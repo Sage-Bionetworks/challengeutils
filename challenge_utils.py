@@ -1,0 +1,114 @@
+import os
+import synapseclient
+import pandas as pd
+
+def privateToNotPrivate(syn,evalID):
+	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
+	for (i,(item,status)) in enumerate(bundle):
+		annots = status.annotations
+		double = annots['doubleAnnos']
+		annots['stringAnnos'][0]['isPrivate'] = False
+		for t in double:
+		    t['isPrivate'] = False
+		syn.store(status)
+		#Checks if you have looped through all the submissions
+		print(i)
+
+def rescore(syn,evalID):
+	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
+	for (i,(item,status)) in enumerate(bundle):
+		status.status = 'VALIDATED'
+		syn.store(status)
+		print(i)
+
+def setQuota(syn,evalID,quota=3):
+	quota1 = dict(submissionLimit = quota)
+	e = syn.getEvaluation(evalID)
+	e.quota = quota1
+	e = syn.store(e)
+
+def reNameSubmissionFiles(syn,evalID,downloadLocation="./",stat="SCORED"):
+	bundle = syn.getSubmissionBundles(evalID,status=stat,limit=200)
+	for (i,(item,status)) in enumerate(bundle):
+		if status.get("annotations") is not None:
+			team = annots['stringAnnos'][0]['value']
+		else:
+			if item.get("teamId") is not None:
+				team = syn.getTeam(item.get("teamId")).name
+			else:
+				user = syn.getUserProfile(item.userId).userName
+		date = item.createdOn
+		fileEnt = syn.getSubmission(item.id,downloadLocation=downloadLocation)
+		fileName = os.path.basename(fileEnt.filePath)
+		newName = team+"___"+date+"___"+fileName
+		newName = newName.replace(' ','_')
+		os.rename(fileName,newName)
+		print(i)
+
+
+def getEntityId(syn,evalID):
+	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
+	f = open('2.csv', 'w')
+	f.write("team,email,public,wikiId,FileID,final,tiebreak,createdOn\n")
+	for (i,(item,status)) in enumerate(bundle):
+		annots = status.annotations
+		#2
+		#print(annots['doubleAnnos'][17])
+		#print(annots['doubleAnnos'][-17])
+		final = annots['doubleAnnos'][17]['value']
+		tiebreak = annots['doubleAnnos'][-17]['value']
+		#1A,B
+		#tiebreak = annots['doubleAnnos'][-1]['value']
+		#final = annots['doubleAnnos'][-3]['value']
+		createdOn = item.createdOn
+		user = syn.getUserProfile(item.userId)
+		email = user.userName + "@synapse.org"
+		try:
+			synId = syn.get(item.entityId,downloadFile=False)
+			synId = synId.parentId
+			public = "True"
+		except:
+			synId = item.entityId
+			public = "False"
+		wiki = "https://www.synapse.org/#!Synapse:%s"%synId
+		f.write("%s,%s,%s,%s,%s,%s,%s,%s\n" % (annots['stringAnnos'][0]['value'], email, public, wiki, item.entityId, final, tiebreak, createdOn))
+	f.close()
+
+def submissionToStatus(syn,submissionID,status='RECEIVED'):
+	temp = syn.getSubmissionStatus(submissionID)
+	temp.status = status
+	syn.store(temp)
+
+# Use syn.setPermissions
+def changeACL(evaluationId, principalId):
+	e = syn.getEvaluation(evaluationId)
+	acl = syn._getACL(e)
+	wanted = filter(lambda input: input.get('principalId', None) == principalId, acl['resourceAccess'])[0]
+	## admin
+	wanted['accessType'].append("READ_PRIVATE_SUBMISSION")
+	syn._storeACL(e, acl)
+
+def addSubmissionSynId(evaluationId):
+	e = syn.getEvaluation(evaluationId)
+	bundle = syn.getSubmissionBundles(e, status ="SCORED")
+	for item,status in bundle:
+		synId = {'isPrivate':False,'key':'synapseId','value':item.entityId}
+		status.annotations['stringAnnos'].append(synId)
+		syn.store(status)
+
+def getTeamStats(teamId):
+	members = syn.getTeamMembers(teamId)
+	info = []
+	for i in members:
+		user = syn.getUserProfile(i['member']['ownerId'])
+		name = user['firstName'] + " " + user['lastName']
+		if user.get("location") is not None:
+			location = user['location']
+		else:
+			location = ""
+		info.append([user['userName'],name,location])
+	temp = pd.DataFrame(info,columns = ['username','name','location'])
+	temp['name'] = [i.encode('utf-8').decode('utf-8') for i in temp['name']]
+	#temp.to_csv("challenge_stats.csv", index=False, encoding='utf-8')
+	return(temp)
+
