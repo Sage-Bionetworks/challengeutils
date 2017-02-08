@@ -1,15 +1,38 @@
 import os
 import synapseclient
 import pandas as pd
+from synapseclient import Evaluation
 
-def privateToNotPrivate(syn,evalID):
+
+def createEvaluationQueue(syn, name, description, status, parentId, submissionInstructionsMessage):
+	queue = syn.store(Evaluation(
+	  name=name,
+	  description=description,
+	  status=status,
+	  contentSource=parentId,
+	  submissionInstructionsMessage=submissionInstructionsMessage,
+	  submissionReceiptMessage="Thanks for submitting to %s!" % name))
+	return(queue)
+
+def _findAnnotation(annotations, key, annotType):
+	if annotations.get(annotType) is not None:
+		check = filter(lambda x: x.get('key') == key, annotations[annotType])
+		if len(check) > 0:
+			check[0]['isPrivate'] = False
+	return(annotations)
+
+def privateToNotPrivate(syn,evalID, annots):
+	"""
+	annots: list of annotation keys to make public
+	"""
 	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
 	for (i,(item,status)) in enumerate(bundle):
-		annots = status.annotations
-		double = annots['doubleAnnos']
-		annots['stringAnnos'][0]['isPrivate'] = False
-		for t in double:
-		    t['isPrivate'] = False
+		annotations = status.annotations
+		for key in annots:
+			annotations = _findAnnotation(annotations, key, "stringAnnos")
+			annotations = _findAnnotation(annotations, key, "doubleAnnos")
+			annotations = _findAnnotation(annotations, key, "longAnnos")
+		status.annotations = annotations
 		syn.store(status)
 		#Checks if you have looped through all the submissions
 		print(i)
@@ -21,6 +44,10 @@ def rescore(syn,evalID):
 		syn.store(status)
 		print(i)
 
+# {u'firstRoundStart': u'2017-01-03T00:00:00.000Z',
+#   u'numberOfRounds': 1,
+#   u'roundDurationMillis': 3139200000,
+#   u'submissionLimit': 6}
 def setQuota(syn,evalID,quota=3):
 	quota1 = dict(submissionLimit = quota)
 	e = syn.getEvaluation(evalID)
