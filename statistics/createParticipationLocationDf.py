@@ -5,14 +5,14 @@ import time
 syn = synapseclient.login()
 
 def getUniqMembers(listOfTeams):
-  """
-  :param listOfTeams:  Takes a list of teams
-  """
-  allmembers= set()
-  for i in teams:
-  	members = syn.getTeamMembers(i)
-  	for member in members:
-  		members.add(member['member']['ownerId'])
+	"""
+	:param listOfTeams:  Takes a list of teams
+	"""
+	allmembers= set()
+	for i in teams:
+		members = syn.getTeamMembers(i)
+		for member in members:
+			members.add(member['member']['ownerId'])
 	return(members)
 
 #CREATE participation.csv
@@ -24,7 +24,7 @@ challenges = {"6/4/2014":"syn312572",
 			  "4/01/2015":"syn2811262",
 			  "7/27/2015":"syn2813558",
 			  "10/01/2015":"syn2873386",
-		 	  "4/04/2016":"syn4231880"}
+			  "4/04/2016":"syn4231880"}
 timeline = dict()
 challengeName = dict()
 for i in challenges:
@@ -50,12 +50,12 @@ timeline["01/01/2013"] = len(getUniqMembers(teams))
 challengeName["01/01/2013"] = "The Whole-Cell Parameter Estimation DREAM Challenge"
 
 for index,i in enumerate(participation['Name']):
-    i = i.replace('DREAM','')
-    i = i.replace('Challenge','')
-    i = i.replace('challenge','')
-    i = i.replace('1','')
-    i = i.replace('  ',' ')
-    participation['Name'][index] = i
+	i = i.replace('DREAM','')
+	i = i.replace('Challenge','')
+	i = i.replace('challenge','')
+	i = i.replace('1','')
+	i = i.replace('  ',' ')
+	participation['Name'][index] = i
 
 participation = pd.DataFrame(timeline.values(), index= timeline.keys(),columns = ["Number"])
 participation['newDate'] = [calendar.timegm(time.strptime(i,"%m/%d/%Y")) for i in participation.index]
@@ -66,28 +66,28 @@ participation = participation.sort_values("newDate",ascending=False)
 #Create challenge_locations.txt
 #Get list of unique members
 def getUniqMembers(listOfTeams):
-  """
-  :param listOfTeams:  Takes a list of teams
-  """
-  allmembers= set()
-  for i in teams:
-  	members = syn.getTeamMembers(i)
-  	for member in members:
-  		members.add(member['member']['ownerId'])
+	"""
+	:param listOfTeams:  Takes a list of teams
+	"""
+	allmembers= set()
+	for i in teams:
+		members = syn.getTeamMembers(i)
+		for member in members:
+			members.add(member['member']['ownerId'])
 	return(members)
 
 #Create challenge locations
 def createChallengeLocationList(allMembers,locationFileName):
-  locations = []
-  for member in allMembers:
-  	user = syn.getUserProfile(member)
-  	loc = user.get('location',None)
-  	if loc is not None and loc != '':
-  		locations.append(loc)
-  with open(locationFileName,'w+') as location_doc:
-    location_doc.write('locations\n')
-  	for i in locations:
-  		location_doc.write(i.encode('utf-8') + "\n")
+	locations = []
+	for member in allMembers:
+		user = syn.getUserProfile(member)
+		loc = user.get('location',None)
+		if loc is not None and loc != '':
+			locations.append(loc)
+	with open(locationFileName,'w+') as location_doc:
+		location_doc.write('locations\n')
+		for i in locations:
+			location_doc.write(i.encode('utf-8') + "\n")
 
 #Get team locations
 teams = [2223721, #Whole-Cell Parameter Estimation
