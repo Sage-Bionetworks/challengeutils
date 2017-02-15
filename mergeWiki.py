@@ -1,5 +1,5 @@
 import synapseclient
-from synapseclient import File, Project, Folder, Table, Schema, Link, Wiki, Activity, exceptions
+from synapseclient import File, Project, Folder, Table, Schema, Link, Wiki, Activity
 from synapseclient.exceptions import *
 import synapseutils as synu
 import tempfile
@@ -44,7 +44,6 @@ def mergeWiki(syn, entity, destinationId, forceMerge=False):
                 new_file_handles = []
             elif oldWiki['attachmentFileHandleIds'] != []:
                 results = [syn._getFileHandleDownload(filehandleId, oldWiki.id, objectType='WikiAttachment') for filehandleId in oldWiki['attachmentFileHandleIds']]
-                #Get rid of the previews
                 nopreviews = [attach['fileHandle'] for attach in results if attach['fileHandle']['concreteType'] != "org.sagebionetworks.repo.model.file.PreviewFileHandle"]
                 copiedFileHandles = synu.copyFileHandles(syn, nopreviews, ["WikiAttachment"]*len(nopreviews), [oldWiki.id]*len(nopreviews))
                 new_file_handles = [filehandle['newFileHandle']['id'] for filehandle in copiedFileHandles['copyResults']]
@@ -55,9 +54,6 @@ def mergeWiki(syn, entity, destinationId, forceMerge=False):
 
 def command_mergeWiki(syn, args):
     mergeWiki(syn, args.id, args.destinationId, args.forceMerge)
-
-#syn = synapseclient.login()
-#mergeWiki(syn, "syn4219927", "syn4224222")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Merge wiki')
@@ -70,5 +66,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     syn = synapseclient.login()
     command_mergeWiki(syn, args)
-
-
