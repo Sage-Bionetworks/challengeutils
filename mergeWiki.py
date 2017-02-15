@@ -1,8 +1,10 @@
 import synapseclient
 from synapseclient import File, Project, Folder, Table, Schema, Link, Wiki, Activity, exceptions
 from synapseclient.exceptions import *
+import synapseutils as synu
 import tempfile
 import re
+import argparse
 
 def mergeWiki(syn, entity, destinationId, forceMerge=False):
     oldOwn = syn.get(entity,downloadFile=False)
@@ -28,28 +30,25 @@ def mergeWiki(syn, entity, destinationId, forceMerge=False):
         if new_child_pages.get(title) is not None:
             newWiki = syn.getWiki(destinationId, new_child_pages[title])
             if newWiki.markdown == oldWiki.markdown and not forceMerge:
-                print("Skipping page update %s", title)
+                print("Skipping page update: %s" % title)
             else:
+                print("Updating: %s" % title)
                 newWiki.markdown = oldWiki.markdown
                 for oldId in mapping:
                     oldProjectAndWikiId = "%s/wiki/%s" % (entity, oldId)
                     newProjectAndWikiId = "%s/wiki/%s" % (destinationId, mapping[oldId])
                     newWiki.markdown=re.sub(oldProjectAndWikiId, newProjectAndWikiId, newWiki.markdown)
                 newWiki.markdown=re.sub(entity, destinationId, newWiki.markdown)
-            print("Updating attachments")
+            #All attachments must be updated
             if oldWiki['attachmentFileHandleIds'] == []:
-                attachments = []
+                new_file_handles = []
             elif oldWiki['attachmentFileHandleIds'] != []:
-                uri = "/entity/%s/wiki/%s/attachmenthandles" % (oldWiki.ownerId, oldWiki.id)
-                results = syn.restGET(uri)
-                file_handles = {fh['id']:fh for fh in results['list']}
-                # TODO: CHeck md5 so no need to upload everytime?
-                attachments = []
-                tempdir = tempfile.gettempdir()
-                for fhid in oldWiki.attachmentFileHandleIds:
-                    file_info = syn._downloadWikiAttachment(oldWiki.ownerId, oldWiki, file_handles[fhid]['fileName'], destination=tempdir)
-                    attachments.append(file_info['path'])
-            newWiki.update({'attachments':attachments})
+                results = [syn._getFileHandleDownload(filehandleId, oldWiki.id, objectType='WikiAttachment') for filehandleId in oldWiki['attachmentFileHandleIds']]
+                #Get rid of the previews
+                nopreviews = [attach['fileHandle'] for attach in results if attach['fileHandle']['concreteType'] != "org.sagebionetworks.repo.model.file.PreviewFileHandle"]
+                copiedFileHandles = synu.copyFileHandles(syn, nopreviews, ["WikiAttachment"]*len(nopreviews), [oldWiki.id]*len(nopreviews))
+                new_file_handles = [filehandle['newFileHandle']['id'] for filehandle in copiedFileHandles['copyResults']]
+            newWiki.update({'attachmentFileHandleIds':new_file_handles})
             newWiki = syn.store(newWiki)
         else:
             print("%s: title not existent in destination wikis" % title)
