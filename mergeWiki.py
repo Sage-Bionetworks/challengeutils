@@ -53,6 +53,22 @@ def mergeWiki(syn, entity, destinationId, forceMerge=False):
         else:
             print("%s: title not existent in destination wikis" % title)
 
+def command_mergeWiki(syn, args):
+    mergeWiki(syn, args.id, args.destinationId, args.forceMerge)
 
-syn = synapseclient.login()
-mergeWiki(syn, "syn4219927", "syn4224222")
+#syn = synapseclient.login()
+#mergeWiki(syn, "syn4219927", "syn4224222")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Merge wiki')
+    parser.add_argument("id", type=str,
+                        help="Synapse ID of the project's wiki you want to copy")
+    parser.add_argument("destinationId", type=str,
+                        help='Synapse ID of project where wiki will be copied to')
+    parser.add_argument("--forceMerge", action='store_true',
+                        help='Force the merge of wiki markdowns')
+    args = parser.parse_args()
+    syn = synapseclient.login()
+    command_mergeWiki(syn, args)
+
+
