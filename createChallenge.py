@@ -1,6 +1,8 @@
-def create_team(name, description):
-    return syn.store(Team(name=name, description=description, canPublicJoin=True))
-
+import synapseclient
+import synapseutils as synu
+import json
+# def create_team(name, description, canPublicJoin=False):
+#     return syn.store(Team(name=name, description=description, canPublicJoin=canPublicJoin))
 
 def create_challenge_object(project, participants_team):
     challenge_json = {'participantTeamId':utils.id_of(participants_team), 'projectId':utils.id_of(project)}
@@ -28,23 +30,11 @@ def set_up(challengeName):
     challenge_staging_project = syn.store(Project(name=challengeName + " Staging"))
     print "Created project %s %s" % (challenge_staging_project.id, challenge_staging_project.name)
 
-    # evaluation = syn.store(Evaluation(
-    #     name=challenge_project.name,
-    #     contentSource=challenge_project.id,
-    #     status="OPEN",
-    #     submissionInstructionsMessage="To submit to the XYZ Challenge, send a tab-delimited file as described here: https://...",
-    #     submissionReceiptMessage="Your submission has been received. For further information, consult the leader board at https://..."),
-    #     quota=dict(numberOfRounds=1,
-    #                roundDurationMillis=1000*60*60*48, ## 48 hours
-    #                submissionLimit=20,
-    #                firstRoundStart=datetime.now().strftime(synapseclient.utils.ISO_FORMAT)))
-    # print "Created Evaluation %s %s" % (evaluation.id, evaluation.name)
-
     # Create teams for participants and administrators
-    participants_team = syn.store(Team(name=challengeName+' Participants', description='A participant team for people who have joined the %s' % challengeName))
+    participants_team = syn.store(Team(name=challengeName+' Participants', description='A participant team for people who have joined the %s' % challengeName, canPublicJoin=True))
     print "Created team %s(%s)" % (participants_team.name, participants_team.id)
 
-    preregistrants_team = syn.store(Team(name=challengeName+' Preregistrants', description='A preregistrant team for people who have preregistered for the %s' % challengeName))
+    preregistrants_team = syn.store(Team(name=challengeName+' Preregistrants', description='A preregistrant team for people who have preregistered for the %s' % challengeName, canPublicJoin=True))
     print "Created team %s(%s)" % (preregistrants_team.name, preregistrants_team.id)
 
     admin_team = syn.store(Team(name=challengeName+' Administrators', description='A team for %s administrators' % challengeName))

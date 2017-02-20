@@ -45,7 +45,9 @@ def mergeWiki(syn, entity, destinationId, forceMerge=False):
             elif oldWiki['attachmentFileHandleIds'] != []:
                 results = [syn._getFileHandleDownload(filehandleId, oldWiki.id, objectType='WikiAttachment') for filehandleId in oldWiki['attachmentFileHandleIds']]
                 nopreviews = [attach['fileHandle'] for attach in results if attach['fileHandle']['concreteType'] != "org.sagebionetworks.repo.model.file.PreviewFileHandle"]
-                copiedFileHandles = synu.copyFileHandles(syn, nopreviews, ["WikiAttachment"]*len(nopreviews), [oldWiki.id]*len(nopreviews))
+                contentTypes = [attach['contentType'] for attach in nopreviews]
+                fileNames = [attach['fileName'] for attach in nopreviews]
+                copiedFileHandles = synu.copyFileHandles(syn, nopreviews, ["WikiAttachment"]*len(nopreviews), [oldWiki.id]*len(nopreviews), contentTypes, fileNames)
                 new_file_handles = [filehandle['newFileHandle']['id'] for filehandle in copiedFileHandles['copyResults']]
             newWiki.update({'attachmentFileHandleIds':new_file_handles})
             newWiki = syn.store(newWiki)
