@@ -25,7 +25,7 @@ def privateToNotPrivate(syn,evalID, annots):
 	"""
 	annots: list of annotation keys to make public
 	"""
-	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
+	bundle = syn.getSubmissionBundles(evalID,status='SCORED')
 	for (i,(item,status)) in enumerate(bundle):
 		annotations = status.annotations
 		for key in annots:
