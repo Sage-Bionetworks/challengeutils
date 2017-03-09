@@ -14,24 +14,26 @@ def createEvaluationQueue(syn, name, description, status, parentId, submissionIn
 	  submissionReceiptMessage="Thanks for submitting to %s!" % name))
 	return(queue)
 
-def _findAnnotation(annotations, key, annotType):
+def _findAnnotation(annotations, key, annotType, isPrivate=False):
 	if annotations.get(annotType) is not None:
 		check = filter(lambda x: x.get('key') == key, annotations[annotType])
 		if len(check) > 0:
-			check[0]['isPrivate'] = False
+			check[0]['isPrivate'] = isPrivate
 	return(annotations)
 
-def privateToNotPrivate(syn,evalID, annots):
+def changeSubmissionAnnotationPrivacy(syn,evalID, annots, status='SCORED', isPrivate=False):
 	"""
 	annots: list of annotation keys to make public
+	status: ALL, VALIDATED, INVALID, 
 	"""
-	bundle = syn.getSubmissionBundles(evalID,status='SCORED')
+	status = None if status == 'ALL' else status
+	bundle = syn.getSubmissionBundles(evalID,status=status)
 	for (i,(item,status)) in enumerate(bundle):
 		annotations = status.annotations
 		for key in annots:
-			annotations = _findAnnotation(annotations, key, "stringAnnos")
-			annotations = _findAnnotation(annotations, key, "doubleAnnos")
-			annotations = _findAnnotation(annotations, key, "longAnnos")
+			annotations = _findAnnotation(annotations, key, "stringAnnos",isPrivate)
+			annotations = _findAnnotation(annotations, key, "doubleAnnos",isPrivate)
+			annotations = _findAnnotation(annotations, key, "longAnnos",isPrivate)
 		status.annotations = annotations
 		syn.store(status)
 		#Checks if you have looped through all the submissions
