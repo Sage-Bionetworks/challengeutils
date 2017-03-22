@@ -34,14 +34,18 @@ submissionsPerWeek = function(challenge_stats_df, challengeSynId) {
 }
 
 numTeamsOverTime = function(challenge_stats_df, challengeSynId) {
-  submissions <- table(challenge_stats_df$Date,challenge_stats_df$team)
+  weeks <- seq(min(challenge_stats_df$Date), max(challenge_stats_df$Date)+6, "weeks")
+  weekSegment = sapply(challenge_stats_df$Date, function(x) {
+    as.character(tail(weeks[x >= weeks],n=1))
+  })
+  submissions <- table(as.Date(weekSegment),challenge_stats_df$team)
   for (i in seq(2, nrow(submissions))) {
     submissions[i,] = submissions[i-1,] + submissions[i,]
   }
   numberOfTeams = rowSums(submissions > 0)
   dates = as.Date(names(numberOfTeams))
   png("totalTeamsSubmitted.png",width=600, height=400)
-  plot(dates,numberOfTeams, xaxt="n",xlab = "Dates",ylab = "Number of Teams",main="Number of Teams Submitted")
+  plot(dates,numberOfTeams, xaxt="n",xlab = "Dates",ylab = "Number of Teams",main="Number of Teams Submitted",ylim = c(0, max(numberOfTeams)),type = "l")
   axis.Date(1, at = seq(min(dates), max(dates)+6, "weeks"))
   dev.off()
   synStore(File("totalTeamsSubmitted.png",parentId = "syn8082860"))
