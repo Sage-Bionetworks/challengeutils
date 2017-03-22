@@ -45,7 +45,7 @@ numTeamsOverTime = function(challenge_stats_df, challengeSynId) {
   numberOfTeams = rowSums(submissions > 0)
   dates = as.Date(names(numberOfTeams))
   png("totalTeamsSubmitted.png",width=600, height=400)
-  plot(dates,numberOfTeams, xaxt="n",xlab = "Dates",ylab = "Number of Teams",main="Number of Teams Submitted",ylim = c(0, max(numberOfTeams)),type = "l")
+  plot(dates,numberOfTeams, xaxt="n",xlab = "Dates",ylab = "Number of Teams",main="Cumulative Number of Teams Submitted",ylim = c(0, max(numberOfTeams)),type = "l")
   axis.Date(1, at = seq(min(dates), max(dates)+6, "weeks"))
   dev.off()
   synStore(File("totalTeamsSubmitted.png",parentId = "syn8082860"))
