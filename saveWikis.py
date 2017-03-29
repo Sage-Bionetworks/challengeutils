@@ -109,18 +109,12 @@ def copyWiki(syn, entity, destinationId, entitySubPageId=None, destinationSubPag
         if wiki['attachmentFileHandleIds'] == []:
             attachments = []
         elif wiki['attachmentFileHandleIds'] != []:
-            results = [stagingSyn._getFileHandleDownload(filehandleId, wiki.id, objectType='WikiAttachment') for filehandleId in wiki['attachmentFileHandleIds']]
             attachments = []
             tempdir = tempfile.gettempdir()
-            for i in results:
-                file_info = stagingSyn._downloadFileHandle(i['preSignedURL'],tempdir,i['fileHandle'])
+            for filehandleId in wiki['attachmentFileHandleIds']:
+                result = stagingSyn._getFileHandleDownload(filehandleId, wiki.id, objectType='WikiAttachment')
+                file_info = stagingSyn._downloadFileHandle(result['preSignedURL'],tempdir,result['fileHandle'])
                 attachments.append(file_info)
-
-            # ## need to download an re-upload wiki attachments, ug!
-
-            # for fhid in wiki.attachmentFileHandleIds:
-            #     stagingSyn._downloadFileHandle(uri,tempdir,file_handles[fhid])
-            #     file_info = stagingSyn._downloadWikiAttachment(wiki.ownerId, wiki, file_handles[fhid]['fileName'], )
         #for some reason some wikis don't have titles?
         if hasattr(wikiHeader, 'parentId'):
             wNew = Wiki(owner=newOwn, title=wiki.get('title',''), markdown=wiki.markdown, attachments=attachments, parentWikiId=wikiIdMap[wiki.parentWikiId])
