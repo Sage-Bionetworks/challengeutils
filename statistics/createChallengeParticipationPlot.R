@@ -1,6 +1,7 @@
 library(data.table)
 library(ggplot2)
-participants = read.csv("~/sage_projects/DREAM/statistics/participation.csv")
+challenge_stats = read.csv("~/sage_projects/DREAM/DREAM-Utilities/statistics/challenge_stats.tsv",sep="\t")
+#participants = read.csv("statistics/participation.csv")
 participants$Year = as.character(participants$Year)
 participants$Year=factor(participants$Year,levels=c('2016','2015',"2014","2013"))
 participants$indexing = c(1:17)

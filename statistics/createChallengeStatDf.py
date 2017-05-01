@@ -30,28 +30,28 @@ def createChallengeLocationList(allMembers,locationFileName):
 
 #Get team locations
 #Need to get participants before 2013
-challenges= {"The Whole-Cell Parameter Estimation DREAM Challenge":[2223721],#2013
-			 "NIEHS-NCATS-UNC DREAM Toxicogenetics Challenge":[2223722,2223723], #2013
-			 "HPN-DREAM Breast Cancer Network Inference Challenge":[2223724,2223725,2223726,2223728],#2013
-			 "The Rheumatoid Arthritis Responder Challenge":[2223744],#2014
-			 "ICGC-TCGA-DREAM Somatic Mutation Calling Challenge":[2223743],#2014
-			 "Alzheimer's Disease Big Data DREAM Challenge #1":[2223741],#2014
-			 "Acute Myeloid Leukemia (AML) Outcome Prediction":[3320951],#2014
-			 "The Broad-DREAM Gene Essentiality Prediction Challenge":[3320895],#2014
-			 "ICGC-TCGA DREAM Somatic Mutation Calling Tumor Heterogeneity Challenge (SMC-Het)":[3328713], #2015
-			 "DREAM Olfaction Prediction Challenge":[3323870], #2015
-			 "Prostate Cancer DREAM Challenge":[3325264], #2015
-			 "ALS Stratification Prize4Life Challenge":[3328255], #2015
-			 "AstraZeneca-Sanger Drug Combination Prediction DREAM Challenge":[3329051], #2015
-			 "ICGC-TCGA SMC-DNA Meta Challenge":[3328707],#2015
-			 "Respiratory Viral DREAM Challenge":[3332517],#2016
-			 "Disease Module Identification DREAM Challenge":[3342189],#2016
-			 "ENCODE-DREAM in vivo Transcription Factor Binding Site Prediction Challenge":[3340988], #2016
+challenges= {"Whole-Cell Parameter Estimation":[2223721],#2013
+			 "NIEHS-NCATS-UNC Toxicogenetics":[2223722,2223723], #2013
+			 "HPN-DREAM Breast Cancer Network Inference":[2223724,2223725,2223726,2223728],#2013
+			 "Rheumatoid Arthritis Responder":[2223744],#2014
+			 "Somatic Mutation Calling":[2223743],#2014
+			 "Alzheimer's Disease Big Data":[2223741],#2014
+			 "Acute Myeloid Leukemia Outcome Prediction":[3320951],#2014
+			 "Broad-DREAM Gene Essentiality Prediction":[3320895],#2014
+			 "SMC-Het":[3328713], #2015
+			 "DREAM Olfaction Prediction":[3323870], #2015
+			 "Prostate Cancer":[3325264], #2015
+			 "ALS Stratification Prize4Life":[3328255], #2015
+			 "AstraZeneca-Sanger Drug Combination Prediction":[3329051], #2015
+			 "SMC-DNA Meta":[3328707],#2015
+			 "Respiratory Viral":[3332517],#2016
+			 "Disease Module Identification":[3342189],#2016
+			 "ENCODE":[3340988], #2016
 			 "DREAM Idea Challenge":[3341755],#2016
-			 "ICGC-TCGA DREAM Somatic Mutation Calling RNA Challenge (SMC-RNA)":[3323365],#2016
-			 "The Digital Mammography DREAM Challenge.":[3342365], #2016
-			 "Multiple Myeloma DREAM Challenge":[3342899],#2017 preregister
-			 "NCI-CPTAC DREAM Proteogenomics Challenge":[3351110] #2017 preregister
+			 "SMC-RNA":[3323365],#2016
+			 "Digital Mammography":[3342365], #2016
+			 "Multiple Myeloma":[3342899],#2017 preregister
+			 "NCI-CPTAC Proteogenomics":[3351110] #2017 preregister
 			}
 
 teams = []
@@ -63,14 +63,14 @@ for chal in challenges:
 	teams.append(','.join([str(i) for i in challenges[chal]]))
 	team = syn.getTeam(challenges[chal][0])
 	chal_users = set()
-	chal_loc = set()
+	chal_loc = []
 	for i in challenges[chal]:
 		for member in syn.getTeamMembers(i):
 			chal_users.add(member['member']['userName'])
 			member = syn.getUserProfile(member['member']['ownerId'])
 			loc = member.get('location',None)
 			if loc is not None and loc != '':
-				chal_loc.add(loc)
+				chal_loc.append(loc)
 	createdOn.append(team.createdOn.split("-")[0])
 	allUsers.append(",".join(chal_users))
 	allLocations.append("|".join(chal_loc))
@@ -96,7 +96,3 @@ challenge_data.to_csv("challenge_stats.tsv",index=False, sep='\t',encoding='utf-
 # 	i = i.replace('  ',' ')
 # 	print(i)
 # 	challenge_data['challenges'][index] = i
-
-
-allMembers = getUniqMemberCount(teams)
-createChallengeLocationList(allMembers,"challenge_locations.txt")
