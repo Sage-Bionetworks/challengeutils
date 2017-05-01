@@ -79,7 +79,7 @@ challenge_data = pd.DataFrame()
 challenge_data['challenges'] = challenges.keys()
 challenge_data['teams'] = teams
 challenge_data['createdOn'] = createdOn
-challenge_data['createdOn'][challenge_data['challenges'] == "Multiple Myeloma DREAM Challenge"] = 2017
+challenge_data['createdOn'][challenge_data['challenges'] == "Multiple Myeloma"] = 2017
 
 challenge_data['users'] = allUsers
 challenge_data['locations'] = allLocations
