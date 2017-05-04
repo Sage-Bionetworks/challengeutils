@@ -24,15 +24,17 @@ createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath) {
   participants$indexing = seq_along(participants$Year)
   
   ggplot(participants, aes(x=reorder(Name,-indexing),y=Number,fill=Year))+ geom_bar(stat="identity") + coord_flip() +
-    ylab("Number of Participants") +
-    theme(panel.background = element_blank(),
-          axis.text.y = element_text(size=12),
+    ylab("Number of Participants") + theme_bw() +
+    theme(#panel.background = element_blank(),
+          axis.text.y = element_text(size=14),
           axis.title.y=element_blank(),
-          axis.text.x  = element_text(size=12),
+          axis.text.x  = element_text(size=14),
           title = element_text(size=14),
-          legend.text=element_text(size=12),
+          legend.text=element_text(size=14),
           legend.justification=c(1,0), 
-          legend.position=c(1,0))
+          legend.position=c(1,0),
+          plot.margin = margin(20, 20, 20, 20)) + 
+    scale_fill_brewer(palette="Set1")
   ggsave(pdfPath,width=17,height=10)
 }
 challengeStatDfPath="statistics/challenge_stats.tsv"
