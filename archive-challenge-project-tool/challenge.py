@@ -34,7 +34,6 @@ from StringIO import StringIO
 import copy
 
 import argparse
-import lock
 import json
 import math
 import os
@@ -48,7 +47,8 @@ import traceback
 import urllib
 import uuid
 import warnings
-
+#Python scripts that are part of the challenge
+import lock
 try:
     import challenge_config as conf
 except Exception as ex1:
