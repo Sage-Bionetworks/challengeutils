@@ -248,7 +248,7 @@ def archive(evaluation, stat="VALIDATED"):
 
     for submission, status in syn.getSubmissionBundles(evaluation, status=stat):
         ## retrieve file into cache and copy it to destination
-        projectEntity = Project('Archived %s %s %s %s' % (submission.name,datetime.utcnow().isoformat(),submission.id,submission.entityId))
+        projectEntity = Project('Archived %s %d %s %s' % (submission.name,int(round(time.time() * 1000)),submission.id,submission.entityId))
         entity = syn.store(projectEntity)
         adminPriv = ['DELETE','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
         syn.setPermissions(entity,"3324230",adminPriv)
