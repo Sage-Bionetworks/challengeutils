@@ -231,7 +231,7 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
                 submission_name=submission.name,
                 message=validation_message)
 
-def archive(evaluation, stat="VALIDATED"):
+def archive(evaluation, stat="VALIDATED", reArchive=False):
     """
     Archive the submissions for the given evaluation queue and store them in the destination synapse folder.
 
@@ -248,14 +248,16 @@ def archive(evaluation, stat="VALIDATED"):
 
     for submission, status in syn.getSubmissionBundles(evaluation, status=stat):
         ## retrieve file into cache and copy it to destination
-        projectEntity = Project('Archived %s %d %s %s' % (submission.name,int(round(time.time() * 1000)),submission.id,submission.entityId))
-        entity = syn.store(projectEntity)
-        adminPriv = ['DELETE','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
-        syn.setPermissions(entity,"3324230",adminPriv)
-        copied = synu.copy(syn, submission.entityId, entity.id)
-        archived = {"archived":entity.id}
-        status = update_single_submission_status(status, archived)
-        syn.store(status)
+        checkIfArchived = filter(lambda x: x.get("key") == "archived", status.annotations['stringAnnos'])
+        if len(checkIfArchived)==0 or reArchive:
+            projectEntity = Project('Archived %s %d %s %s' % (submission.name,int(round(time.time() * 1000)),submission.id,submission.entityId))
+            entity = syn.store(projectEntity)
+            adminPriv = ['DELETE','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
+            syn.setPermissions(entity,"3324230",adminPriv)
+            copied = synu.copy(syn, submission.entityId, entity.id)
+            archived = {"archived":entity.id}
+            status = update_single_submission_status(status, archived)
+            syn.store(status)
 
 ## ==================================================
 ##  Handlers for commands
@@ -279,7 +281,7 @@ def command_validate(args):
     #     sys.stderr.write("\nValidate command requires either an evaluation ID or --all to validate all queues in the challenge")
 
 def command_archive(args):
-    archive(args.evaluation)
+    archive(args.evaluation, args.status, args.reArchive)
 
 ## ==================================================
 ##  main method
@@ -315,6 +317,7 @@ def main():
     parser_archive = subparsers.add_parser('archive', help="Archive submissions to a challenge")
     parser_archive.add_argument("evaluation", metavar="EVALUATION-ID", default=None)
     parser_archive.add_argument("--status",metavar="STATUS", default="VALIDATED")
+    parser_archive.add_argument("--reArchive", action="store_true", default=False)
     parser_archive.set_defaults(func=command_archive)
 
     args = parser.parse_args()
