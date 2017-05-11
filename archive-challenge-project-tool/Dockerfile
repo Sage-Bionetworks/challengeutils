@@ -1,3 +1,4 @@
+FROM ubuntu:16.04
 ENV PACKAGES python-dev git python-setuptools python-pip
 
 ENV BRANCH=develop

@@ -5,9 +5,9 @@ cd /
 #Validate submissions
 #---------------------
 #Remove --send-messages to do rescoring without sending emails to participants
-python challenge.py --challengeName CHALLENGE_NAME -u SYNAPSE_USERNAME -p SYNAPSE_PASSWORD --send-messages --notifications --acknowledge-receipt validate 9603284 --admin 3336298 #>> log/score.log 2>&1
+python challenge.py --challengeName $CHALLENGE_NAME -u $SYNAPSE_USERNAME -p $SYNAPSE_PASSWORD --send-messages --notifications --acknowledge-receipt validate 9603284 --admin 3336298 #>> log/score.log 2>&1
 
 #--------------------
 #Archive submissions
 #--------------------
-python challenge.py --challengeName CHALLENGE_NAME -u SYNAPSE_USERNAME -p SYNAPSE_PASSWORD --notifications archive 9603284 #>> log/score.log 2>&1
+python challenge.py --challengeName $CHALLENGE_NAME -u $SYNAPSE_USERNAME -p $SYNAPSE_PASSWORD --notifications archive 9603284 #>> log/score.log 2>&1
