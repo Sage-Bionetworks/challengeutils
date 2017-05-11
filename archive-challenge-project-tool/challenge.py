@@ -309,7 +309,7 @@ def main():
 
     parser_archive = subparsers.add_parser('archive', help="Archive submissions to a challenge")
     parser_archive.add_argument("evaluation", metavar="EVALUATION-ID", default=None)
-    parser_archive.add_argument("status",metavar="STATUS", default="VALIDATED")
+    parser_archive.add_argument("--status",metavar="STATUS", default="VALIDATED")
     parser_archive.set_defaults(func=command_archive)
 
     args = parser.parse_args()
