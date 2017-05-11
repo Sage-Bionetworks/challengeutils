@@ -16,9 +16,9 @@ dry_run = False
 
 ## Edit these URLs to point to your challenge and its support forum
 defaults = dict(
-    challenge_instructions_url = "https://www.synapse.org/",
-    support_forum_url = "https://www.synapse.org/#!Synapse:{synIdhere}/discussion/default",
-    scoring_script = "the scoring script")
+    challenge_instructions_url = "https://www.synapse.org/#!Synapse:syn4224222/wiki/426788",
+    support_forum_url = "https://www.synapse.org/#!Synapse:syn4224222/discussion/default",
+    scoring_script = "DM Challenge Admins")
 
 ##---------------------------------------------------------
 ## Message templates:
@@ -51,7 +51,7 @@ validation_passed_subject_template = "Submission received to {queue_name}"
 validation_passed_template = """\
 <p>Hello {username},</p>
 
-<p>We have received your submission to the {queue_name} and confirmed that it is correctly formatted.</p>
+<p>We have received your write up to the {queue_name} and confirmed that it has the correct permissions.</p>
 
 <p>submission name: <b>{submission_name}</b><br>
 submission ID: <b>{submission_id}</b></p>
@@ -63,43 +63,43 @@ instructions which can be found at {challenge_instructions_url}.</p>
 {scoring_script}</p>
 """
 
-scoring_succeeded_subject_template = "Scored submission to {queue_name}"
-scoring_succeeded_template = """\
-<p>Hello {username},</p>
+# scoring_succeeded_subject_template = "Scored submission to {queue_name}"
+# scoring_succeeded_template = """\
+# <p>Hello {username},</p>
 
-<p>Your submission \"{submission_name}\" (ID: {submission_id}) to the {queue_name} has been scored:</p>
+# <p>Your submission \"{submission_name}\" (ID: {submission_id}) to the {queue_name} has been scored:</p>
 
-<blockquote><pre>
-{message}
-</pre></blockquote>
+# <blockquote><pre>
+# {message}
+# </pre></blockquote>
 
-<p>If you have questions, please ask on the forums at {support_forum_url}.</p>
+# <p>If you have questions, please ask on the forums at {support_forum_url}.</p>
 
-<p>Sincerely,<br>
-{scoring_script}</p>
-"""
+# <p>Sincerely,<br>
+# {scoring_script}</p>
+# """
 
-scoring_error_subject_template = "Exception while scoring submission to {queue_name}"
-scoring_error_template = """\
-<p>Hello {username},</p>
+# scoring_error_subject_template = "Exception while scoring submission to {queue_name}"
+# scoring_error_template = """\
+# <p>Hello {username},</p>
 
-<p>Sorry, but we were unable to process your submission to the {queue_name}.</p>
+# <p>Sorry, but we were unable to process your submission to the {queue_name}.</p>
 
-<p>Please refer to the challenge instructions which can be found at \
-{challenge_instructions_url} and to the error message below:</p>
+# <p>Please refer to the challenge instructions which can be found at \
+# {challenge_instructions_url} and to the error message below:</p>
 
-<p>submission name: <b>{submission_name}</b><br>
-submission ID: <b>{submission_id}</b></p>
+# <p>submission name: <b>{submission_name}</b><br>
+# submission ID: <b>{submission_id}</b></p>
 
-<blockquote><pre>
-{message}
-</pre></blockquote>
+# <blockquote><pre>
+# {message}
+# </pre></blockquote>
 
-<p>If you have questions, please ask on the forums at {support_forum_url}.</p>
+# <p>If you have questions, please ask on the forums at {support_forum_url}.</p>
 
-<p>Sincerely,<br>
-{scoring_script}</p>
-"""
+# <p>Sincerely,<br>
+# {scoring_script}</p>
+# """
 
 notification_subject_template = "Exception while scoring submission to {queue_name}"
 error_notification_template = """\
