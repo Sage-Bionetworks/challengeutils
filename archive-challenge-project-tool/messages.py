@@ -16,20 +16,20 @@ dry_run = False
 
 ## Edit these URLs to point to your challenge and its support forum
 defaults = dict(
-    challenge_instructions_url = "https://www.synapse.org/#!Synapse:syn4224222/wiki/426788",
-    support_forum_url = "https://www.synapse.org/#!Synapse:syn4224222/discussion/default",
-    scoring_script = "DM Challenge Admins")
+    challenge_instructions_url = "https://www.synapse.org/...",
+    support_forum_url = "https://www.synapse.org/#!Synapse:{synIdHere}/discussion/default",
+    scoring_script = "the archiver")
 
 ##---------------------------------------------------------
 ## Message templates:
 ## Edit to fit your challenge.
 ##---------------------------------------------------------
 
-validation_failed_subject_template = "Validation error in submission to {queue_name}"
+validation_failed_subject_template = "Validation error in challenge write-up to {queue_name}"
 validation_failed_template = """\
 <p>Hello {username},</p>
 
-<p>Sorry, but we were unable to validate your submission to the {queue_name}.</p>
+<p>Sorry, but we were unable to validate your challenge write up to the {queue_name}.</p>
 
 <p>Please refer to the challenge instructions which can be found at \
 {challenge_instructions_url} and to the error message below:</p>
@@ -47,7 +47,7 @@ submission ID: <b>{submission_id}</b></p>
 {scoring_script}</p>
 """
 
-validation_passed_subject_template = "Submission received to {queue_name}"
+validation_passed_subject_template = "Challenge write-up received to {queue_name}"
 validation_passed_template = """\
 <p>Hello {username},</p>
 
@@ -62,44 +62,6 @@ instructions which can be found at {challenge_instructions_url}.</p>
 <p>Sincerely,<br>
 {scoring_script}</p>
 """
-
-# scoring_succeeded_subject_template = "Scored submission to {queue_name}"
-# scoring_succeeded_template = """\
-# <p>Hello {username},</p>
-
-# <p>Your submission \"{submission_name}\" (ID: {submission_id}) to the {queue_name} has been scored:</p>
-
-# <blockquote><pre>
-# {message}
-# </pre></blockquote>
-
-# <p>If you have questions, please ask on the forums at {support_forum_url}.</p>
-
-# <p>Sincerely,<br>
-# {scoring_script}</p>
-# """
-
-# scoring_error_subject_template = "Exception while scoring submission to {queue_name}"
-# scoring_error_template = """\
-# <p>Hello {username},</p>
-
-# <p>Sorry, but we were unable to process your submission to the {queue_name}.</p>
-
-# <p>Please refer to the challenge instructions which can be found at \
-# {challenge_instructions_url} and to the error message below:</p>
-
-# <p>submission name: <b>{submission_name}</b><br>
-# submission ID: <b>{submission_id}</b></p>
-
-# <blockquote><pre>
-# {message}
-# </pre></blockquote>
-
-# <p>If you have questions, please ask on the forums at {support_forum_url}.</p>
-
-# <p>Sincerely,<br>
-# {scoring_script}</p>
-# """
 
 notification_subject_template = "Exception while scoring submission to {queue_name}"
 error_notification_template = """\
