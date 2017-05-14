@@ -5,7 +5,6 @@ Archiving Challenge Participant Write-Ups
 ```
 SYNAPSE_USERNAME=synapseuser
 SYNAPSE_PASSWORD=synapsepass
-CHALLENGE_NAME=challenge
 ```
 
 2 ) Set the `ADMIN_USER_IDS` in `challenge_config.py` by giving it a list of admin users that you want to have emails sent to in case of errors.
@@ -17,3 +16,7 @@ defaults = dict(
     support_forum_url = "https://www.synapse.org/#!Synapse:{synIdhere}/discussion/default",
     scoring_script = "the scoring script")
 ```
+
+4 ) build docker
+
+5 ) docker run -d -e SYNAPSE_USERNAME=$SYNAPSE_USERNAME -e SYNAPSE_PASSWORD=$SYNAPSE_PASSWORD -e CHALLENGE_NAME=chalNameHere yourdockercontainer /runTool.sh
