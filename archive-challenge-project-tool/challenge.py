@@ -252,7 +252,7 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
         if len(checkIfArchived)==0 or reArchive:
             projectEntity = Project('Archived %s %d %s %s' % (submission.name,int(round(time.time() * 1000)),submission.id,submission.entityId))
             entity = syn.store(projectEntity)
-            adminPriv = ['DELETE','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
+            adminPriv = ['DELETE','DOWNLOAD','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
             syn.setPermissions(entity,"3324230",adminPriv)
             copied = synu.copy(syn, submission.entityId, entity.id)
             archived = {"archived":entity.id}
