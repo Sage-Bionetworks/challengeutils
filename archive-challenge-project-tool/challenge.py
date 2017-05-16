@@ -276,7 +276,7 @@ def command_check_status(args):
 def command_validate(args):
     # try:
     for evaluation in args.evaluation:
-        validate(evaluation, args.public, dry_run=args.dry_run)
+        validate(evaluation, args.public, args.admin, dry_run=args.dry_run)
     # except:
     #     sys.stderr.write("\nValidate command requires either an evaluation ID or --all to validate all queues in the challenge")
 
