@@ -10,7 +10,7 @@ synapseLogin()
 ### TO GENERATE THIS FILE: challenge_stats.tsv
 
 
-createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath) {
+createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, orderByYear=T) {
   challenge_stats = read.csv(challengeStatDfPath,sep="\t")
   Year = as.character(challenge_stats$createdOn)
   participants = data.frame(Year)
@@ -20,7 +20,11 @@ createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath) {
   }
   participants$Number = numParticipants
   participants$Name = challenge_stats$challenges
-  participants = participants[order(participants$Year,participants$Number,decreasing = T),]
+  if (orderByYear) {
+    participants = participants[order(participants$Year,participants$Number,decreasing = T),]
+  } else{
+    participants = participants[order(participants$Number,decreasing = T),]
+  }
   participants$indexing = seq_along(participants$Year)
   
   ggplot(participants, aes(x=reorder(Name,-indexing),y=Number,fill=Year))+ geom_bar(stat="identity") + coord_flip() +
@@ -39,7 +43,9 @@ createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath) {
 }
 challengeStatDfPath="statistics/challenge_stats.tsv"
 pdfPath = "statistics/challenge_participation.pdf"
-createChallengeParticipationPlot(challengeStatDfPath,pdfPath)
+createChallengeParticipationPlot(challengeStatDfPath,pdfPath,orderByYear=T)
+pdfPath = "statistics/challenge_participation_ordered.pdf"
+createChallengeParticipationPlot(challengeStatDfPath,pdfPath,orderByYear = F)
 
 ### CREATE CHALLENGE LOCATION MAPS
 makeChallengeLocationMap <- function(location_text_filePath, mapName) {

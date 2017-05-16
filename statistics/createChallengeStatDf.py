@@ -37,6 +37,7 @@ challenges= {"Whole-Cell Parameter Estimation":[2223721],#2013
 			 "Alzheimer's Disease Big Data":[2223741],#2014
 			 "Acute Myeloid Leukemia Outcome Prediction":[3320951],#2014
 			 "Broad-DREAM Gene Essentiality Prediction":[3320895],#2014
+			 "SMC-DNA":[2223743]#2014
 			 "SMC-Het":[3328713], #2015
 			 "DREAM Olfaction Prediction":[3323870], #2015
 			 "Prostate Cancer":[3325264], #2015
@@ -83,10 +84,11 @@ challenge_data['createdOn'] = createdOn
 #Some of the dates are wrong
 challenge_data['createdOn'][challenge_data['challenges'] == "Multiple Myeloma"] = 2017
 challenge_data['createdOn'][challenge_data['challenges'] == "SMC-RNA"] = 2016
-challenge_data['createdOn'][challenge_data['challenges'] == "Somatic Mutation Calling"] = 2016
+challenge_data['createdOn'][challenge_data['challenges'] == "SMC-DNA"] = 2016
 challenge_data['createdOn'][challenge_data['challenges'] == "Alzheimer's Disease Big Data"] = 2014
 challenge_data['createdOn'][challenge_data['challenges'] == "Rheumatoid Arthritis Responder"] = 2014
 challenge_data['createdOn'][challenge_data['challenges'] == "DREAM Olfaction Prediction"] = 2015
+challenge_data['createdOn'][challenge_data['challenges'] == "Respiratory Viral"] = 2016
 
 challenge_data['users'] = allUsers
 challenge_data['locations'] = allLocations
