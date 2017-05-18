@@ -8,8 +8,6 @@ synapseLogin()
 
 ### BEFORE RUNNING THESE FUNCTIONS MAKE SURE YOU RUN: python createChallengeStatDf.py
 ### TO GENERATE THIS FILE: challenge_stats.tsv
-
-
 createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, orderByYear=T) {
   challenge_stats = read.csv(challengeStatDfPath,sep="\t")
   Year = as.character(challenge_stats$createdOn)

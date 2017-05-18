@@ -34,10 +34,10 @@ challenges= {"Whole-Cell Parameter Estimation":[2223721],#2013
 			 "NIEHS-NCATS-UNC Toxicogenetics":[2223722,2223723], #2013
 			 "HPN-DREAM Breast Cancer Network Inference":[2223724,2223725,2223726,2223728],#2013
 			 "Rheumatoid Arthritis Responder":[2223744],#2014
+			 "SMC-DNA":[2223743],#2014
 			 "Alzheimer's Disease Big Data":[2223741],#2014
 			 "Acute Myeloid Leukemia Outcome Prediction":[3320951],#2014
 			 "Broad-DREAM Gene Essentiality Prediction":[3320895],#2014
-			 "SMC-DNA":[2223743]#2014
 			 "SMC-Het":[3328713], #2015
 			 "DREAM Olfaction Prediction":[3323870], #2015
 			 "Prostate Cancer":[3325264], #2015
@@ -46,10 +46,9 @@ challenges= {"Whole-Cell Parameter Estimation":[2223721],#2013
 			 "SMC-DNA Meta":[3328707],#2015
 			 "Respiratory Viral":[3332517],#2016
 			 "Disease Module Identification":[3342189],#2016
-			 "Somatic Mutation Calling":[2223743],#2016
 			 "ENCODE":[3340988], #2016
-			 "DREAM Idea Challenge":[3341755],#2016
 			 "SMC-RNA":[3323365],#2016
+			 "DREAM Idea Challenge":[3341755],#2016
 			 "Digital Mammography":[3342365], #2016
 			 "Multiple Myeloma":[3342899],#2017 preregister
 			 "NCI-CPTAC Proteogenomics":[3351110], #2017 preregister
@@ -84,7 +83,8 @@ challenge_data['createdOn'] = createdOn
 #Some of the dates are wrong
 challenge_data['createdOn'][challenge_data['challenges'] == "Multiple Myeloma"] = 2017
 challenge_data['createdOn'][challenge_data['challenges'] == "SMC-RNA"] = 2016
-challenge_data['createdOn'][challenge_data['challenges'] == "SMC-DNA"] = 2016
+challenge_data['createdOn'][challenge_data['challenges'] == "SMC-DNA Meta"] = 2015
+challenge_data['createdOn'][challenge_data['challenges'] == "SMC-DNA"] = 2014
 challenge_data['createdOn'][challenge_data['challenges'] == "Alzheimer's Disease Big Data"] = 2014
 challenge_data['createdOn'][challenge_data['challenges'] == "Rheumatoid Arthritis Responder"] = 2014
 challenge_data['createdOn'][challenge_data['challenges'] == "DREAM Olfaction Prediction"] = 2015
