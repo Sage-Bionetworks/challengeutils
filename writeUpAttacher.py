@@ -107,9 +107,12 @@ def main(writeUpEvalQueue, challengeQueue):
 					lastLine = i
 				adding = {'writeUp':lastLine[0],'archivedWriteUp':lastLine[3]}
 		if len(adding) > 0:
+			print("STORING %s writeup" % team)
 			add_annots = synapseclient.annotations.to_submission_status_annotations(adding, is_private = False)
 			newStatus = update_single_submission_status(stat, add_annots)
 			syn.store(newStatus)
+		else:
+			print("NO WRITEUP: " + team)
 
 def perform_main(args):
     main(args.writeUpQueue, args.chalQueue)
