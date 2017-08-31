@@ -96,7 +96,7 @@ def getSubmissionCount(syn, evalId, status="VALIDATED"):
 
 def command_getSubmissionStats(syn, args):
 	submission_stat_df = getSubmissionCount(syn, args.evalId, status=args.status)
-	if args.databaseId is not None:
+	if args.databaseSynId is not None:
 		database = syn.tableQuery('select * from %s'% args.databaseSynId)
 		updateDatabase(syn, database.asDataFrame(), submission_stat_df, args.databaseSynId, ["submissionId"])
 		print("Updated database")
