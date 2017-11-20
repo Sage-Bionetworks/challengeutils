@@ -253,7 +253,7 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
         ## retrieve file into cache and copy it to destination
         checkIfArchived = filter(lambda x: x.get("key") == "archived", status.annotations['stringAnnos'])
         if len(checkIfArchived)==0 or reArchive:
-            projectEntity = Project('Archived %s %d %s %s' % (submission.name,int(round(time.time() * 1000)),submission.id,submission.entityId))
+            projectEntity = Project('Archived %s %d %s %s' % (submission.name.replace("&","+"),int(round(time.time() * 1000)),submission.id,submission.entityId))
             entity = syn.store(projectEntity)
             adminPriv = ['DELETE','DOWNLOAD','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
             syn.setPermissions(entity,"3324230",adminPriv)
