@@ -172,7 +172,10 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
     print "-" * 60
     sys.stdout.flush()
     if admin is not None:
-        admin = syn.getUserProfile(admin)['userName']
+        try:
+            admin = syn.getUserProfile(admin)['userName']
+        except Exception as ex1:
+            admin = syn.getTeam(admin)['name']
     for submission, status in syn.getSubmissionBundles(evaluation, status='RECEIVED'):
         ex1 = None #Must define ex1 in case there is no error
         print "validating", submission.id, submission.name

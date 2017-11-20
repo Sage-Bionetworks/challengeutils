@@ -17,7 +17,7 @@ def validate_submission(syn, evaluation, submission, public=False, admin=None):
             assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the `Public` with `Can Download` permissions." % submission['entityId']
         if admin is not None:
             ent = syn.getPermissions(submission['entityId'], admin)
-            assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the `Public` with `Can Download` permissions." % submission['entityId']
+            assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the `%s` with `Can Download` permissions." % (admin, submission['entityId'])
     except SynapseHTTPError as e:
         if e.response.status_code == 403:
             raise AssertionError("Please share your private directory (%s) with the Synapse user `%s` with `Can Download` permissions." % (submission['entityId'], admin))
