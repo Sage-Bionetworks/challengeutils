@@ -177,7 +177,7 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
         ex1 = None #Must define ex1 in case there is no error
         print "validating", submission.id, submission.name
         try:
-            is_valid, validation_message = conf.validate_submission(evaluation, submission, public, admin)
+            is_valid, validation_message = conf.validate_submission(syn, evaluation, submission, public, admin)
         except Exception as ex1:
             is_valid = False
             print "Exception during validation:", type(ex1), ex1, ex1.message

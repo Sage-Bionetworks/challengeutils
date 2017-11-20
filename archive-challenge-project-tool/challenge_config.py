@@ -4,7 +4,7 @@ from synapseclient.exceptions import *
 ## about errors in the scoring script
 ADMIN_USER_IDS = ['3324230']
 
-def validate_submission(evaluation, submission, public=False, admin=None):
+def validate_submission(syn, evaluation, submission, public=False, admin=None):
     """
     Find the right validation function and validate the submission.
 
