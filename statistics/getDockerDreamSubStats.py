@@ -232,3 +232,4 @@ for challenge in statDf['challenge'].unique():
 			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"INVALID", "challenge":challenge,"averageRunTime":averageRunTime, "totalRunTime":totalRunTime, "numberSubmissions":len(invalidDf)}, index=[0])
 			overallStats = overallStats.append(stats)
 
+overallStats.to_csv("dockerStats.csv",index=False)
