@@ -55,7 +55,6 @@ SUB_CH = 3
 EVAL_ID = 8720149
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 
-
 ROUND_START = 1507705200000
 ROUND_END = 1509606000000
 ROUND_VALUE = 2
@@ -90,9 +89,6 @@ SUB_CH = "3b"
 EVAL_ID = 9608083
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 
-
-
-
 #MM
 CHALLENGE = "MM"
 
@@ -105,10 +101,12 @@ statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_E
 SUB_CH = 2
 EVAL_ID = 7997396
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
+
+ROUND_START = 1509001200000
+ROUND_END = 1510214400000
 SUB_CH = 3
 EVAL_ID = 7997398
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
-
 
 
 ROUND_START = 1505458800000
@@ -120,6 +118,9 @@ statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_E
 SUB_CH = 2
 EVAL_ID = 7997396
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
+
+ROUND_START = 1510214400000
+ROUND_END = 1510819200000
 SUB_CH = 3
 EVAL_ID = 7997398
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
@@ -133,9 +134,6 @@ EVAL_ID = 7997393
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 SUB_CH = 2
 EVAL_ID = 7997396
-statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
-SUB_CH = 3
-EVAL_ID = 7997398
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 
 
@@ -151,10 +149,6 @@ statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_E
 SUB_CH = 3
 EVAL_ID = 7997398
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
-
-
-
-
 
 
 #DM
@@ -213,8 +207,28 @@ statDf.reset_index(inplace=True)
 
 del statDf['index']
 
-
 statDf.to_csv("dockerSubmission.csv",index=False,encoding='utf-8')
 
+overallStats = pd.DataFrame()
+for challenge in statDf['challenge'].unique():
+	challengeDf = statDf[statDf['challenge'] == challenge]
+	for sc in challengeDf['sc'].unique():
+		scDf = challengeDf[challengeDf['sc'] == sc]
+		for numRound in scDf["round"].unique():
+			roundDf = scDf[scDf['round'] == numRound]
+			scoredDf = roundDf[roundDf['status'] == "SCORED"]
+			numUniqTeams = len(scoredDf['team'].unique())
+			totalRunTime = scoredDf['runTimeMinutes'].sum()
+			#This mean excludes NAs
+			averageRunTime = scoredDf['runTimeMinutes'].mean()
+			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"SCORED", "challenge":challenge,"averageRunTime":averageRunTime, "totalRunTime":totalRunTime, "numberSubmissions":len(scoredDf)}, index=[0])
+			overallStats = overallStats.append(stats)
 
+			invalidDf = roundDf[roundDf['status'] != "SCORED"]
+			numUniqTeams = len(invalidDf['team'].unique())
+			totalRunTime = invalidDf['runTimeMinutes'].sum()
+			#This mean excludes NAs
+			averageRunTime = invalidDf['runTimeMinutes'].mean()
+			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"INVALID", "challenge":challenge,"averageRunTime":averageRunTime, "totalRunTime":totalRunTime, "numberSubmissions":len(invalidDf)}, index=[0])
+			overallStats = overallStats.append(stats)
 
