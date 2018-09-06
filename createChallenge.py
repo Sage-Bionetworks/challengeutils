@@ -1,73 +1,116 @@
+'''What it does:
+   ...
+   
+Input:  Challenge Project name
+Output: The skeleton for two challenges site with initial wiki, two teams (admin and participants), 
+        and a challenge wedget added on live site with a participant team associated with it. 
+
+Example (run on bash): python challenge-skeleton.py myChallengeName
+
+Code - Status: in progress
+    TODO:
+        1) try to create, then catch error if challenge or team exists
+        3) add participants
+
+Unit Testing:
+'''
+import json 
+import synapseutils
 import synapseclient
-import synapseutils as synu
-import json
-# def create_team(name, description, canPublicJoin=False):
-#     return syn.store(Team(name=name, description=description, canPublicJoin=canPublicJoin))
+import argparse
+import getpass
+from synapseclient import Entity, Project, Team, Wiki
 
-def create_challenge_object(project, participants_team):
-    challenge_json = {'participantTeamId':utils.id_of(participants_team), 'projectId':utils.id_of(project)}
-    return DictObject(**syn.restPOST("/challenge", body=json.dumps(challenge_json)))
+def synapseLogin():
+    try:
+        syn = synapseclient.login()
+    except Exception as e:
+        print("Please provide your synapse username/email and password (You will only be prompted once)")
+        Username = raw_input("Username: ")
+        Password = getpass.getpass()
+        syn = synapseclient.login(email=Username, password=Password,rememberMe=True)
+    return(syn)
 
-def create_evaluation_queue(syn, name, parentId, description, submissionInstructionsMessage, status="OPEN"):
-    evaluation = syn.store(Evaluation(
-      name=name,
-      description=description,
-      status=status,
-      contentSource=parentId,
-      submissionInstructionsMessage=submissionInstructionsMessage,
-      submissionReceiptMessage="Thanks for submitting to %s!" % name,
-      quota=dict(numberOfRounds=1,
-                 roundDurationMillis=1000*60*60*48, ## 48 hours
-                 submissionLimit=20,
-                 firstRoundStart=datetime.now().strftime(synapseclient.utils.ISO_FORMAT))))
-    print "Created Evaluation %s %s" % (evaluation.id, evaluation.name)
-    return(queue)
+def creatTeam(syn, team_name, desc, privacy):
+    team = syn.store(Team(name=team_name, description=desc, canPublicJoin=privacy))
+    print("Created team %s(%s)" % (team.name, team.id))
+    return(team.id)
 
-def set_up(challengeName):
-    # Create the Challenge Project
-    challenge_project = syn.store(Project(name=challengeName))
-    print "Created project %s %s" % (challenge_project.id, challenge_project.name)
-    challenge_staging_project = syn.store(Project(name=challengeName + " Staging"))
-    print "Created project %s %s" % (challenge_staging_project.id, challenge_staging_project.name)
+def creatProject(syn, project_name):
+    project = Project(project_name)
+    project = syn.store(project)
+    print("Created project %s %s" % (project.id, project.name))
+    return(project)
 
-    # Create teams for participants and administrators
-    participants_team = syn.store(Team(name=challengeName+' Participants', description='A participant team for people who have joined the %s' % challengeName, canPublicJoin=True))
-    print "Created team %s(%s)" % (participants_team.name, participants_team.id)
+def copyChallengeWiki(syn, source_project_id, project):
+    destination_project_id = synapseclient.utils.id_of(project)
+    synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
 
-    preregistrants_team = syn.store(Team(name=challengeName+' Preregistrants', description='A preregistrant team for people who have preregistered for the %s' % challengeName, canPublicJoin=True))
-    print "Created team %s(%s)" % (preregistrants_team.name, preregistrants_team.id)
+def creatLivePage(syn, project, teamId):
+    live_page_markdown = '## Banner\n\n\n**Pre-Registration Open:**\n**Launch:**\n**Close:**\n\n\n\n${jointeam?teamId=%s&isChallenge=true&isMemberMessage=You are Pre-registered&text=Pre-register&successMessage=Successfully joined&isSimpleRequestButton=true}\n> Number of Pre-registered Participants: ${teammembercount?teamId=%s} \n> Click [here](http://s3.amazonaws.com/geoloc.sagebase.org/%s.html) to see where in the world solvers are coming from. \n\n#### OVERVIEW - high level (same as DREAM website?) - for journalists, funders, and participants\n\n\n#### Challenge Organizers / Scientific Advisory Board:\n\n#### Data Contributors:\n\n#### Journal Partners:\n\n#### Funders and Sponsors:' % (teamId, teamId, teamId)
+    syn.store(Wiki(title='', owner=project, markdown=live_page_markdown))
 
-    admin_team = syn.store(Team(name=challengeName+' Administrators', description='A team for %s administrators' % challengeName))
-    print "Created team %s(%s)" % (admin_team.name, admin_team.id)
+def createChallengeWidget(syn, project_live, team_part):
+    project_live_id = synapseclient.utils.id_of(project_live)
+    team_part_id = syn.getTeam(team_part)['id']
 
-    # give the teams permissions on challenge artifacts
-    # see: http://rest.synapse.org/org/sagebionetworks/repo/model/ACCESS_TYPE.html
-    # see: http://rest.synapse.org/org/sagebionetworks/evaluation/model/UserEvaluationPermissions.html
-    syn.setPermissions(challenge_project, admin_team.id, ['CREATE', 'READ', 'UPDATE', 'DELETE', 'CHANGE_PERMISSIONS', 'DOWNLOAD', 'UPLOAD'])
-    syn.setPermissions(challenge_staging_project, admin_team.id, ['CREATE', 'READ', 'UPDATE', 'DELETE', 'CHANGE_PERMISSIONS', 'DOWNLOAD', 'UPLOAD'])
-
-    # syn.setPermissions(challenge_project, participants_team.id, ['READ', 'DOWNLOAD'])
-
-    #syn.setPermissions(evaluation, admin_team.id, ['CREATE', 'READ', 'UPDATE', 'DELETE', 'CHANGE_PERMISSIONS', 'DOWNLOAD', 'PARTICIPATE', 'SUBMIT', 'DELETE_SUBMISSION', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION'])
-    #syn.setPermissions(evaluation, participants_team.id, ['CREATE', 'READ', 'UPDATE', 'PARTICIPATE', 'SUBMIT', 'READ_PRIVATE_SUBMISSION'])
+    challenge_object = {'id': u'1000', 'participantTeamId':team_part_id, 'projectId': project_live_id} 
+    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
+    challenge = syn.restGET('/entity/' + project_live_id + '/challenge')
+    print("Created challenge id %s" % challenge.id)
+    return(challenge)
     
-    ## the challenge object associates the challenge project with the
-    ## participants team
-    challenge_object = create_challenge_object(challenge_project, participants_team)
+def main(challenge_name):
 
-    return dict(challenge_project=challenge_project,
-                challenge_object=challenge_object,
-                participants_team=participants_team,
-                preregistrants_team = preregistrants_team,
-                admin_team=admin_team)
+    '''Sage Bionetworks employee login
+    '''
+    syn = synapseLogin()
 
+    '''Create two project entity for challenge sites.
+       1) live (public) and 2) staging (private until launch)
+    '''
+    live = challenge_name
+    staging = challenge_name + ' - staging'
+    project_live = creatProject(syn, live)
+    project_staging = creatProject(syn, staging)
 
-if __name__ == '__main__':
+    '''Create two teams for challenge sites.
+       1) participant and 2) administrator
+    '''
+    team_part = challenge_name + ' Participants'
+    team_admin = challenge_name + ' Admin'
+    team_preReg = challenge_name + ' Preregistrants'
+
+    team_part_id = creatTeam(syn, team_part, 'Challenge Particpant Team', privacy=True)
+    team_admin_id = creatTeam(syn, team_admin, 'Challenge Admin Team', privacy=False)
+    team_preReg_id = creatTeam(syn, team_preReg, 'Challenge Pre-registration Team', privacy=True)
+
+    admin_perms = ['DOWNLOAD','DELETE','READ','CHANGE_PERMISSIONS','CHANGE_SETTINGS','CREATE','MODERATE','UPDATE']
+
+    syn.setPermissions(project_staging, team_admin_id, admin_perms)
+    syn.setPermissions(project_live, team_admin_id, admin_perms)
+
+    '''A pre-defined wiki project is used as initial template for challenge sites.
+       To copy over the template synapseutils.copyWiki() function is used with template 
+       ID as source and new challenge project entity synID as destination.
+    '''
+    dream_challenge_template_id = 'syn2769515'
+    
+    creatLivePage(syn, project_live, team_preReg_id)
+    copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
+
+    '''Create challenge widget on live challenge site with an associated participant team'''
+    createChallengeWidget(syn, project_live, team_part)
+
+def command_main(args):
+    main(args.challengeName)
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
-    parser.add_argument("-u", "--user", help="UserName", default=None)
-    parser.add_argument("-p", "--password", help="Password", default=None)
     parser.add_argument("challengeName", help="Challenge name")
+    args = parser.parse_args()
+    command_main(args)
 
-    parser_setup = subparsers.add_parser('setup', help="create challenge artifacts")
-    parser_setup.set_defaults(func=command_setup)
+
+
+
