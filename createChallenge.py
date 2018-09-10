@@ -57,7 +57,7 @@ def createChallengeWidget(syn, project_live, team_part):
     challenge_object = {'id': u'1000', 'participantTeamId':team_part_id, 'projectId': project_live_id} 
     challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
     challenge = syn.restGET('/entity/' + project_live_id + '/challenge')
-    print("Created challenge id %s" % challenge.id)
+    print("Created challenge id %s" % challenge['id'])
     return(challenge)
     
 def main(challenge_name):

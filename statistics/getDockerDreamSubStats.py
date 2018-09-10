@@ -196,11 +196,11 @@ ROUND_VALUE = "final"
 ROUND_START = 1490639746000
 ROUND_END = 14906397460001490639746000
 SUB_CH = 1
-EVAL_ID = 7453778
+EVAL_ID = 8533482
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 
 SUB_CH = 2
-EVAL_ID = 7453793
+EVAL_ID = 8533484
 statDf = statDf.append(createDockerSubmissionStats(EVAL_ID, ROUND_START, ROUND_END, ROUND_VALUE, SUB_CH, CHALLENGE))
 
 statDf.reset_index(inplace=True)
@@ -221,7 +221,7 @@ for challenge in statDf['challenge'].unique():
 			totalRunTime = scoredDf['runTimeMinutes'].sum()
 			#This mean excludes NAs
 			averageRunTime = scoredDf['runTimeMinutes'].mean()
-			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"SCORED", "challenge":challenge,"averageRunTime":averageRunTime, "totalRunTime":totalRunTime, "numberSubmissions":len(scoredDf)}, index=[0])
+			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"SCORED", "challenge":challenge,"averageRunTime":math.ceil(averageRunTime), "totalRunTime":totalRunTime, "numberSubmissions":len(scoredDf)}, index=[0])
 			overallStats = overallStats.append(stats)
 
 			invalidDf = roundDf[roundDf['status'] != "SCORED"]
@@ -229,7 +229,8 @@ for challenge in statDf['challenge'].unique():
 			totalRunTime = invalidDf['runTimeMinutes'].sum()
 			#This mean excludes NAs
 			averageRunTime = invalidDf['runTimeMinutes'].mean()
-			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"INVALID", "challenge":challenge,"averageRunTime":averageRunTime, "totalRunTime":totalRunTime, "numberSubmissions":len(invalidDf)}, index=[0])
+			stats = pd.DataFrame({"teams":numUniqTeams, "round":numRound, "sc":sc, "status":"INVALID", "challenge":challenge,"averageRunTime":math.ceil(averageRunTime), "totalRunTime":totalRunTime, "numberSubmissions":len(invalidDf)}, index=[0])
 			overallStats = overallStats.append(stats)
+
 
 overallStats.to_csv("dockerStats.csv",index=False)
