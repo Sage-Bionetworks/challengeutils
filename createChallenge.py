@@ -46,7 +46,7 @@ def copyChallengeWiki(syn, source_project_id, project):
     destination_project_id = synapseclient.utils.id_of(project)
     synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
 
-def creatLivePage(syn, project, teamId):
+def createLivePage(syn, project, teamId):
     live_page_markdown = '## Banner\n\n\n**Pre-Registration Open:**\n**Launch:**\n**Close:**\n\n\n\n${jointeam?teamId=%s&isChallenge=true&isMemberMessage=You are Pre-registered&text=Pre-register&successMessage=Successfully joined&isSimpleRequestButton=true}\n> Number of Pre-registered Participants: ${teammembercount?teamId=%s} \n> Click [here](http://s3.amazonaws.com/geoloc.sagebase.org/%s.html) to see where in the world solvers are coming from. \n\n#### OVERVIEW - high level (same as DREAM website?) - for journalists, funders, and participants\n\n\n#### Challenge Organizers / Scientific Advisory Board:\n\n#### Data Contributors:\n\n#### Journal Partners:\n\n#### Funders and Sponsors:' % (teamId, teamId, teamId)
     syn.store(Wiki(title='', owner=project, markdown=live_page_markdown))
 
@@ -96,7 +96,7 @@ def main(challenge_name):
     '''
     dream_challenge_template_id = 'syn2769515'
     
-    creatLivePage(syn, project_live, team_preReg_id)
+    createLivePage(syn, project_live, team_preReg_id)
     copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
 
     '''Create challenge widget on live challenge site with an associated participant team'''
