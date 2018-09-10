@@ -31,12 +31,12 @@ def synapseLogin():
         syn = synapseclient.login(email=Username, password=Password,rememberMe=True)
     return(syn)
 
-def creatTeam(syn, team_name, desc, privacy):
+def createTeam(syn, team_name, desc, privacy):
     team = syn.store(Team(name=team_name, description=desc, canPublicJoin=privacy))
     print("Created team %s(%s)" % (team.name, team.id))
     return(team.id)
 
-def creatProject(syn, project_name):
+def createProject(syn, project_name):
     project = Project(project_name)
     project = syn.store(project)
     print("Created project %s %s" % (project.id, project.name))
@@ -71,8 +71,8 @@ def main(challenge_name):
     '''
     live = challenge_name
     staging = challenge_name + ' - staging'
-    project_live = creatProject(syn, live)
-    project_staging = creatProject(syn, staging)
+    project_live = createProject(syn, live)
+    project_staging = createProject(syn, staging)
 
     '''Create two teams for challenge sites.
        1) participant and 2) administrator
@@ -81,9 +81,9 @@ def main(challenge_name):
     team_admin = challenge_name + ' Admin'
     team_preReg = challenge_name + ' Preregistrants'
 
-    team_part_id = creatTeam(syn, team_part, 'Challenge Particpant Team', privacy=True)
-    team_admin_id = creatTeam(syn, team_admin, 'Challenge Admin Team', privacy=False)
-    team_preReg_id = creatTeam(syn, team_preReg, 'Challenge Pre-registration Team', privacy=True)
+    team_part_id = createTeam(syn, team_part, 'Challenge Particpant Team', privacy=True)
+    team_admin_id = createTeam(syn, team_admin, 'Challenge Admin Team', privacy=False)
+    team_preReg_id = createTeam(syn, team_preReg, 'Challenge Pre-registration Team', privacy=True)
 
     admin_perms = ['DOWNLOAD','DELETE','READ','CHANGE_PERMISSIONS','CHANGE_SETTINGS','CREATE','MODERATE','UPDATE']
 
