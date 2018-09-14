@@ -44,7 +44,8 @@ def createProject(syn, project_name):
 
 def copyChallengeWiki(syn, source_project_id, project):
     destination_project_id = synapseclient.utils.id_of(project)
-    synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
+    wikiIds = synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
+    return(wikiIds)
 
 def createLivePage(syn, project, teamId):
     live_page_markdown = '## Banner\n\n\n**Pre-Registration Open:**\n**Launch:**\n**Close:**\n\n\n\n${jointeam?teamId=%s&isChallenge=true&isMemberMessage=You are Pre-registered&text=Pre-register&successMessage=Successfully joined&isSimpleRequestButton=true}\n> Number of Pre-registered Participants: ${teammembercount?teamId=%s} \n> Click [here](http://s3.amazonaws.com/geoloc.sagebase.org/%s.html) to see where in the world solvers are coming from. \n\n#### OVERVIEW - high level (same as DREAM website?) - for journalists, funders, and participants\n\n\n#### Challenge Organizers / Scientific Advisory Board:\n\n#### Data Contributors:\n\n#### Journal Partners:\n\n#### Funders and Sponsors:' % (teamId, teamId, teamId)
@@ -59,7 +60,15 @@ def createChallengeWidget(syn, project_live, team_part):
     challenge = syn.restGET('/entity/' + project_live_id + '/challenge')
     print("Created challenge id %s" % challenge['id'])
     return(challenge)
-    
+
+def updateValues(wikiPageString, challengeId, teamId, challengeName):
+    "\{teamId\}"
+    "challengeName"
+    'teamId=0'
+    'challengeId=0'
+    '#!Map:0'
+
+
 def main(challenge_name):
 
     '''Sage Bionetworks employee login
@@ -97,7 +106,11 @@ def main(challenge_name):
     dream_challenge_template_id = 'syn2769515'
     
     createLivePage(syn, project_live, team_preReg_id)
-    copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
+    newWikiIds = copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
+
+    for page in newWikiIds:
+        wikiPage = syn.getWiki(project_staging,page['id'])
+        print(wikiPage.markdown)
 
     '''Create challenge widget on live challenge site with an associated participant team'''
     createChallengeWidget(syn, project_live, team_part)
