@@ -19,7 +19,7 @@ import synapseutils
 import synapseclient
 import argparse
 import getpass
-from synapseclient import Entity, Project, Team, Wiki
+from synapseclient import Entity, Project, Team, Wiki, Evaluation
 
 def synapseLogin():
     try:
@@ -30,6 +30,13 @@ def synapseLogin():
         Password = getpass.getpass()
         syn = synapseclient.login(email=Username, password=Password,rememberMe=True)
     return(syn)
+
+def createEvaluationQueue(syn, name, description, parentId):
+    queue = syn.store(Evaluation(
+      name=name,
+      description=description,
+      contentSource=parentId))
+    return(queue)
 
 def createTeam(syn, team_name, desc, privacy):
     team = syn.store(Team(name=team_name, description=desc, canPublicJoin=privacy))
@@ -61,13 +68,14 @@ def createChallengeWidget(syn, project_live, team_part):
     print("Created challenge id %s" % challenge['id'])
     return(challenge)
 
-def updateValues(wikiPageString, challengeId, teamId, challengeName):
-    "\{teamId\}"
-    "challengeName"
-    'teamId=0'
-    'challengeId=0'
-    '#!Map:0'
-
+def updateValues(wikiPageString, challengeId, teamId, challengeName, synId):
+    wikiPageString = wikiPageString.replace("{teamId}", teamId)
+    wikiPageString = wikiPageString.replace("{challengeName}", challengeName)
+    wikiPageString = wikiPageString.replace("teamId=0","teamId=%s" % teamId)
+    wikiPageString = wikiPageString.replace("challengeId=0","challengeId=%s" % challengeId)
+    wikiPageString = wikiPageString.replace("#!Map:0","#!Map:%s" % teamId)
+    wikiPageString = wikiPageString.replace("projectId=syn0","projectId=%s" % synId)
+    return(wikiPageString)
 
 def main(challenge_name):
 
@@ -106,14 +114,17 @@ def main(challenge_name):
     dream_challenge_template_id = 'syn2769515'
     
     createLivePage(syn, project_live, team_preReg_id)
+
     newWikiIds = copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
 
+    '''Create challenge widget on live challenge site with an associated participant team'''
+    challenge = createChallengeWidget(syn, project_live, team_part)
+    '''Create challenge final write up evaluation queue'''
+    writeUpQueue = createEvaluationQueue(syn, "%s Final Write-Up" % live, "Final Write up submission", project_live.id)
     for page in newWikiIds:
         wikiPage = syn.getWiki(project_staging,page['id'])
-        print(wikiPage.markdown)
-
-    '''Create challenge widget on live challenge site with an associated participant team'''
-    createChallengeWidget(syn, project_live, team_part)
+        wikiPage.markdown = updateValues(wikiPage.markdown, challenge['id'], team_part_id, live, project_live.id)
+        syn.store(wikiPage)
 
 def command_main(args):
     main(args.challengeName)
