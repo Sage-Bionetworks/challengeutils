@@ -19,7 +19,7 @@ import synapseutils
 import synapseclient
 import argparse
 import getpass
-from synapseclient import Entity, Project, Team, Wiki
+from synapseclient import Entity, Project, Team, Wiki, Evaluation
 
 def synapseLogin():
     try:
@@ -30,6 +30,13 @@ def synapseLogin():
         Password = getpass.getpass()
         syn = synapseclient.login(email=Username, password=Password,rememberMe=True)
     return(syn)
+
+def createEvaluationQueue(syn, name, description, parentId):
+    queue = syn.store(Evaluation(
+      name=name,
+      description=description,
+      contentSource=parentId))
+    return(queue)
 
 def createTeam(syn, team_name, desc, privacy):
     team = syn.store(Team(name=team_name, description=desc, canPublicJoin=privacy))
@@ -44,7 +51,8 @@ def createProject(syn, project_name):
 
 def copyChallengeWiki(syn, source_project_id, project):
     destination_project_id = synapseclient.utils.id_of(project)
-    synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
+    wikiIds = synapseutils.copyWiki(syn, source_project_id, destination_project_id) 
+    return(wikiIds)
 
 def createLivePage(syn, project, teamId):
     live_page_markdown = '## Banner\n\n\n**Pre-Registration Open:**\n**Launch:**\n**Close:**\n\n\n\n${jointeam?teamId=%s&isChallenge=true&isMemberMessage=You are Pre-registered&text=Pre-register&successMessage=Successfully joined&isSimpleRequestButton=true}\n> Number of Pre-registered Participants: ${teammembercount?teamId=%s} \n> Click [here](http://s3.amazonaws.com/geoloc.sagebase.org/%s.html) to see where in the world solvers are coming from. \n\n#### OVERVIEW - high level (same as DREAM website?) - for journalists, funders, and participants\n\n\n#### Challenge Organizers / Scientific Advisory Board:\n\n#### Data Contributors:\n\n#### Journal Partners:\n\n#### Funders and Sponsors:' % (teamId, teamId, teamId)
@@ -59,7 +67,16 @@ def createChallengeWidget(syn, project_live, team_part):
     challenge = syn.restGET('/entity/' + project_live_id + '/challenge')
     print("Created challenge id %s" % challenge['id'])
     return(challenge)
-    
+
+def updateValues(wikiPageString, challengeId, teamId, challengeName, synId):
+    wikiPageString = wikiPageString.replace("{teamId}", teamId)
+    wikiPageString = wikiPageString.replace("{challengeName}", challengeName)
+    wikiPageString = wikiPageString.replace("teamId=0","teamId=%s" % teamId)
+    wikiPageString = wikiPageString.replace("challengeId=0","challengeId=%s" % challengeId)
+    wikiPageString = wikiPageString.replace("#!Map:0","#!Map:%s" % teamId)
+    wikiPageString = wikiPageString.replace("projectId=syn0","projectId=%s" % synId)
+    return(wikiPageString)
+
 def main(challenge_name):
 
     '''Sage Bionetworks employee login
@@ -97,10 +114,17 @@ def main(challenge_name):
     dream_challenge_template_id = 'syn2769515'
     
     createLivePage(syn, project_live, team_preReg_id)
-    copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
+
+    newWikiIds = copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
 
     '''Create challenge widget on live challenge site with an associated participant team'''
-    createChallengeWidget(syn, project_live, team_part)
+    challenge = createChallengeWidget(syn, project_live, team_part)
+    '''Create challenge final write up evaluation queue'''
+    writeUpQueue = createEvaluationQueue(syn, "%s Final Write-Up" % live, "Final Write up submission", project_live.id)
+    for page in newWikiIds:
+        wikiPage = syn.getWiki(project_staging,page['id'])
+        wikiPage.markdown = updateValues(wikiPage.markdown, challenge['id'], team_part_id, live, project_live.id)
+        syn.store(wikiPage)
 
 def command_main(args):
     main(args.challengeName)
