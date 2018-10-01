@@ -85,6 +85,7 @@ def main(challenge_name,live_site):
 
     '''Create two project entity for challenge sites.
        1) live (public) and 2) staging (private until launch)
+       Allow for users to set up the live site themselves
     '''
     if live_site is not None:
         live = challenge_name
@@ -117,7 +118,7 @@ def main(challenge_name,live_site):
     '''
     dream_challenge_template_id = 'syn2769515'
     
-    if live_site is not None:
+    if live_site is None:
         createLivePage(syn, project_live, team_preReg_id)
 
     newWikiIds = copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
