@@ -77,7 +77,7 @@ def updateValues(wikiPageString, challengeId, teamId, challengeName, synId):
     wikiPageString = wikiPageString.replace("projectId=syn0","projectId=%s" % synId)
     return(wikiPageString)
 
-def main(challenge_name):
+def main(challenge_name,live_site):
 
     '''Sage Bionetworks employee login
     '''
@@ -86,9 +86,13 @@ def main(challenge_name):
     '''Create two project entity for challenge sites.
        1) live (public) and 2) staging (private until launch)
     '''
-    live = challenge_name
+    if live_site is not None:
+        live = challenge_name
+        project_live = createProject(syn, live)
+    else:
+        project_live = syn.get(live_site)
+
     staging = challenge_name + ' - staging'
-    project_live = createProject(syn, live)
     project_staging = createProject(syn, staging)
 
     '''Create two teams for challenge sites.
@@ -113,7 +117,8 @@ def main(challenge_name):
     '''
     dream_challenge_template_id = 'syn2769515'
     
-    createLivePage(syn, project_live, team_preReg_id)
+    if live_site is not None:
+        createLivePage(syn, project_live, team_preReg_id)
 
     newWikiIds = copyChallengeWiki(syn, dream_challenge_template_id, project_staging)
 
@@ -127,11 +132,12 @@ def main(challenge_name):
         syn.store(wikiPage)
 
 def command_main(args):
-    main(args.challengeName)
+    main(args.challengeName,args.liveSite)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("challengeName", help="Challenge name")
+    parser.add_argument("--liveSite", help="Option to specify the live site synapse id when there is already a live site")
     args = parser.parse_args()
     command_main(args)
 
