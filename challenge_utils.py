@@ -148,3 +148,24 @@ def numTeams(evalId):
 		team = filter(lambda x: x.get('key') == "team", status.annotations['stringAnnos'])[0]
 		allTeams.add(team['value'])
 	print(len(allTeams))
+
+def inviteMemberToTeam(team, user=None, email=None):
+	"""
+	Invite members to a team
+
+	params: 
+		team: Synapse Team id or name
+		user: Synapse username or profile id
+		email: Email of user, do not specify both email and user, but must specify one
+	"""
+	teamId = syn.getTeam(team)['id']
+	isMember = False
+	if email is None:
+		userId = syn.getUserProfile(user)['ownerId']
+		membershipStatus = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamId), individualId=str(userId)))
+		isMember = membershipStatus['isMember']
+		invite = {'teamId': str(teamId), 'inviteeId': str(userId)}
+	else:
+		invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
+	if not membershipStatus['isMember']:
+		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
