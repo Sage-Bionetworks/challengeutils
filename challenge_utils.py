@@ -169,3 +169,17 @@ def inviteMemberToTeam(team, user=None, email=None):
 		invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
 	if not membershipStatus['isMember']:
 		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+
+
+def createTeamWikis(challengeId):
+	#challengeId = 4295
+	#challengeId = 747
+	registeredTeams = syn._GET_paginated("/challenge/%s/challengeTeam" % challengeId)
+	for i in registeredTeams:
+		submittedTeams = syn.tableQuery("SELECT * FROM syn17007653 where teamId = '%s'" % i['teamId'])
+		if len(submittedTeams.asDataFrame()) == 0:
+			team = syn.getTeam(i['teamId'])
+			project = syn.store(synapseclient.Project("RAAD2 and Genentech %s" % team.name))
+			wikiCopy = synu.copy(syn,"syn16984095",project.id)
+			syn.store(synapseclient.Table("syn17007653",[[wikiCopy['syn16984095'],i['teamId']]]))
+
