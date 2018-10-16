@@ -167,7 +167,7 @@ def inviteMemberToTeam(team, user=None, email=None):
 		invite = {'teamId': str(teamId), 'inviteeId': str(userId)}
 	else:
 		invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
-	if not membershipStatus['isMember']:
+	if not isMember:
 		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
 def getChallengeId(entity):
