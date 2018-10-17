@@ -20,7 +20,9 @@ import synapseclient
 import argparse
 import getpass
 from synapseclient import Entity, Project, Team, Wiki, Evaluation
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 def synapseLogin():
     try:
         syn = synapseclient.login()
@@ -77,17 +79,13 @@ def updateValues(wikiPageString, challengeId, teamId, challengeName, synId):
     wikiPageString = wikiPageString.replace("projectId=syn0","projectId=%s" % synId)
     return(wikiPageString)
 
-def main(challenge_name,live_site):
-
-    '''Sage Bionetworks employee login
-    '''
-    syn = synapseLogin()
+def main(syn, challenge_name, live_site):
 
     '''Create two project entity for challenge sites.
        1) live (public) and 2) staging (private until launch)
        Allow for users to set up the live site themselves
     '''
-    if live_site is not None:
+    if live_site is None:
         live = challenge_name
         project_live = createProject(syn, live)
     else:
@@ -132,15 +130,19 @@ def main(challenge_name,live_site):
         wikiPage.markdown = updateValues(wikiPage.markdown, challenge['id'], team_part_id, live, project_live.id)
         syn.store(wikiPage)
 
-def command_main(args):
-    main(args.challengeName,args.liveSite)
+def command_main(syn, args):
+    main(syn, args.challengeName, args.liveSite)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("challengeName", help="Challenge name")
     parser.add_argument("--liveSite", help="Option to specify the live site synapse id when there is already a live site")
     args = parser.parse_args()
-    command_main(args)
+    '''
+    Sage Bionetworks employee login
+    '''
+    syn = synapseLogin()
+    command_main(syn, args)
 
 
 

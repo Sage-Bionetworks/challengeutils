@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name='dreamutils',
+setup(name='challengeutils',
       version='0.0.1',
       description='DREAM utility functions',
       url='https://github.com/Sage-Bionetworks/DREAM-Utilities',
@@ -10,7 +10,7 @@ setup(name='dreamutils',
       packages=find_packages(),
       zip_safe=False,
       entry_points = {
-        'console_scripts': ['dreamutils = dreamutils.__main__:main']},
+        'console_scripts': ['challengeutils = challengeutils.__main__:main']},
       install_requires=[
         'pandas>=0.20.0',
         'synapseclient'])
