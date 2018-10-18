@@ -170,19 +170,18 @@ def inviteMemberToTeam(team, user=None, email=None):
 	if not isMember:
 		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
-def getChallengeId(entity):
+def get_challengeid(syn, entity):
 	"""
 	Function that gets the challenge id for a project
 
 	params:
-		synId: Synapse id/Entity of a Synapse project
+		entity: An Entity or Synapse ID to lookup
 	"""
-	synId = synapseclient.utils.id_of(entity)
-	challengeObj = syn.restGET("/entity/%s/challenge" % synId)
-	return(challengeObj)
+	synid = synapseclient.utils.id_of(entity)
+	challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
+	return(challenge_obj)
 
-#createTeamWikis(4295, "syn16984095", "syn17007653")
-def createTeamWikis(synId, templateId, trackerTableSynId):
+def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
 	Function that creates wiki pages from a template by looking at teams that
 	are registered for a challenge.  The teams that have a wiki made for them
@@ -193,20 +192,43 @@ def createTeamWikis(synId, templateId, trackerTableSynId):
 		templateId:  Synapse id of the template
 		trackerTableSynId: Synapse id of Table that tracks if wiki pages have been made per team
 	"""
+	
 
-	challengeEnt = syn.get(synId)
-	challengeObj = getChallengeId(challengeEnt)
-	registeredTeams = syn._GET_paginated("/challenge/%s/challengeTeam" % challengeObj['id'])
-	for i in registeredTeams:
-		submittedTeams = syn.tableQuery("SELECT * FROM %s where teamId = '%s'" % (trackerTableSynId, i['teamId']))
-		if len(submittedTeams.asDataFrame()) == 0:
+	challenge_ent = syn.get(synid)
+	challenge_obj = getChallengeId(challenge_ent)
+	registered_teams = syn._GET_paginated("/challenge/%s/challengeTeam" % challenge_obj['id'])
+	for i in registered_teams:
+		submitted_teams = syn.tableQuery("SELECT * FROM %s where teamId = '%s'" % (tracker_table_synid, i['teamId']))
+		if len(submitted_teams.asDataFrame()) == 0:
 			team = syn.getTeam(i['teamId'])
 			#The project name is the challenge project name and team name
-			project = syn.store(synapseclient.Project("%s %s" % (challengeEnt.name, team.name)))
+			project = syn.store(synapseclient.Project("%s %s" % (challenge_ent.name, team.name)))
 			#Give admin access to the team
 			syn.setPermissions(project, i['teamId'], accessType=['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS'])
-			wikiCopy = synu.copy(syn,templateId,project.id)
+			wiki_copy = synu.copy(syn,templateid,project.id)
 			#Store copied synId to tracking table
-			syn.store(synapseclient.Table(trackerTableSynId,[[wikiCopy[templateId],i['teamId']]]))
+			syn.store(synapseclient.Table(tracker_table_synid,[[wiki_copy[templateid],i['teamId']]]))
 
+def set_entity_permissions(syn, entity, principalid=None, permission_level="view"):
+	"""
+	Convenience function to set ACL on an entity for a user or team based on
+	permission levels (view, download...)
 
+	params:
+		entity: An Entity or Synapse ID to lookup
+		principalid: Identifier of a user or group (defaults to PUBLIC users)
+		permission_level: Can be "view","download","edit","edit_and_delete",or "admin"
+	"""
+	view = ["READ"]
+	download = ['READ','DOWNLOAD']
+	edit = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
+	edit_and_delete = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE','DELETE']
+	admin = ['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS']
+	permission_level_mapping = {'view':view,
+								'download':download,
+								'edit':edit,
+								'edit_and_delete':'edit_and_delete',
+								'admin':admin}
+    assert permission_level in permission_level_mapping.keys()
+    assert principalId is not None
+	syn.setPermissions(entity, principalId=None, accessType=permission_level_mapping[permission_level])
