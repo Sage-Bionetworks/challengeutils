@@ -1,9 +1,9 @@
-# DREAM-Utilities
+# Synapse Challenge Utilities
 
-**Merging wikis**
-For all challenges, you should be editting the staging site and then using the merge script to mirror staging to live site.  The script will compare wiki titles between the staging and live site and update the live site with respect to what has changed on the staging site.
+This repository is meant to house all important challenge functions and allow for you install a command line package with convenience tools for a challenge.
 
 ```
-#python mergeWiki.py "synIdOfEntity" "synIdOfDestination"
-python mergeWiki.py "syn12345" "syn23456"
+#Clone this repository and go into the directory
+python setup.py install
+challengeutils -h
 ```

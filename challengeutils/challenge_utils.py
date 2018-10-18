@@ -148,3 +148,65 @@ def numTeams(evalId):
 		team = filter(lambda x: x.get('key') == "team", status.annotations['stringAnnos'])[0]
 		allTeams.add(team['value'])
 	print(len(allTeams))
+
+def inviteMemberToTeam(team, user=None, email=None):
+	"""
+	Invite members to a team
+
+	params: 
+		team: Synapse Team id or name
+		user: Synapse username or profile id
+		email: Email of user, do not specify both email and user, but must specify one
+	"""
+	teamId = syn.getTeam(team)['id']
+	isMember = False
+	if email is None:
+		userId = syn.getUserProfile(user)['ownerId']
+		membershipStatus = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamId), individualId=str(userId)))
+		isMember = membershipStatus['isMember']
+		invite = {'teamId': str(teamId), 'inviteeId': str(userId)}
+	else:
+		invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
+	if not isMember:
+		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+
+def getChallengeId(entity):
+	"""
+	Function that gets the challenge id for a project
+
+	params:
+		synId: Synapse id/Entity of a Synapse project
+	"""
+	synId = synapseclient.utils.id_of(entity)
+	challengeObj = syn.restGET("/entity/%s/challenge" % synId)
+	return(challengeObj)
+
+#createTeamWikis(4295, "syn16984095", "syn17007653")
+def createTeamWikis(synId, templateId, trackerTableSynId):
+	"""
+	Function that creates wiki pages from a template by looking at teams that
+	are registered for a challenge.  The teams that have a wiki made for them
+	Are stored into a trackerTable that has columns wikiSynId, and teamId
+
+	params:
+		synId: Synapse id of challenge project
+		templateId:  Synapse id of the template
+		trackerTableSynId: Synapse id of Table that tracks if wiki pages have been made per team
+	"""
+
+	challengeEnt = syn.get(synId)
+	challengeObj = getChallengeId(challengeEnt)
+	registeredTeams = syn._GET_paginated("/challenge/%s/challengeTeam" % challengeObj['id'])
+	for i in registeredTeams:
+		submittedTeams = syn.tableQuery("SELECT * FROM %s where teamId = '%s'" % (trackerTableSynId, i['teamId']))
+		if len(submittedTeams.asDataFrame()) == 0:
+			team = syn.getTeam(i['teamId'])
+			#The project name is the challenge project name and team name
+			project = syn.store(synapseclient.Project("%s %s" % (challengeEnt.name, team.name)))
+			#Give admin access to the team
+			syn.setPermissions(project, i['teamId'], accessType=['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS'])
+			wikiCopy = synu.copy(syn,templateId,project.id)
+			#Store copied synId to tracking table
+			syn.store(synapseclient.Table(trackerTableSynId,[[wikiCopy[templateId],i['teamId']]]))
+
+
