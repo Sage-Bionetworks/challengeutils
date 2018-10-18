@@ -1,4 +1,4 @@
 from __future__ import absolute_import
 
-from . import createChallenge
-from . import mirrorWiki
+from . import createchallenge
+from . import mirrorwiki
