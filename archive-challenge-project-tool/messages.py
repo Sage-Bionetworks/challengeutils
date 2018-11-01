@@ -16,9 +16,9 @@ dry_run = False
 
 ## Edit these URLs to point to your challenge and its support forum
 defaults = dict(
-    challenge_instructions_url = "https://www.synapse.org/...",
-    support_forum_url = "https://www.synapse.org/#!Synapse:{synIdHere}/discussion/default",
-    scoring_script = "the archiver")
+    challenge_instructions_url = "https://www.synapse.org/#!Synapse:syn15665609/wiki/583251",
+    support_forum_url = "https://www.synapse.org/#!Synapse:syn15665609/discussion/default",
+    scoring_script = "The DREAM Archiver")
 
 ##---------------------------------------------------------
 ## Message templates:
@@ -140,10 +140,10 @@ def send_message(userIds, subject_template, message_template, kwargs):
     subject = formatter.format(subject_template, **kwargs)
     message = formatter.format(message_template, **kwargs)
     if dry_run:
-        print "\nDry Run: would have sent:"
-        print subject
-        print "-" * 60
-        print message
+        print("\nDry Run: would have sent:")
+        print(subject)
+        print("-" * 60)
+        print(message)
         return None
     elif syn:
         response = syn.sendMessage(
@@ -151,7 +151,7 @@ def send_message(userIds, subject_template, message_template, kwargs):
             messageSubject=subject,
             messageBody=message,
             contentType="text/html")
-        print "sent: ", unicode(response).encode('utf-8')
+        print("sent: ", response)
         return response
     else:
         sys.stderr.write("Can't send message. No Synapse object configured\n")

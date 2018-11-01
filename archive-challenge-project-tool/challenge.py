@@ -18,8 +18,6 @@
 import synapseclient
 import synapseclient.utils as utils
 from synapseclient.exceptions import *
-from synapseclient import Activity
-from synapseclient import Project, Folder, File
 from synapseclient import Evaluation, Submission, SubmissionStatus
 from synapseclient import Wiki
 from synapseclient import Column
@@ -27,26 +25,22 @@ from synapseclient.dict_object import DictObject
 from synapseclient.annotations import from_submission_status_annotations
 import synapseutils as synu
 
-from collections import OrderedDict
 from datetime import datetime, timedelta
-from itertools import izip
-from StringIO import StringIO
-import copy
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import argparse
 import json
-import math
 import os
-import random
 import re
 import sys
-import tarfile
-import tempfile
 import time
 import traceback
-import urllib
 import uuid
-import warnings
+
 #Python scripts that are part of the challenge
 import lock
 try:
@@ -130,46 +124,14 @@ def update_single_submission_status(status, add_annotations, force=False):
     status.annotations = priv
     return(status)
 
-class Query(object):
-    """
-    An object that helps with paging through annotation query results.
-
-    Also exposes properties totalNumberOfResults, headers and rows.
-    """
-    def __init__(self, query, limit=20, offset=0):
-        self.query = query
-        self.limit = limit
-        self.offset = offset
-        self.fetch_batch_of_results()
-
-    def fetch_batch_of_results(self):
-        uri = "/evaluation/submission/query?query=" + urllib.quote_plus("%s limit %s offset %s" % (self.query, self.limit, self.offset))
-        results = syn.restGET(uri)
-        self.totalNumberOfResults = results['totalNumberOfResults']
-        self.headers = results['headers']
-        self.rows = results['rows']
-        self.i = 0
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        if self.i >= len(self.rows):
-            if self.offset >= self.totalNumberOfResults:
-                raise StopIteration()
-            self.fetch_batch_of_results()
-        values = self.rows[self.i]['values']
-        self.i += 1
-        self.offset += 1
-        return values
 
 def validate(evaluation, public=False, admin=None, dry_run=False):
 
     if type(evaluation) != Evaluation:
         evaluation = syn.getEvaluation(evaluation)
 
-    print "\n\nValidating", evaluation.id, evaluation.name
-    print "-" * 60
+    print("\n\nValidating", evaluation.id, evaluation.name)
+    print("-" * 60)
     sys.stdout.flush()
     if admin is not None:
         try:
@@ -178,12 +140,12 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
             admin = syn.getTeam(admin)['name']
     for submission, status in syn.getSubmissionBundles(evaluation, status='RECEIVED'):
         ex1 = None #Must define ex1 in case there is no error
-        print "validating", submission.id, submission.name
+        print("validating", submission.id, submission.name)
         try:
             is_valid, validation_message = conf.validate_submission(syn, evaluation, submission, public, admin)
         except Exception as ex1:
             is_valid = False
-            print "Exception during validation:", type(ex1), ex1, ex1.message
+            print("Exception during validation:", type(ex1), ex1, ex1.message)
             traceback.print_exc()
             validation_message = str(ex1)
         addannotations = {}
@@ -245,15 +207,15 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
     if type(evaluation) != Evaluation:
         evaluation = syn.getEvaluation(evaluation)
 
-    print "\n\nArchiving", evaluation.id, evaluation.name
-    print "-" * 60
+    print("\n\nArchiving", evaluation.id, evaluation.name)
+    print("-" * 60)
     sys.stdout.flush()
 
     for submission, status in syn.getSubmissionBundles(evaluation, status=stat):
         ## retrieve file into cache and copy it to destination
         checkIfArchived = filter(lambda x: x.get("key") == "archived", status.annotations['stringAnnos'])
         if len(checkIfArchived)==0 or reArchive:
-            projectEntity = Project('Archived %s %d %s %s' % (submission.name.replace("&","+").replace("'",""),int(round(time.time() * 1000)),submission.id,submission.entityId))
+            projectEntity = synapseclient.Project('Archived %s %d %s %s' % (submission.name.replace("&","+").replace("'",""),int(round(time.time() * 1000)),submission.id,submission.entityId))
             entity = syn.store(projectEntity)
             adminPriv = ['DELETE','DOWNLOAD','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
             syn.setPermissions(entity,"3324230",adminPriv)
@@ -265,17 +227,6 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
 ## ==================================================
 ##  Handlers for commands
 ## ==================================================
-def command_check_status(args):
-    submission = syn.getSubmission(args.submission)
-    status = syn.getSubmissionStatus(args.submission)
-    evaluation = syn.getEvaluation(submission.evaluationId)
-    ## deleting the entity key is a hack to work around a bug which prevents
-    ## us from printing a submission
-    del submission['entity']
-    print unicode(evaluation).encode('utf-8')
-    print unicode(submission).encode('utf-8')
-    print unicode(status).encode('utf-8')
-
 def command_validate(args):
     # try:
     for evaluation in args.evaluation:
@@ -307,13 +258,9 @@ def main():
 
     subparsers = parser.add_subparsers(title="subcommand")
 
-    parser_status = subparsers.add_parser('status', help="Check the status of a submission")
-    parser_status.add_argument("submission")
-    parser_status.set_defaults(func=command_check_status)
-
     parser_validate = subparsers.add_parser('validate', help="Validate all RECEIVED submissions to an evaluation")
     parser_validate.add_argument("evaluation", metavar="EVALUATION-IDs", nargs='*', default=None)
-    parser_validate.add_argument("--admin", metavar="ADMIN", default=False)
+    parser_validate.add_argument("--admin", metavar="ADMIN", default=None)
     parser_validate.add_argument("--public", action="store_true", default=False)
     parser_validate.set_defaults(func=command_validate)
 
@@ -325,14 +272,14 @@ def main():
 
     args = parser.parse_args()
 
-    print "\n" * 2, "=" * 75
-    print datetime.utcnow().isoformat()
+    print("\n" * 2, "=" * 75)
+    print(datetime.utcnow().isoformat())
 
     ## Acquire lock, don't run two scoring scripts at once
     try:
         update_lock = lock.acquire_lock_or_fail('challenge', max_age=timedelta(hours=4))
     except lock.LockedException:
-        print u"Is the scoring script already running? Can't acquire lock."
+        print("Is the scoring script already running? Can't acquire lock.")
         # can't acquire lock, so return error code 75 which is a
         # temporary error according to /usr/include/sysexits.h
         return 75
@@ -367,8 +314,8 @@ def main():
     finally:
         update_lock.release()
 
-    print "\ndone: ", datetime.utcnow().isoformat()
-    print "=" * 75, "\n" * 2
+    print("\ndone: ", datetime.utcnow().isoformat())
+    print("=" * 75, "\n" * 2)
 
 
 if __name__ == '__main__':
