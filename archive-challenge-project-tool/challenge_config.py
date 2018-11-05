@@ -1,3 +1,4 @@
+import synapseclient
 from synapseclient.exceptions import *
 
 ## Synapse user IDs of the challenge admins who will be notified by email
@@ -17,7 +18,7 @@ def validate_submission(syn, evaluation, submission, public=False, admin=None):
         if public:
             message =  "Please make your private project (%s) public" % submission['entityId']
             share_with.append(message)
-            ent = syn.getPermissions(submission['entityId'], 273948)
+            ent = syn.getPermissions(submission['entityId'], synapseclient.AUTHENTICATED_USERS)
             assert "READ" in ent and "DOWNLOAD" in ent, message
             ent = syn.getPermissions(submission['entityId'])
             assert "READ" in ent, message
