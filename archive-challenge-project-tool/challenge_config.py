@@ -11,16 +11,20 @@ def validate_submission(syn, evaluation, submission, public=False, admin=None):
     :returns: (True, message) if validated, (False, message) if
               validation fails or throws exception
     """
+    #Add in users to share this with
+    share_with = []
     try:
         if public:
+            share_with.append("`Public`")
             ent = syn.getPermissions(submission['entityId'])
             assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the `Public` with `Can Download` permissions." % submission['entityId']
         if admin is not None:
+            share_with.append("Synapse user `%s`" % admin)
             ent = syn.getPermissions(submission['entityId'], admin)
-            assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the `%s` with `Can Download` permissions." % (submission['entityId'], admin)
+            assert "READ" in ent and "DOWNLOAD" in ent, "Please share your private directory (%s) with the Synapse user `%s` with `Can Download` permissions." % (submission['entityId'], admin)
     except SynapseHTTPError as e:
         if e.response.status_code == 403:
-            raise AssertionError("Please share your private directory (%s) with the Synapse user `%s` with `Can Download` permissions." % (submission['entityId'], admin))
+            raise AssertionError("Please share your private directory (%s) with %s with `Can Download` permissions." % (submission['entityId'], ", ".join(share_with)))
         else:
             raise(e)
     return True, "Validated!"

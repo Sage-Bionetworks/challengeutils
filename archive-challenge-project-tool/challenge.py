@@ -19,9 +19,6 @@ import synapseclient
 import synapseclient.utils as utils
 from synapseclient.exceptions import *
 from synapseclient import Evaluation, Submission, SubmissionStatus
-from synapseclient import Wiki
-from synapseclient import Column
-from synapseclient.dict_object import DictObject
 from synapseclient.annotations import from_submission_status_annotations
 import synapseutils as synu
 
@@ -142,12 +139,14 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
         ex1 = None #Must define ex1 in case there is no error
         print("validating", submission.id, submission.name)
         try:
-            is_valid, validation_message = conf.validate_submission(syn, evaluation, submission, public, admin)
+            is_valid, validation_message = conf.validate_submission(syn, evaluation, submission, public=public, admin=admin)
         except Exception as ex1:
             is_valid = False
-            print("Exception during validation:", type(ex1), ex1, ex1.message)
+            print("Exception during validation:", type(ex1), ex1, str(ex1))
             traceback.print_exc()
+            validation_error = ex1
             validation_message = str(ex1)
+
         addannotations = {}
         #Add team name
         if 'teamId' in submission:
@@ -181,7 +180,7 @@ def validate(evaluation, public=False, admin=None, dry_run=False):
                 submission_id=submission.id,
                 submission_name=submission.name)
         else:
-            if isinstance(ex1, AssertionError):
+            if isinstance(validation_error, AssertionError):
                 sendTo = [submission.userId]
                 username = get_user_name(profile)
             else:
@@ -230,7 +229,7 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
 def command_validate(args):
     # try:
     for evaluation in args.evaluation:
-        validate(evaluation, args.public, args.admin, dry_run=args.dry_run)
+        validate(evaluation, public=args.public, admin=args.admin, dry_run=args.dry_run)
     # except:
     #     sys.stderr.write("\nValidate command requires either an evaluation ID or --all to validate all queues in the challenge")
 
