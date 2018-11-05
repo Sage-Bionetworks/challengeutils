@@ -213,7 +213,7 @@ def archive(evaluation, stat="VALIDATED", reArchive=False):
     for submission, status in syn.getSubmissionBundles(evaluation, status=stat):
         ## retrieve file into cache and copy it to destination
         checkIfArchived = filter(lambda x: x.get("key") == "archived", status.annotations['stringAnnos'])
-        if len(checkIfArchived)==0 or reArchive:
+        if len(list(checkIfArchived))==0 or reArchive:
             projectEntity = synapseclient.Project('Archived %s %d %s %s' % (submission.name.replace("&","+").replace("'",""),int(round(time.time() * 1000)),submission.id,submission.entityId))
             entity = syn.store(projectEntity)
             adminPriv = ['DELETE','DOWNLOAD','CREATE','READ','CHANGE_PERMISSIONS','UPDATE','MODERATE','CHANGE_SETTINGS']
