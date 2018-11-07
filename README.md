@@ -1,9 +1,15 @@
-# Synapse Challenge Utilities
+# Sage Bionetworks Challenge Utilities
 
-This repository is meant to house all important challenge functions and allow for you install a command line package with convenience tools for a challenge.
+The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/).
+
+## Install
 
 ```
-#Clone this repository and go into the directory
-python setup.py install
+pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
+```
+
+## Usage
+
+```
 challengeutils -h
 ```

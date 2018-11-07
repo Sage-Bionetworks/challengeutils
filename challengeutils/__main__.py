@@ -3,6 +3,15 @@ import argparse
 import getpass
 from challengeutils import createChallenge, mirrorWiki, query
 
+def command_mirrorwiki(syn, args):
+    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid, args.forceupdate)
+
+def command_createchallenge(syn, args):
+    createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
+
+def command_query(syn, args):
+    print(list(query.evaluation_queue_query(syn, args.uri, args.limit, args.offset)))
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(description='Challenge utility functions')
@@ -17,21 +26,22 @@ def build_parser():
                                        description='The following commands are available:',
                                        help='For additional help: "challengeutils <COMMAND> -h"')
 
-    parser_createChallenge = subparsers.add_parser('createChallenge',
+    parser_createChallenge = subparsers.add_parser('createchallenge',
                                        help='Creates a challenge from a template')
-    parser_createChallenge.add_argument("challengeName", help="Challenge name")
-    parser_createChallenge.add_argument("--liveSite", help="Option to specify the live site synapse id when there is already a live site")
-    parser_createChallenge.set_defaults(func=createChallenge.command_main)
+    parser_createChallenge.add_argument("challengename", help="Challenge name")
+    parser_createChallenge.add_argument("--livesiteid", help="Option to specify the live site synapse Id there is already a live site")
+    parser_createChallenge.set_defaults(func=command_createchallenge)
 
-    parser_mirrorWiki = subparsers.add_parser('mirrorWiki',
+    parser_mirrorWiki = subparsers.add_parser('mirrorwiki',
                                         help='Mirrors a staging site to live site.  Make sure that the wiki titles match.')
-    parser_mirrorWiki.add_argument("id", type=str,
-                        help="Synapse ID of the project's wiki you want to copy")
-    parser_mirrorWiki.add_argument("destinationId", type=str,
-                        help='Synapse ID of project where wiki will be copied to')
-    parser_mirrorWiki.add_argument("--forceMerge", action='store_true',
-                        help='Force the merge of wiki markdowns')
-    parser_mirrorWiki.set_defaults(func=mirrorWiki.command_mergeWiki)
+    parser_mirrorWiki.add_argument("entityid", type=str,
+                        help="Synapse Id of the project's wiki you want to copy")
+    parser_mirrorWiki.add_argument("destinationid", type=str,
+                        help='Synapse Id of project where wiki will be copied to')
+    parser_mirrorWiki.add_argument("--forceupdate", action='store_true',
+                        help='Update the wikipages even if they are the same')
+    parser_mirrorWiki.set_defaults(func=command_mirrorwiki)
+    
 
     parser_query = subparsers.add_parser('query',
                                         help='Queries on a evaluation queue')
@@ -41,7 +51,7 @@ def build_parser():
                         help='How many records should be returned per request', default=20)
     parser_query.add_argument("--offset", type=int, default=0,
                         help='At what record offset from the first should iteration start')
-    parser_query.set_defaults(func=query.command_query)
+    parser_query.set_defaults(func=command_query)
 
     return parser
 
@@ -69,4 +79,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
