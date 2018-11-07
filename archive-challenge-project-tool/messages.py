@@ -16,7 +16,7 @@ dry_run = False
 
 ## Edit these URLs to point to your challenge and its support forum
 defaults = dict(
-    challenge_instructions_url = "https://www.synapse.org/#!Synapse:...",
+    challenge_instructions_url = "https://www.synapse.org/#!Synapse:{synid_here}",
     support_forum_url = "https://www.synapse.org/#!Synapse:{synid_here}/discussion/default",
     scoring_script = "The DREAM Archiver")
 
