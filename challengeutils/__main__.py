@@ -1,7 +1,7 @@
 import synapseclient
 import argparse
 import getpass
-from challengeutils import createChallenge, mirrorWiki, query
+from challengeutils import createchallenge, mirrorwiki, query
 
 def command_mirrorwiki(syn, args):
     mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid, args.forceupdate)
