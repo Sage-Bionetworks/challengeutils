@@ -3,7 +3,7 @@ from synapseclient.exceptions import *
 
 ## Synapse user IDs of the challenge admins who will be notified by email
 ## about errors in the scoring script
-ADMIN_USER_IDS = ['3324230']
+ADMIN_USER_IDS = []
 
 def validate_submission(syn, evaluation, submission, public=False, admin=None):
     """
