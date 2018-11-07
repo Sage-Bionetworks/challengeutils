@@ -149,26 +149,29 @@ def numTeams(evalId):
 		allTeams.add(team['value'])
 	print(len(allTeams))
 
-def inviteMemberToTeam(team, user=None, email=None):
+def inviteMemberToTeam(team, user=None, email=None, message=None):
 	"""
 	Invite members to a team
 
 	params: 
-		team: Synapse Team id or name
-		user: Synapse username or profile id
-		email: Email of user, do not specify both email and user, but must specify one
+			team: Synapse Team id or name
+			user: Synapse username or profile id
+			email: Email of user, do not specify both email and user, but must specify one
+			message: Message for people getting invited to the team
 	"""
 	teamId = syn.getTeam(team)['id']
 	isMember = False
 	if email is None:
-		userId = syn.getUserProfile(user)['ownerId']
-		membershipStatus = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamId), individualId=str(userId)))
-		isMember = membershipStatus['isMember']
-		invite = {'teamId': str(teamId), 'inviteeId': str(userId)}
+			userId = syn.getUserProfile(user)['ownerId']
+			membershipStatus = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamId), individualId=str(userId)))
+			isMember = membershipStatus['isMember']
+			invite = {'teamId': str(teamId), 'inviteeId': str(userId)}
 	else:
-		invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
+			invite = {'teamId': str(teamId), 'inviteeEmail':str(email)}
+	if message is not None:
+			invite['message'] = message
 	if not isMember:
-		invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+			invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
 def getChallengeId(entity):
 	"""
@@ -206,6 +209,7 @@ def createTeamWikis(synId, templateId, trackerTableSynId):
 			#Give admin access to the team
 			syn.setPermissions(project, i['teamId'], accessType=['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS'])
 			wikiCopy = synu.copy(syn,templateId,project.id)
+			#syn.sendMessage(i[])
 			#Store copied synId to tracking table
 			syn.store(synapseclient.Table(trackerTableSynId,[[wikiCopy[templateId],i['teamId']]]))
 

@@ -1,7 +1,7 @@
 import synapseclient
 import argparse
 import getpass
-from challengeutils import createChallenge, mirrorWiki
+from challengeutils import createChallenge, mirrorWiki, query
 
 def build_parser():
     """Builds the argument parser and returns the result."""
@@ -32,7 +32,17 @@ def build_parser():
     parser_mirrorWiki.add_argument("--forceMerge", action='store_true',
                         help='Force the merge of wiki markdowns')
     parser_mirrorWiki.set_defaults(func=mirrorWiki.command_mergeWiki)
-    
+
+    parser_query = subparsers.add_parser('query',
+                                        help='Queries on a evaluation queue')
+    parser_query.add_argument("uri", type=str,
+                        help="Synapse ID of the project's wiki you want to copy")
+    parser_query.add_argument("--limit", type=int,
+                        help='How many records should be returned per request', default=20)
+    parser_query.add_argument("--offset", type=int, default=0,
+                        help='At what record offset from the first should iteration start')
+    parser_query.set_defaults(func=query.command_query)
+
     return parser
 
 def perform_main(syn, args):
