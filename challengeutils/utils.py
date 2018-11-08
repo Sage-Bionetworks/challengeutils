@@ -22,8 +22,8 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 		private_added_annotations =  dict() if to_public else add_annotations
 		public_added_annotations = add_annotations if to_public else dict()
 	else:
-		private_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in existing_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == True}
-		public_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in existing_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == False}
+		private_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in add_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == True}
+		public_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in add_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == False}
 	#If you add a private annotation that appears in the public annotation, it switches 
 	if sum([key in public_added_annotations for key in private_annotations]) == 0:
 		pass

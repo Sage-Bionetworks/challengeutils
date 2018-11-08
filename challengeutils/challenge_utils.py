@@ -87,9 +87,6 @@ def changeACL(evaluationId, principalId):
 	syn._storeACL(e, acl)
 
 
-
-
-
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
 	Function that creates wiki pages from a template by looking at teams that
