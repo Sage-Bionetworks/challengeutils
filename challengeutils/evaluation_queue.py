@@ -1,5 +1,8 @@
+import synapseclient
+
+
 def createEvaluationQueue(syn, name, description, status, parentId, submissionInstructionsMessage):
-	queue = syn.store(Evaluation(
+	queue = syn.store(synapseclient.Evaluation(
 	  name=name,
 	  description=description,
 	  status=status,
