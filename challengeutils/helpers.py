@@ -1,37 +1,7 @@
 import os
 import synapseclient
-import pandas as pd
-from synapseclient import Evaluation
 
-
-def createEvaluationQueue(syn, name, description, status, parentId, submissionInstructionsMessage):
-	queue = syn.store(Evaluation(
-	  name=name,
-	  description=description,
-	  status=status,
-	  contentSource=parentId,
-	  submissionInstructionsMessage=submissionInstructionsMessage,
-	  submissionReceiptMessage="Thanks for submitting to %s!" % name))
-	return(queue)
-
-def rescore(syn,evalID):
-	bundle = syn.getSubmissionBundles(evalID,status='SCORED')
-	for (i,(item,status)) in enumerate(bundle):
-		status.status = 'VALIDATED'
-		syn.store(status)
-		print(i)
-
-# {u'firstRoundStart': u'2017-01-03T00:00:00.000Z',
-#   u'numberOfRounds': 1,
-#   u'roundDurationMillis': 3139200000,
-#   u'submissionLimit': 6}
-def setQuota(syn,evalID,quota=3):
-	quota1 = dict(submissionLimit = quota)
-	e = syn.getEvaluation(evalID)
-	e.quota = quota1
-	e = syn.store(e)
-
-def reNameSubmissionFiles(syn,evalID,downloadLocation="./",stat="SCORED"):
+def rename_submission_files(syn, evalID,downloadLocation="./",stat="SCORED"):
 	bundle = syn.getSubmissionBundles(evalID,status=stat)
 	for (i,(item,status)) in enumerate(bundle):
 		if status.get("annotations") is not None:

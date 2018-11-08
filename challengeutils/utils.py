@@ -183,3 +183,21 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
 	sub_status.status = status
 	sub_status = syn.store(sub_status)
 	return(sub_status)
+
+
+def change_all_submission_status(syn, evaluationid, submission_status='SCORED', change_to_status='VALIDATED'):
+	'''
+	Function to change submission status of all submissions in a queue
+	The defaults is to change submissions from SCORED -> VALIDATED 
+	This function can be useful for 'rescoring' submissions
+
+	params:
+		syn: Synapse object
+		evaluationid: Id of an Evaluation queue
+		submission_status: Submissions with this status that you want to change (Default is SCORED)
+		change_to_status: Submission status to change a submission to (Default is VALIDATED)
+	'''
+	submission_bundle = syn.getSubmissionBundles(evaluationid,status=submission_status)
+	for sub, status in submission_bundle:
+		status.status = change_to_status
+		syn.store(status)
