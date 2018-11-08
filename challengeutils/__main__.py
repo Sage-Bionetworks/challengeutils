@@ -1,6 +1,7 @@
 import synapseclient
 import argparse
 import getpass
+import pandas as pd
 from challengeutils import createchallenge, mirrorwiki, utils, writeup_attacher
 
 def command_mirrorwiki(syn, args):
@@ -10,7 +11,8 @@ def command_createchallenge(syn, args):
     createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
 
 def command_query(syn, args):
-    print(list(utils.evaluation_queue_query(syn, args.uri, args.limit, args.offset)))
+    querydf = pd.DataFrame(list(utils.evaluation_queue_query(syn, args.uri, args.limit, args.offset)))
+    print(querydf.to_csv(index=False))
 
 def command_change_status(syn, args):
     print(utils.change_submission_status(syn, args.submissionid, args.status))
