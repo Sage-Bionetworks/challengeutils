@@ -35,8 +35,8 @@ def create_evaluation_queue(syn, name, description, parentid):
     logger.info("Created Queue %s(%s)" % (queue.name, queue.id))
     return(queue)
 
-def create_team(syn, team_name, desc, privacy):
-    team = syn.store(synapseclient.Team(name=team_name, description=desc, canPublicJoin=privacy))
+def create_team(syn, team_name, desc, can_public_join):
+    team = syn.store(synapseclient.Team(name=team_name, description=desc, canPublicJoin=can_public_join))
     logger.info("Created Team %s(%s)" % (team.name, team.id))
     return(team.id)
 
@@ -91,9 +91,9 @@ def createchallenge(syn, challenge_name, live_site):
     team_admin = challenge_name + ' Admin'
     team_preReg = challenge_name + ' Preregistrants'
 
-    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team', privacy=True)
-    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team', privacy=False)
-    team_prereg_id = create_team(syn, team_preReg, 'Challenge Pre-registration Team', privacy=True)
+    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team', can_public_join=True)
+    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team', can_public_join=False)
+    team_prereg_id = create_team(syn, team_preReg, 'Challenge Pre-registration Team', can_public_join=True)
     admin_perms = ['DOWNLOAD','DELETE','READ','CHANGE_PERMISSIONS','CHANGE_SETTINGS','CREATE','MODERATE','UPDATE']
 
     syn.setPermissions(project_staging, team_admin_id, admin_perms)
