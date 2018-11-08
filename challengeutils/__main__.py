@@ -1,7 +1,7 @@
 import synapseclient
 import argparse
 import getpass
-from challengeutils import createchallenge, mirrorwiki, utils
+from challengeutils import createchallenge, mirrorwiki, utils, writeup_attacher
 
 def command_mirrorwiki(syn, args):
     mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid, args.forceupdate)
@@ -14,6 +14,10 @@ def command_query(syn, args):
 
 def command_change_status(syn, args):
     print(utils.change_submission_status(syn, args.submissionid, args.status))
+
+def command_writeup_attach(syn, args):
+    writeup_attacher.attach_writeup(syn, args.writeupqueue, args.submissionqueue)
+
 
 def build_parser():
     """Builds the argument parser and returns the result."""
@@ -63,6 +67,13 @@ def build_parser():
     parser_change_status.add_argument("status", type=str,
                         help='Status to change submission to')
     parser_change_status.set_defaults(func=command_change_status)
+
+    parser_attach_writeup = subparsers.add_parser('attachwriteup',
+                                        help='Attaches the write ups of a challenge to its main challenge queue')
+
+    parser_attach_writeup.add_argument("writeupqueue", type=str, help='Write up submission queue evaluation id')
+    parser_attach_writeup.add_argument("submissionqueue", type=str, help='Challenge submission queue evaluation id')
+    parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     return parser
 

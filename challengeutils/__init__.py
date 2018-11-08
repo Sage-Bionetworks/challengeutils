@@ -4,3 +4,4 @@ from . import createchallenge
 from . import mirrorwiki
 from . import utils
 from . import permissions
+from . import writeup_attacher

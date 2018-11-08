@@ -39,15 +39,4 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
 
     submissions_with_writeupsdf.apply(lambda row: append_writeup_to_main_submission(row, syn),axis=1)
 
-def perform_main(syn, args):
-    attach_writeup(syn, args.writeupqueue, args.submissionqueue)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Attach writeup and archived writeups to challenge queue annotations')
-    parser.add_argument("writeupqueue", type=str, help='Write up submission queue evaluation id')
-    parser.add_argument("submissionqueue", type=str, help='Challenge submission queue evaluation id')
-    args = parser.parse_args()
-    syn = synapseclient.login()
-    perform_main(syn, args)
-
 
