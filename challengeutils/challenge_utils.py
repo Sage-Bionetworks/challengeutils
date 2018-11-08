@@ -14,30 +14,6 @@ def createEvaluationQueue(syn, name, description, status, parentId, submissionIn
 	  submissionReceiptMessage="Thanks for submitting to %s!" % name))
 	return(queue)
 
-def _findAnnotation(annotations, key, annotType, isPrivate=False):
-	if annotations.get(annotType) is not None:
-		check = filter(lambda x: x.get('key') == key, annotations[annotType])
-		if len(check) > 0:
-			check[0]['isPrivate'] = isPrivate
-	return(annotations)
-
-def changeSubmissionAnnotationPrivacy(syn,evalID, annots, status='SCORED', isPrivate=False):
-	"""
-	annots: list of annotation keys to make public
-	status: ALL, VALIDATED, INVALID, 
-	"""
-	status = None if status == 'ALL' else status
-	bundle = syn.getSubmissionBundles(evalID,status=status)
-	for (i,(item,status)) in enumerate(bundle):
-		annotations = status.annotations
-		for key in annots:
-			annotations = _findAnnotation(annotations, key, "stringAnnos",isPrivate)
-			annotations = _findAnnotation(annotations, key, "doubleAnnos",isPrivate)
-			annotations = _findAnnotation(annotations, key, "longAnnos",isPrivate)
-		status.annotations = annotations
-		syn.store(status)
-		#Checks if you have looped through all the submissions
-		print(i)
 
 def rescore(syn,evalID):
 	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
@@ -173,16 +149,6 @@ def inviteMemberToTeam(team, user=None, email=None, message=None):
 	if not isMember:
 			invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
-def get_challengeid(syn, entity):
-	"""
-	Function that gets the challenge id for a project
-
-	params:
-		entity: An Entity or Synapse ID to lookup
-	"""
-	synid = synapseclient.utils.id_of(entity)
-	challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
-	return(challenge_obj)
 
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
