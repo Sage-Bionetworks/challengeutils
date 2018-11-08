@@ -42,3 +42,17 @@ Most challenges require participants to submit a writeup.  Using the new archive
 ```
 challengeutils attachwriteup writeupid submissionqueueid
 ```
+
+**Adding ACLs to Synapse Entities and Evaluation queues**
+
+These two functions will give users or teams permissions to entities and evaluation queues.  By default the user is public if there is no user or team specified and the default permission is view.  For entities, the permission choices are "view", "download", "edit", "edit_and_delete", "admin".  
+
+```
+challengeutils setentityacl syn123545 user_or_team view
+```
+
+For evaluation queues, the permission choices are "view", "submit", "score", "admin". 
+
+```
+challengeutils setevaluationacl 12345 user_or_team score
+```

@@ -2,7 +2,7 @@ import synapseclient
 import argparse
 import getpass
 import pandas as pd
-from challengeutils import createchallenge, mirrorwiki, utils, writeup_attacher
+from challengeutils import createchallenge, mirrorwiki, utils, writeup_attacher, permissions
 
 def command_mirrorwiki(syn, args):
     mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid, args.forceupdate)
@@ -20,6 +20,11 @@ def command_change_status(syn, args):
 def command_writeup_attach(syn, args):
     writeup_attacher.attach_writeup(syn, args.writeupqueue, args.submissionqueue)
 
+def command_set_entity_acl(syn, args):
+    permissions.set_entity_permissions(syn, args.entityid, principalid=args.principalid, permission_level=args.permission_level)
+
+def command_set_evaluation_acl(syn, args):
+    permissions.set_evaluation_permissions(syn, args.evaluationid, principalid=args.principalid, permission_level=args.permission_level)
 
 def build_parser():
     """Builds the argument parser and returns the result."""
@@ -77,6 +82,19 @@ def build_parser():
     parser_attach_writeup.add_argument("submissionqueue", type=str, help='Challenge submission queue evaluation id')
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
+    parser_set_entity_acl = subparsers.add_parser('setentityacl',
+                                        help='Sets the permissions of a Synapse Entity')
+    parser_set_entity_acl.add_argument("entityid", type=str, help='Entity Synapse id')
+    parser_set_entity_acl.add_argument("principalid", type=str, help='Synapse user or Team name/id')
+    parser_set_entity_acl.add_argument("permission_level", type=str, help='Permissions', choices=['view','download','edit','edit_and_delete','admin'])
+    parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
+
+    parser_set_evaluation_acl = subparsers.add_parser('setevaluationacl',
+                                        help='Sets the permissions of a Synapse Evaluation Queue')
+    parser_set_evaluation_acl.add_argument("evaluationid", type=str, help='Synapse Evaluation Queue id')
+    parser_set_evaluation_acl.add_argument("principalid", type=str, help='Synapse user or Team name/id')
+    parser_set_evaluation_acl.add_argument("permission_level", type=str, help='Permissions', choices=['view','submit','score','admin'])
+    parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
     return parser
 
 def perform_main(syn, args):
