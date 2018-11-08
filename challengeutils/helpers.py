@@ -49,33 +49,6 @@ def reNameSubmissionFiles(syn,evalID,downloadLocation="./",stat="SCORED"):
 		os.rename(fileName,newName)
 		print(i)
 
-def getEntityId(syn,evalID):
-	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
-	f = open('2.csv', 'w')
-	f.write("team,email,public,wikiId,FileID,final,tiebreak,createdOn\n")
-	for (i,(item,status)) in enumerate(bundle):
-		annots = status.annotations
-		#2
-		#print(annots['doubleAnnos'][17])
-		#print(annots['doubleAnnos'][-17])
-		final = annots['doubleAnnos'][17]['value']
-		tiebreak = annots['doubleAnnos'][-17]['value']
-		#1A,B
-		#tiebreak = annots['doubleAnnos'][-1]['value']
-		#final = annots['doubleAnnos'][-3]['value']
-		createdOn = item.createdOn
-		user = syn.getUserProfile(item.userId)
-		email = user.userName + "@synapse.org"
-		try:
-			synId = syn.get(item.entityId,downloadFile=False)
-			synId = synId.parentId
-			public = "True"
-		except:
-			synId = item.entityId
-			public = "False"
-		wiki = "https://www.synapse.org/#!Synapse:%s"%synId
-		f.write("%s,%s,%s,%s,%s,%s,%s,%s\n" % (annots['stringAnnos'][0]['value'], email, public, wiki, item.entityId, final, tiebreak, createdOn))
-	f.close()
 
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
