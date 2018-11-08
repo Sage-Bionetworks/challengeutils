@@ -15,7 +15,7 @@ def createEvaluationQueue(syn, name, description, status, parentId, submissionIn
 	return(queue)
 
 def rescore(syn,evalID):
-	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
+	bundle = syn.getSubmissionBundles(evalID,status='SCORED')
 	for (i,(item,status)) in enumerate(bundle):
 		status.status = 'VALIDATED'
 		syn.store(status)
@@ -32,7 +32,7 @@ def setQuota(syn,evalID,quota=3):
 	e = syn.store(e)
 
 def reNameSubmissionFiles(syn,evalID,downloadLocation="./",stat="SCORED"):
-	bundle = syn.getSubmissionBundles(evalID,status=stat,limit=200)
+	bundle = syn.getSubmissionBundles(evalID,status=stat)
 	for (i,(item,status)) in enumerate(bundle):
 		if status.get("annotations") is not None:
 			team = annots['stringAnnos'][0]['value']
@@ -76,16 +76,6 @@ def getEntityId(syn,evalID):
 		wiki = "https://www.synapse.org/#!Synapse:%s"%synId
 		f.write("%s,%s,%s,%s,%s,%s,%s,%s\n" % (annots['stringAnnos'][0]['value'], email, public, wiki, item.entityId, final, tiebreak, createdOn))
 	f.close()
-
-# Use syn.setPermissions
-def changeACL(evaluationId, principalId):
-	e = syn.getEvaluation(evaluationId)
-	acl = syn._getACL(e)
-	wanted = filter(lambda input: input.get('principalId', None) == principalId, acl['resourceAccess'])[0]
-	## admin
-	wanted['accessType'].append("READ_PRIVATE_SUBMISSION")
-	syn._storeACL(e, acl)
-
 
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
