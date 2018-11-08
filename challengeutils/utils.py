@@ -149,10 +149,11 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 	Invite members to a team
 
 	params: 
-			team: Synapse Team id or name
-			user: Synapse username or profile id
-			email: Email of user, do not specify both email and user, but must specify one
-			message: Message for people getting invited to the team
+		syn: Synapse object
+		team: Synapse Team id or name
+		user: Synapse username or profile id
+		email: Email of user, do not specify both email and user, but must specify one
+		message: Message for people getting invited to the team
 	"""
 	teamid = syn.getTeam(team)['id']
 	is_member = False
@@ -168,3 +169,17 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 	if not is_member:
 			invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
+
+def change_submission_status(syn,submissionid,status='RECEIVED'):
+	'''
+	Function to change a submission status
+
+	params:
+		syn: Synapse object
+		submissionid: Id of a submission
+		status: Submission status to change a submission to
+	'''
+	sub_status = syn.getSubmissionStatus(submissionid)
+	sub_status.status = status
+	sub_status = syn.store(sub_status)
+	return(sub_status)

@@ -10,7 +10,10 @@ def command_createchallenge(syn, args):
     createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
 
 def command_query(syn, args):
-    print(list(query.evaluation_queue_query(syn, args.uri, args.limit, args.offset)))
+    print(list(utils.evaluation_queue_query(syn, args.uri, args.limit, args.offset)))
+
+def command_change_status(syn, args):
+    print(utils.change_submission_status(syn, args.submissionid, args.status))
 
 def build_parser():
     """Builds the argument parser and returns the result."""
@@ -52,6 +55,14 @@ def build_parser():
     parser_query.add_argument("--offset", type=int, default=0,
                         help='At what record offset from the first should iteration start')
     parser_query.set_defaults(func=command_query)
+
+    parser_change_status = subparsers.add_parser('changestatus',
+                                        help='Changes the status of a submission id')
+    parser_change_status.add_argument("submissionid", type=str,
+                        help="Synapse submission Id")
+    parser_change_status.add_argument("status", type=str,
+                        help='Status to change submission to')
+    parser_change_status.set_defaults(func=command_change_status)
 
     return parser
 

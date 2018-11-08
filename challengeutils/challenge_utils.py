@@ -79,10 +79,6 @@ def getEntityId(syn,evalID):
 		f.write("%s,%s,%s,%s,%s,%s,%s,%s\n" % (annots['stringAnnos'][0]['value'], email, public, wiki, item.entityId, final, tiebreak, createdOn))
 	f.close()
 
-def submissionToStatus(syn,submissionID,status='RECEIVED'):
-	temp = syn.getSubmissionStatus(submissionID)
-	temp.status = status
-	syn.store(temp)
 
 # Use syn.setPermissions
 def changeACL(evaluationId, principalId):
@@ -92,14 +88,6 @@ def changeACL(evaluationId, principalId):
 	## admin
 	wanted['accessType'].append("READ_PRIVATE_SUBMISSION")
 	syn._storeACL(e, acl)
-
-def addSubmissionSynId(evaluationId):
-	e = syn.getEvaluation(evaluationId)
-	bundle = syn.getSubmissionBundles(e, status ="SCORED")
-	for item,status in bundle:
-		synId = {'isPrivate':False,'key':'synapseId','value':item.entityId}
-		status.annotations['stringAnnos'].append(synId)
-		syn.store(status)
 
 def getTeamStats(teamId):
 	members = syn.getTeamMembers(teamId)
