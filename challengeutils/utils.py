@@ -141,3 +141,29 @@ def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status
 	bundle = syn.getSubmissionBundles(evaluationid,status=status)
 	for sub, status in bundle:
 		change_submission_annotation_acl(status, annotations, is_private=is_private)
+
+
+def invite_member_to_team(syn, team, user=None, email=None, message=None):
+	"""
+	Invite members to a team
+
+	params: 
+			team: Synapse Team id or name
+			user: Synapse username or profile id
+			email: Email of user, do not specify both email and user, but must specify one
+			message: Message for people getting invited to the team
+	"""
+	teamid = syn.getTeam(team)['id']
+	is_member = False
+	if email is None:
+			userid = syn.getUserProfile(user)['ownerId']
+			membership_status = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamid), individualId=str(userid)))
+			is_member = membership_status['isMember']
+			invite = {'teamId': str(teamid), 'inviteeId': str(userid)}
+	else:
+			invite = {'teamId': str(teamid), 'inviteeEmail':str(email)}
+	if message is not None:
+			invite['message'] = message
+	if not is_member:
+			invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+
