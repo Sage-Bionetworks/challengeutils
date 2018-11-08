@@ -1,23 +1,33 @@
 import os
 import synapseclient
 
-def rename_submission_files(syn, evalID,downloadLocation="./",stat="SCORED"):
-	bundle = syn.getSubmissionBundles(evalID,status=stat)
-	for (i,(item,status)) in enumerate(bundle):
-		if status.get("annotations") is not None:
-			team = annots['stringAnnos'][0]['value']
+def rename_submission_files(syn, evaluationid, download_location="./", status="SCORED"):
+	'''
+	This function renames the submission files of an evaluation queue.  For many challenges we require
+	participants to submit files that are named one thing such as prediction.csv.
+	This function renames them to
+
+	submitter_date_filename
+
+	params:
+		syn: synapse object
+		evaluationid:  Id of Evaluation queue
+		download_location:  location to download files to (Default is ./)
+		status: The submissions to download (Default is SCORED)
+	'''
+	submission_bundle = syn.getSubmissionBundles(evaluationid, status=status)
+	for sub, status in submission_bundle:
+		if sub.get("teamId") is not None:
+			submitter = syn.getTeam(sub.get("teamId"))['name']
 		else:
-			if item.get("teamId") is not None:
-				team = syn.getTeam(item.get("teamId")).name
-			else:
-				user = syn.getUserProfile(item.userId).userName
-		date = item.createdOn
-		fileEnt = syn.getSubmission(item.id,downloadLocation=downloadLocation)
-		fileName = os.path.basename(fileEnt.filePath)
-		newName = team+"___"+date+"___"+fileName
-		newName = newName.replace(' ','_')
-		os.rename(fileName,newName)
-		print(i)
+			submitter = syn.getUserProfile(sub.userId)['userName']
+		date = sub.createdOn
+		submission_ent = syn.getSubmission(sub.id,downloadLocation=download_location)
+		filename = os.path.basename(submission_ent.filePath)
+		newname = submitter+"___"+date+"___"+filename
+		newname = newname.replace(' ','_')
+		os.rename(filename,newname)
+		print(newname)
 
 
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
