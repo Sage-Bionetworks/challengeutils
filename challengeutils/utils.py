@@ -1,6 +1,7 @@
 import synapseclient
 import urllib
 import sys
+import json
 
 def update_single_submission_status(status, add_annotations, to_public=False, force_change_annotation_acl=False):
 	"""
