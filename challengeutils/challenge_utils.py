@@ -14,7 +14,6 @@ def createEvaluationQueue(syn, name, description, status, parentId, submissionIn
 	  submissionReceiptMessage="Thanks for submitting to %s!" % name))
 	return(queue)
 
-
 def rescore(syn,evalID):
 	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
 	for (i,(item,status)) in enumerate(bundle):
@@ -50,7 +49,6 @@ def reNameSubmissionFiles(syn,evalID,downloadLocation="./",stat="SCORED"):
 		os.rename(fileName,newName)
 		print(i)
 
-
 def getEntityId(syn,evalID):
 	bundle = syn.getSubmissionBundles(evalID,status='SCORED',limit=200)
 	f = open('2.csv', 'w')
@@ -79,7 +77,6 @@ def getEntityId(syn,evalID):
 		f.write("%s,%s,%s,%s,%s,%s,%s,%s\n" % (annots['stringAnnos'][0]['value'], email, public, wiki, item.entityId, final, tiebreak, createdOn))
 	f.close()
 
-
 # Use syn.setPermissions
 def changeACL(evaluationId, principalId):
 	e = syn.getEvaluation(evaluationId)
@@ -88,30 +85,6 @@ def changeACL(evaluationId, principalId):
 	## admin
 	wanted['accessType'].append("READ_PRIVATE_SUBMISSION")
 	syn._storeACL(e, acl)
-
-def getTeamStats(teamId):
-	members = syn.getTeamMembers(teamId)
-	info = []
-	for i in members:
-		user = syn.getUserProfile(i['member']['ownerId'])
-		name = user['firstName'] + " " + user['lastName']
-		if user.get("location") is not None:
-			location = user['location']
-		else:
-			location = ""
-		info.append([user['userName'],name,location,user['ownerId']])
-	temp = pd.DataFrame(info,columns = ['username','name','location','userId'])
-	temp['name'] = [i.encode('utf-8').decode('utf-8') for i in temp['name']]
-	#temp.to_csv("challenge_stats.csv", index=False, encoding='utf-8')
-	return(temp)
-
-def numTeams(evalId):
-	submissions = syn.getSubmissionBundles(evalId)
-	allTeams = set()
-	for sub, status in submissions:
-		team = filter(lambda x: x.get('key') == "team", status.annotations['stringAnnos'])[0]
-		allTeams.add(team['value'])
-	print(len(allTeams))
 
 
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
