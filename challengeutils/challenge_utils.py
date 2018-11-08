@@ -233,6 +233,6 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 								'edit':edit,
 								'edit_and_delete':'edit_and_delete',
 								'admin':admin}
-    assert permission_level in permission_level_mapping.keys()
-    assert principalId is not None
+	assert permission_level in permission_level_mapping.keys()
+	assert principalId is not None
 	syn.setPermissions(entity, principalId=None, accessType=permission_level_mapping[permission_level])
