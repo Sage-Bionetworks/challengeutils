@@ -87,6 +87,9 @@ def changeACL(evaluationId, principalId):
 	syn._storeACL(e, acl)
 
 
+
+
+
 def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	"""
 	Function that creates wiki pages from a template by looking at teams that
@@ -115,27 +118,3 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 			#syn.sendMessage(i[])
 			#Store copied synId to tracking table
 			syn.store(synapseclient.Table(tracker_table_synid,[[wiki_copy[templateid],i['teamId']]]))
-
-def set_entity_permissions(syn, entity, principalid=None, permission_level="view"):
-	"""
-	Convenience function to set ACL on an entity for a user or team based on
-	permission levels (view, download...)
-
-	params:
-		entity: An Entity or Synapse ID to lookup
-		principalid: Identifier of a user or group (defaults to PUBLIC users)
-		permission_level: Can be "view","download","edit","edit_and_delete",or "admin"
-	"""
-	view = ["READ"]
-	download = ['READ','DOWNLOAD']
-	edit = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
-	edit_and_delete = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE','DELETE']
-	admin = ['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS']
-	permission_level_mapping = {'view':view,
-								'download':download,
-								'edit':edit,
-								'edit_and_delete':'edit_and_delete',
-								'admin':admin}
-	assert permission_level in permission_level_mapping.keys()
-	assert principalId is not None
-	syn.setPermissions(entity, principalId=None, accessType=permission_level_mapping[permission_level])
