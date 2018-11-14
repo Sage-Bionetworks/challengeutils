@@ -47,11 +47,14 @@ def build_parser():
     parser_createChallenge.set_defaults(func=command_createchallenge)
 
     parser_mirrorWiki = subparsers.add_parser('mirrorwiki',
-                                        help='Mirrors a staging site to live site.  Make sure that the wiki titles match.')
+                                        help=("This command mirrors wiki pages. It relies on the wiki titles "
+                                              "between two Synapse Projects to be the same and will merge the updates "
+                                              "from entity's wikis to destination's wikis.  Do not confuse "
+                                              "this function with copy wiki."))
     parser_mirrorWiki.add_argument("entityid", type=str,
-                        help="Synapse Id of the project's wiki you want to copy")
+                        help="Synapse Id of the project's wiki changes you have staged")
     parser_mirrorWiki.add_argument("destinationid", type=str,
-                        help='Synapse Id of project where wiki will be copied to')
+                        help='Synapse Id of project whose wiki you want to update with the entityid')
     parser_mirrorWiki.add_argument("--forceupdate", action='store_true',
                         help='Update the wikipages even if they are the same')
     parser_mirrorWiki.set_defaults(func=command_mirrorwiki)
