@@ -13,6 +13,9 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 			  			 If dict, all submissions will be added as private submissions
 		to_public: change these annotations from private to public (default is False)
 		force_change_annotation_acl: Force change the annotation from private to public and vice versa
+
+	returns: Updated submission status
+
 	"""
 	existing_annotations = status.get("annotations", dict())
 	private_annotations = {annotation['key']:annotation['value'] for annotation_type in existing_annotations for annotation in existing_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == True}
@@ -86,6 +89,9 @@ def get_challengeid(syn, entity):
 
 	params:
 		entity: An Entity or Synapse ID to lookup
+
+	returns: Returns challenge dictionary 
+
 	"""
 	synid = synapseclient.utils.id_of(entity)
 	challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
@@ -100,6 +106,8 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 		key: key of the annotation
 		annotation_type: stringAnnos, doubleAnnos or longAnnos
 		is_private: whether the annotation is private or not, default to True
+
+	returns: Updated annotation key ACL
 
 	'''
 	if annotations.get(annotation_type) is not None:
@@ -169,6 +177,23 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 	if not is_member:
 			invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
 
+def register_team(syn, entity, team):
+	'''
+	Registers team to challenge
+
+	params:
+		syn: Synapse object
+		entity: An Entity or Synapse ID to lookup
+		team: Team name or team Id
+	
+	returns: Team id
+	'''
+
+	challengeid = get_challengeid(syn, entity)['id']
+	teamid = syn.getTeam(team)['id']
+	challenge_object = {'challengeId': challengeid, 'teamId':teamid}
+	registered_team = syn.restPOST('/challenge/%s/challengeTeam' % challengeid, json.dumps(challenge_object))
+	return(registered_team['teamId'])
 
 def change_submission_status(syn,submissionid,status='RECEIVED'):
 	'''
@@ -178,6 +203,8 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
 		syn: Synapse object
 		submissionid: Id of a submission
 		status: Submission status to change a submission to
+
+	returns: Updated submission status
 	'''
 	sub_status = syn.getSubmissionStatus(submissionid)
 	sub_status.status = status
