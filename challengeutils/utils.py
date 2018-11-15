@@ -235,3 +235,23 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
 	for sub, status in submission_bundle:
 		status.status = change_to_status
 		syn.store(status)
+
+def team_member_diff(syn, teama, teamb):
+	'''
+	Function to print out the difference in team members between two teams
+
+	Args:
+		syn: Synapse object
+		teama: Synapse Team
+		teamb: Synapse Team
+	'''
+	teama = syn.getTeam(teama)
+	teamb = syn.getTeam(teamb)
+	teama_members = syn.getTeamMembers(teama)
+	teamb_members = syn.getTeamMembers(teamb)
+	uniq_teama_members = set(member['member']['userName'] for member in teama_members)
+	uniq_teamb_members = set(member['member']['userName'] for member in teamb_members)
+	not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
+	not_in_teama = uniq_teamb_members.difference(uniq_teama_members)
+	print("Members in '%s', but not in '%s': %s" % (teama['name'],teamb['name'],", ".join(not_in_teamb)))
+	print("Members in '%s', but not in '%s': %s" % (teamb['name'],teama['name'],", ".join(not_in_teama)))

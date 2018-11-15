@@ -27,6 +27,8 @@ Challenge Utilities Documentation
 
 .. autofunction:: challengeutils.utils.change_all_submission_status
 
+.. autofunction:: challengeutils.utils.team_member_diff
+
 .. autofunction:: challengeutils.mirrorwiki.mirrorwiki
 
 .. autofunction:: challengeutils.createchallenge.createchallenge
@@ -34,6 +36,7 @@ Challenge Utilities Documentation
 .. autofunction:: challengeutils.permissions.set_evaluation_permissions
 
 .. autofunction:: challengeutils.permissions.set_entity_permissions
+
 
 
 
