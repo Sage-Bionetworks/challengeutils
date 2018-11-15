@@ -9,7 +9,7 @@ def append_writeup_to_main_submission(row, syn):
     Helper function that appends the write up synapse id and archived write up synapse id 
     on the main submission
 
-    params:
+    Args:
         row:  Dictionary row['team'], row['objectId'], row['archived'], row['entityId']
         syn: synapse object
     '''
@@ -27,7 +27,7 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
     '''
     Attach the write up to the submission queue
 
-    params:
+    Args:
         writeup_queueid:   Write up evaluation queue id
         submission_queueid: Submission queue id
     '''

@@ -9,7 +9,7 @@ def rename_submission_files(syn, evaluationid, download_location="./", status="S
 
 	submitter_date_filename
 
-	params:
+	Args:
 		syn: synapse object
 		evaluationid:  Id of Evaluation queue
 		download_location:  location to download files to (Default is ./)
@@ -36,7 +36,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 	are registered for a challenge.  The teams that have a wiki made for them
 	Are stored into a trackerTable that has columns wikiSynId, and teamId
 
-	params:
+	Args:
 		synId: Synapse id of challenge project
 		templateId:  Synapse id of the template
 		trackerTableSynId: Synapse id of Table that tracks if wiki pages have been made per team
