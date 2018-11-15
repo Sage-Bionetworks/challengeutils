@@ -23,7 +23,7 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
     try:
         destination_wiki = syn.getWikiHeaders(destination)
     except synapseclient.exceptions.SynapseHTTPError  as e:
-        raise ValueError("The destination project has no wiki page.  Do not confuse the mirror wiki script for the copy wiki script (synapseutils.copyWiki)")
+        raise ValueError("The destination Project has no Wiki. Mirroring a Wiki requires that the source and destination Projects have the same structure. You may want to use the copy wiki functionality provided by 'synapseutils.copyWiki'")
 
     #Get mapping of wiki pages
     entity_wiki_pages = {}
