@@ -1,0 +1,399 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Challenge Utilities documentation! &#8212; Challenge Utility  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-challenge-utilities-documentation">
+<h1>Welcome to Challenge Utilities documentation!<a class="headerlink" href="#welcome-to-challenge-utilities-documentation" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="challengeutils.utils.get_challengeid">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">get_challengeid</code><span class="sig-paren">(</span><em>syn</em>, <em>entity</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.get_challengeid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that gets the challenge id for a project</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> – An Entity or Synapse ID to lookup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Challenge dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.update_single_submission_status">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">update_single_submission_status</code><span class="sig-paren">(</span><em>status</em>, <em>add_annotations</em>, <em>to_public=False</em>, <em>force_change_annotation_acl=False</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.update_single_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will update a single submission’s status</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>status</strong> – syn.getSubmissionStatus()</li>
+<li><strong>add_annotations</strong> – Annotations that you want to add in dict or submission status annotations format.
+If dict, all submissions will be added as private submissions</li>
+<li><strong>to_public</strong> – change these annotations from private to public (default is False)</li>
+<li><strong>force_change_annotation_acl</strong> – Force change the annotation from private to public and vice versa</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Updated submission status</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.evaluation_queue_query">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">evaluation_queue_query</code><span class="sig-paren">(</span><em>syn</em>, <em>uri</em>, <em>limit=20</em>, <em>offset=0</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.evaluation_queue_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is to query the evaluation queue service.
+The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
+responses are large enough to be a burden on the service they may be truncated.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Args:</dt>
+<dd>syn:     A Synapse object
+uri:     A URI for evaluation queues (select * from evaluation_12345)
+limit:   How many records should be returned per request
+offset:  At what record offset from the first should iteration start</dd>
+</dl>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A generator over some paginated results</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">challengeutils.utils.</code><code class="descname">get_challengeid</code><span class="sig-paren">(</span><em>syn</em>, <em>entity</em><span class="sig-paren">)</span></dt>
+<dd><p>Function that gets the challenge id for a project</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity</strong> – An Entity or Synapse ID to lookup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Challenge dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_submission_annotation_acl">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">change_submission_annotation_acl</code><span class="sig-paren">(</span><em>status</em>, <em>annotations</em>, <em>is_private=False</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.change_submission_annotation_acl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change the acl of a list of known annotation keys on one submission</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>status</strong> – syn.getSubmissionStatus()</li>
+<li><strong>annotations</strong> – list of annotation keys to make public</li>
+<li><strong>is_private</strong> – whether the annotation is private or not, default to True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_all_submissions_annotation_acl">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">change_all_submissions_annotation_acl</code><span class="sig-paren">(</span><em>syn</em>, <em>evaluationid</em>, <em>annotations</em>, <em>status='SCORED'</em>, <em>is_private=False</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.change_all_submissions_annotation_acl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change the acl of a list of known annotation keys on all submissions of a evaluation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>syn</strong> – synapse object</li>
+<li><strong>evaluationid</strong> – evaluation id</li>
+<li><strong>annotations</strong> – list of annotation keys to make public</li>
+<li><strong>status</strong> – ALL, VALIDATED, INVALID</li>
+<li><strong>is_private</strong> – whether the annotation is private or not, default to True</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.invite_member_to_team">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">invite_member_to_team</code><span class="sig-paren">(</span><em>syn</em>, <em>team</em>, <em>user=None</em>, <em>email=None</em>, <em>message=None</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.invite_member_to_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invite members to a team</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>team</strong> – Synapse Team id or name</li>
+<li><strong>user</strong> – Synapse username or profile id</li>
+<li><strong>email</strong> – Email of user, do not specify both email and user, but must specify one</li>
+<li><strong>message</strong> – Message for people getting invited to the team</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.register_team">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">register_team</code><span class="sig-paren">(</span><em>syn</em>, <em>entity</em>, <em>team</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.register_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers team to challenge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>entity</strong> – An Entity or Synapse ID to lookup</li>
+<li><strong>team</strong> – Team name or team Id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Team id</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_submission_status">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">change_submission_status</code><span class="sig-paren">(</span><em>syn</em>, <em>submissionid</em>, <em>status='RECEIVED'</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.change_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change a submission status</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>submissionid</strong> – Id of a submission</li>
+<li><strong>status</strong> – Submission status to change a submission to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Updated submission status</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_all_submission_status">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">change_all_submission_status</code><span class="sig-paren">(</span><em>syn</em>, <em>evaluationid</em>, <em>submission_status='SCORED'</em>, <em>change_to_status='VALIDATED'</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.change_all_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change submission status of all submissions in a queue
+The defaults is to change submissions from SCORED -&gt; VALIDATED
+This function can be useful for ‘rescoring’ submissions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>evaluationid</strong> – Id of an Evaluation queue</li>
+<li><strong>submission_status</strong> – Submissions with this status that you want to change (Default is SCORED)</li>
+<li><strong>change_to_status</strong> – Submission status to change a submission to (Default is VALIDATED)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.mirrorwiki.mirrorwiki">
+<code class="descclassname">challengeutils.mirrorwiki.</code><code class="descname">mirrorwiki</code><span class="sig-paren">(</span><em>syn</em>, <em>entity</em>, <em>destination</em>, <em>force_merge=False</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.mirrorwiki.mirrorwiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>This script is responsible for mirroring wiki pages
+It relies on the wiki titles between two Synapse Projects to be
+The same and will merge the updates from entity’s wikis to destination’s wikis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>entity</strong> – Synapse File, Project, Folder Entity or Id with Wiki you want to copy</li>
+<li><strong>destination</strong> – Synapse File, Project, Folder Entity or Id with Wiki that matches entity</li>
+<li><strong>force_merge</strong> – this will update a page even if its the same</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.createchallenge">
+<code class="descclassname">challengeutils.createchallenge.</code><code class="descname">createchallenge</code><span class="sig-paren">(</span><em>syn</em>, <em>challenge_name</em>, <em>live_site=None</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.createchallenge.createchallenge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create two project entity for challenge sites.
+1) live (public) and 2) staging (private until launch)
+Allow for users to set up the live site themselves</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>challenge_name</strong> – Name of the challenge</li>
+<li><strong>live_site</strong> – If there is already a live site, specify live site Synapse id. (Default is None)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.permissions.set_evaluation_permissions">
+<code class="descclassname">challengeutils.permissions.</code><code class="descname">set_evaluation_permissions</code><span class="sig-paren">(</span><em>syn</em>, <em>evaluation</em>, <em>principalid=None</em>, <em>permission_level='view'</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.permissions.set_evaluation_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to set ACL on an entity for a user or team based on
+permission levels (view, download…)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>evaluation</strong> – An Evaluation or Evaluation id</li>
+<li><strong>principalid</strong> – Identifier of a user or group (defaults to PUBLIC users)</li>
+<li><strong>permission_level</strong> – Can be “view”,”submit”,”score”,or “admin”</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.permissions.set_entity_permissions">
+<code class="descclassname">challengeutils.permissions.</code><code class="descname">set_entity_permissions</code><span class="sig-paren">(</span><em>syn</em>, <em>entity</em>, <em>principalid=None</em>, <em>permission_level='view'</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.permissions.set_entity_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to set ACL on an entity for a user or team based on
+permission levels (view, download…)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>entity</strong> – An Entity or Synapse ID to lookup</li>
+<li><strong>principalid</strong> – Identifier of a user or group (defaults to PUBLIC users)</li>
+<li><strong>permission_level</strong> – Can be “view”,”download”,”edit”,”edit_and_delete”,or “admin”</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Challenge Utility</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
