@@ -10,7 +10,7 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 	Args:
 		status: syn.getSubmissionStatus()
 		add_annotations: Annotations that you want to add in dict or submission status annotations format.
-			  			 If dict, all submissions will be added as private submissions
+						 If dict, all submissions will be added as private submissions
 		to_public: change these annotations from private to public (default is False)
 		force_change_annotation_acl: Force change the annotation from private to public and vice versa
 
@@ -61,10 +61,10 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 	return(status)
 
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
-    """
-    This is to query the evaluation queue service.
-    The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
-    responses are large enough to be a burden on the service they may be truncated.
+	"""
+	This is to query the evaluation queue service.
+	The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
+	responses are large enough to be a burden on the service they may be truncated.
 
 	Args:
 		syn:     A Synapse object
@@ -72,20 +72,20 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
 		limit:   How many records should be returned per request	
 		offset:  At what record offset from the first should iteration start
 
-    Returns: 
-    	A generator over some paginated results
-    """
+	Returns: 
+		A generator over some paginated results
+	"""
 
-    prev_num_results = sys.maxsize
-    while prev_num_results > 0:
-        rest_uri = "/evaluation/submission/query?query=" + urllib.parse.quote_plus("%s limit %s offset %s" % (uri, limit, offset))
-        page = syn.restGET(rest_uri)
-        #results = page['results'] if 'results' in page else page['children']
-        results = [{page['headers'][index]:value  for index, value in enumerate(row['values']) } for row in page['rows'] ]
-        prev_num_results = len(results)
-        for result in results:
-            offset += 1
-            yield result
+	prev_num_results = sys.maxsize
+	while prev_num_results > 0:
+		rest_uri = "/evaluation/submission/query?query=" + urllib.parse.quote_plus("%s limit %s offset %s" % (uri, limit, offset))
+		page = syn.restGET(rest_uri)
+		#results = page['results'] if 'results' in page else page['children']
+		results = [{page['headers'][index]:value  for index, value in enumerate(row['values']) } for row in page['rows'] ]
+		prev_num_results = len(results)
+		for result in results:
+			offset += 1
+			yield result
 
 def get_challengeid(syn, entity):
 	"""
