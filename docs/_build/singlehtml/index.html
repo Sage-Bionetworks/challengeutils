@@ -79,20 +79,20 @@ If dict, all submissions will be added as private submissions</li>
 <dd><p>This is to query the evaluation queue service.
 The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
 responses are large enough to be a burden on the service they may be truncated.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>Args:</dt>
-<dd>syn:     A Synapse object
-uri:     A URI for evaluation queues (select * from evaluation_12345)
-limit:   How many records should be returned per request
-offset:  At what record offset from the first should iteration start</dd>
-</dl>
-</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A generator over some paginated results</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – A Synapse object</li>
+<li><strong>uri</strong> – A URI for evaluation queues (select * from evaluation_12345)</li>
+<li><strong>limit</strong> – How many records should be returned per request</li>
+<li><strong>offset</strong> – At what record offset from the first should iteration start</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A generator over some paginated results</p>
+</td>
 </tr>
 </tbody>
 </table>
