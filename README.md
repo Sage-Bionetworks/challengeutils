@@ -1,3 +1,5 @@
+![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg) ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)  
+
 # Sage Bionetworks Challenge Utilities
 
 The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/).
