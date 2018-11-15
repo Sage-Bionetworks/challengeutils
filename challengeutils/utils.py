@@ -236,22 +236,71 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
 		status.status = change_to_status
 		syn.store(status)
 
-def team_member_diff(syn, teama, teamb):
+def _get_team_set(syn, team):
 	'''
-	Function to print out the difference in team members between two teams
+	Helper function to return a set of usernames
 
 	Args:
 		syn: Synapse object
-		teama: Synapse Team
-		teamb: Synapse Team
+		team: Synapse team id, name or object
+
+	Returns:
+		Set of team members
 	'''
-	teama = syn.getTeam(teama)
-	teamb = syn.getTeam(teamb)
-	teama_members = syn.getTeamMembers(teama)
-	teamb_members = syn.getTeamMembers(teamb)
-	uniq_teama_members = set(member['member']['userName'] for member in teama_members)
-	uniq_teamb_members = set(member['member']['userName'] for member in teamb_members)
-	not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
-	not_in_teama = uniq_teamb_members.difference(uniq_teama_members)
-	print("Members in '%s', but not in '%s': %s" % (teama['name'],teamb['name'],", ".join(not_in_teamb)))
-	print("Members in '%s', but not in '%s': %s" % (teamb['name'],teama['name'],", ".join(not_in_teama)))
+	members = syn.getTeamMembers(team)
+	members_set = set(member['member']['ownerId'] for member in members)
+	return(members_set)
+
+
+def team_members_diff(syn, teama, teamb):
+	'''
+	Calculates the diff between teama and teamb
+
+	Args:
+		syn: Synapse object
+		teama: Synapse Team id or name
+		teamb: Synapse Team id or name
+
+	Returns:
+		Set of members in teama but not in teamb
+	'''
+	uniq_teama_members = _get_team_set(syn, teama)
+	uniq_teamb_members = _get_team_set(syn, teamb)
+	members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
+	return(members_not_in_teamb)
+
+
+def team_members_intersection(syn, teama, teamb):
+	'''
+	Calculates the intersection between teama and teamb
+
+	Args:
+		syn: Synapse object
+		teama: Synapse Team id or name
+		teamb: Synapse Team id or name
+
+	Returns:
+		Set of members that belong in both teams
+	'''
+	uniq_teama_members = _get_team_set(syn, teama)
+	uniq_teamb_members = _get_team_set(syn, teamb)
+	intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
+	return(intersect_members)
+
+
+def team_members_union(syn, teama, teamb):
+	'''
+	Calculates the union between teama and teamb
+
+	Args:
+		syn: Synapse object
+		teama: Synapse Team id or name
+		teamb: Synapse Team id or name
+
+	Returns:
+		Set of a combination of members from both teams
+	'''
+	uniq_teama_members = _get_team_set(syn, teama)
+	uniq_teamb_members = _get_team_set(syn, teamb)
+	union_members = uniq_teama_members.union(uniq_teamb_members)
+	return(union_members)

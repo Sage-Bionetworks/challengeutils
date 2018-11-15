@@ -242,18 +242,65 @@ This function can be useful for ‘rescoring’ submissions</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="challengeutils.utils.team_member_diff">
-<code class="descclassname">challengeutils.utils.</code><code class="descname">team_member_diff</code><span class="sig-paren">(</span><em>syn</em>, <em>teama</em>, <em>teamb</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.team_member_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to print out the difference in team members between two teams</p>
+<dt id="challengeutils.utils.team_members_diff">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">team_members_diff</code><span class="sig-paren">(</span><em>syn</em>, <em>teama</em>, <em>teamb</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.team_members_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the diff between teama and teamb</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>syn</strong> – Synapse object</li>
-<li><strong>teama</strong> – Synapse Team</li>
-<li><strong>teamb</strong> – Synapse Team</li>
+<li><strong>teama</strong> – Synapse Team id or name</li>
+<li><strong>teamb</strong> – Synapse Team id or name</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Set of members in teama but not in teamb</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.team_members_intersection">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">team_members_intersection</code><span class="sig-paren">(</span><em>syn</em>, <em>teama</em>, <em>teamb</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.team_members_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the intersection between teama and teamb</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>teama</strong> – Synapse Team id or name</li>
+<li><strong>teamb</strong> – Synapse Team id or name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Set of members that belong in both teams</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.team_members_union">
+<code class="descclassname">challengeutils.utils.</code><code class="descname">team_members_union</code><span class="sig-paren">(</span><em>syn</em>, <em>teama</em>, <em>teamb</em><span class="sig-paren">)</span><a class="headerlink" href="#challengeutils.utils.team_members_union" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the union between teama and teamb</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn</strong> – Synapse object</li>
+<li><strong>teama</strong> – Synapse Team id or name</li>
+<li><strong>teamb</strong> – Synapse Team id or name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Set of a combination of members from both teams</p>
 </td>
 </tr>
 </tbody>
