@@ -7,14 +7,15 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 	"""
 	This will update a single submission's status
 	
-	param:
+	Args:
 		status: syn.getSubmissionStatus()
 		add_annotations: Annotations that you want to add in dict or submission status annotations format.
 			  			 If dict, all submissions will be added as private submissions
 		to_public: change these annotations from private to public (default is False)
 		force_change_annotation_acl: Force change the annotation from private to public and vice versa
 
-	returns: Updated submission status
+	Returns:
+		Updated submission status
 
 	"""
 	existing_annotations = status.get("annotations", dict())
@@ -61,15 +62,18 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
     """
-    :param syn:     A Synapse object
-    :param uri:     A URI for evaluation queues (select * from evaluation_12345)
-    :param limit:   How many records should be returned per request
-    :param offset:  At what record offset from the first should iteration start
-
-    :returns: A generator over some paginated results
-
+    This is to query the evaluation queue service.
     The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
     responses are large enough to be a burden on the service they may be truncated.
+
+	Args:
+		syn:     A Synapse object
+		uri:     A URI for evaluation queues (select * from evaluation_12345)	
+		limit:   How many records should be returned per request	
+		offset:  At what record offset from the first should iteration start
+
+    Returns: 
+    	A generator over some paginated results
     """
 
     prev_num_results = sys.maxsize
@@ -87,11 +91,11 @@ def get_challengeid(syn, entity):
 	"""
 	Function that gets the challenge id for a project
 
-	params:
+	Args:
 		entity: An Entity or Synapse ID to lookup
 
-	returns: Returns challenge dictionary 
-
+	Returns: 
+		Challenge dictionary 
 	"""
 	synid = synapseclient.utils.id_of(entity)
 	challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
@@ -101,13 +105,14 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 	'''
 	Helper function to locate the existing annotation
 
-	params:
+	Args:
 		annotations: submission status annotations
 		key: key of the annotation
 		annotation_type: stringAnnos, doubleAnnos or longAnnos
 		is_private: whether the annotation is private or not, default to True
 
-	returns: Updated annotation key ACL
+	Returns: 
+		Updated annotation key ACL
 
 	'''
 	if annotations.get(annotation_type) is not None:
@@ -121,7 +126,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
 	"""
 	Function to change the acl of a list of known annotation keys on one submission
 	
-	param:
+	Args:
 		status: syn.getSubmissionStatus()
 		annotations: list of annotation keys to make public
 		is_private: whether the annotation is private or not, default to True
@@ -139,7 +144,7 @@ def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status
 	"""
 	Function to change the acl of a list of known annotation keys on all submissions of a evaluation
 	
-	params:
+	Args:
 		syn: synapse object
 		evaluationid: evaluation id
 		annotations: list of annotation keys to make public
@@ -156,7 +161,7 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 	"""
 	Invite members to a team
 
-	params: 
+	Args: 
 		syn: Synapse object
 		team: Synapse Team id or name
 		user: Synapse username or profile id
@@ -181,12 +186,13 @@ def register_team(syn, entity, team):
 	'''
 	Registers team to challenge
 
-	params:
+	Args:
 		syn: Synapse object
 		entity: An Entity or Synapse ID to lookup
 		team: Team name or team Id
 	
-	returns: Team id
+	Returns: 
+		Team id
 	'''
 
 	challengeid = get_challengeid(syn, entity)['id']
@@ -199,12 +205,13 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
 	'''
 	Function to change a submission status
 
-	params:
+	Args:
 		syn: Synapse object
 		submissionid: Id of a submission
 		status: Submission status to change a submission to
 
-	returns: Updated submission status
+	Returns: 
+		Updated submission status
 	'''
 	sub_status = syn.getSubmissionStatus(submissionid)
 	sub_status.status = status
@@ -218,7 +225,7 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
 	The defaults is to change submissions from SCORED -> VALIDATED 
 	This function can be useful for 'rescoring' submissions
 
-	params:
+	Args:
 		syn: Synapse object
 		evaluationid: Id of an Evaluation queue
 		submission_status: Submissions with this status that you want to change (Default is SCORED)

@@ -69,11 +69,20 @@ def update_wikipage_string(wikipage_string, challengeid, teamid, challenge_name,
     wikipage_string = wikipage_string.replace("projectId=syn0","projectId=%s" % synid)
     return(wikipage_string)
 
-def createchallenge(syn, challenge_name, live_site):
+def createchallenge(syn, challenge_name, live_site=None):
+    '''
+    Create two project entity for challenge sites.
+    1) live (public) and 2) staging (private until launch)
+    Allow for users to set up the live site themselves
+    
+    Args:
+        syn: Synapse object
+        challenge_name: Name of the challenge
+        live_site: If there is already a live site, specify live site Synapse id. (Default is None)
+    
+    Returns:
+        Nothing
 
-    '''Create two project entity for challenge sites.
-       1) live (public) and 2) staging (private until launch)
-       Allow for users to set up the live site themselves
     '''
     if live_site is None:
         #live = challenge_name

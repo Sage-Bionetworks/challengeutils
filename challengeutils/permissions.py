@@ -5,7 +5,7 @@ def set_evaluation_permissions(syn, evaluation, principalid=None, permission_lev
 	Convenience function to set ACL on an entity for a user or team based on
 	permission levels (view, download...)
 
-	params:
+	Args:
 		evaluation: An Evaluation or Evaluation id
 		principalid: Identifier of a user or group (defaults to PUBLIC users)
 		permission_level: Can be "view","submit","score",or "admin"
@@ -28,7 +28,7 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 	Convenience function to set ACL on an entity for a user or team based on
 	permission levels (view, download...)
 
-	params:
+	Args:
 		entity: An Entity or Synapse ID to lookup
 		principalid: Identifier of a user or group (defaults to PUBLIC users)
 		permission_level: Can be "view","download","edit","edit_and_delete",or "admin"

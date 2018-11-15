@@ -8,12 +8,12 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
     It relies on the wiki titles between two Synapse Projects to be 
     The same and will merge the updates from entity's wikis to destination's wikis
 
-    params:
+    Args:
         entity: Synapse File, Project, Folder Entity or Id with Wiki you want to copy
         destination: Synapse File, Project, Folder Entity or Id with Wiki that matches entity
         force_merge: this will update a page even if its the same
     
-    return:
+    Returns:
         nothing
     """
     entity = syn.get(entity,downloadFile=False)
