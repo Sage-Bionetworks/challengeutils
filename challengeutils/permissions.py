@@ -45,5 +45,5 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 								'admin':admin}
 	assert permission_level in permission_level_mapping.keys()
 	assert principalid is not None
-	entity = syn.get(entity)
+	entity = syn.get(entity,downloadFile=False)
 	syn.setPermissions(entity, principalId=principalid, accessType=permission_level_mapping[permission_level])
