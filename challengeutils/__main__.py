@@ -86,17 +86,17 @@ def build_parser():
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     parser_set_entity_acl = subparsers.add_parser('setentityacl',
-                                        help='Sets the permissions of a Synapse Entity')
+                                        help='Sets the permissions of a Synapse Entity, by not specifying permission level you are removing the permissions for this principal id')
     parser_set_entity_acl.add_argument("entityid", type=str, help='Entity Synapse id')
     parser_set_entity_acl.add_argument("principalid", type=str, help='Synapse user or Team name/id')
-    parser_set_entity_acl.add_argument("permission_level", type=str, help='Permissions', choices=['view','download','edit','edit_and_delete','admin'])
+    parser_set_entity_acl.add_argument("--permission_level", type=str, help='Permissions', choices=['view','download','edit','edit_and_delete','admin'])
     parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
 
     parser_set_evaluation_acl = subparsers.add_parser('setevaluationacl',
-                                        help='Sets the permissions of a Synapse Evaluation Queue')
+                                        help='Sets the permissions of a Synapse Evaluation Queue, by not specifying permission level you are removing the permissions for this principal id')
     parser_set_evaluation_acl.add_argument("evaluationid", type=str, help='Synapse Evaluation Queue id')
     parser_set_evaluation_acl.add_argument("principalid", type=str, help='Synapse user or Team name/id')
-    parser_set_evaluation_acl.add_argument("permission_level", type=str, help='Permissions', choices=['view','submit','score','admin'])
+    parser_set_evaluation_acl.add_argument("--permission_level", type=str, help='Permissions', choices=['view','submit','score','admin'])
     parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
     return parser
 
