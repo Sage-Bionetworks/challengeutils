@@ -122,14 +122,18 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 	return(annotations)
 
 
-def change_submission_annotation_acl(status, annotations, is_private=False):
+def change_submission_annotation_acl(syn, status, annotations, is_private=False):
 	"""
 	Function to change the acl of a list of known annotation keys on one submission
 	
 	Args:
+		syn: Synapse object
 		status: syn.getSubmissionStatus()
 		annotations: list of annotation keys to make public
 		is_private: whether the annotation is private or not, default to True
+
+	Returns:
+		Stored submission status
 	"""
 	submission_annotations = status.annotations
 	for key in annotations:
@@ -137,7 +141,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
 		submission_annotations = _change_annotation_acl(submission_annotations, key, "doubleAnnos",is_private)
 		submission_annotations = _change_annotation_acl(submission_annotations, key, "longAnnos",is_private)
 	status.annotations = submission_annotations
-	syn.store(status)
+	return(syn.store(status))
 
 
 def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
