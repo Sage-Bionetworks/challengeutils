@@ -1,4 +1,4 @@
-
+import synapseclient
 
 def set_evaluation_permissions(syn, evaluation, principalid=None, permission_level="view"):
 	"""
@@ -31,7 +31,7 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 	Args:
 		entity: An Entity or Synapse ID to lookup
 		principalid: Identifier of a user or group (defaults to PUBLIC users)
-		permission_level: Can be "view","download","edit","edit_and_delete",or "admin"
+		permission_level: Can be "view","download","edit","edit_and_delete", "admin" or None. If None is specified, the permissions are removed from the principalid.
 	"""
 	view = ["READ"]
 	download = ['READ','DOWNLOAD']
@@ -42,8 +42,13 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 								'download':download,
 								'edit':edit,
 								'edit_and_delete':edit_and_delete,
-								'admin':admin}
-	assert permission_level in permission_level_mapping.keys()
-	assert principalid is not None
-	entity = syn.get(entity)
-	syn.setPermissions(entity, principalId=principalid, accessType=permission_level_mapping[permission_level])
+								'admin':admin,
+								'delete':[]}
+	if permission_level not in permission_level_mapping.keys():
+		raise ValueError("permission_level must be one of these: {0}".format(', '.join(permission_level_mapping.keys())))
+
+	if principalid is None:
+		raise ValueError("principalid must not be None")
+
+	entityid = synapseclient.utils.id_of(entity)
+	syn.setPermissions(entityid, principalId=principalid, accessType=permission_level_mapping[permission_level])
