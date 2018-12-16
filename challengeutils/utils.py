@@ -270,7 +270,7 @@ def team_members_diff(syn, a, b):
 	return(members_not_in_teamb)
 
 
-def team_members_intersection(syn, teama, teamb):
+def team_members_intersection(syn, a, b):
 	'''
 	Calculates the intersection between teama and teamb
 
