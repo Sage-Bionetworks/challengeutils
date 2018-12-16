@@ -252,7 +252,7 @@ def _get_team_set(syn, team):
 	return(members_set)
 
 
-def team_members_diff(syn, teama, teamb):
+def team_members_diff(syn, a, b):
 	'''
 	Calculates the diff between teama and teamb
 
