@@ -288,7 +288,7 @@ def team_members_intersection(syn, a, b):
 	return(intersect_members)
 
 
-def team_members_union(syn, teama, teamb):
+def team_members_union(syn, a, b):
 	'''
 	Calculates the union between teama and teamb
 
