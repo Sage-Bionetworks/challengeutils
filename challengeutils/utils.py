@@ -258,14 +258,14 @@ def team_members_diff(syn, a, b):
 
 	Args:
 		syn: Synapse object
-		teama: Synapse Team id or name
-		teamb: Synapse Team id or name
+		a: Synapse Team id or name
+		b: Synapse Team id or name
 
 	Returns:
 		Set of members in teama but not in teamb
 	'''
-	uniq_teama_members = _get_team_set(syn, teama)
-	uniq_teamb_members = _get_team_set(syn, teamb)
+	uniq_teama_members = _get_team_set(syn, a)
+	uniq_teamb_members = _get_team_set(syn, b)
 	members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
 	return(members_not_in_teamb)
 
@@ -276,14 +276,14 @@ def team_members_intersection(syn, a, b):
 
 	Args:
 		syn: Synapse object
-		teama: Synapse Team id or name
-		teamb: Synapse Team id or name
+		a: Synapse Team id or name
+		b: Synapse Team id or name
 
 	Returns:
 		Set of members that belong in both teams
 	'''
-	uniq_teama_members = _get_team_set(syn, teama)
-	uniq_teamb_members = _get_team_set(syn, teamb)
+	uniq_teama_members = _get_team_set(syn, a)
+	uniq_teamb_members = _get_team_set(syn, b)
 	intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
 	return(intersect_members)
 
@@ -294,13 +294,13 @@ def team_members_union(syn, a, b):
 
 	Args:
 		syn: Synapse object
-		teama: Synapse Team id or name
-		teamb: Synapse Team id or name
+		a: Synapse Team id or name
+		b: Synapse Team id or name
 
 	Returns:
 		Set of a combination of members from both teams
 	'''
-	uniq_teama_members = _get_team_set(syn, teama)
-	uniq_teamb_members = _get_team_set(syn, teamb)
+	uniq_teama_members = _get_team_set(syn, a)
+	uniq_teamb_members = _get_team_set(syn, b)
 	union_members = uniq_teama_members.union(uniq_teamb_members)
 	return(union_members)
