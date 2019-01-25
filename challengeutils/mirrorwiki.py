@@ -52,6 +52,9 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
                     entity_project_and_wiki_id = "%s/wiki/%s" % (entity.id, entity_page_id)
                     destination_project_and_wiki_id = "%s/wiki/%s" % (destination.id, wiki_mapping[entity_page_id])
                     destination_wiki.markdown=re.sub(entity_project_and_wiki_id, destination_project_and_wiki_id, destination_wiki.markdown)
+                    entity_project_and_wiki_id = "{}%2Fwiki%2F{}".format(entity.id,entity_page_id)
+                    destination_project_and_wiki_id = "{}%2Fwiki%2F{}".format(destination.id, wiki_mapping[entity_page_id])
+                    destination_wiki.markdown=re.sub(entity_project_and_wiki_id, destination_project_and_wiki_id, destination_wiki.markdown)
                 destination_wiki.markdown=re.sub(entity.id, destination.id, destination_wiki.markdown)
             #All attachments must be updated
             if entity_wiki['attachmentFileHandleIds'] == []:
