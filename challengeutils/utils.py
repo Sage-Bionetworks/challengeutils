@@ -252,7 +252,7 @@ def _get_team_set(syn, team):
         team: Synapse team id, name or object
 
     Returns:
-        Set of team members
+        Set of synapse user profiles in team
     '''
     members = syn.getTeamMembers(team)
     members_set = set(NewUserProfile(**member['member']) for member in members)
@@ -268,7 +268,7 @@ def team_members_diff(syn, a, b):
         b: Synapse Team id or name
 
     Returns:
-        Set of members in teama but not in teamb
+        Set of synapse user profiles in teama but not in teamb
     '''
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
@@ -286,7 +286,7 @@ def team_members_intersection(syn, a, b):
         b: Synapse Team id or name
 
     Returns:
-        Set of members that belong in both teams
+        Set of synapse user profiles that belong in both teams
     '''
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
@@ -304,7 +304,7 @@ def team_members_union(syn, a, b):
         b: Synapse Team id or name
 
     Returns:
-        Set of a combination of members from both teams
+        Set of a combination of synapse user profiles from both teams
     '''
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
