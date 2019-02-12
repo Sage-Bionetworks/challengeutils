@@ -141,7 +141,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     status.annotations = submission_annotations
     return(status)
 
-def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
+def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on all submissions of a evaluation
     
