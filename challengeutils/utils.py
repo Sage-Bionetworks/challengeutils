@@ -122,12 +122,11 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 	return(annotations)
 
 
-def change_submission_annotation_acl(syn, status, annotations, is_private=False):
+def change_submission_annotation_acl(status, annotations, is_private=False):
 	"""
 	Function to change the acl of a list of known annotation keys on one submission
 	
 	Args:
-		syn: Synapse object
 		status: syn.getSubmissionStatus()
 		annotations: list of annotation keys to make public
 		is_private: whether the annotation is private or not, default to True
