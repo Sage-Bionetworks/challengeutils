@@ -27,11 +27,7 @@ Challenge Utilities Documentation
 
 .. autofunction:: challengeutils.utils.change_all_submission_status
 
-.. autofunction:: challengeutils.utils.team_members_diff
-
-.. autofunction:: challengeutils.utils.team_members_intersection
-
-.. autofunction:: challengeutils.utils.team_members_union
+.. autofunction:: challengeutils.utils.team_member_diff
 
 .. autofunction:: challengeutils.mirrorwiki.mirrorwiki
 
