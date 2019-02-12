@@ -251,7 +251,6 @@ def _get_team_set(syn, team):
     members_set = set(member['member']['ownerId'] for member in members)
     return(members_set)
 
-
 def team_members_diff(syn, a, b):
     '''
     Calculates the diff between teama and teamb

@@ -1,4 +1,4 @@
-![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg) ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)  
+[![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg)](https://hub.docker.com/r/sagebionetworks/challengeutils/) ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)  
 
 # Sage Bionetworks Challenge Utilities
 
