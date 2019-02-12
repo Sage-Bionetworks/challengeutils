@@ -255,36 +255,3 @@ def team_member_diff(syn, teama, teamb):
     not_in_teama = uniq_teamb_members.difference(uniq_teama_members)
     print("Members in '%s', but not in '%s': %s" % (teama['name'],teamb['name'],", ".join(not_in_teamb)))
     print("Members in '%s', but not in '%s': %s" % (teamb['name'],teama['name'],", ".join(not_in_teama)))
-
-def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
-    '''
-    Kills any docker container that exceeds the run time quota
-
-    Args:
-        syn (str): Synapse object
-        evaluation_id (int): Synapse evaluation queue id
-        quota (int): Quota in milliseconds. Default is None. One hour is 3600000.
-    '''
-    if quota is None:
-        quota = sys.maxsize
-    else:
-        quota = int(quota)
-
-    workflow_last_updated_key = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
-    workflow_start_key = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
-    time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
-
-    evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = evaluation_queue_query(syn, evaluation_query)
-
-    for result in query_results:
-        model_run_time = int(result[workflow_last_updated_key]) - int(result[workflow_start_key])
-        if model_run_time > quota:
-            status = syn.getSubmissionStatus(result['objectId'])
-            add_annotations = {time_remaining_key:0}
-            status = update_single_submission_status(status, add_annotations)
-            syn.store(status)
-
-    #Rerunning submissions will require setting this annotation to a positive integer
-
-

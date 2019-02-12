@@ -27,8 +27,9 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)
-
+    
     Args:
+        syn: Synapse object
         entity: An Entity or Synapse ID to lookup
         principalid: Identifier of a user or group (defaults to PUBLIC users)
         permission_level: Can be "view","download","edit","edit_and_delete", "admin" or None. If None is specified, the permissions are removed from the principalid.
@@ -52,3 +53,4 @@ def set_entity_permissions(syn, entity, principalid=None, permission_level="view
 
     entityid = synapseclient.utils.id_of(entity)
     syn.setPermissions(entityid, principalId=principalid, accessType=permission_level_mapping[permission_level])
+
