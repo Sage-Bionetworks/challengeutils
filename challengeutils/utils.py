@@ -218,7 +218,6 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
     sub_status = syn.store(sub_status)
     return(sub_status)
 
-
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED', change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
@@ -236,6 +235,14 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
         status.status = change_to_status
         syn.store(status)
 
+class NewUserProfile(synapseclient.team.UserProfile):
+    '''
+    Create new user profile that makes Userprofiles hashable
+    SYNPY-879
+    '''
+    def __hash__(self):
+        return(int(self['ownerId']))
+
 def _get_team_set(syn, team):
     '''
     Helper function to return a set of usernames
@@ -248,7 +255,7 @@ def _get_team_set(syn, team):
         Set of team members
     '''
     members = syn.getTeamMembers(team)
-    members_set = set(member['member']['ownerId'] for member in members)
+    members_set = set(NewUserProfile(**member['member']) for member in members)
     return(members_set)
 
 def team_members_diff(syn, a, b):
