@@ -133,7 +133,7 @@ def change_submission_annotation_acl(syn, status, annotations, is_private=False)
 		is_private: whether the annotation is private or not, default to True
 
 	Returns:
-		Stored submission status
+		Submission status with new submission annotation ACLs
 	"""
 	submission_annotations = status.annotations
 	for key in annotations:
@@ -141,7 +141,7 @@ def change_submission_annotation_acl(syn, status, annotations, is_private=False)
 		submission_annotations = _change_annotation_acl(submission_annotations, key, "doubleAnnos",is_private)
 		submission_annotations = _change_annotation_acl(submission_annotations, key, "longAnnos",is_private)
 	status.annotations = submission_annotations
-	return(syn.store(status))
+	return(status)
 
 
 def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
@@ -158,7 +158,8 @@ def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status
 	status = None if status == 'ALL' else status
 	bundle = syn.getSubmissionBundles(evaluationid,status=status)
 	for sub, status in bundle:
-		change_submission_annotation_acl(status, annotations, is_private=is_private)
+		new_status = change_submission_annotation_acl(status, annotations, is_private=is_private)
+		syn.store(new_status)
 
 
 def invite_member_to_team(syn, team, user=None, email=None, message=None):
