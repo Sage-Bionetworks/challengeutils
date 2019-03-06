@@ -121,7 +121,6 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
             check[0]['isPrivate'] = is_private
     return(annotations)
 
-
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     Function to change the acl of a list of known annotation keys on one submission
@@ -130,6 +129,9 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
         status: syn.getSubmissionStatus()
         annotations: list of annotation keys to make public
         is_private: whether the annotation is private or not, default to True
+
+    Returns:
+        Submission status with new submission annotation ACLs
     """
     submission_annotations = status.annotations
     for key in annotations:
@@ -137,10 +139,9 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
         submission_annotations = _change_annotation_acl(submission_annotations, key, "doubleAnnos",is_private)
         submission_annotations = _change_annotation_acl(submission_annotations, key, "longAnnos",is_private)
     status.annotations = submission_annotations
-    syn.store(status)
+    return(status)
 
-
-def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
+def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on all submissions of a evaluation
     
@@ -154,8 +155,8 @@ def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status
     status = None if status == 'ALL' else status
     bundle = syn.getSubmissionBundles(evaluationid,status=status)
     for sub, status in bundle:
-        change_submission_annotation_acl(status, annotations, is_private=is_private)
-
+        new_status = change_submission_annotation_acl(status, annotations, is_private=is_private)
+        syn.store(new_status)
 
 def invite_member_to_team(syn, team, user=None, email=None, message=None):
     """
