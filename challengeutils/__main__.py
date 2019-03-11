@@ -209,8 +209,8 @@ def build_parser():
         help="Submission status")
 
     parser_dl_cur_lead_sub.add_argument(
-            "-a", "--cutoff_annotation",
-            default="met_cutoff")
+        "-a", "--cutoff_annotation",
+        default="met_cutoff")
 
     parser_dl_cur_lead_sub.add_argument(
         "-v", "--verbose",

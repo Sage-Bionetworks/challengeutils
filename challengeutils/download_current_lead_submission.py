@@ -1,4 +1,4 @@
-import utils
+import challengeutils
 import os
 
 
@@ -6,7 +6,7 @@ def get_submitterid_from_submission_id(
         syn, submissionid, queue, verbose=False):
     query = ("select * from " + queue +
              " where objectId == " + str(submissionid))
-    generator = utils.evaluation_queue_query(syn, query)
+    generator = challengeutils.utils.evaluation_queue_query(syn, query)
     lst = list(generator)
     if len(lst) == 0:
         raise Exception('submission id {} not in queue'.format(submissionid))
@@ -25,7 +25,7 @@ def get_submitters_lead_submission(
              " and prediction_file_status == 'SCORED' and '" +
              cutoff_annotation + "' == 'true'" +
              " order by createdOn DESC")
-    generator = utils.evaluation_queue_query(syn, query)
+    generator = challengeutils.utils.evaluation_queue_query(syn, query)
     lst = list(generator)
     if len(lst) > 0:
         sub_dict = lst[0]
