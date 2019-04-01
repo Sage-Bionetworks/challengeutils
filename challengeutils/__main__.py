@@ -17,7 +17,10 @@ def command_createchallenge(syn, args):
 def command_query(syn, args):
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
-    print(querydf.to_csv(index=False))
+    if args.outputfile is not None:
+        querydf.to_csv(args.outputfile, index=False)
+    else:
+        print(querydf.to_csv(index=False))
 
 
 def command_change_status(syn, args):
@@ -113,6 +116,12 @@ def build_parser():
         "uri",
         type=str,
         help="Synapse ID of the project's wiki you want to copy")
+    parser_query.add_argument(
+        "--outputfile",
+        type=str,
+        help="File that you want your query results to be written to."
+             "If not specified, it is written as stdout.",
+        default=None)
     parser_query.add_argument(
         "--limit",
         type=int,

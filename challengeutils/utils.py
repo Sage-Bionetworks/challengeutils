@@ -3,6 +3,7 @@ import urllib
 import sys
 import json
 
+
 def update_single_submission_status(status, add_annotations, to_public=False,
                                     force_change_annotation_acl=False):
     """
@@ -42,18 +43,18 @@ def update_single_submission_status(status, add_annotations, to_public=False,
                                      for annotation in add_annotations[annotation_type]
                                      if annotation_type not in ['scopeId', 'objectId']
                                      and annotation['isPrivate'] == True}
-        
+
         public_added_annotations = {annotation['key']:annotation['value']
                                     for annotation_type in add_annotations
                                     for annotation in add_annotations[annotation_type]
                                     if annotation_type not in ['scopeId', 'objectId']
                                     and annotation['isPrivate'] == False}
 
-    #If you add a private annotation that appears in the public annotation, it switches 
+    # If you add a private annotation that appears in the public annotation, it switches 
     if sum([key in public_added_annotations for key in private_annotations]) == 0:
         pass
     elif sum([key in public_added_annotations for key in private_annotations]) >0 and force_change_annotation_acl:
-        #Filter out the annotations that have changed ACL
+        # Filter out the annotations that have changed ACL
         private_annotations = {key:private_annotations[key] for key in private_annotations if key not in public_added_annotations}
     else:
         raise ValueError("You are trying to change the ACL of these annotation key(s): %s. Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in private_annotations if key in public_added_annotations]))
@@ -72,7 +73,7 @@ def update_single_submission_status(status, add_annotations, to_public=False,
                                                                       is_private=True)
     pub = synapseclient.annotations.to_submission_status_annotations(public_annotations,
                                                                      is_private=False)
-    #Combined private and public annotations into one
+    # Combined private and public annotations into one
     for annotation_type in ['stringAnnos', 'longAnnos', 'doubleAnnos']:
         if priv.get(annotation_type) is not None and pub.get(annotation_type) is not None:
             if pub.get(annotation_type) is not None:
@@ -85,33 +86,41 @@ def update_single_submission_status(status, add_annotations, to_public=False,
     status.annotations = priv
     return(status)
 
+
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
     """
     This is to query the evaluation queue service.
-    The limit parameter is set at 20 by default. Using a larger limit results in fewer calls 
-    to the service, but if responses are large enough to be a burden on the service 
-    they may be truncated.
+    The limit parameter is set at 20 by default.
+    Using a larger limit results in fewer calls
+    to the service, but if responses are large enough to be a
+    burden on the service they may be truncated.
 
     Args:
         syn:     A Synapse object
-        uri:     A URI for evaluation queues (select * from evaluation_12345)   
-        limit:   How many records should be returned per request    
+        uri:     A URI for evaluation queues (select * from evaluation_12345)
+        limit:   How many records should be returned per request
         offset:  At what record offset from the first should iteration start
 
-    Returns: 
+    Returns:
         A generator over some paginated results
     """
 
     prev_num_results = sys.maxsize
     while prev_num_results > 0:
-        rest_uri = "/evaluation/submission/query?query=" + urllib.parse.quote_plus("%s limit %s offset %s" % (uri, limit, offset))
+        rest_uri = "/evaluation/submission/query?query=" + \
+            urllib.parse.quote_plus("{} limit {} offset {}".format(
+                uri, limit, offset))
         page = syn.restGET(rest_uri)
-        #results = page['results'] if 'results' in page else page['children']
-        results = [{page['headers'][index]:value  for index, value in enumerate(row['values']) } for row in page['rows'] ]
+        # results = page['results'] if 'results' in page else page['children']
+        results = [{
+            page['headers'][index]:value
+            for index, value in enumerate(row['values'])}
+            for row in page['rows']]
         prev_num_results = len(results)
         for result in results:
             offset += 1
             yield result
+
 
 def get_challengeid(syn, entity):
     """
@@ -127,6 +136,7 @@ def get_challengeid(syn, entity):
     challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
     return(challenge_obj)
 
+
 def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
     '''
     Helper function to locate the existing annotation
@@ -137,20 +147,22 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
         annotation_type: stringAnnos, doubleAnnos or longAnnos
         is_private: whether the annotation is private or not, default to True
 
-    Returns: 
+    Returns:
         Updated annotation key ACL
 
     '''
     if annotations.get(annotation_type) is not None:
-        check = list(filter(lambda x: x.get('key') == key, annotations[annotation_type]))
+        check = list(filter(
+            lambda x: x.get('key') == key, annotations[annotation_type]))
         if len(check) > 0:
             check[0]['isPrivate'] = is_private
     return(annotations)
 
+
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     Function to change the acl of a list of known annotation keys on one submission
-    
+
     Args:
         status: syn.getSubmissionStatus()
         annotations: list of annotation keys to make public
@@ -167,10 +179,11 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     status.annotations = submission_annotations
     return(status)
 
+
 def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on all submissions of a evaluation
-    
+
     Args:
         syn: synapse object
         evaluationid: evaluation id
@@ -183,6 +196,7 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status
     for sub, status in bundle:
         new_status = change_submission_annotation_acl(status, annotations, is_private=is_private)
         syn.store(new_status)
+
 
 def invite_member_to_team(syn, team, user=None, email=None, message=None):
     """
@@ -218,6 +232,7 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 
     return None
 
+
 def register_team(syn, entity, team):
     '''
     Registers team to challenge
@@ -226,8 +241,8 @@ def register_team(syn, entity, team):
         syn: Synapse object
         entity: An Entity or Synapse ID to lookup
         team: Team name or team Id
-    
-    Returns: 
+
+    Returns:
         Team id
     '''
 
@@ -236,6 +251,7 @@ def register_team(syn, entity, team):
     challenge_object = {'challengeId': challengeid, 'teamId':teamid}
     registered_team = syn.restPOST('/challenge/%s/challengeTeam' % challengeid, json.dumps(challenge_object))
     return(registered_team['teamId'])
+
 
 def change_submission_status(syn,submissionid,status='RECEIVED'):
     '''
@@ -254,6 +270,7 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
     sub_status = syn.store(sub_status)
     return(sub_status)
 
+
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED', change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
@@ -271,6 +288,7 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
         status.status = change_to_status
         syn.store(status)
 
+
 class NewUserProfile(synapseclient.team.UserProfile):
     '''
     Create new user profile that makes Userprofiles hashable
@@ -278,6 +296,7 @@ class NewUserProfile(synapseclient.team.UserProfile):
     '''
     def __hash__(self):
         return(int(self['ownerId']))
+
 
 def _get_team_set(syn, team):
     '''
@@ -293,6 +312,7 @@ def _get_team_set(syn, team):
     members = syn.getTeamMembers(team)
     members_set = set(NewUserProfile(**member['member']) for member in members)
     return(members_set)
+
 
 def team_members_diff(syn, a, b):
     '''
