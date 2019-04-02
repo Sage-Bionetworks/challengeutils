@@ -83,6 +83,7 @@ makeChallengeLocationMap <- function(location_text_filePath, mapName) {
   visit.x <- noduplicates$lon
   visit.y <- noduplicates$lat
   pdf(mapName)
+  # mapgilbert <- get_map(maptype = c("satellite")
   map("world",
       fill = TRUE,
       col = "grey",
