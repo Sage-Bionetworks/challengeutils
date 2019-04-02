@@ -240,9 +240,9 @@ def perform_main(syn, args):
 
 def synapse_login(synapse_config):
     try:
-        syn = synapseclient.login()
+        syn = synapseclient.login(silent=True)
     except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config)
+        syn = synapseclient.Synapse(configPath=synapse_config, silent=True)
         syn.login()
     return(syn)
 
