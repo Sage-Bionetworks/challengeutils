@@ -31,6 +31,16 @@ DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
 
 def create_project(syn, project_name):
+    '''
+    Convenience function to create Synapse Project
+
+    Args:
+        syn: Synpase object
+        project_name: Name of project
+
+    Returns:
+        Project Entity
+    '''
     project = synapseclient.Project(project_name)
     # returns the handle to the project if the user has sufficient priviledge
     project = syn.store(project)
@@ -38,12 +48,25 @@ def create_project(syn, project_name):
     return(project)
 
 
-def create_team(syn, team_name, desc, can_public_join):
+def create_team(syn, team_name, desc, can_public_join=False):
+    '''
+    Convenience function to create Synapse Team
+
+    Args:
+        syn: Synpase object
+        team_name: Name of team
+        desc: Description of team
+        can_public_join: true for teams which members can join without
+                         an invitation or approval. Default to False
+
+    Returns:
+        Synapse Team id
+    '''
     try:
         # raises a ValueError if a team does not exist
         team = syn.getTeam(team_name)
-        print('The team %s already exists.' % team_name)
-        print(team)
+        logger.info('The team %s already exists.' % team_name)
+        logger.info(team)
         user_input = input('Do you want to use this team? (Y/n) ') or 'y'
         if user_input.lower() not in ('y', 'yes'):
             logger.info('Please specify another team. Exiting.')
@@ -58,6 +81,18 @@ def create_team(syn, team_name, desc, can_public_join):
 
 
 def create_evaluation_queue(syn, name, description, parentid):
+    '''
+    Convenience function to create Evaluation Queues
+
+    Args:
+        syn: Synpase object
+        name: Name of evaluation queue
+        description: Description of queue
+        parentid: Synapse project id
+
+    Returns:
+        Evalation Queue
+    '''
     queue = syn.store(synapseclient.Evaluation(
         name=name,
         description=description,
@@ -67,6 +102,14 @@ def create_evaluation_queue(syn, name, description, parentid):
 
 
 def create_live_page(syn, project, teamid):
+    '''
+    Create the wiki of the live challenge page
+
+    Args:
+        syn: Synpase object
+        project: Synapse project
+        teamid: Synapse team id of participant team
+    '''
     live_page_markdown = (
         '## Banner\n\n\n'
         '**Pre-Registration Open:**\n'
@@ -89,6 +132,14 @@ def create_live_page(syn, project, teamid):
 
 
 def create_challenge_widget(syn, project_live, team_part_id):
+    '''
+    Create challenge widget - activates a Synapse project
+
+    Args:
+        syn: Synpase object
+        project_live: Synapse id of live challenge project
+        team_part_id: Synapse team id of participant team
+    '''
     try:
         challenge = syn.restGET('/entity/' + project_live.id + '/challenge')
         logger.info("Fetched existing Challenge (%s)" % challenge['id'])
@@ -104,6 +155,20 @@ def create_challenge_widget(syn, project_live, team_part_id):
 
 def update_wikipage_string(
         wikipage_string, challengeid, teamid, challenge_name, synid):
+    '''
+    Helper function to update wikipage strings in the challenge wiki template
+    with the newly created challengeid, teamid, challenge name and project id
+
+    Args:
+        wikipage_string: Original wikipage string
+        challengeid: New challenge id
+        teamid: Synapse Team id
+        challenge_name: challenge name
+        synid: Synapse id of project
+
+    Returns:
+        fixed wiki page string
+    '''
     wikipage_string = wikipage_string.replace(
         'challengeId=0', 'challengeId=%s' % challengeid)
     wikipage_string = wikipage_string.replace('{teamId}', teamid)
@@ -127,9 +192,6 @@ def createchallenge(syn, challenge_name, live_site=None):
         challenge_name: Name of the challenge
         live_site: If there is already a live site, specify live site Synapse
                    id. (Default is None)
-
-    Returns:
-        Nothing
     '''
     if live_site is None:
         project_live = create_project(syn, challenge_name)
