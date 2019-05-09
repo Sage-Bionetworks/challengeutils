@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(name='challengeutils',
       version='0.0.1',
-      description='DREAM utility functions',
+      description='Challenge utility functions',
       url='https://github.com/Sage-Bionetworks/DREAM-Utilities',
       author='Thomas Yu',
       author_email='thomasyu888@gmail.com',
