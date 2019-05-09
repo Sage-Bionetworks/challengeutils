@@ -96,6 +96,6 @@ def set_entity_permissions(
                           Default is 'download'
     """
     # Get the entity to check for access / validity of entity
-    entity = syn.get(entity)
+    entity = syn.get(entity, downloadFile=False)
     _set_permissions(
         syn, entity, principalid, permission_level)
