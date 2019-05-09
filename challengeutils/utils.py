@@ -101,8 +101,8 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
         limit:   How many records should be returned per request
         offset:  At what record offset from the first should iteration start
 
-    Returns:
-        A generator over some paginated results
+    Yields:
+        dict: A generator over some paginated results
     """
 
     prev_num_results = sys.maxsize
