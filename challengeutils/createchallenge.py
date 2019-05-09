@@ -229,16 +229,16 @@ def createchallenge(syn, challenge_name, live_site=None):
         pass
 
     if project_staging_wiki:
-        print('The staging project has already a wiki.')
-        print(project_staging_wiki)
+        logger.info('The staging project has already a wiki.')
+        logger.info(project_staging_wiki)
         user_input = input(
             'Do you agree to delete the wiki before continuing? (y/N) ') or 'n'
         if user_input.lower() not in ('y', 'yes'):
             logger.info('Exiting')
             sys.exit(1)
         else:
-            print('Deleting wiki of the staging project (%s)'
-                  % project_staging_wiki.id)
+            logger.info('Deleting wiki of the staging project (%s)'
+                        % project_staging_wiki.id)
             syn.delete(project_staging_wiki)
 
     logger.info('Copying wiki template to %s' % project_staging.name)
