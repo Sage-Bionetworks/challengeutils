@@ -3,31 +3,52 @@ import urllib
 import sys
 import json
 
-def update_single_submission_status(status, add_annotations, to_public=False, force_change_annotation_acl=False):
+def update_single_submission_status(status, add_annotations, to_public=False,
+                                    force_change_annotation_acl=False):
     """
     This will update a single submission's status
-    
+
     Args:
         status: syn.getSubmissionStatus()
-        add_annotations: Annotations that you want to add in dict or submission status annotations format.
+        add_annotations: Annotations that you want to add in dict or submission status
+                         annotations format.
                          If dict, all submissions will be added as private submissions
         to_public: change these annotations from private to public (default is False)
-        force_change_annotation_acl: Force change the annotation from private to public and vice versa
-
+        force_change_annotation_acl: Force change the annotation from private to public
+                                     and vice versa.
     Returns:
         Updated submission status
 
     """
     existing_annotations = status.get("annotations", dict())
-    private_annotations = {annotation['key']:annotation['value'] for annotation_type in existing_annotations for annotation in existing_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == True}
-    public_annotations = {annotation['key']:annotation['value'] for annotation_type in existing_annotations for annotation in existing_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == False}
+    private_annotations = {annotation['key']:annotation['value']
+                           for annotation_type in existing_annotations
+                           for annotation in existing_annotations[annotation_type]
+                           if annotation_type not in ['scopeId', 'objectId'] and
+                           annotation['isPrivate'] == True}
+
+    public_annotations = {annotation['key']:annotation['value']
+                          for annotation_type in existing_annotations
+                          for annotation in existing_annotations[annotation_type]
+                          if annotation_type not in ['scopeId', 'objectId']
+                          and annotation['isPrivate'] == False}
 
     if not synapseclient.annotations.is_submission_status_annotations(add_annotations):
-        private_added_annotations =  dict() if to_public else add_annotations
+        private_added_annotations = dict() if to_public else add_annotations
         public_added_annotations = add_annotations if to_public else dict()
     else:
-        private_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in add_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == True}
-        public_added_annotations = {annotation['key']:annotation['value'] for annotation_type in add_annotations for annotation in add_annotations[annotation_type] if annotation_type not in ['scopeId','objectId'] and annotation['isPrivate'] == False}
+        private_added_annotations = {annotation['key']:annotation['value']
+                                     for annotation_type in add_annotations
+                                     for annotation in add_annotations[annotation_type]
+                                     if annotation_type not in ['scopeId', 'objectId']
+                                     and annotation['isPrivate'] == True}
+        
+        public_added_annotations = {annotation['key']:annotation['value']
+                                    for annotation_type in add_annotations
+                                    for annotation in add_annotations[annotation_type]
+                                    if annotation_type not in ['scopeId', 'objectId']
+                                    and annotation['isPrivate'] == False}
+
     #If you add a private annotation that appears in the public annotation, it switches 
     if sum([key in public_added_annotations for key in private_annotations]) == 0:
         pass
@@ -35,18 +56,22 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
         #Filter out the annotations that have changed ACL
         private_annotations = {key:private_annotations[key] for key in private_annotations if key not in public_added_annotations}
     else:
-        raise ValueError("You are trying to change the ACL of these annotation key(s): %s.  Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in private_annotations if key in public_added_annotations]))
+        raise ValueError("You are trying to change the ACL of these annotation key(s): %s. Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in private_annotations if key in public_added_annotations]))
     if sum([key in private_added_annotations for key in public_annotations]) == 0:
         pass
-    elif sum([key in private_added_annotations for key in public_annotations])>0 and force_change_annotation_acl:
-        public_annotations= {key:public_annotations[key] for key in public_annotations if key not in private_added_annotations}
+    elif sum([key in private_added_annotations for key in public_annotations]) > 0 and force_change_annotation_acl:
+        public_annotations= {key: public_annotations[key]
+                             for key in public_annotations
+                             if key not in private_added_annotations}
     else:
         raise ValueError("You are trying to change the ACL of these annotation key(s): %s.  Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in public_annotations if key in private_added_annotations]))
     private_annotations.update(private_added_annotations)
     public_annotations.update(public_added_annotations)
 
-    priv = synapseclient.annotations.to_submission_status_annotations(private_annotations, is_private=True)
-    pub = synapseclient.annotations.to_submission_status_annotations(public_annotations, is_private=False)
+    priv = synapseclient.annotations.to_submission_status_annotations(private_annotations,
+                                                                      is_private=True)
+    pub = synapseclient.annotations.to_submission_status_annotations(public_annotations,
+                                                                     is_private=False)
     #Combined private and public annotations into one
     for annotation_type in ['stringAnnos', 'longAnnos', 'doubleAnnos']:
         if priv.get(annotation_type) is not None and pub.get(annotation_type) is not None:
@@ -63,8 +88,9 @@ def update_single_submission_status(status, add_annotations, to_public=False, fo
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
     """
     This is to query the evaluation queue service.
-    The limit parameter is set at 20 by default. Using a larger limit results in fewer calls to the service, but if
-    responses are large enough to be a burden on the service they may be truncated.
+    The limit parameter is set at 20 by default. Using a larger limit results in fewer calls 
+    to the service, but if responses are large enough to be a burden on the service 
+    they may be truncated.
 
     Args:
         syn:     A Synapse object
@@ -72,8 +98,8 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
         limit:   How many records should be returned per request    
         offset:  At what record offset from the first should iteration start
 
-    Returns: 
-        A generator over some paginated results
+    Yields: 
+        dict: A generator over some paginated results
     """
 
     prev_num_results = sys.maxsize
@@ -121,7 +147,6 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
             check[0]['isPrivate'] = is_private
     return(annotations)
 
-
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     Function to change the acl of a list of known annotation keys on one submission
@@ -130,6 +155,9 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
         status: syn.getSubmissionStatus()
         annotations: list of annotation keys to make public
         is_private: whether the annotation is private or not, default to True
+
+    Returns:
+        Submission status with new submission annotation ACLs
     """
     submission_annotations = status.annotations
     for key in annotations:
@@ -137,10 +165,9 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
         submission_annotations = _change_annotation_acl(submission_annotations, key, "doubleAnnos",is_private)
         submission_annotations = _change_annotation_acl(submission_annotations, key, "longAnnos",is_private)
     status.annotations = submission_annotations
-    syn.store(status)
+    return(status)
 
-
-def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
+def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on all submissions of a evaluation
     
@@ -154,14 +181,14 @@ def change_all_submissions_annotation_acl(syn, evaluationid, annotations, status
     status = None if status == 'ALL' else status
     bundle = syn.getSubmissionBundles(evaluationid,status=status)
     for sub, status in bundle:
-        change_submission_annotation_acl(status, annotations, is_private=is_private)
-
+        new_status = change_submission_annotation_acl(status, annotations, is_private=is_private)
+        syn.store(new_status)
 
 def invite_member_to_team(syn, team, user=None, email=None, message=None):
     """
     Invite members to a team
 
-    Args: 
+    Args:
         syn: Synapse object
         team: Synapse Team id or name
         user: Synapse username or profile id
@@ -170,17 +197,26 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
     """
     teamid = syn.getTeam(team)['id']
     is_member = False
+    invite = {'teamId': str(teamid)}
+
     if email is None:
-            userid = syn.getUserProfile(user)['ownerId']
-            membership_status = syn.restGET("/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamid), individualId=str(userid)))
-            is_member = membership_status['isMember']
-            invite = {'teamId': str(teamid), 'inviteeId': str(userid)}
+        userid = syn.getUserProfile(user)['ownerId']
+        request = "/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamid),
+                                                                                     individualId=str(userid))
+        membership_status = syn.restGET(request)
+        is_member = membership_status['isMember']
+        invite['inviteeId'] = str(userid)
     else:
-            invite = {'teamId': str(teamid), 'inviteeEmail':str(email)}
+        invite['inviteeEmail'] = email
+
     if message is not None:
-            invite['message'] = message
+        invite['message'] = message
+
     if not is_member:
-            invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+        invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
+        return invite
+
+    return None
 
 def register_team(syn, entity, team):
     '''
@@ -218,7 +254,6 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
     sub_status = syn.store(sub_status)
     return(sub_status)
 
-
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED', change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
@@ -236,22 +271,78 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED', 
         status.status = change_to_status
         syn.store(status)
 
-def team_member_diff(syn, teama, teamb):
+class NewUserProfile(synapseclient.team.UserProfile):
     '''
-    Function to print out the difference in team members between two teams
+    Create new user profile that makes Userprofiles hashable
+    SYNPY-879
+    '''
+    def __hash__(self):
+        return(int(self['ownerId']))
+
+def _get_team_set(syn, team):
+    '''
+    Helper function to return a set of usernames
 
     Args:
         syn: Synapse object
-        teama: Synapse Team
-        teamb: Synapse Team
+        team: Synapse team id, name or object
+
+    Returns:
+        Set of synapse user profiles in team
     '''
-    teama = syn.getTeam(teama)
-    teamb = syn.getTeam(teamb)
-    teama_members = syn.getTeamMembers(teama)
-    teamb_members = syn.getTeamMembers(teamb)
-    uniq_teama_members = set(member['member']['userName'] for member in teama_members)
-    uniq_teamb_members = set(member['member']['userName'] for member in teamb_members)
-    not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
-    not_in_teama = uniq_teamb_members.difference(uniq_teama_members)
-    print("Members in '%s', but not in '%s': %s" % (teama['name'],teamb['name'],", ".join(not_in_teamb)))
-    print("Members in '%s', but not in '%s': %s" % (teamb['name'],teama['name'],", ".join(not_in_teama)))
+    members = syn.getTeamMembers(team)
+    members_set = set(NewUserProfile(**member['member']) for member in members)
+    return(members_set)
+
+def team_members_diff(syn, a, b):
+    '''
+    Calculates the diff between teama and teamb
+
+    Args:
+        syn: Synapse object
+        a: Synapse Team id or name
+        b: Synapse Team id or name
+
+    Returns:
+        Set of synapse user profiles in teama but not in teamb
+    '''
+    uniq_teama_members = _get_team_set(syn, a)
+    uniq_teamb_members = _get_team_set(syn, b)
+    members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
+    return(members_not_in_teamb)
+
+
+def team_members_intersection(syn, a, b):
+    '''
+    Calculates the intersection between teama and teamb
+
+    Args:
+        syn: Synapse object
+        a: Synapse Team id or name
+        b: Synapse Team id or name
+
+    Returns:
+        Set of synapse user profiles that belong in both teams
+    '''
+    uniq_teama_members = _get_team_set(syn, a)
+    uniq_teamb_members = _get_team_set(syn, b)
+    intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
+    return(intersect_members)
+
+
+def team_members_union(syn, a, b):
+    '''
+    Calculates the union between teama and teamb
+
+    Args:
+        syn: Synapse object
+        a: Synapse Team id or name
+        b: Synapse Team id or name
+
+    Returns:
+        Set of a combination of synapse user profiles from both teams
+    '''
+    uniq_teama_members = _get_team_set(syn, a)
+    uniq_teamb_members = _get_team_set(syn, b)
+    union_members = uniq_teama_members.union(uniq_teamb_members)
+    return(union_members)
