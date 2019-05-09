@@ -26,8 +26,8 @@ A pre-defined wiki project is used as initial template for challenge sites.
 To copy over the template synapseutils.copyWiki() function is used with
 template id as source and new challenge project entity synId as destination.
 '''
-DREAM_CHALLENGE_TEMPLATE_SYNID = "syn2769515"  # Template 1.0
-# DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
+# DREAM_CHALLENGE_TEMPLATE_SYNID = "syn2769515"  # Template 1.0
+DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
 
 def create_project(syn, project_name):
