@@ -4,83 +4,98 @@ import sys
 import json
 
 
-def update_single_submission_status(status, add_annotations, to_public=False,
-                                    force_change_annotation_acl=False):
+def update_single_submission_status(
+        status, add_annotations, to_public=False,
+        force_change_annotation_acl=False):
     """
     This will update a single submission's status
 
     Args:
         status: syn.getSubmissionStatus()
-        add_annotations: Annotations that you want to add in dict or submission status
-                         annotations format.
-                         If dict, all submissions will be added as private submissions
-        to_public: change these annotations from private to public (default is False)
-        force_change_annotation_acl: Force change the annotation from private to public
-                                     and vice versa.
+        add_annotations: Annotations that you want to add in dict or
+                         submission status annotations format.
+                         If dict, all submissions will be added as
+                         private submissions
+        to_public: change these annotations from private to public
+                   (default is False)
+        force_change_annotation_acl: Force change the annotation from
+                                     private to public and vice versa.
     Returns:
         Updated submission status
 
     """
     existing_annotations = status.get("annotations", dict())
-    private_annotations = {annotation['key']:annotation['value']
-                           for annotation_type in existing_annotations
-                           for annotation in existing_annotations[annotation_type]
-                           if annotation_type not in ['scopeId', 'objectId'] and
-                           annotation['isPrivate'] == True}
+    private_annotations = {
+        annotation['key']: annotation['value']
+        for annotation_type in existing_annotations
+        for annotation in existing_annotations[annotation_type]
+        if annotation_type not in ['scopeId', 'objectId'] and
+        annotation['isPrivate']}
 
-    public_annotations = {annotation['key']:annotation['value']
-                          for annotation_type in existing_annotations
-                          for annotation in existing_annotations[annotation_type]
-                          if annotation_type not in ['scopeId', 'objectId']
-                          and annotation['isPrivate'] == False}
+    public_annotations = {
+        annotation['key']: annotation['value']
+        for annotation_type in existing_annotations
+        for annotation in existing_annotations[annotation_type]
+        if annotation_type not in ['scopeId', 'objectId']
+        and not annotation['isPrivate']}
 
-    if not synapseclient.annotations.is_submission_status_annotations(add_annotations):
+    if not synapseclient.annotations.is_submission_status_annotations(
+            add_annotations):
         private_added_annotations = dict() if to_public else add_annotations
         public_added_annotations = add_annotations if to_public else dict()
     else:
-        private_added_annotations = {annotation['key']:annotation['value']
-                                     for annotation_type in add_annotations
-                                     for annotation in add_annotations[annotation_type]
-                                     if annotation_type not in ['scopeId', 'objectId']
-                                     and annotation['isPrivate'] == True}
+        private_added_annotations = {
+            annotation['key']: annotation['value']
+            for annotation_type in add_annotations
+            for annotation in add_annotations[annotation_type]
+            if annotation_type not in ['scopeId', 'objectId']
+            and annotation['isPrivate']}
 
-        public_added_annotations = {annotation['key']:annotation['value']
-                                    for annotation_type in add_annotations
-                                    for annotation in add_annotations[annotation_type]
-                                    if annotation_type not in ['scopeId', 'objectId']
-                                    and annotation['isPrivate'] == False}
+        public_added_annotations = {
+            annotation['key']: annotation['value']
+            for annotation_type in add_annotations
+            for annotation in add_annotations[annotation_type]
+            if annotation_type not in ['scopeId', 'objectId']
+            and not annotation['isPrivate']}
 
-    # If you add a private annotation that appears in the public annotation, it switches 
+    # If you add a private annotation that appears in the public annotation,
+    # it switches
     if sum([key in public_added_annotations for key in private_annotations]) == 0:
         pass
     elif sum([key in public_added_annotations for key in private_annotations]) >0 and force_change_annotation_acl:
         # Filter out the annotations that have changed ACL
-        private_annotations = {key:private_annotations[key] for key in private_annotations if key not in public_added_annotations}
+        private_annotations = {
+            key: private_annotations[key]
+            for key in private_annotations
+            if key not in public_added_annotations}
     else:
         raise ValueError("You are trying to change the ACL of these annotation key(s): %s. Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in private_annotations if key in public_added_annotations]))
     if sum([key in private_added_annotations for key in public_annotations]) == 0:
         pass
     elif sum([key in private_added_annotations for key in public_annotations]) > 0 and force_change_annotation_acl:
-        public_annotations= {key: public_annotations[key]
-                             for key in public_annotations
-                             if key not in private_added_annotations}
+        public_annotations = {
+            key: public_annotations[key]
+            for key in public_annotations
+            if key not in private_added_annotations}
     else:
         raise ValueError("You are trying to change the ACL of these annotation key(s): %s.  Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in public_annotations if key in private_added_annotations]))
     private_annotations.update(private_added_annotations)
     public_annotations.update(public_added_annotations)
 
-    priv = synapseclient.annotations.to_submission_status_annotations(private_annotations,
-                                                                      is_private=True)
-    pub = synapseclient.annotations.to_submission_status_annotations(public_annotations,
-                                                                     is_private=False)
+    priv = synapseclient.annotations.to_submission_status_annotations(
+        private_annotations, is_private=True)
+    pub = synapseclient.annotations.to_submission_status_annotations(
+        public_annotations, is_private=False)
     # Combined private and public annotations into one
     for annotation_type in ['stringAnnos', 'longAnnos', 'doubleAnnos']:
-        if priv.get(annotation_type) is not None and pub.get(annotation_type) is not None:
+        if priv.get(annotation_type) is not None and \
+                pub.get(annotation_type) is not None:
             if pub.get(annotation_type) is not None:
                 priv[annotation_type].extend(pub[annotation_type])
             else:
                 priv[annotation_type] = pub[annotation_type]
-        elif priv.get(annotation_type) is None and pub.get(annotation_type) is not None:
+        elif priv.get(annotation_type) is None and \
+                pub.get(annotation_type) is not None:
             priv[annotation_type] = pub[annotation_type]
 
     status.annotations = priv
@@ -129,8 +144,8 @@ def get_challengeid(syn, entity):
     Args:
         entity: An Entity or Synapse ID to lookup
 
-    Returns: 
-        Challenge dictionary 
+    Returns:
+        Challenge dictionary
     """
     synid = synapseclient.utils.id_of(entity)
     challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
@@ -161,7 +176,8 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
-    Function to change the acl of a list of known annotation keys on one submission
+    Function to change the acl of a list of known annotation keys
+    on one submission
 
     Args:
         status: syn.getSubmissionStatus()
@@ -173,16 +189,21 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     submission_annotations = status.annotations
     for key in annotations:
-        submission_annotations = _change_annotation_acl(submission_annotations, key, "stringAnnos",is_private)
-        submission_annotations = _change_annotation_acl(submission_annotations, key, "doubleAnnos",is_private)
-        submission_annotations = _change_annotation_acl(submission_annotations, key, "longAnnos",is_private)
+        submission_annotations = _change_annotation_acl(
+            submission_annotations, key, "stringAnnos", is_private)
+        submission_annotations = _change_annotation_acl(
+            submission_annotations, key, "doubleAnnos", is_private)
+        submission_annotations = _change_annotation_acl(
+            submission_annotations, key, "longAnnos", is_private)
     status.annotations = submission_annotations
     return(status)
 
 
-def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status='SCORED', is_private=False):
+def update_all_submissions_annotation_acl(
+        syn, evaluationid, annotations, status='SCORED', is_private=False):
     """
-    Function to change the acl of a list of known annotation keys on all submissions of a evaluation
+    Function to change the acl of a list of known annotation keys on
+    all submissions of a evaluation
 
     Args:
         syn: synapse object
@@ -192,9 +213,10 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations, status
         is_private: whether the annotation is private or not, default to True
     """
     status = None if status == 'ALL' else status
-    bundle = syn.getSubmissionBundles(evaluationid,status=status)
+    bundle = syn.getSubmissionBundles(evaluationid, status=status)
     for sub, status in bundle:
-        new_status = change_submission_annotation_acl(status, annotations, is_private=is_private)
+        new_status = change_submission_annotation_acl(
+            status, annotations, is_private=is_private)
         syn.store(new_status)
 
 
@@ -206,7 +228,8 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
         syn: Synapse object
         team: Synapse Team id or name
         user: Synapse username or profile id
-        email: Email of user, do not specify both email and user, but must specify one
+        email: Email of user, do not specify both email and user,
+               but must specify one
         message: Message for people getting invited to the team
     """
     teamid = syn.getTeam(team)['id']
@@ -215,8 +238,10 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
 
     if email is None:
         userid = syn.getUserProfile(user)['ownerId']
-        request = "/team/%(teamId)s/member/%(individualId)s/membershipStatus" % dict(teamId=str(teamid),
-                                                                                     individualId=str(userid))
+        request = \
+            "/team/{teamId}/member/{individualId}/membershipStatus".format(
+                teamId=str(teamid),
+                individualId=str(userid))
         membership_status = syn.restGET(request)
         is_member = membership_status['isMember']
         invite['inviteeId'] = str(userid)
@@ -248,12 +273,14 @@ def register_team(syn, entity, team):
 
     challengeid = get_challengeid(syn, entity)['id']
     teamid = syn.getTeam(team)['id']
-    challenge_object = {'challengeId': challengeid, 'teamId':teamid}
-    registered_team = syn.restPOST('/challenge/%s/challengeTeam' % challengeid, json.dumps(challenge_object))
+    challenge_object = {'challengeId': challengeid, 'teamId': teamid}
+    registered_team = syn.restPOST(
+        '/challenge/%s/challengeTeam' % challengeid,
+        json.dumps(challenge_object))
     return(registered_team['teamId'])
 
 
-def change_submission_status(syn,submissionid,status='RECEIVED'):
+def change_submission_status(syn, submissionid, status='RECEIVED'):
     '''
     Function to change a submission status
 
@@ -262,7 +289,7 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
         submissionid: Id of a submission
         status: Submission status to change a submission to
 
-    Returns: 
+    Returns:
         Updated submission status
     '''
     sub_status = syn.getSubmissionStatus(submissionid)
@@ -271,19 +298,24 @@ def change_submission_status(syn,submissionid,status='RECEIVED'):
     return(sub_status)
 
 
-def change_all_submission_status(syn, evaluationid, submission_status='SCORED', change_to_status='VALIDATED'):
+def change_all_submission_status(
+        syn, evaluationid, submission_status='SCORED',
+        change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
-    The defaults is to change submissions from SCORED -> VALIDATED 
+    The defaults is to change submissions from SCORED -> VALIDATED
     This function can be useful for 'rescoring' submissions
 
     Args:
         syn: Synapse object
         evaluationid: Id of an Evaluation queue
-        submission_status: Submissions with this status that you want to change (Default is SCORED)
-        change_to_status: Submission status to change a submission to (Default is VALIDATED)
+        submission_status: Submissions with this status that you want to
+                           change. Default is SCORED.
+        change_to_status: Submission status to change a submission to.
+                          Default is VALIDATED.
     '''
-    submission_bundle = syn.getSubmissionBundles(evaluationid,status=submission_status)
+    submission_bundle = syn.getSubmissionBundles(
+        evaluationid, status=submission_status)
     for sub, status in submission_bundle:
         status.status = change_to_status
         syn.store(status)
