@@ -20,7 +20,7 @@ challengeutils -h
 
 **Creating Challenge Templates**
 
-To begin all challenge infrastructure, you will want to create several Projects, and Teams.  This script pulls from a standard DREAM template and creates the Projects and Teams that you will need for a challenge.
+To begin all challenge infrastructure, you will want to create several Projects, and Teams.  This script pulls from a standard DREAM template and creates the Projects and Teams that you will need for a challenge. 
 
 ```
 challengeutils createchallenge "Challenge Name Here"

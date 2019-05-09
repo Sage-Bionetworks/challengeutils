@@ -7,3 +7,11 @@ from . import permissions
 from . import writeup_attacher
 from . import discussion
 from . import download_current_lead_submission
+
+__all__ = ['createchallenge',
+           'mirrorwiki',
+           'utils',
+           'permissions',
+           'writeup_attacher',
+           'discussion',
+           'download_current_lead_submission']
