@@ -1,12 +1,15 @@
 Challenge Template for Python
 =============================
 
-After following [Challenge Infrastructure](https://docs.synapse.org/articles/challenge_administration.html), a step-by-step guide to building out a challenge, you are now ready to pull submissions from Synapse and interact with them.
+`challenge.py` is a lightweight script that takes a configuration python script as a parameter to validate and score submissions submitted to evaluation queues in a challenge.
 
-This is a lightweight script that validates and scores a challenge on Synapse. 
+If you are curious about how to start a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge.  If you have already configured your evaluation queues and are ready to interact with submitted submissions, then you are at the right place.
+
 
 ## Dependencies
-Python 3.5 and above
+
+* Python 3.5 and above
+* Software:
 ```
 pip install synapseclient
 pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
@@ -39,7 +42,6 @@ EVALUATION_QUEUES_CONFIG = [
 
 ## Example
 
-
 The challenge.py script has several subcommands that help administrate a challenge. To see all the commands, type:
 
 ```
@@ -64,6 +66,7 @@ The script can send several types of messages, which are in `messages.py`.
 
 
 ### RPy2
+
 Often it's more convenient to write statistical code in R. We've successfully used the [Rpy2](http://rpy.sourceforge.net/) library to pass file paths to scoring functions written in R and get back a named list of scoring statistics. Alternatively, there's R code included in the R folder of this repo to fully run a challenge in R.
 
 ## Setting Up Automatic Validation and Scoring on an EC2
