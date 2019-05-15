@@ -337,7 +337,7 @@ def main(args):
         args.func(syn, evaluation_queue_maps, args)
     except Exception as ex1:
         logging.error('Error in challenge.py:')
-        logging.error(type(ex1), ex1, str(ex1))
+        logging.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         if args.admin_user_ids:
             messages.error_notification(
                 syn=syn,
