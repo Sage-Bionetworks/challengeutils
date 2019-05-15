@@ -5,6 +5,12 @@ After following [Challenge Infrastructure](https://docs.synapse.org/articles/cha
 
 This is a lightweight script that validates and scores a challenge on Synapse. 
 
+## Dependencies
+Python 3.5 and above
+```
+pip install synapseclient
+pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
+```
 
 ## Creating your challenge configuration file.
 
