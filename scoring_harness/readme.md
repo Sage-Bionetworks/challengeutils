@@ -15,9 +15,9 @@ pip install synapseclient
 pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
 ```
 
-## Creating your challenge configuration file.
+## Creating your challenge python script.
 
-`challenge.py` takes in a configuration python script.  In this repository an example configuration script would be `challenge_config.template.py`.  Make a copy of it to embed your own configurations. 
+Please make a copy of the `challenge_config.template.py` as a start to creating your own configuration script.
 
 You will need to add an evaluation queue for each question in your challenge and write appropriate validation and scoring functions. Then, customize the messages with challenge specific help for your solvers.  Information about evaluation queues can be found [here](https://docs.synapse.org/articles/evaluation_queues.html)
 
@@ -40,7 +40,7 @@ EVALUATION_QUEUES_CONFIG = [
 ]
 ```
 
-## Example
+## Running the Harness
 
 The challenge.py script has several subcommands that help administrate a challenge. To see all the commands, type:
 
