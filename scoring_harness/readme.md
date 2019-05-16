@@ -1,7 +1,7 @@
 Python Challenge Scoring Harness
 ================================
 
-In a perfect world, Synapse would automaticaly validate, score, annotate submissions and emails participants for you.  Sadly, we do not live in a perfect world! 
+In a perfect world, Synapse would automatically validate, score, annotate submissions and emails participants for you.  Sadly, we do not live in a perfect world! 
 
 Fortunately, we have created `challenge.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for recieved submissions to an evaluation queue and validate/score these submissions.
 
