@@ -2,7 +2,8 @@ import synapseclient
 import argparse
 import pandas as pd
 from challengeutils import createchallenge, mirrorwiki, utils, \
-    writeup_attacher, permissions, download_current_lead_submission as dl_cur
+                           writeup_attacher, permissions, \
+                           download_current_lead_submission as dl_cur
 
 
 def command_mirrorwiki(syn, args):
@@ -91,6 +92,7 @@ def build_parser():
               "between two Synapse Projects to be the same and will merge the "
               "updates from entity's wikis to destination's wikis. "
               "Do not confuse this function with copy wiki."))
+
     parser_mirrorWiki.add_argument(
         "entityid",
         type=str,
@@ -169,7 +171,9 @@ def build_parser():
         "permission_level",
         type=str,
         help='Permissions',
-        choices=['view', 'download', 'edit', 'edit_and_delete', 'admin'])
+        choices=[
+            'view', 'download', 'edit', 'edit_and_delete', 'admin', 'remove'])
+
     parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
 
     parser_set_evaluation_acl = subparsers.add_parser(
@@ -190,7 +194,7 @@ def build_parser():
         "permission_level",
         type=str,
         help='Permissions',
-        choices=['view', 'submit', 'score', 'admin'])
+        choices=['view', 'submit', 'score', 'admin', 'remove'])
 
     parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
 

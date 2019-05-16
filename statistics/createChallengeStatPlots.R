@@ -3,13 +3,13 @@ library(ggplot2)
 library("ggmap")
 library(maptools)
 library(maps)
-library(synapseClient)
-synapseLogin()
+library(synapser)
+synLogin()
 
 ### BEFORE RUNNING THESE FUNCTIONS MAKE SURE YOU RUN: python createChallengeStatDf.py
 ### TO GENERATE THIS FILE: challenge_stats.tsv
 createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, orderByYear=T) {
-  challenge_stats = read.csv(challengeStatDfPath,sep="\t")
+  challenge_stats = read.csv(challengeStatDfPath, sep = "\t")
   Year = as.character(challenge_stats$createdOn)
   participants = data.frame(Year)
   numParticipants = c()
@@ -19,57 +19,62 @@ createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, order
   participants$Number = numParticipants
   participants$Name = challenge_stats$challenges
   if (orderByYear) {
-    participants = participants[order(participants$Year,participants$Number,decreasing = T),]
+    participants = participants[order(participants$Year,participants$Number, decreasing = T),]
   } else{
     participants = participants[order(participants$Number,decreasing = T),]
   }
   participants$indexing = seq_along(participants$Year)
   
-  ggplot(participants, aes(x=reorder(Name,-indexing),y=Number,fill=Year))+ geom_bar(stat="identity") + coord_flip() +
+  ggplot(participants,
+         aes(x = reorder(Name,-indexing),
+             y = Number,
+             fill = Year)) + 
+    geom_bar(stat = "identity") + coord_flip() +
     ylab("Number of Participants") + theme_bw() +
     theme(#panel.background = element_blank(),
-          axis.text.y = element_text(size=14),
-          axis.title.y=element_blank(),
-          axis.text.x  = element_text(size=14),
-          title = element_text(size=14),
-          legend.text=element_text(size=14),
-          legend.justification=c(1,0), 
-          legend.position=c(1,0),
+          axis.text.y = element_text(size = 14),
+          axis.title.y = element_blank(),
+          axis.text.x  = element_text(size = 14),
+          title = element_text(size = 14),
+          legend.text = element_text(size = 14),
+          legend.justification = c(1,0), 
+          legend.position = c(1,0),
           plot.margin = margin(20, 20, 20, 20)) + 
-    scale_fill_brewer(palette="Set1")
-  ggsave(pdfPath,width=17,height=10)
+    scale_fill_brewer(palette = "Set1")
+  ggsave(pdfPath, width = 17, height = 10)
 }
-challengeStatDfPath="statistics/challenge_stats.tsv"
-pdfPath = "statistics/challenge_participation.pdf"
-createChallengeParticipationPlot(challengeStatDfPath,pdfPath,orderByYear=T)
+challengeStatDfPath = "statistics/challenge_stats.tsv"
 pdfPath = "statistics/challenge_participation_ordered.pdf"
-createChallengeParticipationPlot(challengeStatDfPath,pdfPath,orderByYear = F)
+createChallengeParticipationPlot(challengeStatDfPath, pdfPath, orderByYear = T)
+pdfPath = "statistics/challenge_participation.pdf"
+createChallengeParticipationPlot(challengeStatDfPath, pdfPath, orderByYear = F)
 
 ### CREATE CHALLENGE LOCATION MAPS
 makeChallengeLocationMap <- function(location_text_filePath, mapName) {
-  challenge_stats = read.csv(location_text_filePath,sep="\t",stringsAsFactors = F)
+  challenge_stats = read.csv(location_text_filePath,sep = "\t",stringsAsFactors = F)
   visited = challenge_stats$locations
   locations = c()
   for (loc in visited) {
     locations = c(locations, strsplit(loc,"[|]")[[1]])
   }
   locationDB = synTableQuery('select * from syn9730854')
+  locationdbdf = locationDB$asDataFrame()
   unique_locations = unique(locations)
-  notFoundInDB = unique_locations[!unique_locations %in% locationDB@values$location]
+  notFoundInDB = unique_locations[!unique_locations %in% locationdbdf$location]
   notFoundInDB = c()
-  if (length(notFoundInDB)>0) {
+  if (length(notFoundInDB) > 0) {
     ll.visited = geocode(notFoundInDB)
     ll.visited$location = notFoundInDB
-    ll.visited.all = rbind(locationDB@values,ll.visited)
+    ll.visited.all = rbind(locationdbdf,ll.visited)
     schema <- synGet('syn9730854')
     tableToAppend <- Table(schema, ll.visited)
     table <- synStore(tableToAppend)
   } else {
-    ll.visited.all = locationDB@values
+    ll.visited.all = locationdbdf
   }
   visited = data.frame(locations)
   mergedData = merge.data.frame(visited, ll.visited.all, by.x = "locations",by.y = "location")
-  mergedData= mergedData[!is.na(mergedData$lat),]
+  mergedData = mergedData[!is.na(mergedData$lat),]
   
   mergedData$combined <- paste(mergedData$lon, mergedData$lat)
   noduplicates <- mergedData[!duplicated(mergedData$combined),]
@@ -78,24 +83,67 @@ makeChallengeLocationMap <- function(location_text_filePath, mapName) {
   visit.x <- noduplicates$lon
   visit.y <- noduplicates$lat
   pdf(mapName)
-  map("world", fill=TRUE, col="grey", bg="white", ylim=c(-60, 90),
-      mar=c(0,0,0,0))
+  # mapgilbert <- get_map(maptype = c("satellite")
+  map("world",
+      fill = TRUE,
+      col = "grey",
+      bg = "white",
+      ylim = c(-60, 90),
+      mar = c(0,0,0,0))
   #log10 is 0 sometimes
  # points(visit.x,visit.y, col="red", pch=20, bg=24, cex=log10(noduplicates$density)*2+1, lwd=.4)
-  points(visit.x,visit.y, col="red", pch=20, bg=24, lwd=.4)
+  points(visit.x,visit.y,
+         col = "red",
+         pch = 20,
+         bg = 24,
+         lwd = .4)
   dev.off()
   pdf("usa.pdf")
-  map("usa", fill=TRUE, col="grey", bg="white",mar=c(0,0,0,0))
+  map("usa",
+      fill = TRUE,
+      col = "grey",
+      bg = "white",
+      mar = c(0,0,0,0))
   #log10 is 0 sometimes
-  points(visit.x,visit.y, col="red", pch=20, bg=24, cex=log10(noduplicates$density)*3+1, lwd=.4)
+  points(visit.x,
+         visit.y,
+         col = "red",
+         pch = 20,
+         bg = 24,
+         cex = log10(noduplicates$density)*3 + 1,
+         lwd = .4)
   dev.off()
   pdf("europe.pdf")
-  map("world", fill=TRUE, col="grey", bg="white", xlim = c(-20, 59),ylim = c(35, 71),mar=c(0,0,0,0))
-  points(visit.x,visit.y, col="red", pch=20, bg=24, cex=log10(noduplicates$density)*3+1, lwd=.4)
+  map("world",
+      fill = TRUE,
+      col = "grey",
+      bg = "white",
+      xlim = c(-20, 59),
+      ylim = c(35, 71),
+      mar = c(0,0,0,0))
+  points(visit.x,
+         visit.y,
+         col = "red",
+         pch = 20,
+         bg = 24,
+         cex = log10(noduplicates$density)*3 + 1,
+         lwd = .4)
   dev.off()
   pdf("china.pdf")
-  map("world", fill=TRUE, col="grey", bg="white", xlim = c(50, 129),ylim = c(15, 51),mar=c(0,0,0,0))
-  points(visit.x,visit.y, col="red", pch=20, bg=24, cex=log10(noduplicates$density)*3+1, lwd=.4)
+  map("world",
+      fill = TRUE,
+      col = "grey",
+      bg = "white",
+      xlim = c(50, 129),
+      ylim = c(15, 51),
+      mar = c(0,0,0,0))
+  points(visit.x,
+         visit.y,
+         col = "red",
+         pch = 20,
+         bg = 24,
+         cex = log10(noduplicates$density)*3 + 1,
+         lwd = .4)
   dev.off()
 }
 
