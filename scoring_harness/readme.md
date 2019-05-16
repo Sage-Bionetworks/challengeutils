@@ -1,5 +1,5 @@
-Challenge Template for Python
-=============================
+Python Challenge Scoring Harness
+================================
 
 In a perfect world, Synapse would automaticaly validate, score, annotate submissions and emails participants for you.  Sadly, we do not live in a perfect world! 
 
