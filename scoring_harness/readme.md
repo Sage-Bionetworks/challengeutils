@@ -1,9 +1,9 @@
 Python Challenge Scoring Harness
 ================================
 
-In a perfect world, Synapse would automatically validate, score, annotate submissions and emails participants for you.  Sadly, we do not live in a perfect world! 
+In a perfect world, Synapse would automatically validate, score, annotate submissions and email participants for you.  Sadly, we do not live in a perfect world! 
 
-Fortunately, we have created `challenge.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for recieved submissions to an evaluation queue and validate/score these submissions.
+Fortunately, we have created `challenge.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for received submissions to an evaluation queue and validate/score these submissions.
 
 If you have no idea what evaluation queues or challenge are, then please turn back around.  If you are curious about setting up a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge before continuing. 
 
@@ -27,16 +27,16 @@ In your configuration file **challenge_config.template.py**, you can add in sepa
 ```
 EVALUATION_QUEUES_CONFIG = [
     {
-        'id':1,
-        'scoring_func':score1
-        'validation_func':validate_func
-        'goldstandard':'path/to/sc1gold.txt'
+        'id': 1,
+        'scoring_func': score1
+        'validation_func': validate_func
+        'goldstandard': 'path/to/sc1gold.txt'
     },
     {
-        'id':2,
-        'scoring_func':score2
-        'validation_func':validate_func
-        'goldstandard':'path/to/sc2gold.txt'
+        'id': 2,
+        'scoring_func': score2
+        'validation_func': validate_func
+        'goldstandard': 'path/to/sc2gold.txt'
 
     }
 ]
@@ -44,11 +44,12 @@ EVALUATION_QUEUES_CONFIG = [
 
 ## Running the Harness
 
-As stated above, Synapse does not have the natural capabilities of validating and scoring submissions.  ![how_it_works](scoring_harness.png)
+As stated above, Synapse does not have the capability of validating and scoring submissions.  The diagram below depicts how the scoring harness connects your validation/scoring script to Synapse and participant submissions. ![how_it_works](scoring_harness.png)
 
-The harness essentially helps connect participant submissions with your validation and scoring scripts. To see run the script, type:
+Here are some examples on how to run the script.
 
 ```
+# See all the available parameters
 python challenge.py -h
 
 # Validation
@@ -71,7 +72,7 @@ The script can send several types of messages, which are in `messages.py`.
 
 ### RPy2
 
-Often it's more convenient to write statistical code in R. We've successfully used the [Rpy2](http://rpy.sourceforge.net/) library to pass file paths to scoring functions written in R and get back a named list of scoring statistics. Alternatively, there's R code included in the R folder of this repo to fully run a challenge in R.
+Often it's more convenient to write statistical code in R. We've successfully used the [Rpy2](https://rpy2.bitbucket.io/) library to pass file paths to scoring functions written in R and get back a named list of scoring statistics. 
 
 ## Setting Up Automatic Validation and Scoring on an EC2
 
