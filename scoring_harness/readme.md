@@ -1,9 +1,11 @@
 Challenge Template for Python
 =============================
 
-`challenge.py` is a lightweight script that takes a configuration python script as a parameter to validate and score submissions submitted to evaluation queues in a challenge.
+In a perfect world, Synapse would automaticaly validate, score, annotate submissions and emails participants for you.  Sadly, we do not live in a perfect world! 
 
-If you are curious about how to start a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge.  If you have already configured your evaluation queues and are ready to interact with submitted submissions, then you are at the right place.
+Fortunately, we have created `challenge.py`, a lightweight python script, that takes a configuration python as a parameter that **you** can run on their cloud or internal servers.  This script helps will automatically look for recieved submissions to an evaluation queue and validate/score these submissions. 
+
+If you have no idea what evaluation queues or challenge are, then please turn back around.  If you are curious about setting up a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge before continuing. 
 
 
 ## Dependencies
@@ -71,7 +73,7 @@ Often it's more convenient to write statistical code in R. We've successfully us
 
 ## Setting Up Automatic Validation and Scoring on an EC2
 
-Crontab can be used to help run the validation and scoring command automatically.  To set up crontab, first open the crontab configuration file:
+It is very typical for validation and scoring to occur every 5 to 10 minutes, as you want challenge participants to be informed of their submissions.  To do this on a cloud instance (AWS, Google, Azure...), a cronjob can be set up.  To set this up, first open the crontab configuration file:
 
 	crontab -e
 
