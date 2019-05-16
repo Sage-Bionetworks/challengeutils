@@ -46,7 +46,7 @@ EVALUATION_QUEUES_CONFIG = [
 
 As stated above, Synapse does not have the natural capabilities of validating and scoring submissions.  ![how_it_works](scoring_harness.png)
 
-The harness essentially helps connect participants submissions with your validation and processing scripts. The challenge.py script has several subcommands that help administrate a challenge. To see all the commands, type:
+The harness essentially helps connect participant submissions with your validation and scoring scripts. To see run the script, type:
 
 ```
 python challenge.py -h
