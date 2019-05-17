@@ -11,10 +11,13 @@ If you have no idea what evaluation queues or challenge are, then please turn ba
 ## Dependencies
 
 * Python 3.5 and above
+* R if you use rpy2
 * Software:
 ```
 pip install synapseclient
 pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
+# If you are using rpy2
+pip install rpy2
 ```
 
 ## Creating your challenge python script.
