@@ -16,7 +16,7 @@ If you have no idea what evaluation queues or challenge are, then please turn ba
 ```
 pip install synapseclient
 pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
-# If you are using rpy2, must install version 2.9
+# If you are using rpy2, must install version 2.9.x
 pip install rpy2==2.9
 ```
 
