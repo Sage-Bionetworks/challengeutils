@@ -1,13 +1,18 @@
 import os
 import synapseclient
+import challengeutils
+import synapseutils
+import sys
 
-def rename_submission_files(syn, evaluationid, download_location="./", status="SCORED"):
+
+def rename_submission_files(syn, evaluationid, download_location="./",
+                            status="SCORED"):
     '''
-    This function renames the submission files of an evaluation queue.  For many challenges we require
-    participants to submit files that are named one thing such as prediction.csv.
-    This function renames them to
+    This function renames the submission files of an evaluation queue.
+    For many challenges we require participants to submit files that are
+    named one thing such as prediction.csv. This function renames them to
 
-    submitter_date_filename
+        submitter_date_filename
 
     Args:
         syn: synapse object
@@ -22,11 +27,12 @@ def rename_submission_files(syn, evaluationid, download_location="./", status="S
         else:
             submitter = syn.getUserProfile(sub.userId)['userName']
         date = sub.createdOn
-        submission_ent = syn.getSubmission(sub.id,downloadLocation=download_location)
+        submission_ent = \
+            syn.getSubmission(sub.id, downloadLocation=download_location)
         filename = os.path.basename(submission_ent.filePath)
         newname = submitter+"___"+date+"___"+filename
-        newname = newname.replace(' ','_')
-        os.rename(filename,newname)
+        newname = newname.replace(' ', '_')
+        os.rename(filename, newname)
         print(newname)
 
 
@@ -39,25 +45,35 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
     Args:
         synId: Synapse id of challenge project
         templateId:  Synapse id of the template
-        trackerTableSynId: Synapse id of Table that tracks if wiki pages have been made per team
+        trackerTableSynId: Synapse id of Table that tracks if wiki pages
+                           have been made per team
     """
-    
 
     challenge_ent = syn.get(synid)
-    challenge_obj = getChallengeId(challenge_ent)
-    registered_teams = syn._GET_paginated("/challenge/%s/challengeTeam" % challenge_obj['id'])
+    challenge_obj = challengeutils.utils.get_challengeid(challenge_ent)
+    registered_teams = syn._GET_paginated(
+        "/challenge/{}/challengeTeam".format(challenge_obj['id']))
     for i in registered_teams:
-        submitted_teams = syn.tableQuery("SELECT * FROM %s where teamId = '%s'" % (tracker_table_synid, i['teamId']))
+        submitted_teams = syn.tableQuery(
+            "SELECT * FROM {} where teamId = '{}'".format(
+                tracker_table_synid, i['teamId']))
         if len(submitted_teams.asDataFrame()) == 0:
             team = syn.getTeam(i['teamId'])
-            #The project name is the challenge project name and team name
-            project = syn.store(synapseclient.Project("%s %s" % (challenge_ent.name, team.name)))
-            #Give admin access to the team
-            syn.setPermissions(project, i['teamId'], accessType=['DELETE','CHANGE_SETTINGS','MODERATE','CREATE','READ','DOWNLOAD','UPDATE','CHANGE_PERMISSIONS'])
-            wiki_copy = synu.copy(syn,templateid,project.id)
-            #syn.sendMessage(i[])
-            #Store copied synId to tracking table
-            syn.store(synapseclient.Table(tracker_table_synid,[[wiki_copy[templateid],i['teamId']]]))
+            # The project name is the challenge project name and team name
+            project = syn.store(synapseclient.Project("{} {}".format(
+                challenge_ent.name, team.name)))
+            # Give admin access to the team
+            syn.setPermissions(
+                project, i['teamId'],
+                accessType=['DELETE', 'CHANGE_SETTINGS', 'MODERATE',
+                            'CREATE', 'READ', 'DOWNLOAD', 'UPDATE',
+                            'CHANGE_PERMISSIONS'])
+            wiki_copy = synapseutils.copy(syn, templateid, project.id)
+            # syn.sendMessage(i[])
+            # Store copied synId to tracking table
+            tracking_table = synapseclient.Table(
+                tracker_table_synid, [[wiki_copy[templateid], i['teamId']]])
+            syn.store(tracking_table)
 
 
 def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
@@ -65,9 +81,10 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     Kills any docker container that exceeds the run time quota
 
     Args:
-        syn (str): Synapse object
+        syn (obj): Synapse object
         evaluation_id (int): Synapse evaluation queue id
-        quota (int): Quota in milliseconds. Default is None. One hour is 3600000.
+        quota (int): Quota in milliseconds. Default is None.
+                     One hour is 3600000.
     '''
     if quota is None:
         quota = sys.maxsize
