@@ -7,7 +7,6 @@ def append_writeup_to_main_submission(row, syn):
     '''
     Helper function that appends the write up synapse id and archived
     write up synapse id on the main submission
-    
 
     Args:
         row: Dictionary row['team'], row['objectId'], row['archived'],
@@ -18,7 +17,8 @@ def append_writeup_to_main_submission(row, syn):
         print("NO WRITEUP: " + row['team'])
     else:
         status = syn.getSubmissionStatus(row['objectId'])
-        add_writeup_dict = {'writeUp': row['entityId'], 'archivedWriteUp': row['archived']}
+        add_writeup_dict = {
+            'writeUp': row['entityId'], 'archivedWriteUp': row['archived']}
 
         add_writeup = to_submission_status_annotations(
             add_writeup_dict, is_private=False)
