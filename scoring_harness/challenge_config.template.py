@@ -42,6 +42,52 @@ def validate_func(submission_path, goldstandard_path):
     return(is_valid, message)
 
 
+def validate_writeup(submission, goldstandard_path, syn,
+                     public=True, admin=None):
+    '''
+    Validates challenge writeup
+
+    Args:
+        submission: Submission object
+        goldstandard_path: Unused
+        syn: Synapse object
+        public: If the writeup needs to be public. Defaults to True
+        admin: Specify Synapse userid that writeup needs to be
+               shared with
+    Returns:
+        (True, message) if validated, (False, message) if
+        validation fails or throws exception
+    '''
+    from synapseclient.exceptions import SynapseHTTPError
+    from synapseclient import AUTHENTICATED_USERS
+    # Add in users to share this with
+    share_with = []
+    try:
+        if public:
+            message = "Please make your private project ({}) public".format(
+                submission['entityId'])
+            share_with.append(message)
+            ent = \
+                syn.getPermissions(submission['entityId'], AUTHENTICATED_USERS)
+            assert "READ" in ent and "DOWNLOAD" in ent, message
+            ent = syn.getPermissions(submission['entityId'])
+            assert "READ" in ent, message
+        if admin is not None:
+            message = (
+                "Please share your private directory ({}) with the Synapse"
+                " user `{}` with `Can Download` permissions.".format(
+                    submission['entityId'], admin))
+            share_with.append(message)
+            ent = syn.getPermissions(submission['entityId'], admin)
+            assert "READ" in ent and "DOWNLOAD" in ent, message
+    except SynapseHTTPError as e:
+        if e.response.status_code == 403:
+            raise AssertionError("\n".join(share_with))
+        else:
+            raise(e)
+    return True, "Validated!"
+
+
 def score1(submission_path, goldstandard_path):
     '''
     Scoring function number 1

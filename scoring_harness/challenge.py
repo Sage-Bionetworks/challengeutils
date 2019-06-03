@@ -8,7 +8,6 @@
 #
 ###############################################################################
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 import synapseclient
 from synapseclient import Evaluation
 from synapseclient.exceptions import \
@@ -23,9 +22,19 @@ import importlib
 # within this dir
 import lock
 import messages
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 
 def get_user_name(profile):
+    '''
+    Get name of Synapse user
+
+    Args:
+        profile: syn.getUserProfile()
+
+    Returns:
+        Synapse name or username
+    '''
     names = []
     if 'firstName' in profile and profile['firstName']:
         names.append(profile['firstName'].strip())
@@ -38,7 +47,13 @@ def get_user_name(profile):
 
 def import_config_py(config_path):
     '''
-    Uses importlib to import config.py
+    Uses importlib to import users configuration
+
+    Args:
+        config_path: Path to configuration python script
+
+    Returns:
+        module
     '''
     spec = importlib.util.spec_from_file_location("config", config_path)
     module = importlib.util.module_from_spec(spec)
@@ -75,8 +90,13 @@ def validate(syn,
         validation_error = None
         logging.info("validating {} {}".format(submission.id, submission.name))
         try:
+            # Account for if submissions aren't files
+            if submission.filePath is None:
+                submission_input = submission
+            else:
+                submission_input = submission.filePath
             is_valid, validation_message = \
-                validation_func(submission.filePath, goldstandard_path)
+                validation_func(submission_input, goldstandard_path)
         except Exception as ex1:
             is_valid = False
             logging.error(
