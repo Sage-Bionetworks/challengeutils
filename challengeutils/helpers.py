@@ -79,6 +79,8 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
 def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     '''
     Kills any docker container that exceeds the run time quota
+    Rerunning submissions will require setting TimeRemaining annotation
+    to a positive integer
 
     Args:
         syn (obj): Synapse object
@@ -96,14 +98,16 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
 
     evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = evaluation_queue_query(syn, evaluation_query)
+    query_results = \
+        challengeutils.utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
-        model_run_time = int(result[workflow_last_updated_key]) - int(result[workflow_start_key])
+        last_updated = int(result[workflow_last_updated_key])
+        start = int(result[workflow_start_key])
+        model_run_time = last_updated - start
         if model_run_time > quota:
             status = syn.getSubmissionStatus(result['objectId'])
-            add_annotations = {time_remaining_key:0}
-            status = update_single_submission_status(status, add_annotations)
+            add_annotations = {time_remaining_key: 0}
+            status = challengeutils.utils.update_single_submission_status(
+                status, add_annotations)
             syn.store(status)
-
-    #Rerunning submissions will require setting this annotation to a positive integer
