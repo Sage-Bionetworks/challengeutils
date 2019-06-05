@@ -157,6 +157,40 @@ def validate(syn,
     logging.info("-" * 20)
 
 
+def score_single_submission(syn, submission, status,
+                            scoring_func, goldstandard_path,
+                            dry_run=False):
+    status.status = "INVALID"
+    try:
+        score, message = scoring_func(
+            submission.filePath, goldstandard_path)
+
+        logging.info("scored: {} {} {} {}".format(
+            submission.id, submission.name,
+            submission.userId, score))
+
+        add_annotations = to_submission_status_annotations(
+            score, is_private=True)
+        status = challengeutils.utils.update_single_submission_status(
+            status, add_annotations)
+
+        status.status = "SCORED"
+
+    except Exception as ex1:
+        score = dict()
+        logging.error(
+            'Error scoring submission {} {}:\n'.format(
+                submission.name, submission.id))
+        logging.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
+        # ex1 only happens in this scope in python3,
+        # so must store message as a variable
+        message = str(ex1)
+
+    if not dry_run:
+        status = syn.store(status)
+    return(status, message)
+
+
 def score(syn,
           queue_info_dict,
           admin_user_ids,
@@ -177,40 +211,13 @@ def score(syn,
     submission_bundle = \
         syn.getSubmissionBundles(evaluation, status=status)
     for submission, status in submission_bundle:
-
-        status.status = "INVALID"
-
         # refetch the submission so that we get the file path
-        # to be later replaced by a "downloadFiles" flag on
-        # getSubmissionBundles
         submission = syn.getSubmission(submission)
 
-        try:
-            score, message = scoring_func(
-                submission.filePath, goldstandard_path)
-
-            logging.info("scored: {} {} {} {}".format(
-                submission.id, submission.name,
-                submission.userId, score))
-
-            add_annotations = to_submission_status_annotations(
-                score, is_private=True)
-            status = challengeutils.utils.update_single_submission_status(
-                status, add_annotations)
-
-            status.status = "SCORED"
-
-        except Exception as ex1:
-            logging.error(
-                'Error scoring submission {} {}:\n'.format(
-                    submission.name, submission.id))
-            logging.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
-            # ex1 only happens in this scope in python3,
-            # so must store message as a variable
-            message = str(ex1)
-
-        if not dry_run:
-            status = syn.store(status)
+        status, message = score_single_submission(
+            syn, submission, status,
+            scoring_func, goldstandard_path,
+            dry_run=dry_run)
 
         # send message AFTER storing status to ensure
         # we don't get repeat messages
