@@ -38,6 +38,7 @@ def validate_func(submission_path, goldstandard_path):
         Must return a boolean and validation message
     '''
     from synapseclient import Submission
+    # Sometimes participants accidentally submit Projects/Folders
     assert not isinstance(submission_path, Submission), \
         "Submission must be a Synapse File and not Project/Folder"
     is_valid = True
