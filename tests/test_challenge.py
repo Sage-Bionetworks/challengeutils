@@ -1,7 +1,10 @@
 import sys
 import mock
+import os
 import synapseclient
-sys.path.append('../scoring_harness')
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(SCRIPT_DIR, '../scoring_harness'))
 from challenge import score_single_submission
 
 syn = synapseclient.Synapse()
