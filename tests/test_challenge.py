@@ -1,6 +1,4 @@
-import sys
 import mock
-import os
 import synapseclient
 from scoring_harness.challenge import score_single_submission
 from scoring_harness.challenge import score
