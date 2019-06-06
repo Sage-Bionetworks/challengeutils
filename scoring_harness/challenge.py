@@ -160,6 +160,21 @@ def validate(syn,
 def score_single_submission(syn, submission, status,
                             scoring_func, goldstandard_path,
                             dry_run=False):
+    '''
+    Scores a single submission
+
+    Args:
+        syn: Synapse object
+        submission: Submission object
+        status: Submission Status object
+        scoring_func: Function that scores (takes prediction filepath and
+                      truth file)
+        dry_run: Defaults to storing status (False)
+
+    Return:
+        status - Annotated submission status
+        message - scoring message (errors/success)
+    '''
     status.status = "INVALID"
     try:
         score, message = scoring_func(
