@@ -23,7 +23,6 @@ def _switch_annotation_permission(add_annotations,
         Existing annotations
     '''
     check_key = [key in add_annotations for key in existing_annotations]
-    print(check_key)
     if sum(check_key) == 0:
         pass
     elif sum(check_key) > 0 and force_change_annotation_acl:
@@ -124,7 +123,7 @@ def update_single_submission_status(status, add_annotations, to_public=False,
                 pub.get(annotation_type) is not None:
             priv[annotation_type] = pub[annotation_type]
 
-    status.annotations = priv
+    status['annotations'] = priv
     return(status)
 
 
