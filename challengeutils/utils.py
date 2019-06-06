@@ -4,9 +4,46 @@ import sys
 import json
 
 
-def update_single_submission_status(
-        status, add_annotations, to_public=False,
-        force_change_annotation_acl=False):
+def _switch_annotation_permission(add_annotations,
+                                  existing_annotations,
+                                  force_change_annotation_acl=False):
+    '''
+    Switch annotation permissions
+    If you add a private annotation that appears in the public annotation,
+    it should throw an error, or switch permissions
+
+    Args:
+        add_annotations: Annotations to add
+        existing_annotations: Existing annotations (of the opposite annotation
+                              permissions)
+        force_change_annotation_acl: Force the annotation permission to change.
+                                     Default is False.
+
+    Returns:
+        Existing annotations
+    '''
+    check_key = [key in add_annotations for key in existing_annotations]
+    if sum(check_key) == 0:
+        pass
+    elif sum(check_key) > 0 and force_change_annotation_acl:
+        # Filter out the annotations that have changed ACL
+        existing_annotations = {
+            key: existing_annotations[key]
+            for key in existing_annotations
+            if key not in add_annotations}
+    else:
+        change_keys = [
+            key for key in existing_annotations if key in add_annotations]
+        raise ValueError(
+            "You are trying to change the ACL of these annotation key(s): {}."
+            " Either change the annotation key or specify "
+            "force_change_annotation_acl=True".format(
+                ", ".join(change_keys)))
+    return(existing_annotations)
+
+
+def update_single_submission_status(status, add_annotations, to_public=False,
+                                    force_change_annotation_acl=False):
     """
     This will update a single submission's status
 
@@ -60,25 +97,13 @@ def update_single_submission_status(
 
     # If you add a private annotation that appears in the public annotation,
     # it switches
-    if sum([key in public_added_annotations for key in private_annotations]) == 0:
-        pass
-    elif sum([key in public_added_annotations for key in private_annotations]) >0 and force_change_annotation_acl:
-        # Filter out the annotations that have changed ACL
-        private_annotations = {
-            key: private_annotations[key]
-            for key in private_annotations
-            if key not in public_added_annotations}
-    else:
-        raise ValueError("You are trying to change the ACL of these annotation key(s): %s. Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in private_annotations if key in public_added_annotations]))
-    if sum([key in private_added_annotations for key in public_annotations]) == 0:
-        pass
-    elif sum([key in private_added_annotations for key in public_annotations]) > 0 and force_change_annotation_acl:
-        public_annotations = {
-            key: public_annotations[key]
-            for key in public_annotations
-            if key not in private_added_annotations}
-    else:
-        raise ValueError("You are trying to change the ACL of these annotation key(s): %s.  Either change the annotation key or specify force_change_annotation_acl=True" % ", ".join([key for key in public_annotations if key in private_added_annotations]))
+    private_annotations = _switch_annotation_permission(
+        public_added_annotations, private_annotations,
+        force_change_annotation_acl)
+    public_annotations = _switch_annotation_permission(
+        private_added_annotations, public_annotations,
+        force_change_annotation_acl)
+
     private_annotations.update(private_added_annotations)
     public_annotations.update(public_added_annotations)
 
@@ -98,7 +123,7 @@ def update_single_submission_status(
                 pub.get(annotation_type) is not None:
             priv[annotation_type] = pub[annotation_type]
 
-    status.annotations = priv
+    status['annotations'] = priv
     return(status)
 
 
@@ -199,8 +224,8 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     return(status)
 
 
-def update_all_submissions_annotation_acl(
-        syn, evaluationid, annotations, status='SCORED', is_private=False):
+def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
+                                          status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on
     all submissions of a evaluation
@@ -298,9 +323,8 @@ def change_submission_status(syn, submissionid, status='RECEIVED'):
     return(sub_status)
 
 
-def change_all_submission_status(
-        syn, evaluationid, submission_status='SCORED',
-        change_to_status='VALIDATED'):
+def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
+                                 change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
     The defaults is to change submissions from SCORED -> VALIDATED
