@@ -214,6 +214,23 @@ def score(syn,
           send_messages=False,
           send_notifications=False,
           dry_run=False):
+    '''
+    Score all submissions with status = 'VALIDATED' by default and
+    emails participants with scores
+
+    Args:
+        syn: Synapse object
+        queue_info_dict: dictionary with id, scoring_func,
+                         and goldstandard_path as keys
+        admin_user_ids: list of Synapse user profile ids of admin users
+        challenge_synid: Synapse id of challenge project
+        status: submissions with this status to score. Default to
+                VALIDATED
+        send_messages: Send messages
+        send_notifications: Send notifications
+        dry_run: Do not update Synapse
+
+    '''
     evaluation = queue_info_dict['id']
     scoring_func = queue_info_dict['scoring_func']
     goldstandard_path = queue_info_dict['goldstandard_path']
@@ -315,10 +332,6 @@ def main(args):
     # Synapse login
     try:
         syn = synapseclient.Synapse(debug=args.debug)
-        if not args.user:
-            args.user = os.environ.get('SYNAPSE_USER', None)
-        if not args.password:
-            args.password = os.environ.get('SYNAPSE_PASSWORD', None)
         syn.login(email=args.user, password=args.password, silent=True)
     except (SynapseAuthenticationError, SynapseNoCredentialsError):
         raise ValueError(
