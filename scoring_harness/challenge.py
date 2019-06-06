@@ -1,5 +1,6 @@
+###############################################################################
 #
-# Command line tool for scoring and managing Synapse challenges
+# Command line tool for validatin and scoring Synapse challenges
 #
 # To use this script, first install the Synapse Python Client
 # http://python-docs.synapse.org/
@@ -8,7 +9,6 @@
 #
 ###############################################################################
 import logging
-import argparse
 from datetime import timedelta
 import importlib
 
@@ -18,11 +18,11 @@ from synapseclient.exceptions import SynapseAuthenticationError
 from synapseclient.exceptions import SynapseNoCredentialsError
 from synapseclient.annotations import to_submission_status_annotations
 import challengeutils
-# lock and messages are not python modules, they are scripts
-# within this dir
 from scoring_harness import lock, messages
 
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def get_user_name(profile):
@@ -81,7 +81,7 @@ def validate_single_submission(syn, submission, status,
         validation_message - Error message
     '''
     validation_error = None
-    logging.info("validating {} {}".format(submission.id, submission.name))
+    logger.info("validating {} {}".format(submission.id, submission.name))
     try:
         # Account for if submissions aren't files
         if submission.filePath is None:
@@ -92,7 +92,7 @@ def validate_single_submission(syn, submission, status,
             validation_func(submission_input, goldstandard_path)
     except Exception as ex1:
         is_valid = False
-        logging.error(
+        logger.error(
             "Exception during validation: {} {} {}".format(
                 type(ex1), ex1, str(ex1)))
         # ex1 only happens in this scope in python3,
@@ -148,8 +148,8 @@ def validate(syn,
     if type(evaluation) != Evaluation:
         evaluation = syn.getEvaluation(evaluation)
 
-    logging.info("Validating {} {}".format(evaluation.id, evaluation.name))
-    logging.info("-" * 20)
+    logger.info("Validating {} {}".format(evaluation.id, evaluation.name))
+    logger.info("-" * 20)
 
     submission_bundles = \
         syn.getSubmissionBundles(evaluation, status=status)
@@ -197,7 +197,7 @@ def validate(syn,
                 submission_name=submission.name,
                 message=validation_message,
                 challenge_synid=challenge_synid)
-    logging.info("-" * 20)
+    logger.info("-" * 20)
 
 
 def score_single_submission(syn, submission, status,
@@ -223,7 +223,7 @@ def score_single_submission(syn, submission, status,
         score, message = scoring_func(
             submission.filePath, goldstandard_path)
 
-        logging.info("scored: {} {} {} {}".format(
+        logger.info("scored: {} {} {} {}".format(
             submission.id, submission.name,
             submission.userId, score))
 
@@ -236,10 +236,10 @@ def score_single_submission(syn, submission, status,
 
     except Exception as ex1:
         score = dict()
-        logging.error(
+        logger.error(
             'Error scoring submission {} {}:\n'.format(
                 submission.name, submission.id))
-        logging.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
+        logger.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         # ex1 only happens in this scope in python3,
         # so must store message as a variable
         message = str(ex1)
@@ -280,8 +280,8 @@ def score(syn,
     if type(evaluation) != Evaluation:
         evaluation = syn.getEvaluation(evaluation)
 
-    logging.info('Scoring {} {}'.format(evaluation.id, evaluation.name))
-    logging.info("-" * 20)
+    logger.info('Scoring {} {}'.format(evaluation.id, evaluation.name))
+    logger.info("-" * 20)
     submission_bundle = \
         syn.getSubmissionBundles(evaluation, status=status)
     for submission, status in submission_bundle:
@@ -321,7 +321,7 @@ def score(syn,
                 submission_name=submission.name,
                 submission_id=submission.id,
                 challenge_synid=challenge_synid)
-    logging.info("-" * 20)
+    logger.info("-" * 20)
 
 
 # ==================================================
@@ -366,11 +366,10 @@ def command_score(syn, evaluation_queue_maps, args):
               dry_run=args.dry_run)
 
 
-# ==================================================
-#  main method
-# ==================================================
-
 def main(args):
+    '''
+    Main method that executes validate / scoring
+    '''
     # Synapse login
     try:
         syn = synapseclient.Synapse(debug=args.debug)
@@ -424,7 +423,7 @@ def main(args):
         update_lock = lock.acquire_lock_or_fail(
             'challenge', max_age=timedelta(hours=4))
     except lock.LockedException:
-        logging.error(
+        logger.error(
             "Is the scoring script already running? Can't acquire lock.")
         # can't acquire lock, so return error code 75 which is a
         # temporary error according to /usr/include/sysexits.h
@@ -433,8 +432,8 @@ def main(args):
     try:
         args.func(syn, evaluation_queue_maps, args)
     except Exception as ex1:
-        logging.error('Error in challenge.py:')
-        logging.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
+        logger.error('Error in challenge.py:')
+        logger.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         if args.admin_user_ids:
             messages.error_notification(
                 syn=syn,
@@ -446,84 +445,3 @@ def main(args):
 
     finally:
         update_lock.release()
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "challenge_synid",
-        help="Synapse id of challenge project")
-    parser.add_argument(
-        "config_path",
-        help="path to config.py")
-    parser.add_argument(
-        "--evaluation",
-        help="Evaluation id(s) to validate/score.  If not specified, script "
-             "will validate/score all evaluations set in "
-             "EVALUATION_QUEUES_CONFIG",
-        nargs='?',
-        default=None)
-
-    parser.add_argument(
-        '-a',
-        "--admin-user-ids",
-        help="Synapse user ids. Defaults to the user running the script",
-        nargs='?',
-        default=None)
-
-    parser.add_argument(
-        "-u",
-        "--user",
-        help="UserName",
-        default=None)
-
-    parser.add_argument(
-        "-p",
-        "--password",
-        help="Password",
-        default=None)
-
-    parser.add_argument(
-        "--notifications",
-        help="Send error notifications to challenge admins",
-        action="store_true")
-
-    parser.add_argument(
-        "--send-messages",
-        help="Send validation and scoring messages to participants",
-        action="store_true")
-
-    parser.add_argument(
-        "--acknowledge-receipt",
-        help="Send confirmation message on passing validation to participants",
-        action="store_true")
-
-    parser.add_argument(
-        "--dry-run",
-        help=("Perform the requested command without "
-              "updating anything in Synapse"),
-        action="store_true")
-
-    parser.add_argument(
-        "--debug",
-        help="Show verbose error output from Synapse API calls",
-        action="store_true")
-
-    subparsers = parser.add_subparsers(title="subcommand")
-
-    parser_validate = subparsers.add_parser(
-        'validate',
-        help="Validate all RECEIVED submissions to an evaluation")
-    parser_validate.set_defaults(func=command_validate)
-
-    parser_score = subparsers.add_parser(
-        'score',
-        help="Score all VALIDATED submissions to an evaluation")
-    parser_score.set_defaults(func=command_score)
-
-    args = parser.parse_args()
-    logging.info("=" * 30)
-    logging.info("STARTING HARNESS")
-    main(args)
-    logging.info("ENDING HARNESS")
-    logging.info("=" * 30)
