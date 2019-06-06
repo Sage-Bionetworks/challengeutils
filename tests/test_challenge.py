@@ -2,11 +2,8 @@ import sys
 import mock
 import os
 import synapseclient
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(SCRIPT_DIR, '../scoring_harness'))
-from challenge import score_single_submission
-from challenge import score
+from scoring_harness.challenge import score_single_submission
+from scoring_harness.challenge import score
 
 syn = synapseclient.Synapse()
 SCORES = {"score": 5}
@@ -113,14 +110,15 @@ def test_score():
                 syn, "getSubmission",
                 return_value=SUBMISSION) as patch_get_sub,\
             mock.patch(
-                "challenge.score_single_submission",
+                "scoring_harness.challenge.score_single_submission",
                 return_value=(status, "message")) as patch_score_single,\
             mock.patch.object(
                 syn, "getUserProfile",
                 return_value=SYN_USERPROFILE) as patch_get_user,\
-            mock.patch("messages.scoring_succeeded") as patch_send,\
             mock.patch(
-                "challenge.get_user_name",
+                "scoring_harness.messages.scoring_succeeded") as patch_send,\
+            mock.patch(
+                "scoring_harness.challenge.get_user_name",
                 return_value="foo") as patch_get_user_name:
         score(syn,
               QUEUE_INFO_DICT,

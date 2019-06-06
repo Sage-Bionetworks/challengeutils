@@ -8,20 +8,20 @@
 #
 ###############################################################################
 import logging
+import argparse
+from datetime import timedelta
+import importlib
+
 import synapseclient
 from synapseclient import Evaluation
-from synapseclient.exceptions import \
-    SynapseAuthenticationError, SynapseNoCredentialsError
+from synapseclient.exceptions import SynapseAuthenticationError
+from synapseclient.exceptions import SynapseNoCredentialsError
 from synapseclient.annotations import to_submission_status_annotations
 import challengeutils
-from datetime import timedelta
-import argparse
-import os
-import importlib
 # lock and messages are not python modules, they are scripts
 # within this dir
-import lock
-import messages
+from scoring_harness import lock, messages
+
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 
