@@ -113,16 +113,19 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
                 status, add_annotations)
             syn.store(status)
 
-    #Rerunning submissions will require setting this annotation to a positive integer
+    # Rerunning submissions will require setting this
+    # annotation to a positive integer
 
 
 def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
     """
-    Archive the submissions for the given evaluation queue and store them in the destination synapse folder.
+    Archive the submissions for the given evaluation queue and
+    store them in the destination synapse folder.
 
     :param evaluation: a synapse evaluation queue or its ID
-    :param query: a query that will return the desired submissions. At least the ID must be returned.
-                  defaults to _select * from evaluation_[EVAL_ID] where status=="SCORED"_.
+    :param query: a query that will return the desired submissions.
+                  At least the ID must be returned. Defaults to:
+                  'select * from evaluation_[EVAL_ID] where status=="SCORED"'
     """
     if type(evaluation) != synapseclient.Evaluation:
         evaluation = syn.getEvaluation(evaluation)
