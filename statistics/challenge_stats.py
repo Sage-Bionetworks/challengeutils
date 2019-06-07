@@ -1,6 +1,7 @@
 import synapseclient
 
-def getTeamStats(teamId):
+
+def get_team_stats(teamId):
 	members = syn.getTeamMembers(teamId)
 	info = []
 	for i in members:
@@ -16,10 +17,11 @@ def getTeamStats(teamId):
 	#temp.to_csv("challenge_stats.csv", index=False, encoding='utf-8')
 	return(temp)
 
-def numTeams(evalId):
+def num_teams(evalId):
 	submissions = syn.getSubmissionBundles(evalId)
 	allTeams = set()
 	for sub, status in submissions:
 		team = filter(lambda x: x.get('key') == "team", status.annotations['stringAnnos'])[0]
 		allTeams.add(team['value'])
 	print(len(allTeams))
+
