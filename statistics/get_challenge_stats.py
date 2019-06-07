@@ -2,6 +2,8 @@ import synapseclient
 import pandas as pd
 import challengeutils
 import math
+import requests
+import json
 
 
 def create_docker_submission_stats(syn, evalid, round_start, round_end,
@@ -95,6 +97,23 @@ def get_challenge_participant_locations(syn, usernames,
     return(locations)
 
 
+def get_team_user_map_json(teamid):
+    '''
+    Get Synapse team user map json info
+
+    Args:
+        teamid: Synapse team id
+
+    Returns:
+        Json with information of users in team
+    '''
+    map_json_url = "https://s3.amazonaws.com/geoloc.sagebase.org/{}.json"
+    team_json_url = map_json_url.format(teamid)
+    response = requests.get(team_json_url)
+    team_json = response.json()
+    return(team_json)
+
+
 def main():
     # EDIT syn10163902 TO ADD CHALLENGES
     syn = synapseclient.login()
@@ -137,6 +156,16 @@ def main():
         index=False,
         sep='\t',
         encoding='utf-8')
+
+    all_json = []
+    for teams in all_teams:
+        challenge_teams = teams.split(",")
+        for team in challenge_teams:
+            team_json = get_team_user_map_json(team)
+            all_json.extend(team_json)
+
+    with open("teams_json.json", 'w') as outfile:
+        json.dump(all_json, outfile)
 
 
 if __name__ == "__main__":

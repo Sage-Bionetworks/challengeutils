@@ -45,6 +45,11 @@ create_participation_plot(challengeStatDfPath, pdfPath, orderByYear = T)
 pdfPath = "statistics/challenge_participation.pdf"
 create_participation_plot(challengeStatDfPath, pdfPath, orderByYear = F)
 
+# draw a map in R from lat/long
+# https://gist.github.com/kdaily/77993a19a90cc0d34c4b5799230f854f
+# map to users and aggregate to country or other level
+# https://gist.github.com/kdaily/c68fe3038780057db530891d2603393d
+
 ### CREATE CHALLENGE LOCATION MAPS
 makeChallengeLocationMap <- function(location_text_filePath, mapName) {
   challenge_stats = read.csv(location_text_filePath,sep = "\t",stringsAsFactors = F)
