@@ -3,6 +3,9 @@
 *.pdf
 *.zip
 *.tsv
+*.xlsx
+.DS_Store
+.Rhistory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
