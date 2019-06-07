@@ -1,8 +1,5 @@
 import synapseclient
 import pandas as pd
-# import calendar
-# import time
-syn = synapseclient.login()
 
 
 def get_team_usernames(syn, team):
@@ -69,6 +66,7 @@ def get_challenge_participant_locations(syn, usernames,
 
 def main():
     # EDIT syn10163902 TO ADD CHALLENGES
+    syn = synapseclient.login()
     challenge_landscape = syn.tableQuery(
         'select challenge, challengeParticipants, challengePreregistrants, '
         'challengeYear from syn10163902')
@@ -78,11 +76,12 @@ def main():
     all_participants = []
     all_locations = []
     for challenge in challenge_landscapedf['challenge']:
-        challenge_stats = challenge_landscapedf.query(
-            "challenge == '{}'".format(challenge))
-        challenge_team = challenge_stats['challengeParticipants'].iloc[0]
+        print(challenge)
+        challenge_infodf = challenge_landscapedf.query(
+            'challenge == "{}"'.format(challenge))
+        challenge_team = challenge_infodf['challengeParticipants'].iloc[0]
         preregistration_team = \
-            challenge_stats['challengePreregistrants'].iloc[0]
+            challenge_infodf['challengePreregistrants'].iloc[0]
         teams = [str(int(challenge_team))]
         if not pd.isnull(preregistration_team):
             teams.append(str(int(preregistration_team)))
