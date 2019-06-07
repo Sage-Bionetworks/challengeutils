@@ -1,5 +1,36 @@
 import synapseclient
 import pandas as pd
+import challengeutils
+import math
+
+
+def create_docker_submission_stats(syn, evalid, round_start, round_end,
+                                   round_value, subchallenge, challenge):
+    '''
+    Get docker challenge submission statistics
+    '''
+    query_string = 'select * from evaluation_{}'.format(evalid)
+    query_results = \
+        challengeutils.utils.evaluation_queue_query(syn, query_string)
+    submission_statsdf = pd.DataFrame()
+    for result in query_results:
+        time_submit = result['createdOn']
+        if time_submit > round_start and time_submit <= round_end:
+            # milliseconds
+            submission_run_start = int(result['RUN_START'])
+            submission_run_end = int(result['RUN_END'])
+            run_duration_minutes = math.ciel(
+                (submission_run_end - submission_run_start)/60000.0)
+
+            subdf = pd.DataFrame({"team": result['submitterId'],
+                                  "submissionId": result['id'],
+                                  "runTimeMinutes": run_duration_minutes,
+                                  "sc": subchallenge,
+                                  "round": round_value,
+                                  "status": result['status'],
+                                  "challenge": challenge}, index=[0])
+            submission_statsdf = submission_statsdf.append(subdf)
+    return(submission_statsdf)
 
 
 def get_team_usernames(syn, team):
@@ -86,7 +117,8 @@ def main():
         if not pd.isnull(preregistration_team):
             teams.append(str(int(preregistration_team)))
         all_teams.append(",".join(teams))
-        challenge_participants = get_uniq_members(syn, all_teams)
+        challenge_participants = get_uniq_members(syn, teams)
+        print(len(challenge_participants))
         participant_location = \
             get_challenge_participant_locations(syn, challenge_participants)
         all_participants.append(",".join(challenge_participants))
@@ -95,9 +127,11 @@ def main():
     challenge_datadf = pd.DataFrame()
     challenge_datadf['challenges'] = challenge_landscapedf['challenge']
     challenge_datadf['teams'] = all_teams
-    challenge_datadf['createdOn'] = challenge_landscapedf['year']
+    challenge_datadf['year'] = challenge_landscapedf['challengeYear']
     challenge_datadf['users'] = all_participants
     challenge_datadf['locations'] = all_locations
+    challenge_datadf['number_participants'] = \
+        [len(user.split(",")) for user in challenge_datadf['users']]
     challenge_datadf.to_csv(
         "challenge_stats.tsv",
         index=False,
