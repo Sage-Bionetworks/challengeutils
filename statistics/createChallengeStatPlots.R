@@ -8,27 +8,23 @@ synLogin()
 
 ### BEFORE RUNNING THESE FUNCTIONS MAKE SURE YOU RUN: python createChallengeStatDf.py
 ### TO GENERATE THIS FILE: challenge_stats.tsv
-createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, orderByYear=T) {
-  challenge_stats = read.csv(challengeStatDfPath, sep = "\t")
-  Year = as.character(challenge_stats$createdOn)
-  participants = data.frame(Year)
-  numParticipants = c()
-  for (users in challenge_stats$users) {
-    numParticipants = c(numParticipants,length(strsplit(users, ",")[[1]]))
-  }
-  participants$Number = numParticipants
-  participants$Name = challenge_stats$challenges
+create_participation_plot <- function(challengestat_filepath, pdfPath, orderByYear=T) {
+  challenge_stats = read.csv(challengestat_filepath, sep = "\t")
+  year = as.character(challenge_stats$year)
+  participants = data.frame(year)
+  participants$number = challenge_stats$number_participants
+  participants$name = challenge_stats$challenges
   if (orderByYear) {
-    participants = participants[order(participants$Year,participants$Number, decreasing = T),]
+    participants = participants[order(participants$year, participants$number, decreasing = T),]
   } else{
-    participants = participants[order(participants$Number,decreasing = T),]
+    participants = participants[order(participants$number,decreasing = T),]
   }
-  participants$indexing = seq_along(participants$Year)
+  participants$indexing = seq_along(participants$year)
   
   ggplot(participants,
-         aes(x = reorder(Name,-indexing),
-             y = Number,
-             fill = Year)) + 
+         aes(x = reorder(name,-indexing),
+             y = number,
+             fill = year)) + 
     geom_bar(stat = "identity") + coord_flip() +
     ylab("Number of Participants") + theme_bw() +
     theme(#panel.background = element_blank(),
@@ -45,9 +41,9 @@ createChallengeParticipationPlot <- function(challengeStatDfPath, pdfPath, order
 }
 challengeStatDfPath = "statistics/challenge_stats.tsv"
 pdfPath = "statistics/challenge_participation_ordered.pdf"
-createChallengeParticipationPlot(challengeStatDfPath, pdfPath, orderByYear = T)
+create_participation_plot(challengeStatDfPath, pdfPath, orderByYear = T)
 pdfPath = "statistics/challenge_participation.pdf"
-createChallengeParticipationPlot(challengeStatDfPath, pdfPath, orderByYear = F)
+create_participation_plot(challengeStatDfPath, pdfPath, orderByYear = F)
 
 ### CREATE CHALLENGE LOCATION MAPS
 makeChallengeLocationMap <- function(location_text_filePath, mapName) {
