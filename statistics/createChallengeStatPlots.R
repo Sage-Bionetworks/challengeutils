@@ -4,6 +4,10 @@ library("ggmap")
 library(maptools)
 library(maps)
 library(synapser)
+library(glue)
+library(ggrepel)
+
+
 synLogin()
 
 ### BEFORE RUNNING THESE FUNCTIONS MAKE SURE YOU RUN: python createChallengeStatDf.py
@@ -50,107 +54,109 @@ create_participation_plot(challengeStatDfPath, pdfPath, orderByYear = F)
 # map to users and aggregate to country or other level
 # https://gist.github.com/kdaily/c68fe3038780057db530891d2603393d
 
-### CREATE CHALLENGE LOCATION MAPS
-makeChallengeLocationMap <- function(location_text_filePath, mapName) {
-  challenge_stats = read.csv(location_text_filePath,sep = "\t",stringsAsFactors = F)
-  visited = challenge_stats$locations
-  locations = c()
-  for (loc in visited) {
-    locations = c(locations, strsplit(loc,"[|]")[[1]])
-  }
-  locationDB = synTableQuery('select * from syn9730854')
-  locationdbdf = locationDB$asDataFrame()
-  unique_locations = unique(locations)
-  notFoundInDB = unique_locations[!unique_locations %in% locationdbdf$location]
-  notFoundInDB = c()
-  if (length(notFoundInDB) > 0) {
-    ll.visited = geocode(notFoundInDB)
-    ll.visited$location = notFoundInDB
-    ll.visited.all = rbind(locationdbdf,ll.visited)
-    schema <- synGet('syn9730854')
-    tableToAppend <- Table(schema, ll.visited)
-    table <- synStore(tableToAppend)
-  } else {
-    ll.visited.all = locationdbdf
-  }
-  visited = data.frame(locations)
-  mergedData = merge.data.frame(visited, ll.visited.all, by.x = "locations",by.y = "location")
-  mergedData = mergedData[!is.na(mergedData$lat),]
+synapse_location_df <- function(ur) {
+  resp <- httr::GET(url)
+  data_raw_ugly <- jsonlite::fromJSON(rawToChar(resp$content))
+  locations_df <- tibble::tibble(location = data_raw_ugly$location,
+                                 longitude = purrr::map_dbl(data_raw_ugly$latLng, 2),
+                                 latitude = purrr::map_dbl(data_raw_ugly$latLng, 1))
   
-  mergedData$combined <- paste(mergedData$lon, mergedData$lat)
-  noduplicates <- mergedData[!duplicated(mergedData$combined),]
-  count <- table(mergedData$combined)
+  return(locations_df)
+}
+
+### CREATE CHALLENGE LOCATION MAPS
+makeChallengeLocationMap <- function(mapName) {
+  
+  challenge_teams = synTableQuery("select challengeParticipants, challengePreregistrants from syn10163902")
+  challenge_teamsdf = as.data.frame(challenge_teams)
+  all_teams = c(challenge_teamsdf$challengeParticipants, challenge_teamsdf$challengePreregistrants)
+  all_teams = all_teams[!is.na(all_teams)]
+  all_locationsdf = data.frame()
+  for (team in all_teams) {
+    url = glue::glue("https://s3.amazonaws.com/geoloc.sagebase.org/{team}.json")
+    locationdf = synapse_location_df(url)
+    all_locationsdf = rbind(all_locationsdf, locationdf)
+  }
+  
+  
+  all_locationsdf$combined <- paste(all_locationsdf$longitude, all_locationsdf$latitude)
+  noduplicates <- all_locationsdf[!duplicated(all_locationsdf$combined),]
+  count <- table(all_locationsdf$combined)
   noduplicates$density <- count[match(noduplicates$combined, names(count))]
-  visit.x <- noduplicates$lon
-  visit.y <- noduplicates$lat
+  visit.x <- noduplicates$longitude
+  visit.y <- noduplicates$latitude
+  pdf("locations_density_huge.pdf")
   pdf(mapName)
   # mapgilbert <- get_map(maptype = c("satellite")
-  map("world",
+  maps::map("world",
       fill = TRUE,
       col = "grey",
       bg = "white",
       ylim = c(-60, 90),
       mar = c(0,0,0,0))
   #log10 is 0 sometimes
- # points(visit.x,visit.y, col="red", pch=20, bg=24, cex=log10(noduplicates$density)*2+1, lwd=.4)
+  points(visit.x,visit.y,
+         col="red",
+         pch=20,
+         bg=24,
+         cex=log10(noduplicates$density)*2 + 1, lwd=.4)
   points(visit.x,visit.y,
          col = "red",
          pch = 20,
          bg = 24,
          lwd = .4)
   dev.off()
-  pdf("usa.pdf")
-  map("usa",
-      fill = TRUE,
-      col = "grey",
-      bg = "white",
-      mar = c(0,0,0,0))
-  #log10 is 0 sometimes
-  points(visit.x,
-         visit.y,
-         col = "red",
-         pch = 20,
-         bg = 24,
-         cex = log10(noduplicates$density)*3 + 1,
-         lwd = .4)
-  dev.off()
-  pdf("europe.pdf")
-  map("world",
-      fill = TRUE,
-      col = "grey",
-      bg = "white",
-      xlim = c(-20, 59),
-      ylim = c(35, 71),
-      mar = c(0,0,0,0))
-  points(visit.x,
-         visit.y,
-         col = "red",
-         pch = 20,
-         bg = 24,
-         cex = log10(noduplicates$density)*3 + 1,
-         lwd = .4)
-  dev.off()
-  pdf("china.pdf")
-  map("world",
-      fill = TRUE,
-      col = "grey",
-      bg = "white",
-      xlim = c(50, 129),
-      ylim = c(15, 51),
-      mar = c(0,0,0,0))
-  points(visit.x,
-         visit.y,
-         col = "red",
-         pch = 20,
-         bg = 24,
-         cex = log10(noduplicates$density)*3 + 1,
-         lwd = .4)
-  dev.off()
+  # pdf("usa.pdf")
+  # map("usa",
+  #     fill = TRUE,
+  #     col = "grey",
+  #     bg = "white",
+  #     mar = c(0,0,0,0))
+  # #log10 is 0 sometimes
+  # points(visit.x,
+  #        visit.y,
+  #        col = "red",
+  #        pch = 20,
+  #        bg = 24,
+  #        cex = log10(noduplicates$density)*3 + 1,
+  #        lwd = .4)
+  # dev.off()
+  # pdf("europe.pdf")
+  # map("world",
+  #     fill = TRUE,
+  #     col = "grey",
+  #     bg = "white",
+  #     xlim = c(-20, 59),
+  #     ylim = c(35, 71),
+  #     mar = c(0,0,0,0))
+  # points(visit.x,
+  #        visit.y,
+  #        col = "red",
+  #        pch = 20,
+  #        bg = 24,
+  #        cex = log10(noduplicates$density)*3 + 1,
+  #        lwd = .4)
+  # dev.off()
+  # pdf("china.pdf")
+  # map("world",
+  #     fill = TRUE,
+  #     col = "grey",
+  #     bg = "white",
+  #     xlim = c(50, 129),
+  #     ylim = c(15, 51),
+  #     mar = c(0,0,0,0))
+  # points(visit.x,
+  #        visit.y,
+  #        col = "red",
+  #        pch = 20,
+  #        bg = 24,
+  #        cex = log10(noduplicates$density)*3 + 1,
+  #        lwd = .4)
+  # dev.off()
 }
 
 #Must make challenge_stats.tsv exist first (This file can be generated by running python createChallengeStatDf.py)
-location_text_filePath <- "statistics/challenge_stats.tsv"
-makeChallengeLocationMap(location_text_filePath, "statistics/challenge_locations.pdf")
+makeChallengeLocationMap("statistics/challenge_locations.pdf")
 
 #location_text_filePath <- "~/sage_projects/DREAM/statistics/DM_challenge_locations.txt"
 #makeChallengeLocationMap(location_text_filePath, "~/sage_projects/DREAM/statistics/DM_challenge_locations.pdf")
