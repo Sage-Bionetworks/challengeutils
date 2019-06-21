@@ -24,5 +24,11 @@ def test_get_forum_threads():
     '''
     Test get forum threads
     '''
-    with mock.patch.object(discussion, "_get_forum_obj") as patch_get_obj:
-        
+    with mock.patch.object(discussion,
+                           "_get_forum_obj",
+                           return_value=FORUM_OBJ) as patch_get_obj,\
+        mock.patch.object(syn,
+                          "_GET_paginated") as patch_syn_get:
+        discussion.get_forum_threads(syn, PROJECTID)
+        patch_get_obj.assert_called_once()
+        patch_syn_get.assert_called_once()
