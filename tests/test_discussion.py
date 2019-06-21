@@ -30,5 +30,8 @@ def test_get_forum_threads():
         mock.patch.object(syn,
                           "_GET_paginated") as patch_syn_get:
         discussion.get_forum_threads(syn, PROJECTID)
-        patch_get_obj.assert_called_once()
-        patch_syn_get.assert_called_once()
+        patch_get_obj.assert_called_once_with(syn, PROJECTID)
+        patch_syn_get.assert_called_once_with(
+            '/forum/{forumid}/threads?filter={query_filter}'.format(
+                forumid=FORUM_OBJ['id'], query_filter="EXCLUDE_DELETED"),
+            limit=20, offset=0)
