@@ -19,9 +19,8 @@ def _get_forum_obj(syn, synid):
     return(forum_obj)
 
 
-def get_forum_threads(
-        syn, synid, query_filter='EXCLUDE_DELETED',
-        limit=20, offset=0):
+def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
+                      limit=20, offset=0):
     """
     Get threads from a forum
 
@@ -45,9 +44,8 @@ def get_forum_threads(
     return(response)
 
 
-def get_thread_replies(
-        syn, threadid, query_filter='EXCLUDE_DELETED',
-        limit=20, offset=0):
+def get_thread_replies(syn, threadid, query_filter='EXCLUDE_DELETED',
+                       limit=20, offset=0):
     """
     Get thread replies from a thread
 
@@ -68,6 +66,22 @@ def get_thread_replies(
     return(response)
 
 
+def _get_text(syn, uri):
+    '''
+    Get the text from a message url
+
+    Args:
+        syn: Synapse object
+        uri: rest call URL
+
+    Returns:
+        response: Request response
+    '''
+    text_url = syn.restGET(uri)
+    response = requests.get(text_url['messageUrl'].split("?")[0])
+    return(response)
+
+
 def get_thread_text(syn, messagekey):
     '''
     Get thread text by the messageKey that is returned by getting thread
@@ -79,11 +93,9 @@ def get_thread_text(syn, messagekey):
     Returns:
         str: Thread text
     '''
-    thread_text_url = syn.restGET(
-        "/thread/messageUrl?messageKey={key}".format(key=messagekey))
-    thread_text = requests.get(
-        thread_text_url['messageUrl'].split("?")[0])
-    return(thread_text.text)
+    uri = "/thread/messageUrl?messageKey={key}".format(key=messagekey)
+    thread_response = _get_text(syn, uri)
+    return(thread_response.text)
 
 
 def get_thread_reply_text(syn, messagekey):
@@ -98,11 +110,9 @@ def get_thread_reply_text(syn, messagekey):
     Returns:
         str: Thread text
     '''
-    thread_reply_text_url = syn.restGET(
-        "/reply/messageUrl?messageKey={key}".format(key=messagekey))
-    thread_reply_text = requests.get(
-        thread_reply_text_url['messageUrl'].split("?")[0])
-    return(thread_reply_text.text)
+    uri = "/reply/messageUrl?messageKey={key}".format(key=messagekey)
+    thread_reply_response = _get_text(syn, uri)
+    return(thread_reply_response.text)
 
 
 def get_forum_participants(syn, synid):
