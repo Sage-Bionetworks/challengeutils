@@ -8,17 +8,17 @@
 # Author: thomas.yu
 #
 ###############################################################################
-import logging
 from datetime import timedelta
 import importlib
+import logging
 
 import synapseclient
 from synapseclient import Evaluation
 from synapseclient.exceptions import SynapseAuthenticationError
 from synapseclient.exceptions import SynapseNoCredentialsError
 from synapseclient.annotations import to_submission_status_annotations
-import challengeutils
-from scoring_harness import lock, messages
+import challengeutils.utils
+from . import lock, messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)

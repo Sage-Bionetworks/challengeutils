@@ -1,7 +1,7 @@
-import synapseclient
-import urllib
-import sys
 import json
+import sys
+import urllib
+import synapseclient
 
 
 def _switch_annotation_permission(add_annotations,

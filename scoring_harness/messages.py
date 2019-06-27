@@ -1,6 +1,4 @@
 # Messages for challenge scoring script.
-from __future__ import unicode_literals
-
 DEFAULTS = dict(
     challenge_instructions_url="https://www.synapse.org/{challenge_synid}",
     support_forum_url="https://www.synapse.org/#!Synapse:{challenge_synid}/discussion/default",

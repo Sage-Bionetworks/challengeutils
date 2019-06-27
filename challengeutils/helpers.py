@@ -1,9 +1,9 @@
 import os
-import synapseclient
-import challengeutils
-import synapseutils
 import sys
 import time
+import synapseclient
+import synapseutils
+from . import utils
 
 
 def rename_submission_files(syn, evaluationid, download_location="./",
@@ -51,7 +51,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
     """
 
     challenge_ent = syn.get(synid)
-    challenge_obj = challengeutils.utils.get_challengeid(challenge_ent)
+    challenge_obj = utils.get_challengeid(challenge_ent)
     registered_teams = syn._GET_paginated(
         "/challenge/{}/challengeTeam".format(challenge_obj['id']))
     for i in registered_teams:
@@ -99,8 +99,7 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
 
     evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = \
-        challengeutils.utils.evaluation_queue_query(syn, evaluation_query)
+    query_results = utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
         last_updated = int(result[workflow_last_updated_key])
@@ -109,7 +108,7 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
         if model_run_time > quota:
             status = syn.getSubmissionStatus(result['objectId'])
             add_annotations = {time_remaining_key: 0}
-            status = challengeutils.utils.update_single_submission_status(
+            status = utils.update_single_submission_status(
                 status, add_annotations)
             syn.store(status)
 
@@ -152,6 +151,5 @@ def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
             syn.setPermissions(entity, "3324230", adminPriv)
             synapseutils.copy(syn, sub.entityId, entity.id)
             archived = {"archived": entity.id}
-            status = challengeutils.utils.update_single_submission_status(
-                status, archived)
+            status = utils.update_single_submission_status(status, archived)
             syn.store(status)
