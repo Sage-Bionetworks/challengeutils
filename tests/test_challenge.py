@@ -2,6 +2,7 @@ import mock
 import synapseclient
 from scoring_harness.challenge import score_single_submission
 from scoring_harness.challenge import score
+from scoring_harness.challenge import validate_single_submission
 
 syn = synapseclient.Synapse()
 SCORES = {"score": 5}
@@ -9,11 +10,15 @@ MESSAGE = "passed"
 ERROR_MESSAGE = "error for days"
 
 
+def validation_func(path, truth):
+    return(True, MESSAGE)
+
+
 def scoring_func(path, truth):
     return(SCORES, MESSAGE)
 
 
-def invalid_scoring_func(path, truth):
+def invalid_func(path, truth):
     raise ValueError(ERROR_MESSAGE)
 
 
@@ -72,17 +77,17 @@ def test_storestatus_score_single_submission():
         patch_store.assert_called_once_with(expected_status)
         # Return the stored status
         assert status == store_return
-        assert message == "passed"
+        assert message == MESSAGE
 
 
-def test_invalid_single_submission():
+def test_invalid_score_single_submission():
     '''
     Test invalid submission
     '''
     status = synapseclient.SubmissionStatus(status="VALIDATED")
     status, message = score_single_submission(
         syn, SUBMISSION, status,
-        invalid_scoring_func, "path", dry_run=True)
+        invalid_func, "path", dry_run=True)
     assert status == {'status': 'INVALID'}
     assert message == ERROR_MESSAGE
 
@@ -148,3 +153,77 @@ def test_score():
             challenge_synid="syn1234"
         )
         patch_get_user_name.assert_called_once_with(SYN_USERPROFILE)
+
+
+def test_valid_validate_single_submission():
+    '''
+    Test validation of single valid submission
+    '''
+    status = synapseclient.SubmissionStatus(status="VALIDATED")
+    valid, error, message = validate_single_submission(
+        syn, SUBMISSION, status, validation_func, "path", dry_run=True)
+    assert valid
+    assert error is None
+    assert message == MESSAGE
+
+
+def test_storestatus_validate_single_submission():
+    '''
+    Test storing of status
+    '''
+    status = synapseclient.SubmissionStatus(status="VALIDATED")
+    with mock.patch.object(syn, "store") as patch_store:
+        status = synapseclient.SubmissionStatus(status="VALIDATED")
+        valid, error, message = validate_single_submission(
+            syn, SUBMISSION, status, validation_func, "path")
+        expected_status = {
+            "annotations": {
+                'stringAnnos': [{
+                    "isPrivate": False,
+                    "key": "FAILURE_REASON",
+                    "value": ''
+                }]
+            },
+            "status": "VALIDATED"
+        }
+        assert valid
+        assert error is None
+        assert message == MESSAGE
+        patch_store.assert_called_once_with(expected_status)
+
+
+def test_invalid_validate_single_submission():
+    '''
+    Test invalid submission
+    '''
+    status = synapseclient.SubmissionStatus(status="VALIDATED")
+    valid, error, message = validate_single_submission(
+        syn, SUBMISSION, status, invalid_func, "path", dry_run=True)
+    assert not valid
+    assert isinstance(error, ValueError)
+    assert message == ERROR_MESSAGE
+
+
+def test_storeinvalid_validate_single_submission():
+    '''
+    Test storing of status
+    '''
+    status = synapseclient.SubmissionStatus(status="VALIDATED")
+    with mock.patch.object(syn, "store") as patch_store:
+        status = synapseclient.SubmissionStatus(status="VALIDATED")
+        valid, error, message = validate_single_submission(
+            syn, SUBMISSION, status, invalid_func, "path")
+        expected_status = {
+            "annotations": {
+                'stringAnnos': [{
+                    "isPrivate": False,
+                    "key": "FAILURE_REASON",
+                    "value": ERROR_MESSAGE
+                }]
+            },
+            "status": "INVALID"
+        }
+        assert not valid
+        assert isinstance(error, ValueError)
+        assert message == ERROR_MESSAGE
+        patch_store.assert_called_once_with(expected_status)
