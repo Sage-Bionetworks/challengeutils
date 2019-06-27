@@ -158,10 +158,9 @@ def validate(syn,
         submission = syn.getSubmission(submission)
 
         is_valid, validation_error, validation_message = \
-            validate_single_submission(
-                syn, submission, status,
-                validation_func, goldstandard_path,
-                dry_run=dry_run)
+            validate_single_submission(syn, submission, status,
+                                       validation_func, goldstandard_path,
+                                       dry_run=dry_run)
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)
@@ -229,9 +228,8 @@ def score_single_submission(syn, submission, status,
 
     except Exception as ex1:
         score = dict()
-        logger.error(
-            'Error scoring submission {} {}:\n'.format(
-                submission.name, submission.id))
+        logger.error('Error scoring submission {} {}:\n'.format(submission.name,
+                                                                submission.id))
         logger.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         # ex1 only happens in this scope in python3,
         # so must store message as a variable
@@ -275,8 +273,7 @@ def score(syn,
 
     logger.info('Scoring {} {}'.format(evaluation.id, evaluation.name))
     logger.info("-" * 20)
-    submission_bundle = \
-        syn.getSubmissionBundles(evaluation, status=status)
+    submission_bundle = syn.getSubmissionBundles(evaluation, status=status)
     for submission, status in submission_bundle:
         # refetch the submission so that we get the file path
         submission = syn.getSubmission(submission)
