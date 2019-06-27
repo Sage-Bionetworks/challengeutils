@@ -1,8 +1,8 @@
-import pytest
 import mock
-import challengeutils
-import synapseclient
+import pytest
 import re
+import challengeutils.utils
+import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 
 syn = mock.create_autospec(synapseclient.Synapse)
