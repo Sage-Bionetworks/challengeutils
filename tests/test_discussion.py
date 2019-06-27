@@ -37,6 +37,13 @@ REPLY_OBJ = {'threadId': THREAD_OBJ['id'],
              'forumId': FORUM_OBJ['id']}
 
 
+class TEXT_RESPONSE_MOCK:
+    '''
+    This is to mock the request.get text
+    '''
+    text = "text"
+
+
 def test__get_forum_obj():
     '''
     Test getting forum object
@@ -105,10 +112,9 @@ def test__get_text():
 
 def test_get_thread_text():
     messagekey = THREAD_OBJ['messageKey']
-    class textresponse:
-        text = "text"
     with mock.patch.object(challengeutils.discussion,
-                           "_get_text", return_value=textresponse) as patch_get_text:
+                           "_get_text",
+                           return_value=TEXT_RESPONSE_MOCK) as patch_get_text:
         thread_text = challengeutils.discussion.get_thread_text(syn, messagekey)
         uri = "/thread/messageUrl?messageKey={key}".format(key=messagekey)
         assert thread_text == 'text'
@@ -117,10 +123,9 @@ def test_get_thread_text():
 
 def test_get_thread_reply_text():
     messagekey = REPLY_OBJ['messageKey']
-    class textresponse:
-        text = "text"
     with mock.patch.object(challengeutils.discussion,
-                           "_get_text", return_value=textresponse) as patch_get_text:
+                           "_get_text",
+                           return_value=TEXT_RESPONSE_MOCK) as patch_get_text:
         thread_text = challengeutils.discussion.get_thread_reply_text(syn, messagekey)
         uri = "/reply/messageUrl?messageKey={key}".format(key=messagekey)
         assert thread_text == 'text'
@@ -131,9 +136,11 @@ def test_get_forum_participants():
     threads = [THREAD_OBJ]
     profile = synapseclient.UserProfile(ownerId="test")
     with mock.patch.object(challengeutils.discussion,
-                           "get_forum_threads", return_value=threads) as patch_get_threads,\
+                           "get_forum_threads",
+                           return_value=threads) as patch_get_threads,\
         mock.patch.object(syn,
-                          "getUserProfile", return_value=profile) as patch_getuserprofile:
+                          "getUserProfile",
+                          return_value=profile) as patch_getuserprofile:
         participants = challengeutils.discussion.get_forum_participants(syn, PROJECTID)
         patch_get_threads.assert_called_once_with(syn, PROJECTID)
         patch_getuserprofile.assert_called_once_with('2222')
