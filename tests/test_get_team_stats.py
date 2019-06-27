@@ -1,5 +1,5 @@
 import mock
-import challengeutils
+import challengeutils.utils
 import synapseclient
 
 member1 = challengeutils.utils.NewUserProfile(

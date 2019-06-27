@@ -25,11 +25,10 @@ ENTITY_PERMS_MAPPINGS = {'view': VIEW,
                          'remove': []}
 
 
-def _set_permissions(
-        syn,
-        syn_obj,
-        principalid,
-        permission_level):
+def _set_permissions(syn,
+                     syn_obj,
+                     principalid,
+                     permission_level):
     """
     Helper function to set the ACL on entity or evaluation
 
@@ -57,8 +56,8 @@ def _set_permissions(
         accessType=permission_level_mapping[permission_level])
 
 
-def set_evaluation_permissions(
-        syn, evaluation, principalid, permission_level="view"):
+def set_evaluation_permissions(syn, evaluation, principalid,
+                               permission_level="view"):
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)
@@ -79,8 +78,8 @@ def set_evaluation_permissions(
         syn, evaluation, principalid, permission_level)
 
 
-def set_entity_permissions(
-        syn, entity, principalid, permission_level="download"):
+def set_entity_permissions(syn, entity, principalid,
+                           permission_level="download"):
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)

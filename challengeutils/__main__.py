@@ -1,9 +1,12 @@
-import synapseclient
 import argparse
 import pandas as pd
-from challengeutils import createchallenge, mirrorwiki, utils, \
-                           writeup_attacher, permissions, \
-                           download_current_lead_submission as dl_cur
+import synapseclient
+from . import createchallenge
+from . import mirrorwiki
+from . import utils
+from . import writeup_attacher
+from . import permissions
+from . import download_current_lead_submission as dl_cur
 
 
 def command_mirrorwiki(syn, args):
