@@ -129,7 +129,8 @@ def get_forum_participants(syn, synid):
     threads = get_forum_threads(syn, synid)
     users = set()
     for thread in threads:
-        users.add(thread['activeAuthors'])
+        unique_users = set(thread['activeAuthors'])
+        users.update(unique_users)
     userprofiles = [syn.getUserProfile(user) for user in users]
     return(userprofiles)
 
