@@ -88,13 +88,13 @@ def validate_single_submission(syn, submission, status,
             submission_input = submission
         else:
             submission_input = submission.filePath
-        is_valid, validation_message = \
-            validation_func(submission_input, goldstandard_path)
+        is_valid, validation_message = validation_func(submission_input,
+                                                       goldstandard_path)
     except Exception as ex1:
         is_valid = False
-        logger.error(
-            "Exception during validation: {} {} {}".format(
-                type(ex1), ex1, str(ex1)))
+        logger.error("Exception during validation: {} {} {}".format(type(ex1),
+                                                                    ex1,
+                                                                    str(ex1)))
         # ex1 only happens in this scope in python3,
         # so must store validation_error as a variable
         validation_error = ex1
@@ -107,10 +107,9 @@ def validate_single_submission(syn, submission, status,
     else:
         failure_reason = {"FAILURE_REASON": ''}
 
-    add_annotations = to_submission_status_annotations(
-        failure_reason, is_private=False)
-    status = challengeutils.utils.update_single_submission_status(
-        status, add_annotations)
+    add_annotations = to_submission_status_annotations(failure_reason,
+                                                       is_private=False)
+    status = challengeutils.utils.update_single_submission_status(status, add_annotations)
 
     if not dry_run:
         status = syn.store(status)
@@ -151,8 +150,7 @@ def validate(syn,
     logger.info("Validating {} {}".format(evaluation.id, evaluation.name))
     logger.info("-" * 20)
 
-    submission_bundles = \
-        syn.getSubmissionBundles(evaluation, status=status)
+    submission_bundles = syn.getSubmissionBundles(evaluation, status=status)
     for submission, status in submission_bundles:
         # refetch the submission so that we get the file path
         # to be later replaced by a "downloadFiles" flag on
@@ -168,16 +166,15 @@ def validate(syn,
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)
         if is_valid:
-            messages.validation_passed(
-                syn=syn,
-                userIds=[submission.userId],
-                acknowledge_receipt=acknowledge_receipt,
-                dry_run=dry_run,
-                username=get_user_name(profile),
-                queue_name=evaluation.name,
-                submission_id=submission.id,
-                submission_name=submission.name,
-                challenge_synid=challenge_synid)
+            messages.validation_passed(syn=syn,
+                                       userIds=[submission.userId],
+                                       acknowledge_receipt=acknowledge_receipt,
+                                       dry_run=dry_run,
+                                       username=get_user_name(profile),
+                                       queue_name=evaluation.name,
+                                       submission_id=submission.id,
+                                       submission_name=submission.name,
+                                       challenge_synid=challenge_synid)
         else:
             if isinstance(validation_error, AssertionError):
                 sendTo = [submission.userId]
@@ -186,17 +183,16 @@ def validate(syn,
                 sendTo = admin_user_ids
                 username = "Challenge Administrator"
 
-            messages.validation_failed(
-                syn=syn,
-                userIds=sendTo,
-                send_messages=send_messages,
-                dry_run=dry_run,
-                username=username,
-                queue_name=evaluation.name,
-                submission_id=submission.id,
-                submission_name=submission.name,
-                message=validation_message,
-                challenge_synid=challenge_synid)
+            messages.validation_failed(syn=syn,
+                                       userIds=sendTo,
+                                       send_messages=send_messages,
+                                       dry_run=dry_run,
+                                       username=username,
+                                       queue_name=evaluation.name,
+                                       submission_id=submission.id,
+                                       submission_name=submission.name,
+                                       message=validation_message,
+                                       challenge_synid=challenge_synid)
     logger.info("-" * 20)
 
 
@@ -220,18 +216,15 @@ def score_single_submission(syn, submission, status,
     '''
     status.status = "INVALID"
     try:
-        score, message = scoring_func(
-            submission.filePath, goldstandard_path)
+        score, message = scoring_func(submission.filePath, goldstandard_path)
 
         logger.info("scored: {} {} {} {}".format(
             submission.id, submission.name,
             submission.userId, score))
 
-        add_annotations = to_submission_status_annotations(
-            score, is_private=True)
-        status = challengeutils.utils.update_single_submission_status(
-            status, add_annotations)
-
+        add_annotations = to_submission_status_annotations(score,
+                                                           is_private=True)
+        status = challengeutils.utils.update_single_submission_status(status, add_annotations)
         status.status = "SCORED"
 
     except Exception as ex1:
@@ -288,39 +281,37 @@ def score(syn,
         # refetch the submission so that we get the file path
         submission = syn.getSubmission(submission)
 
-        status, message = score_single_submission(
-            syn, submission, status,
-            scoring_func, goldstandard_path,
-            dry_run=dry_run)
+        status, message = score_single_submission(syn, submission, status,
+                                                  scoring_func,
+                                                  goldstandard_path,
+                                                  dry_run=dry_run)
 
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)
 
         if status.status == 'SCORED':
-            messages.scoring_succeeded(
-                syn=syn,
-                userIds=[submission.userId],
-                send_messages=send_messages,
-                dry_run=dry_run,
-                message=message,
-                username=get_user_name(profile),
-                queue_name=evaluation.name,
-                submission_name=submission.name,
-                submission_id=submission.id,
-                challenge_synid=challenge_synid)
+            messages.scoring_succeeded(syn=syn,
+                                       userIds=[submission.userId],
+                                       send_messages=send_messages,
+                                       dry_run=dry_run,
+                                       message=message,
+                                       username=get_user_name(profile),
+                                       queue_name=evaluation.name,
+                                       submission_name=submission.name,
+                                       submission_id=submission.id,
+                                       challenge_synid=challenge_synid)
         else:
-            messages.scoring_error(
-                syn=syn,
-                userIds=admin_user_ids,
-                send_messages=send_messages,
-                dry_run=dry_run,
-                message=message,
-                username="Challenge Administrator,",
-                queue_name=evaluation.name,
-                submission_name=submission.name,
-                submission_id=submission.id,
-                challenge_synid=challenge_synid)
+            messages.scoring_error(syn=syn,
+                                   userIds=admin_user_ids,
+                                   send_messages=send_messages,
+                                   dry_run=dry_run,
+                                   message=message,
+                                   username="Challenge Administrator,",
+                                   queue_name=evaluation.name,
+                                   submission_name=submission.name,
+                                   submission_id=submission.id,
+                                   challenge_synid=challenge_synid)
     logger.info("-" * 20)
 
 
@@ -411,20 +402,18 @@ def main(args):
             "in your EVALUATION_QUEUES_CONFIG")
 
     if args.evaluation is not None:
-        check_queue_in_config = [
-            eval_queue in evaluation_queue_maps
-            for eval_queue in args.evaluation]
+        check_queue_in_config = [eval_queue in evaluation_queue_maps
+                                 for eval_queue in args.evaluation]
         if not all(check_queue_in_config):
-            raise ValueError(
-                "If evaluation is specified, must match an 'id' in"
-                "EVALUATION_QUEUES_CONFIG")
+            raise ValueError("If evaluation is specified, must match an 'id' "
+                             "in EVALUATION_QUEUES_CONFIG")
     # Acquire lock, don't run two scoring scripts at once
     try:
-        update_lock = lock.acquire_lock_or_fail(
-            'challenge', max_age=timedelta(hours=4))
+        update_lock = lock.acquire_lock_or_fail('challenge',
+                                                max_age=timedelta(hours=4))
     except lock.LockedException:
-        logger.error(
-            "Is the scoring script already running? Can't acquire lock.")
+        logger.error("Is the scoring script already running? "
+                     "Can't acquire lock.")
         # can't acquire lock, so return error code 75 which is a
         # temporary error according to /usr/include/sysexits.h
         return 75
@@ -435,13 +424,12 @@ def main(args):
         logger.error('Error in challenge.py:')
         logger.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         if args.admin_user_ids:
-            messages.error_notification(
-                syn=syn,
-                send_notifications=args.notifications,
-                userIds=args.admin_user_ids,
-                dry_run=args.dry_run,
-                message=str(ex1),
-                queue_name=challenge_name)
+            messages.error_notification(syn=syn,
+                                        send_notifications=args.notifications,
+                                        userIds=args.admin_user_ids,
+                                        dry_run=args.dry_run,
+                                        message=str(ex1),
+                                        queue_name=challenge_name)
 
     finally:
         update_lock.release()
