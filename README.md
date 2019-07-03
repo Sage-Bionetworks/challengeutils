@@ -50,6 +50,14 @@ This is a convenience function to change the status of a submission
 challengeutils changestatus 1234545 INVALID
 ```
 
+**Making WorkflowHook submission invalid**
+
+The challenge workflow templates and workflow hooks together add a 'prediction_file_status' to the submission but makes the submission status 'ACCEPTED'. This is an issue because the submission status is used for synapse submission quotas.  This function will check the 'prediction_file_status'. If it is 'INVALID' make the submission status 'INVALID' as well.
+
+```
+challengeutils makehooksubinvalid 999999
+```
+
 **Attaching write ups to main submission queue**
 
 Most challenges require participants to submit a writeup.  Using the new archive-challenge-project-tool system of receiving writeups, this is a convenience function to merge the writeup and archived write up Synapse ids to the main challenge queue

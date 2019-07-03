@@ -98,8 +98,7 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
 
     evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = \
-        utils.evaluation_queue_query(syn, evaluation_query)
+    query_results = utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
         last_updated = int(result[workflow_last_updated_key])
