@@ -111,3 +111,28 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
             status = utils.update_single_submission_status(
                 status, add_annotations)
             syn.store(status)
+
+
+def make_submission_status_invalid(syn, evaluationid,
+                                   file_status_key='prediction_file_status'):
+    '''
+    The challenge workflow templates and workflow hooks together add a
+    'prediction_file_status' to the submission but makes the submission
+    status 'ACCEPTED'. This is an issue because the submission status is used for
+    synapse submission quotas.  This function will check the
+    'prediction_file_status'. If it is 'INVALID' make the submission status
+    'INVALID' as well.
+
+    Args:
+        syn: Synapse object
+        evaluationid: Synapse evaluation queue id
+        file_status_key: Prediction file status annotation key. Defaults to
+                         'prediction_file_status'
+    '''
+    uri = ("select objectId from evaluation_{evalid} "
+           "where status == 'ACCEPTED' and "
+           "{file_status} == 'INVALID'".format(evalid=evaluationid,
+                                               file_status=file_status_key))
+    query_result = utils.evaluation_queue_query(syn, uri)
+    for row in query_result:
+        utils.change_submission_status(syn, row['objectId'], 'INVALID')

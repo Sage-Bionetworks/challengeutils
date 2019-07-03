@@ -7,6 +7,7 @@ from . import utils
 from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
+from . import helpers
 
 
 def command_mirrorwiki(syn, args):
