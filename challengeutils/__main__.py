@@ -60,6 +60,10 @@ def command_dl_cur_lead_sub(syn, args):
         verbose=args.verbose)
 
 
+def command_make_hook_sub_invalid(syn, args):
+    helpers.make_submission_status_invalid(syn, args.evaluationid)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -153,6 +157,14 @@ def build_parser():
         help='Status to change submission to')
 
     parser_change_status.set_defaults(func=command_change_status)
+
+    parser_make_sub_invalid = subparsers.add_parser('makehooksubinvalid',
+                                                    help='Changes submission status with invalid prediction file to invalid')
+    parser_make_sub_invalid.add_argument("evaluationid",
+                                         type=str,
+                                         help="Synapse evaluation id")
+
+    parser_make_sub_invalid.set_defaults(func=command_make_hook_sub_invalid)
 
     parser_attach_writeup = subparsers.add_parser(
         'attachwriteup',
