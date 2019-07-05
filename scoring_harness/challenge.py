@@ -109,7 +109,8 @@ def validate_single_submission(syn, submission, status,
 
     add_annotations = to_submission_status_annotations(failure_reason,
                                                        is_private=False)
-    status = challengeutils.utils.update_single_submission_status(status, add_annotations)
+    status = challengeutils.utils.update_single_submission_status(
+        status, add_annotations)
 
     if not dry_run:
         status = syn.store(status)
@@ -223,13 +224,15 @@ def score_single_submission(syn, submission, status,
 
         add_annotations = to_submission_status_annotations(score,
                                                            is_private=True)
-        status = challengeutils.utils.update_single_submission_status(status, add_annotations)
+        status = challengeutils.utils.update_single_submission_status(
+            status, add_annotations)
         status.status = "SCORED"
 
     except Exception as ex1:
         score = dict()
-        logger.error('Error scoring submission {} {}:\n'.format(submission.name,
-                                                                submission.id))
+        logger.error(
+            'Error scoring submission {} {}:\n'.format(submission.name,
+                                                       submission.id))
         logger.error('{} {} {}'.format(type(ex1), ex1, str(ex1)))
         # ex1 only happens in this scope in python3,
         # so must store message as a variable
