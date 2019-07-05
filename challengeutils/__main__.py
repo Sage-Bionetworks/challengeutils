@@ -59,6 +59,10 @@ def command_dl_cur_lead_sub(syn, args):
         verbose=args.verbose)
 
 
+def command_list_evaluations(syn, args):
+    utils.list_evaluations(syn, args.projectid)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -234,6 +238,16 @@ def build_parser():
 
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
+    parser_list_evals = subparsers.add_parser(
+        'listevaluations',
+        help='List all evaluation queues of a project')
+
+    parser_list_evals.add_argument(
+        "projectid",
+        type=str,
+        help='Synapse id of project')
+
+    parser_list_evals.set_defaults(func=command_list_evaluations)
     return parser
 
 

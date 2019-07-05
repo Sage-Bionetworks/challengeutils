@@ -431,5 +431,5 @@ def list_evaluations(syn, project):
     evaluations = syn.getEvaluationByContentSource(project)
     for evaluation in evaluations:
         logger.info(
-            "Evaluation: {name}({evalid})".format(name=evaluation.name,
+            "Evaluation- {name}({evalid})".format(name=evaluation.name,
                                                   evalid=evaluation.id))
