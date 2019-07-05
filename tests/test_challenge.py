@@ -3,6 +3,7 @@ import synapseclient
 from scoring_harness.challenge import score_single_submission
 from scoring_harness.challenge import score
 from scoring_harness.challenge import validate_single_submission
+from scoring_harness.challenge import validate
 
 syn = synapseclient.Synapse()
 SCORES = {"score": 5}
@@ -22,8 +23,10 @@ def invalid_func(path, truth):
     raise ValueError(ERROR_MESSAGE)
 
 
-QUEUE_INFO_DICT = {
-    'id': '1', 'scoring_func': scoring_func, 'goldstandard_path': "./"}
+QUEUE_INFO_DICT = {'id': '1',
+                   'scoring_func': scoring_func,
+                   'goldstandard_path': "./",
+                   'validation_func': validation_func}
 SUBMISSION = synapseclient.Submission(
     name="foo", entityId="syn123", evaluationId=2, versionNumber=1,
     id="syn222", filePath="foo", userId="222")
@@ -227,3 +230,64 @@ def test_storeinvalid_validate_single_submission():
         assert isinstance(error, ValueError)
         assert message == ERROR_MESSAGE
         patch_store.assert_called_once_with(expected_status)
+
+
+def test_validate():
+    '''
+    Test validate process
+    - get evaluation
+    - get bundles
+    - get submission
+    - score single submission
+    - get users
+    - send emails
+    '''
+    status = synapseclient.SubmissionStatus(status="SCORED")
+
+    with mock.patch.object(
+        syn, "getEvaluation", return_value=EVALUATION) as patch_getevaluation,\
+            mock.patch.object(
+                syn, "getSubmissionBundles",
+                return_value=[(SUBMISSION, status)]) as patch_get_bundles,\
+            mock.patch.object(
+                syn, "getSubmission",
+                return_value=SUBMISSION) as patch_get_sub,\
+            mock.patch("scoring_harness.challenge.validate_single_submission",
+                       return_value=(status, ValueError("foo"), "message")) as patch_validate_single,\
+            mock.patch.object(
+                syn, "getUserProfile",
+                return_value=SYN_USERPROFILE) as patch_get_user,\
+            mock.patch(
+                "scoring_harness.messages.validation_passed") as patch_send,\
+            mock.patch(
+                "scoring_harness.challenge.get_user_name",
+                return_value="foo") as patch_get_user_name:
+        validate(syn,
+                 QUEUE_INFO_DICT,
+                 [1],
+                 "syn1234",
+                 status='RECEIVED',
+                 send_messages=False,
+                 acknowledge_receipt=False,
+                 dry_run=False)
+        patch_getevaluation.assert_called_once_with(QUEUE_INFO_DICT['id'])
+        patch_get_bundles.assert_called_once_with(EVALUATION,
+                                                  status='RECEIVED')
+        patch_get_sub.assert_called_once_with(SUBMISSION)
+        patch_validate_single.assert_called_once_with(syn, SUBMISSION,
+                                                      status,
+                                                      validation_func,
+                                                      QUEUE_INFO_DICT['goldstandard_path'],
+                                                      dry_run=False)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+        patch_send.assert_called_once_with(syn=syn,
+                                           userIds=[SUBMISSION.userId],
+                                           acknowledge_receipt=False,
+                                           dry_run=False,
+                                           username="foo",
+                                           queue_name=EVALUATION.name,
+                                           submission_name=SUBMISSION.name,
+                                           submission_id=SUBMISSION.id,
+                                           challenge_synid="syn1234"
+        )
+        patch_get_user_name.assert_called_once_with(SYN_USERPROFILE)
