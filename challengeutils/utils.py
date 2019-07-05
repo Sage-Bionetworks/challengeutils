@@ -1,7 +1,10 @@
 import json
+import logging
 import sys
 import urllib
 import synapseclient
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def _switch_annotation_permission(add_annotations,
@@ -422,3 +425,11 @@ def team_members_union(syn, a, b):
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
+
+
+def list_evaluations(syn, project):
+    evaluations = syn.getEvaluationByContentSource(project)
+    for evaluation in evaluations:
+        logger.info(
+            "Evaluation: {name}({evalid})".format(name=evaluation.name,
+                                                  evalid=evaluation.id))
