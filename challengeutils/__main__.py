@@ -1,4 +1,6 @@
 import argparse
+import json
+import logging
 import pandas as pd
 import synapseclient
 from . import createchallenge
@@ -7,6 +9,8 @@ from . import utils
 from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
@@ -61,6 +65,17 @@ def command_dl_cur_lead_sub(syn, args):
 
 def command_list_evaluations(syn, args):
     utils.list_evaluations(syn, args.projectid)
+
+
+def command_download_submission(syn, args):
+    submission_dict = utils.download_submission(
+        syn, args.submissionid, download_location=args.download_location)
+    if args.output:
+        with open(args.output, "w") as sub_out:
+            json.dump(submission_dict, sub_out)
+        logger.info(args.output)
+    else:
+        logger.info(submission_dict)
 
 
 def build_parser():
@@ -248,6 +263,28 @@ def build_parser():
         help='Synapse id of project')
 
     parser_list_evals.set_defaults(func=command_list_evaluations)
+
+    parser_download_submission = subparsers.add_parser(
+        'downloadsubmission',
+        help='Download a Synapse submission')
+
+    parser_download_submission.add_argument(
+        "submissionid",
+        type=str,
+        help='Synapse id of submission')
+
+    parser_download_submission.add_argument(
+        "--download_location",
+        type=str,
+        help='Specify download location. Defaults to current working dir',
+        default=".")
+
+    parser_download_submission.add_argument(
+        "--output",
+        type=str,
+        help='Output json results into a file')
+
+    parser_download_submission.set_defaults(func=command_download_submission)
     return parser
 
 

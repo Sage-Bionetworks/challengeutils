@@ -440,3 +440,19 @@ def list_evaluations(syn, project):
         logger.info(
             "Evaluation- {name}({evalid})".format(name=evaluation.name,
                                                   evalid=evaluation.id))
+
+
+def download_submission(syn, submissionid, download_location=None):
+    '''
+    Download submission
+    '''
+    sub = syn.getSubmission(submissionid, downloadLocation=download_location)
+    entity = sub['entity']
+    result = {'docker_repository': sub.get("dockerRepositoryName"),
+              'docker_digest': sub.get("dockerDigest"),
+              'entity_id': entity['id'],
+              'entity_version': entity.get('versionNumber'),
+              'entity_type': entity.get('concreteType'),
+              'evaluation_id': sub['evaluationId'],
+              'file_path': sub['filePath']}
+    return(result)
