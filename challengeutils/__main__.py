@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 import pandas as pd
 import synapseclient
 from . import createchallenge
@@ -71,6 +72,9 @@ def command_download_submission(syn, args):
     submission_dict = utils.download_submission(
         syn, args.submissionid, download_location=args.download_location)
     if args.output:
+        os.rename(submission_dict['file_path'],
+                  'submission-' + args.submissionid)
+        submission_dict['file_path'] = 'submission-' + args.submissionid
         with open(args.output, "w") as sub_out:
             json.dump(submission_dict, sub_out)
         logger.info(args.output)
