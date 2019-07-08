@@ -108,3 +108,10 @@ def test_topublic_update_single_submission_status():
         add_annotations, is_private=False)
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
+
+
+def test_list_evaluations():
+    with mock.patch.object(
+            syn, "getEvaluationByContentSource") as patch_geteval:
+        challengeutils.utils.list_evaluations(syn, "syn1234")
+        patch_geteval.assert_called_once_with("syn1234")

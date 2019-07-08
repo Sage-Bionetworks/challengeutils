@@ -428,6 +428,13 @@ def team_members_union(syn, a, b):
 
 
 def list_evaluations(syn, project):
+    '''
+    List evaluation queues of a Synapse project
+
+    Args:
+        syn: Synapse object
+        project: Synapse id/entity of project
+    '''
     evaluations = syn.getEvaluationByContentSource(project)
     for evaluation in evaluations:
         logger.info(
