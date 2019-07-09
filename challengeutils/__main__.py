@@ -4,6 +4,7 @@ import logging
 import os
 import pandas as pd
 import synapseclient
+from synapseclient.retry import _with_retry
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
@@ -72,14 +73,25 @@ def command_download_submission(syn, args):
     submission_dict = utils.download_submission(
         syn, args.submissionid, download_location=args.download_location)
     if args.output:
-        os.rename(submission_dict['file_path'],
-                  'submission-' + args.submissionid)
+        filepath = submission_dict['file_path']
+        if filepath is not None:
+            os.rename(filepath, 'submission-' + args.submissionid)
+            filepath = 'submission-' + args.submissionid
         submission_dict['file_path'] = 'submission-' + args.submissionid
         with open(args.output, "w") as sub_out:
             json.dump(submission_dict, sub_out)
         logger.info(args.output)
     else:
         logger.info(submission_dict)
+
+def command_annotate_submission_with_json(syn, args):
+    _with_retry(lambda: utils.annotate_submission_with_json(
+        syn, args.submissionid,
+        args.annotation_values,
+        to_public=args.to_public,
+        force_change_annotation_acl=args.force_change_annotation_acl),
+        wait=3,
+        retries=10)
 
 
 def build_parser():
@@ -289,6 +301,31 @@ def build_parser():
         help='Output json results into a file')
 
     parser_download_submission.set_defaults(func=command_download_submission)
+
+    parser_annotate_sub = subparsers.add_parser(
+        'annotatesubmission',
+        help='Annotate a Synapse submission with a json file')
+
+    parser_annotate_sub.add_argument(
+        "submissionid",
+        help="Submission ID")
+    parser_annotate_sub.add_argument(
+        "annotation_values",
+        help="JSON file of annotations with key:value pair")
+    parser_annotate_sub.add_argument(
+        "-p", "--to_public",
+        help="Annotations are by default private except to queue "
+             "administrator(s), so change them to be public",
+        action='store_true')
+    parser_annotate_sub.add_argument(
+        "-f", "--force_change_annotation_acl",
+        help="Ability to update annotations if the key has "
+             "different ACLs, warning will occur if this parameter "
+             "isn't specified and the same key has different ACLs",
+        action='store_true')
+    parser_annotate_sub.set_defaults(
+        func=command_annotate_submission_with_json)
+
     return parser
 
 

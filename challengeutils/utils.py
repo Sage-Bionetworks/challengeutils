@@ -456,3 +456,19 @@ def download_submission(syn, submissionid, download_location=None):
               'evaluation_id': sub['evaluationId'],
               'file_path': sub['filePath']}
     return(result)
+
+
+def annotate_submission_with_json(syn, submissionid, annotation_values,
+                                  to_public=False,
+                                  force_change_annotation_acl=False):
+    '''
+    Annotate submission with annotation values from a json file
+    '''
+    status = syn.getSubmissionStatus(submissionid)
+    with open(annotation_values) as json_data:
+        annotation_json = json.load(json_data)
+    status = update_single_submission_status(
+        status, annotation_json,
+        to_public=to_public,
+        force_change_annotation_acl=force_change_annotation_acl)
+    status = syn.store(status)
