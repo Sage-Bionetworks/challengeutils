@@ -12,7 +12,7 @@ pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
 
 ## Usage
 
-View [here](http://htmlpreview.github.io/?https://github.com/Sage-Bionetworks/challengeutils/blob/master/docs/_build/singlehtml/index.html) for documentation to use this package in python scripts.  Below is documentation for the command line client.
+Below is documentation for the command line client.
 
 ```
 challengeutils -h

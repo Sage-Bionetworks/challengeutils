@@ -1,7 +1,7 @@
 from mock import patch
 import pytest
-import challengeutils
 import synapseclient
+import challengeutils.permissions
 syn = synapseclient.Synapse()
 SET_PERMS = {"set"}
 

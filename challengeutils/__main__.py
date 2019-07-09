@@ -1,9 +1,12 @@
-import synapseclient
 import argparse
 import pandas as pd
-from challengeutils import createchallenge, mirrorwiki, utils, \
-                           writeup_attacher, permissions, \
-                           download_current_lead_submission as dl_cur
+import synapseclient
+from . import createchallenge
+from . import mirrorwiki
+from . import utils
+from . import writeup_attacher
+from . import permissions
+from . import download_current_lead_submission as dl_cur
 
 
 def command_mirrorwiki(syn, args):
@@ -18,7 +21,10 @@ def command_createchallenge(syn, args):
 def command_query(syn, args):
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
-    print(querydf.to_csv(index=False))
+    if args.outputfile is not None:
+        querydf.to_csv(args.outputfile, index=False)
+    else:
+        print(querydf.to_csv(index=False))
 
 
 def command_change_status(syn, args):
@@ -115,6 +121,12 @@ def build_parser():
         "uri",
         type=str,
         help="Synapse ID of the project's wiki you want to copy")
+    parser_query.add_argument(
+        "--outputfile",
+        type=str,
+        help="File that you want your query results to be written to."
+             "If not specified, it is written as stdout.",
+        default=None)
     parser_query.add_argument(
         "--limit",
         type=int,
@@ -235,9 +247,9 @@ def perform_main(syn, args):
 
 def synapse_login(synapse_config):
     try:
-        syn = synapseclient.login()
+        syn = synapseclient.login(silent=True)
     except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config)
+        syn = synapseclient.Synapse(configPath=synapse_config, silent=True)
         syn.login()
     return(syn)
 
