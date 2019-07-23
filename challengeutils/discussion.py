@@ -174,3 +174,9 @@ def create_thread_reply(syn, threadid, message):
     thread_reply_dict = {'threadId': threadid, 'messageMarkdown': message}
     reply_obj = syn.restPOST('/reply', body=json.dumps(thread_reply_dict))
     return(reply_obj)
+
+
+def get_entity_thread_num(syn, entityid):
+    uri = "/entity/{entityid}/threads".format(entityid=entityid)
+    results = syn._GET_paginated(uri)
+    return(results)
