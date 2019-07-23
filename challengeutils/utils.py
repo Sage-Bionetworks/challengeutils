@@ -422,3 +422,40 @@ def team_members_union(syn, a, b):
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
+
+def _get_eligible_contributors(syn, evaluationid, status):
+    '''
+    Helper function to get contributors from a given evaluation id
+
+    Args:
+        syn: Synapse object
+        evaluationid: evaluation id
+        submission_status: Submission status
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    bundles = syn.getSubmissionBundles(evaluationid, status=status)
+    contributors = set()
+    for sub, _ in bundles:
+        principalids = set(contributor['principalId'] for contributor in sub.contributors)
+        contributors.update(principalids)
+    return(contributors)
+
+def get_eligible_contributors(syn, evaluationids, status='SCORED'):
+    '''
+    Function to get contributors from a list of evaluation ids
+
+    Args:
+        syn: Synapse object
+        evaluationids: a list of evaluation ids 
+        status: Submission status. Default = SCORED
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    all_contributors = set()
+    for evaluationid in evaluationids:
+        contributors = _get_eligible_contributors(syn,evaluationid,status)
+        all_contributors = all_contributors.union(contributors)
+    return(all_contributors)
