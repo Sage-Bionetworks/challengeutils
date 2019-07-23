@@ -1,4 +1,5 @@
 import mock
+from mock import patch
 import pytest
 import re
 import challengeutils.utils
@@ -108,3 +109,18 @@ def test_topublic_update_single_submission_status():
         add_annotations, is_private=False)
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
+
+
+def test__get_eligible_contributors():
+    sub = synapseclient.Submission(evaluationId=3, entityId=3, versionNumber=3,
+                                   contributors=[{"principalId": 3}])
+    bundle = [(sub, "temp")]
+    with patch.object(syn, "getSubmissionBundles",
+                      return_value=bundle) as patch_syn_get_bundles:
+        contributors = challengeutils.utils._get_eligible_contributors(
+            syn, 3, "SCORED")
+        patch_syn_get_bundles.assert_called_once_with(
+            3,
+            status="SCORED")
+        print(contributors)
+        assert contributors == set([3])
