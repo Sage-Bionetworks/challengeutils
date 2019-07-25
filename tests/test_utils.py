@@ -1,4 +1,6 @@
+import json
 import mock
+import os
 import pytest
 import re
 import challengeutils.utils
@@ -171,3 +173,29 @@ def test_specifyloc_download_submission():
         patch_get_submission.assert_called_once_with(
             "12345", downloadLocation=".")
         assert sub_dict == expected_submission_dict
+
+
+def test_annotate_submission_with_json():
+    add_annotations = {'test': 2, 'test2': 2}
+    tempfile_path = "temp.json"
+    with open(tempfile_path, "w") as annotation_file:
+        json.dump(add_annotations, annotation_file)
+    status = {"foo": "bar"}
+    with mock.patch.object(
+            syn, "getSubmissionStatus",
+            return_value=status) as patch_get_submission, \
+        mock.patch.object(
+            challengeutils.utils, "update_single_submission_status",
+            return_value=status) as patch_update, \
+            mock.patch.object(syn, "store") as patch_syn_store:
+        challengeutils.utils.annotate_submission_with_json(
+            syn, "1234", tempfile_path,
+            to_public=False,
+            force_change_annotation_acl=False)
+        patch_get_submission.assert_called_once_with("1234")
+        patch_update.assert_called_once_with(
+            status, add_annotations,
+            to_public=False,
+            force_change_annotation_acl=False)
+        patch_syn_store.assert_called_once_with(status)
+    os.unlink(tempfile_path)

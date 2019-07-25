@@ -444,7 +444,15 @@ def list_evaluations(syn, project):
 
 def download_submission(syn, submissionid, download_location=None):
     '''
-    Download submission
+    Download submission and return json
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        download_location: Location to download submission
+
+    Returns:
+        dict: submission json results
     '''
     sub = syn.getSubmission(submissionid, downloadLocation=download_location)
     entity = sub['entity']
@@ -463,6 +471,15 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   force_change_annotation_acl=False):
     '''
     Annotate submission with annotation values from a json file
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        annotation_values: Annotation json file
+        to_public: change these annotations from private to public
+                   (default is False)
+        force_change_annotation_acl: Force change the annotation from
+                                     private to public and vice versa.
     '''
     status = syn.getSubmissionStatus(submissionid)
     with open(annotation_values) as json_data:
