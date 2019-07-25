@@ -84,6 +84,7 @@ def command_download_submission(syn, args):
     else:
         logger.info(submission_dict)
 
+
 def command_annotate_submission_with_json(syn, args):
     _with_retry(lambda: utils.annotate_submission_with_json(
         syn, args.submissionid,
@@ -341,8 +342,8 @@ def synapse_login(synapse_config):
     try:
         syn = synapseclient.login(silent=True)
     except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config, silent=True)
-        syn.login()
+        syn = synapseclient.Synapse(configPath=synapse_config)
+        syn.login(silent=True)
     return(syn)
 
 
