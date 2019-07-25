@@ -1,7 +1,10 @@
 import json
+import logging
 import sys
 import urllib
 import synapseclient
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def _switch_annotation_permission(add_annotations,
@@ -422,3 +425,67 @@ def team_members_union(syn, a, b):
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
+
+
+def list_evaluations(syn, project):
+    '''
+    List evaluation queues of a Synapse project
+
+    Args:
+        syn: Synapse object
+        project: Synapse id/entity of project
+    '''
+    evaluations = syn.getEvaluationByContentSource(project)
+    for evaluation in evaluations:
+        logger.info(
+            "Evaluation- {name}({evalid})".format(name=evaluation.name,
+                                                  evalid=evaluation.id))
+
+
+def download_submission(syn, submissionid, download_location=None):
+    '''
+    Download submission and return json
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        download_location: Location to download submission
+
+    Returns:
+        dict: submission json results
+    '''
+    sub = syn.getSubmission(submissionid, downloadLocation=download_location)
+    entity = sub['entity']
+    result = {'docker_repository': sub.get("dockerRepositoryName"),
+              'docker_digest': sub.get("dockerDigest"),
+              'entity_id': entity['id'],
+              'entity_version': entity.get('versionNumber'),
+              'entity_type': entity.get('concreteType'),
+              'evaluation_id': sub['evaluationId'],
+              'file_path': sub['filePath']}
+    return(result)
+
+
+def annotate_submission_with_json(syn, submissionid, annotation_values,
+                                  to_public=False,
+                                  force_change_annotation_acl=False):
+    '''
+    Annotate submission with annotation values from a json file
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        annotation_values: Annotation json file
+        to_public: change these annotations from private to public
+                   (default is False)
+        force_change_annotation_acl: Force change the annotation from
+                                     private to public and vice versa.
+    '''
+    status = syn.getSubmissionStatus(submissionid)
+    with open(annotation_values) as json_data:
+        annotation_json = json.load(json_data)
+    status = update_single_submission_status(
+        status, annotation_json,
+        to_public=to_public,
+        force_change_annotation_acl=force_change_annotation_acl)
+    status = syn.store(status)
