@@ -1,6 +1,7 @@
 import json
 import sys
 import urllib
+import datetime
 import synapseclient
 
 
@@ -423,7 +424,30 @@ def team_members_union(syn, a, b):
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
 
-def _get_eligible_contributors(syn, evaluationid, status):
+def _check_date_range(date_str, start, end):
+    '''
+    Helper function to check if the date is within range
+    
+    Args:
+        date_str: date string 
+        start: start date in YYYY-MM-DD format, example: 2019-01-01
+        end: end date in YYYY-MM-DD format, example: 2019-01-01
+    
+    Returns:
+        boolean
+    '''
+    result = True
+    if(start is not None or end is not None):
+        date_obj = datetime.datetime.strptime(date_str,'%Y-%m-%dT%H:%M:%S.%fZ')
+        if(start is not None):
+            start_obj = datetime.datetime.strptime(start,'%Y-%m-%d')
+            result = date_obj >= start_obj
+        if(end is not None):
+            end_obj = datetime.datetime.strptime(end,'%Y-%m-%d') + datetime.timedelta(days=1)
+            result = date_obj < end_obj
+    return(result)
+
+def _get_eligible_contributors(syn, evaluationid, status, start, end):
     '''
     Helper function to get contributors from a given evaluation id
 
@@ -431,6 +455,8 @@ def _get_eligible_contributors(syn, evaluationid, status):
         syn: Synapse object
         evaluationid: evaluation id
         submission_status: Submission status
+        start: Start date in YYYY-MM-DD format, example: 2019-01-01
+        end: End date in YYYY-MM-DD format, example: 2019-01-01
 
     Returns:
         Set of contributors' user ids
@@ -438,11 +464,12 @@ def _get_eligible_contributors(syn, evaluationid, status):
     bundles = syn.getSubmissionBundles(evaluationid, status=status)
     contributors = set()
     for sub, _ in bundles:
-        principalids = set(contributor['principalId'] for contributor in sub.contributors)
-        contributors.update(principalids)
+        if(_check_date_range(sub.createdOn, start, end)):
+            principalids = set(contributor['principalId'] for contributor in sub.contributors)
+            contributors.update(principalids)
     return(contributors)
 
-def get_eligible_contributors(syn, evaluationids, status='SCORED'):
+def get_eligible_contributors(syn, evaluationids, status='SCORED', start=None, end=None):
     '''
     Function to get contributors from a list of evaluation ids
 
@@ -450,12 +477,14 @@ def get_eligible_contributors(syn, evaluationids, status='SCORED'):
         syn: Synapse object
         evaluationids: a list of evaluation ids 
         status: Submission status. Default = SCORED
+        start: Start date in YYYY-MM-DD format, example: 2019-01-01
+        end: End date in YYYY-MM-DD format, example: 2019-01-01
 
     Returns:
         Set of contributors' user ids
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_eligible_contributors(syn,evaluationid,status)
+        contributors = _get_eligible_contributors(syn,evaluationid,status,start,end)
         all_contributors = all_contributors.union(contributors)
     return(all_contributors)
