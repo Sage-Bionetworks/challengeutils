@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 import argparse
-import scoring_harness
+import scoring_harness.challenge
 import logging
+
 logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
