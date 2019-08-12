@@ -95,6 +95,15 @@ def command_annotate_submission_with_json(syn, args):
         retries=10)
 
 
+def command_send_email(syn, args):
+    # Must escape the backslash and replace all \n with
+    # html breaks
+    message = args.message.replace("\\n", "<br>")
+    syn.sendMessage(userIds=args.userids,
+                    messageSubject=args.subject,
+                    messageBody=message)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -326,6 +335,31 @@ def build_parser():
         action='store_true')
     parser_annotate_sub.set_defaults(
         func=command_annotate_submission_with_json)
+
+    parser_send_email = subparsers.add_parser(
+        'sendemail',
+        help='Send a Synapse email')
+
+    parser_send_email.add_argument(
+        "--userids",
+        type=str,
+        help='List of user ids',
+        nargs="+",
+        required=True)
+
+    parser_send_email.add_argument(
+        "--subject",
+        type=str,
+        help='Email message subject',
+        required=True)
+
+    parser_send_email.add_argument(
+        "--message",
+        type=str,
+        help='Email message body',
+        required=True)
+
+    parser_send_email.set_defaults(func=command_send_email)
 
     return parser
 
