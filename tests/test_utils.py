@@ -136,9 +136,7 @@ def test__get_eligible_contributors():
             syn, 123, "SCORED","2019-05-06","2019-06-01")
         patch_syn_get_bundles.assert_called_once_with(
             123,
-            status="SCORED",
-            start="2019-05-06",
-            end="2019-06-01")
+            status="SCORED")
         print(contributors)
         assert contributors == set([321])
 
@@ -154,9 +152,7 @@ def test_get_eligible_contributors():
             syn, ids, "SCORED","2019-05-06","2019-06-01")
         patch_syn_get_bundles.assert_called_once_with(
             123,
-            status="SCORED",
-            start="2019-05-06",
-            end="2019-06-01")
+            status="SCORED")
         print(all_contributors)
         assert all_contributors == set([321])
 
