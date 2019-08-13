@@ -137,7 +137,6 @@ def test__get_eligible_contributors():
         patch_syn_get_bundles.assert_called_once_with(
             123,
             status="SCORED")
-        print(contributors)
         assert contributors == set([321])
 
 def test_get_eligible_contributors():
@@ -149,11 +148,7 @@ def test_get_eligible_contributors():
     with patch.object(challengeutils.utils, "_get_eligible_contributors",
                       return_value=contributors) as patch_syn_get_bundles:
         all_contributors = challengeutils.utils.get_eligible_contributors(
-            syn, ids, "SCORED","2019-05-06","2019-06-01")
-        patch_syn_get_bundles.assert_called_once_with(
-            123,
-            status="SCORED")
-        print(all_contributors)
+            syn, ids, "SCORED")
         assert all_contributors == set([321])
 
 def test_list_evaluations():
