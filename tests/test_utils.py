@@ -1,7 +1,9 @@
+#! /Users/xindiguo/python3/bin/python
 import mock
 from mock import patch
 import pytest
 import re
+import challengeutils
 import challengeutils.utils
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
@@ -110,17 +112,50 @@ def test_topublic_update_single_submission_status():
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
 
+def test__check_date_range():
+    '''
+    Test checking date range
+    '''
+    date_str = '2019-05-26T23:59:59.062Z'
+    start = '2019-05-06'
+    end = '2019-06-01'
+    result = challengeutils.utils._check_date_range(date_str, start, end)
+    expected_result = True
+    assert result == expected_result
 
 def test__get_eligible_contributors():
-    sub = synapseclient.Submission(evaluationId=3, entityId=3, versionNumber=3,
-                                   contributors=[{"principalId": 3}])
+    '''
+    Test getting eligible contributors by evaluationID, status, and date range
+    '''
+    sub = synapseclient.Submission(evaluationId=123, entityId="syn1234", versionNumber=1,
+                                   contributors=[{"principalId": 321}], createdOn="2019-05-26T23:59:59.062Z")
     bundle = [(sub, "temp")]
     with patch.object(syn, "getSubmissionBundles",
                       return_value=bundle) as patch_syn_get_bundles:
         contributors = challengeutils.utils._get_eligible_contributors(
-            syn, 3, "SCORED")
+            syn, 123, "SCORED","2019-05-06","2019-06-01")
         patch_syn_get_bundles.assert_called_once_with(
-            3,
-            status="SCORED")
+            123,
+            status="SCORED",
+            start="2019-05-06",
+            end="2019-06-01")
         print(contributors)
-        assert contributors == set([3])
+        assert contributors == set([321])
+
+def test_get_eligible_contributors():
+    '''
+    Test getting eligible contributors by a list of evaluation IDs
+    '''
+    contributors = set([321])
+    ids = [123]
+    with patch.object(challengeutils.utils, "_get_eligible_contributors",
+                      return_value=contributors) as patch_syn_get_bundles:
+        all_contributors = challengeutils.utils.get_eligible_contributors(
+            syn, ids, "SCORED","2019-05-06","2019-06-01")
+        patch_syn_get_bundles.assert_called_once_with(
+            123,
+            status="SCORED",
+            start="2019-05-06",
+            end="2019-06-01")
+        print(all_contributors)
+        assert all_contributors == set([321])
