@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-#! /Users/xindiguo/python3/bin/python
-=======
 import json
->>>>>>> e0c00d24519a313596ba48b914ea5ff958e9d567
 import mock
 from mock import patch
 import os
 import pytest
 import re
-import challengeutils
 import challengeutils.utils
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
