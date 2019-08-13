@@ -1,6 +1,6 @@
 # Messages for challenge scoring script.
 DEFAULTS = dict(
-    challenge_instructions_url="https://www.synapse.org/{challenge_synid}",
+    challenge_instructions_url="https://www.synapse.org/#!Synapse:{challenge_synid}",
     support_forum_url="https://www.synapse.org/#!Synapse:{challenge_synid}/discussion/default",
     scoring_script="The Challenge Admin")
 
