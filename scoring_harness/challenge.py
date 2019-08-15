@@ -280,7 +280,9 @@ def score(syn,
     for submission, status in submission_bundle:
         # refetch the submission so that we get the file path
         submission = syn.getSubmission(submission)
-
+        # If goldstandard path is None, skip scoring
+        if goldstandard_path is None:
+            continue
         status, message = score_single_submission(syn, submission, status,
                                                   scoring_func,
                                                   goldstandard_path,

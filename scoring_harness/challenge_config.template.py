@@ -17,6 +17,16 @@
 # Predictions will be validated and scored
 
 
+def no_score(submission_path, goldstandard_path):
+    '''
+    Use this function for evaluation queues that don't need scoring
+    Args:
+        submission_path:  Path to submission file
+        goldstandard_path: Path to truth file
+    '''
+    pass
+
+
 def validate_func(submission_path, goldstandard_path):
     '''
     Validate submission.
@@ -62,6 +72,17 @@ def validate_writeup(submission, goldstandard_path, syn,
         (True, message) if validated, (False, message) if
         validation fails or throws exception
     '''
+    from synapseclient import Submission, Project
+    not_writeup_error = (
+        "This is the writeup submission queue - submission must be a "
+        "Synapse Project.  Please submit to the subchallenge queues "
+        "for prediction file submissions."
+    )
+    assert isinstance(submission, Submission), not_writeup_error
+    assert isinstance(submission['entity'], Project), not_writeup_error
+    # Replace with the challenge project id here
+    assert submission.entityId != "syn1234", \
+        "Writeup submission must be your project and not the challenge site"
     from synapseclient.exceptions import SynapseHTTPError
     from synapseclient import AUTHENTICATED_USERS
     # Add in users to share this with
@@ -143,5 +164,13 @@ EVALUATION_QUEUES_CONFIG = [
        'scoring_func': score2,
        'validation_func': validate_func,
        'goldstandard_path': 'path/to/sc2gold.txt'
+    },
+    # Write ups don't need to be scored
+    # If goldstandard path is None, the submissions will not be scored
+    {
+       'id': 3,
+       'scoring_func': no_score,
+       'validation_func': validate_writeup,
+       'goldstandard_path': None
     }
 ]
