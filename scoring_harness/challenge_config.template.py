@@ -160,17 +160,17 @@ EVALUATION_QUEUES_CONFIG = [
         'goldstandard_path': 'path/to/sc1gold.txt'
     },
     {
-       'id': 2,
-       'scoring_func': score2,
-       'validation_func': validate_func,
-       'goldstandard_path': 'path/to/sc2gold.txt'
+        'id': 2,
+        'scoring_func': score2,
+        'validation_func': validate_func,
+        'goldstandard_path': 'path/to/sc2gold.txt'
     },
     # Write ups don't need to be scored
     # If goldstandard path is None, the submissions will not be scored
     {
-       'id': 3,
-       'scoring_func': no_score,
-       'validation_func': validate_writeup,
-       'goldstandard_path': None
+        'id': 3,
+        'scoring_func': no_score,
+        'validation_func': validate_writeup,
+        'goldstandard_path': None
     }
 ]
