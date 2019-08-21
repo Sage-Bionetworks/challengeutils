@@ -53,13 +53,13 @@ Here are some examples on how to run the script.
 
 ```
 # See all the available parameters
-python challenge.py -h
+runchallenge.py -h
 
 # Validation
-python challenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt validate
+runchallenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt validate
 
 # Scoring
-python challenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt score
+runchallenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt score
 
 ```
 
