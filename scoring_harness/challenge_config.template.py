@@ -1,8 +1,10 @@
-# -----------------------------------------------------------------------------
-#
-# challenge specific code and configuration
-#
-# -----------------------------------------------------------------------------
+'''
+
+Challenge specific code and configuration
+
+'''
+from synapseclient import Submission, Project, AUTHENTICATED_USERS
+from synapseclient.exceptions import SynapseHTTPError
 # Use rpy2 if you have R scoring functions
 # import rpy2.robjects as robjects
 # import os
@@ -24,7 +26,7 @@ def no_score(submission_path, goldstandard_path):
         submission_path:  Path to submission file
         goldstandard_path: Path to truth file
     '''
-    pass
+    return submission_path, goldstandard_path
 
 
 def validate_func(submission_path, goldstandard_path):
@@ -47,13 +49,12 @@ def validate_func(submission_path, goldstandard_path):
     Returns:
         Must return a boolean and validation message
     '''
-    from synapseclient import Submission
     # Sometimes participants accidentally submit Projects/Folders
     assert not isinstance(submission_path, Submission), \
         "Submission must be a Synapse File and not Project/Folder"
     is_valid = True
     message = "Passed Validation"
-    return(is_valid, message)
+    return is_valid, message
 
 
 def validate_writeup(submission, goldstandard_path, syn,
@@ -72,7 +73,6 @@ def validate_writeup(submission, goldstandard_path, syn,
         (True, message) if validated, (False, message) if
         validation fails or throws exception
     '''
-    from synapseclient import Submission, Project
     not_writeup_error = (
         "This is the writeup submission queue - submission must be a "
         "Synapse Project.  Please submit to the subchallenge queues "
@@ -83,33 +83,27 @@ def validate_writeup(submission, goldstandard_path, syn,
     # Replace with the challenge project id here
     assert submission.entityId != "syn1234", \
         "Writeup submission must be your project and not the challenge site"
-    from synapseclient.exceptions import SynapseHTTPError
-    from synapseclient import AUTHENTICATED_USERS
+
     # Add in users to share this with
     share_with = []
     try:
         if public:
-            message = "Please make your private project ({}) public".format(
-                submission['entityId'])
+            message = f"Please make your private project ({submission['entityId']}) public"
             share_with.append(message)
-            ent = \
-                syn.getPermissions(submission['entityId'], AUTHENTICATED_USERS)
+            ent = syn.getPermissions(submission['entityId'], AUTHENTICATED_USERS)
             assert "READ" in ent and "DOWNLOAD" in ent, message
             ent = syn.getPermissions(submission['entityId'])
             assert "READ" in ent, message
         if admin is not None:
-            message = (
-                "Please share your private directory ({}) with the Synapse"
-                " user `{}` with `Can Download` permissions.".format(
-                    submission['entityId'], admin))
+            message = (f"Please share your private directory ({submission['entityId']})"
+                       f" with the Synapse user `{admin}` with `Can Download` permissions.")
             share_with.append(message)
             ent = syn.getPermissions(submission['entityId'], admin)
             assert "READ" in ent and "DOWNLOAD" in ent, message
-    except SynapseHTTPError as e:
-        if e.response.status_code == 403:
+    except SynapseHTTPError as syn_error:
+        if syn_error.response.status_code == 403:
             raise AssertionError("\n".join(share_with))
-        else:
-            raise(e)
+        raise syn_error
     return True, "Validated!"
 
 
@@ -124,10 +118,12 @@ def score1(submission_path, goldstandard_path):
     Returns:
         Must return score dictionary and a scoring message
     '''
-    score1 = 4
-    score2 = 3
-    score3 = 2
-    score_dict = dict(score=round(score1, 4), rmse=score2, auc=score3)
+    print(submission_path)
+    print(goldstandard_path)
+    auc = 4
+    bac = 3
+    score = 1
+    score_dict = dict(auc=round(auc, 4), bac=bac, score=score)
     message = "Your submission has been scored!"
     return(score_dict, message)
 
@@ -143,11 +139,13 @@ def score2(submission_path, goldstandard_path):
     Returns:
         Must return score dictionary and a scoring message
     '''
+    print(submission_path)
+    print(goldstandard_path)
     # Score against goldstandard
-    score1 = 2
-    score2 = 3
-    score3 = 5
-    score_dict = dict(score=round(score1, 4), rmse=score2, auc=score3)
+    auc = 4
+    bac = 3
+    score = 1
+    score_dict = dict(auc=round(auc, 4), bac=bac, score=score)
     message = "Your submission has been scored!"
     return(score_dict, message)
 
