@@ -1,17 +1,15 @@
+
+'''
+Message templates
+'''
+
 # Messages for challenge scoring script.
-DEFAULTS = dict(
-    challenge_instructions_url="https://www.synapse.org/#!Synapse:{challenge_synid}",
-    support_forum_url="https://www.synapse.org/#!Synapse:{challenge_synid}/discussion/default",
-    scoring_script="The Challenge Admin")
+DEFAULTS = dict(challenge_instructions_url="https://www.synapse.org/#!Synapse:{challenge_synid}",
+                support_forum_url="https://www.synapse.org/#!Synapse:{challenge_synid}/discussion/default", #pylint: disable=line-too-long
+                scoring_script="The Challenge Admin")
 
-# ---------------------------------------------------------
-# Message templates:
-# Edit to fit your challenge.
-# ---------------------------------------------------------
-
-validation_failed_subject_template = \
-    "Validation error in submission to {queue_name}"
-validation_failed_template = """\
+VALIDATION_FAILED_SUBJECT_TEMPLATE = "Validation error in submission to {queue_name}"
+VALIDATION_FAILED_TEMPLATE = """\
 <p>Hello {username},</p>
 
 <p>Sorry, but we were unable to validate your submission to the {queue_name}.</p>
@@ -32,8 +30,8 @@ submission ID: <b>{submission_id}</b></p>
 {scoring_script}</p>
 """
 
-validation_passed_subject_template = "Submission received to {queue_name}"
-validation_passed_template = """\
+VALIDATION_PASSED_SUBJECT_TEMPLATE = "Submission received to {queue_name}"
+VALIDATION_PASSED_TEMPLATE = """\
 <p>Hello {username},</p>
 
 <p>We have received your submission to the {queue_name} and confirmed that it is correctly formatted.</p>
@@ -48,8 +46,8 @@ instructions which can be found at {challenge_instructions_url}.</p>
 {scoring_script}</p>
 """
 
-scoring_succeeded_subject_template = "Scored submission to {queue_name}"
-scoring_succeeded_template = """\
+SCORING_SUCEEDED_SUBJECT_TEMPLATE = "Scored submission to {queue_name}"
+SCORING_SUCEEDED_TEMPLATE = """\
 <p>Hello {username},</p>
 
 <p>Your submission \"{submission_name}\" (ID: {submission_id}) to the {queue_name} has been scored:</p>
@@ -64,9 +62,8 @@ scoring_succeeded_template = """\
 {scoring_script}</p>
 """
 
-scoring_error_subject_template = \
-    "Exception while scoring submission to {queue_name}"
-scoring_error_template = """\
+SCORING_ERROR_SUBJECT_TEMPLATE = "Exception while scoring submission to {queue_name}"
+SCORING_ERROR_TEMPLATE = """\
 <p>Hello {username},</p>
 <p>Sorry, but we were unable to process your submission to the {queue_name}.</p>
 <p>Please refer to the challenge instructions which can be found at \
@@ -81,9 +78,8 @@ submission ID: <b>{submission_id}</b></p>
 {scoring_script}</p>
 """
 
-notification_subject_template = \
-    "Exception while scoring submission to {queue_name}"
-error_notification_template = """\
+ERROR_NOTIFICATION_SUBJECT_TEMPLATE = "Exception while scoring submission to {queue_name}"
+ERROR_NOTIFICATION_TEMPLATE = """\
 <p>Hello Challenge Administrator,</p>
 
 <p>The scoring script for {queue_name} encountered an error:</p>
@@ -112,11 +108,14 @@ class DefaultFormatter(dict):
 # functions for sending various types of messages
 # ---------------------------------------------------------
 def send_message(syn,
-                 userIds,
+                 userids,
                  subject_template,
                  message_template,
                  dry_run,
                  kwargs):
+    '''
+    Sends emails to participants
+    '''
     subject = subject_template.format_map(DefaultFormatter(DEFAULTS))
     subject = subject.format_map(DefaultFormatter(kwargs))
     message = message_template.format_map(DefaultFormatter(DEFAULTS))
@@ -127,65 +126,75 @@ def send_message(syn,
         print("-" * 60)
         print(message)
         return None
-    else:
-        response = syn.sendMessage(
-            userIds=userIds,
-            messageSubject=subject,
-            messageBody=message,
-            contentType="text/html")
-        print("sent: ", response)
-        return response
+    response = syn.sendMessage(userIds=userids,
+                               messageSubject=subject,
+                               messageBody=message,
+                               contentType="text/html")
+    print("sent: ", response)
+    return response
 
 
-def validation_failed(syn, userIds, send_messages, dry_run, **kwargs):
+def validation_failed(syn, userids, send_messages, dry_run, **kwargs):
+    '''
+    Helper function to send validation failed email
+    '''
     if send_messages:
         return send_message(
             syn=syn,
-            userIds=userIds,
-            subject_template=validation_failed_subject_template,
-            message_template=validation_failed_template,
+            userids=userids,
+            subject_template=VALIDATION_FAILED_SUBJECT_TEMPLATE,
+            message_template=VALIDATION_FAILED_TEMPLATE,
             dry_run=dry_run,
             kwargs=kwargs)
 
 
-def scoring_error(syn, userIds, send_messages, dry_run, **kwargs):
+def scoring_error(syn, userids, send_messages, dry_run, **kwargs):
+    '''
+    Helper function to send scoring error email
+    '''
     if send_messages:
         return send_message(syn,
-                            userIds=userIds,
-                            subject_template=scoring_error_subject_template,
-                            message_template=scoring_error_template,
+                            userids=userids,
+                            subject_template=SCORING_ERROR_SUBJECT_TEMPLATE,
+                            message_template=SCORING_ERROR_TEMPLATE,
                             dry_run=dry_run,
                             kwargs=kwargs)
 
 
-def validation_passed(syn, userIds, acknowledge_receipt, dry_run, **kwargs):
+def validation_passed(syn, userids, acknowledge_receipt, dry_run, **kwargs):
+    '''
+    Helper function to send validation passed email
+    '''
     if acknowledge_receipt:
-        return send_message(
-            syn=syn,
-            userIds=userIds,
-            subject_template=validation_passed_subject_template,
-            message_template=validation_passed_template,
-            dry_run=dry_run,
-            kwargs=kwargs)
+        return send_message(syn=syn,
+                            userids=userids,
+                            subject_template=VALIDATION_PASSED_SUBJECT_TEMPLATE,
+                            message_template=VALIDATION_PASSED_TEMPLATE,
+                            dry_run=dry_run,
+                            kwargs=kwargs)
 
 
-def scoring_succeeded(syn, userIds, send_messages, dry_run, **kwargs):
+def scoring_succeeded(syn, userids, send_messages, dry_run, **kwargs):
+    '''
+    Helper function to send scoring succeeded emails
+    '''
     if send_messages:
-        return send_message(
-            syn=syn,
-            userIds=userIds,
-            subject_template=scoring_succeeded_subject_template,
-            message_template=scoring_succeeded_template,
-            dry_run=dry_run,
-            kwargs=kwargs)
+        return send_message(syn=syn,
+                            userids=userids,
+                            subject_template=SCORING_SUCEEDED_SUBJECT_TEMPLATE,
+                            message_template=SCORING_SUCEEDED_TEMPLATE,
+                            dry_run=dry_run,
+                            kwargs=kwargs)
 
 
-def error_notification(syn, userIds, send_notifications, dry_run, **kwargs):
+def error_notification(syn, userids, send_notifications, dry_run, **kwargs):
+    '''
+    Helper function to send error notification emails
+    '''
     if send_notifications:
-        return send_message(
-            syn=syn,
-            userIds=userIds,
-            subject_template=notification_subject_template,
-            message_template=error_notification_template,
-            dry_run=dry_run,
-            kwargs=kwargs)
+        return send_message(syn=syn,
+                            userids=userids,
+                            subject_template=ERROR_NOTIFICATION_SUBJECT_TEMPLATE,
+                            message_template=ERROR_NOTIFICATION_TEMPLATE,
+                            dry_run=dry_run,
+                            kwargs=kwargs)
