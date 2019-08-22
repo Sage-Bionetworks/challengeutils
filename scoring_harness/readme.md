@@ -10,7 +10,7 @@ If you have no idea what evaluation queues or challenge are, then please turn ba
 
 ## Dependencies
 
-* Python 3.5 and above
+* Python 3.6 and above
 * R if you use rpy2
 * Software:
 ```
@@ -22,7 +22,7 @@ pip install rpy2>=2.9
 
 ## Creating your challenge python script.
 
-Please make a copy of the `challenge_config.template.py` as a start to creating your own configuration script.
+Please make a copy of the `challenge_config.template.py` as a start to creating your own configuration script.  This can be found in the templates folder.
 
 You will need to add an evaluation queue for each question in your challenge and write appropriate validation and scoring functions. Then, customize the messages with challenge specific help for your solvers.  Information about evaluation queues can be found [here](https://docs.synapse.org/articles/evaluation_queues.html)
 
@@ -86,6 +86,6 @@ It is very typical for validation and scoring to occur every 5 to 10 minutes, as
 Paste this into the file:
 
 	# minute (m), hour (h), day of month (dom), month (mon)                      
-	*/10 * * * * python challenge.py ....
+	*/10 * * * * runchallenge.py ....
 
 Note: the first 5 * stand for minute (m), hour (h), day of month (dom), and month (mon). The configuration to have a job be done every ten minutes would look something like */10 * * * *
