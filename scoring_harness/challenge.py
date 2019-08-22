@@ -164,7 +164,7 @@ def validate(syn,
         profile = syn.getUserProfile(submission.userId)
         if is_valid:
             messages.validation_passed(syn=syn,
-                                       userIds=[submission.userId],
+                                       userids=[submission.userId],
                                        acknowledge_receipt=acknowledge_receipt,
                                        dry_run=dry_run,
                                        username=get_user_name(profile),
@@ -181,7 +181,7 @@ def validate(syn,
                 username = "Challenge Administrator"
 
             messages.validation_failed(syn=syn,
-                                       userIds=send_to,
+                                       userids=send_to,
                                        send_messages=send_messages,
                                        dry_run=dry_run,
                                        username=username,
@@ -285,7 +285,7 @@ def score(syn,
 
         if status.status == 'SCORED':
             messages.scoring_succeeded(syn=syn,
-                                       userIds=[submission.userId],
+                                       userids=[submission.userId],
                                        send_messages=send_messages,
                                        dry_run=dry_run,
                                        message=message,
@@ -296,7 +296,7 @@ def score(syn,
                                        challenge_synid=challenge_synid)
         else:
             messages.scoring_error(syn=syn,
-                                   userIds=admin_user_ids,
+                                   userids=admin_user_ids,
                                    send_messages=send_messages,
                                    dry_run=dry_run,
                                    message=message,
@@ -422,7 +422,7 @@ def main(args):
         if args.admin_user_ids:
             messages.error_notification(syn=syn,
                                         send_notifications=args.notifications,
-                                        userIds=args.admin_user_ids,
+                                        userids=args.admin_user_ids,
                                         dry_run=args.dry_run,
                                         message=str(ex1),
                                         queue_name=challenge_name)
