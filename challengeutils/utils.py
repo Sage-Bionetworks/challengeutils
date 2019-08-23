@@ -428,39 +428,41 @@ def team_members_union(syn, a, b):
     return(union_members)
 
 
-def _check_date_range(date_str, start, end):
+def _check_date_range(date_str, start_datetime, end_datetime):
     '''
     Helper function to check if the date is within range
-    
+    Note: the date and time is in Pacific time
+
     Args:
         date_str: date string 
-        start: start date in YYYY-MM-DD format, example: 2019-01-01
-        end: end date in YYYY-MM-DD format, example: 2019-01-01
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
     
     Returns:
         boolean
     '''
     result = True
-    if(start is not None or end is not None):
+    if(start_datetime is not None or end_datetime is not None):
         date_obj = datetime.datetime.strptime(date_str,'%Y-%m-%dT%H:%M:%S.%fZ')
-        if(start is not None):
-            start_obj = datetime.datetime.strptime(start,'%Y-%m-%d')
+        if(start_datetime is not None):
+            start_obj = datetime.datetime.strptime(start_datetime,'%Y-%m-%d %H:%M')
             result = date_obj >= start_obj
-        if(end is not None):
-            end_obj = datetime.datetime.strptime(end,'%Y-%m-%d') + datetime.timedelta(days=1)
-            result = date_obj < end_obj
+        if(end_datetime is not None):
+            end_obj = datetime.datetime.strptime(end_datetime,'%Y-%m-%d %H:%M')
+            result = date_obj <= end_obj
     return(result)
 
-def _get_eligible_contributors(syn, evaluationid, status, start, end):
+def _get_eligible_contributors(syn, evaluationid, status, start_datetime, end_datetime):
     '''
-    Helper function to get contributors from a given evaluation id
+    Helper function to get contributors from a given evaluation id. 
+    Note: the date and time is in Pacific time 
 
     Args:
         syn: Synapse object
         evaluationid: evaluation id
         submission_status: Submission status
-        start: Start date in YYYY-MM-DD format, example: 2019-01-01
-        end: End date in YYYY-MM-DD format, example: 2019-01-01
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
 
     Returns:
         Set of contributors' user ids
@@ -468,13 +470,12 @@ def _get_eligible_contributors(syn, evaluationid, status, start, end):
     bundles = syn.getSubmissionBundles(evaluationid, status=status)
     contributors = set()
     for sub, _ in bundles:
-        if(
-          (sub.createdOn, start, end)):
+        if((sub.createdOn, start_datetime, end_datetime)):
             principalids = set(contributor['principalId'] for contributor in sub.contributors)
             contributors.update(principalids)
     return(contributors)
 
-def get_eligible_contributors(syn, evaluationids, status='SCORED', start=None, end=None):
+def get_eligible_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
     '''
     Function to get contributors from a list of evaluation ids
 
@@ -482,15 +483,15 @@ def get_eligible_contributors(syn, evaluationids, status='SCORED', start=None, e
         syn: Synapse object
         evaluationids: a list of evaluation ids 
         status: Submission status. Default = SCORED
-        start: Start date in YYYY-MM-DD format, example: 2019-01-01
-        end: End date in YYYY-MM-DD format, example: 2019-01-01
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
 
     Returns:
         Set of contributors' user ids
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_eligible_contributors(syn,evaluationid,status,start,end)
+        contributors = _get_eligible_contributors(syn,evaluationid,status,start_datetime,end_datetime)
         all_contributors = all_contributors.union(contributors)
     return(all_contributors)
 
