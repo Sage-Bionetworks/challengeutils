@@ -492,7 +492,7 @@ def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, e
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_eligible_contributors(syn,evaluationid,status,start_datetime,end_datetime)
+        contributors = _get_contributors(syn,evaluationid,status,start_datetime,end_datetime)
         all_contributors = all_contributors.union(contributors)
     return(all_contributors)
 
