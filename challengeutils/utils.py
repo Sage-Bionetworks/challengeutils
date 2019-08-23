@@ -431,7 +431,7 @@ def team_members_union(syn, a, b):
 def _check_date_range(date_str, start_datetime, end_datetime):
     '''
     Helper function to check if the date is within range
-    Note: the date and time is in Pacific time
+    Note: the date and time is in UTC
 
     Args:
         date_str: date string 
@@ -452,10 +452,10 @@ def _check_date_range(date_str, start_datetime, end_datetime):
             result = date_obj <= end_obj
     return(result)
 
-def _get_eligible_contributors(syn, evaluationid, status, start_datetime, end_datetime):
+def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
     '''
     Helper function to get contributors from a given evaluation id. 
-    Note: the date and time is in Pacific time 
+    Note: the date and time is in UTC
 
     Args:
         syn: Synapse object
@@ -475,9 +475,10 @@ def _get_eligible_contributors(syn, evaluationid, status, start_datetime, end_da
             contributors.update(principalids)
     return(contributors)
 
-def get_eligible_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
     '''
     Function to get contributors from a list of evaluation ids
+    Note: the date and time is in UTC
 
     Args:
         syn: Synapse object
