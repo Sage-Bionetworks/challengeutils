@@ -37,8 +37,8 @@ def archive_writeup(syn, submissionid, rearchive=False):
         entity = syn.store(project_entity)
         synapseutils.copy(syn, sub.entityId, entity.id)
         archived = {"archived": entity.id}
-        status = utils.update_single_submission_status(status, archived)
-        syn.store(status)
+        sub_status = utils.update_single_submission_status(sub_status, archived)
+        syn.store(sub_status)
         return entity.id
     return None
 
