@@ -30,15 +30,15 @@ def archive_writeup(syn, submissionid, rearchive=False):
                                sub_status.annotations['stringAnnos'])
     # check_if_archived will be an empty list if the annotation doesnt exist
     if not list(check_if_archived) or rearchive:
-        submission_name = sub.name.replace("&", "+").replace("'", "")
+        submission_name = sub.entity.name
         current_time_ms = int(round(time.time() * 1000))
         archived_name = f"Archived {submission_name} {current_time_ms} {sub.id} {sub.entityId}"
         project_entity = synapseclient.Project(archived_name)
         entity = syn.store(project_entity)
         synapseutils.copy(syn, sub.entityId, entity.id)
         archived = {"archived": entity.id}
-        status = utils.update_single_submission_status(status, archived)
-        syn.store(status)
+        sub_status = utils.update_single_submission_status(sub_status, archived)
+        syn.store(sub_status)
         return entity.id
     return None
 
