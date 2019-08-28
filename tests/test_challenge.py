@@ -1,3 +1,6 @@
+'''
+Test scoring harness functions
+'''
 import mock
 import synapseclient
 from scoring_harness.challenge import score_single_submission
@@ -16,10 +19,12 @@ def validation_func(path, truth):
 
 
 def scoring_func(path, truth):
+    '''Test scoring function'''
     return(SCORES, MESSAGE)
 
 
 def invalid_func(path, truth):
+    '''Test invalid function'''
     raise ValueError(ERROR_MESSAGE)
 
 
@@ -107,25 +112,19 @@ def test_score():
     '''
     status = synapseclient.SubmissionStatus(status="SCORED")
 
-    with mock.patch.object(
-        syn, "getEvaluation", return_value=EVALUATION) as patch_getevaluation,\
-            mock.patch.object(
-                syn, "getSubmissionBundles",
-                return_value=[(SUBMISSION, status)]) as patch_get_bundles,\
-            mock.patch.object(
-                syn, "getSubmission",
-                return_value=SUBMISSION) as patch_get_sub,\
-            mock.patch(
-                "scoring_harness.challenge.score_single_submission",
-                return_value=(status, "message")) as patch_score_single,\
-            mock.patch.object(
-                syn, "getUserProfile",
-                return_value=SYN_USERPROFILE) as patch_get_user,\
-            mock.patch(
-                "scoring_harness.messages.scoring_succeeded") as patch_send,\
-            mock.patch(
-                "scoring_harness.challenge.get_user_name",
-                return_value="foo") as patch_get_user_name:
+    with mock.patch.object(syn, "getEvaluation",
+                           return_value=EVALUATION) as patch_getevaluation,\
+         mock.patch.object(syn, "getSubmissionBundles",
+                           return_value=[(SUBMISSION, status)]) as patch_get_bundles,\
+         mock.patch.object(syn, "getSubmission",
+                           return_value=SUBMISSION) as patch_get_sub,\
+         mock.patch("scoring_harness.challenge.score_single_submission",
+                    return_value=(status, "message")) as patch_score_single,\
+         mock.patch.object(syn, "getUserProfile",
+                           return_value=SYN_USERPROFILE) as patch_get_user,\
+         mock.patch("scoring_harness.messages.scoring_succeeded") as patch_send,\
+         mock.patch("scoring_harness.challenge.get_user_name",
+                    return_value="foo") as patch_get_user_name:
         score(syn,
               QUEUE_INFO_DICT,
               [1],
@@ -143,18 +142,16 @@ def test_score():
             scoring_func, QUEUE_INFO_DICT['goldstandard_path'],
             dry_run=False)
         patch_get_user.assert_called_once_with(SUBMISSION.userId)
-        patch_send.assert_called_once_with(
-            syn=syn,
-            userIds=[SUBMISSION.userId],
-            send_messages=False,
-            dry_run=False,
-            message="message",
-            username="foo",
-            queue_name=EVALUATION.name,
-            submission_name=SUBMISSION.name,
-            submission_id=SUBMISSION.id,
-            challenge_synid="syn1234"
-        )
+        patch_send.assert_called_once_with(syn=syn,
+                                           userIds=[SUBMISSION.userId],
+                                           send_messages=False,
+                                           dry_run=False,
+                                           message="message",
+                                           username="foo",
+                                           queue_name=EVALUATION.name,
+                                           submission_name=SUBMISSION.name,
+                                           submission_id=SUBMISSION.id,
+                                           challenge_synid="syn1234")
         patch_get_user_name.assert_called_once_with(SYN_USERPROFILE)
 
 
@@ -163,8 +160,12 @@ def test_valid_validate_single_submission():
     Test validation of single valid submission
     '''
     status = synapseclient.SubmissionStatus(status="VALIDATED")
-    valid, error, message = validate_single_submission(
-        syn, SUBMISSION, status, validation_func, "path", dry_run=True)
+    valid, error, message = validate_single_submission(syn,
+                                                       SUBMISSION,
+                                                       status,
+                                                       validation_func,
+                                                       "path",
+                                                       dry_run=True)
     assert valid
     assert error is None
     assert message == MESSAGE
