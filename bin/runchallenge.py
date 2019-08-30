@@ -52,6 +52,11 @@ if __name__ == '__main__':
                         help="Perform the requested command without updating anything in Synapse",
                         action="store_true")
 
+    parser.add_argument("--remove-cache",
+                        help="If 'validate' step, removes invalid submissions from cache. "
+                        "If 'score' step, removes scored submissions from cache.",
+                        action="store_true")
+
     parser.add_argument("--debug",
                         help="Show verbose error output from Synapse API calls",
                         action="store_true")
@@ -60,7 +65,8 @@ if __name__ == '__main__':
 
     parser_validate = subparsers.add_parser('validate',
                                             help="Validate all RECEIVED submissions to an evaluation")
-    parser_validate.set_defaults(func=scoring_harness.challenge.command_validate)
+    parser_validate.set_defaults(
+        func=scoring_harness.challenge.command_validate)
 
     parser_score = subparsers.add_parser('score',
                                          help="Score all VALIDATED submissions to an evaluation")
