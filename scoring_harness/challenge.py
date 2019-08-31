@@ -10,8 +10,6 @@ from datetime import timedelta
 import importlib
 import logging
 import os
-import re
-from shutil import rmtree as rmdir
 
 import synapseclient
 from synapseclient import Evaluation
@@ -75,7 +73,7 @@ def validate_single_submission(syn, submission, status,
         validation_func: Function that validates (takes prediction filepath and
                          truth file)
         dry_run: Defaults to storing status (False)
-        remove_cache: Removes invalid submission file from cache (default: False)
+        remove_cache: Removes submission file from cache (default: False)
 
     Return:
         is_valid - Boolean value for whether submission is valid
@@ -104,17 +102,9 @@ def validate_single_submission(syn, submission, status,
 
     status.status = "VALIDATED" if is_valid else "INVALID"
 
-    # Remove submission if invalid
-    if remove_cache and status.status == "INVALID":
+    # Remove submission file if cache clearing is requested.
+    if remove_cache:
         try:
-            # Each submission is uploaded with .cacheMap, so we want to remove its
-            # parent directory to get rid of both files.
-            submission_dir = re.match(
-                r'(.*synapseCache\/.+?\/.+?\/)', submission_input).group(1)
-            rmdir(submission_dir)
-
-        # If removing parent directory is not allowed, remove submission file only.
-        except OSError:
             os.unlink(submission_input)
         except TypeError:
             pass
@@ -158,7 +148,7 @@ def validate(syn,
         send_messages: Send messages
         acknowledge_receipt: Send validation results
         dry_run: Do not update Synapse
-        remove_cache: Clear cache of invalid submissions
+        remove_cache: Clear cache of submission files
     '''
     evaluation = queue_info_dict['id']
     validation_func = queue_info_dict['validation_func']
@@ -248,15 +238,9 @@ def score_single_submission(syn, submission, status,
             status, add_annotations)
         status.status = "SCORED"
 
-        # Remove submission file (and its .cacheMap file if possible) after scoring.
+        # Remove submission file after scoring if requested.
         if remove_cache:
-            try:
-                submission_dir = re.match(
-                    r'(.*synapseCache\/.+?\/.+?\/)', submission.filePath).group(1)
-                rmdir(submission_dir)
-
-            except OSError:
-                os.unlink(submission.filePath)
+            os.unlink(submission.filePath)
 
     except Exception as ex1:
         logger.error(
