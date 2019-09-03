@@ -14,6 +14,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _create_archive_writeup_project(syn, sub):
+    '''
+    Creates the archived writeup project
+
+    Args:
+        syn: Synapse object
+        sub: Synapse submission
+
+    Returns:
+        Synapse Project entity
+    '''
+    submission_name = sub.entity.name
+    current_time_ms = int(round(time.time() * 1000))
+    archived_name = (f"Archived {submission_name} {current_time_ms} "
+                     f"{sub.id} {sub.entityId}")
+    project_entity = synapseclient.Project(archived_name)
+    entity = syn.store(project_entity)
+    return entity
+
+
 def archive_writeup(syn, submissionid, rearchive=False):
     '''
     Archive one writeup submission
@@ -30,14 +50,11 @@ def archive_writeup(syn, submissionid, rearchive=False):
                                sub_status.annotations['stringAnnos'])
     # check_if_archived will be an empty list if the annotation doesnt exist
     if not list(check_if_archived) or rearchive:
-        submission_name = sub.entity.name
-        current_time_ms = int(round(time.time() * 1000))
-        archived_name = f"Archived {submission_name} {current_time_ms} {sub.id} {sub.entityId}"
-        project_entity = synapseclient.Project(archived_name)
-        entity = syn.store(project_entity)
+        entity = _create_archive_writeup_project(syn, sub)
         synapseutils.copy(syn, sub.entityId, entity.id)
         archived = {"archived": entity.id}
-        sub_status = utils.update_single_submission_status(sub_status, archived)
+        sub_status = utils.update_single_submission_status(sub_status,
+                                                           archived)
         syn.store(sub_status)
         return entity.id
     return None
@@ -63,14 +80,14 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
         archive_writeup(syn, sub.id, rearchive=rearchive)
 
 
-def append_writeup_to_main_submission(row, syn):
+def attach_writeup_to_main_submission(row, syn):
     '''
-    Helper function that appends the write up synapse id and archived
+    Helper function that attach the write up synapse id and archived
     write up synapse id on the main submission
 
     Args:
         row: Dictionary row['submitterId'], row['objectId'], row['archived'],
-             row['entityId']
+                row['entityId']
         syn: synapse object
     '''
     if pd.isnull(row['entityId']):
@@ -97,7 +114,7 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
     Attach the write up to the submission queue
 
     Args:
-        writeup_queueid:   Write up evaluation queue id
+        writeup_queueid: Write up evaluation queue id
         submission_queueid: Submission queue id
     '''
     writeup_query = (f"select objectId, submitterId, entityId, archived from evaluation_{writeup_queueid} "
@@ -114,5 +131,5 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
                                                       on="submitterId",
                                                       how="left")
 
-    submissions_with_writeupsdf.apply(lambda row: append_writeup_to_main_submission(row, syn),
+    submissions_with_writeupsdf.apply(lambda row: attach_writeup_to_main_submission(row, syn),
                                       axis=1)
