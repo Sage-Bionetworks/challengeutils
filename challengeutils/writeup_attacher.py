@@ -1,6 +1,6 @@
-import challengeutils
 import pandas as pd
 from synapseclient.annotations import to_submission_status_annotations
+from . import utils
 
 
 def append_writeup_to_main_submission(row, syn):
@@ -22,7 +22,7 @@ def append_writeup_to_main_submission(row, syn):
 
         add_writeup = to_submission_status_annotations(
             add_writeup_dict, is_private=False)
-        new_status = challengeutils.utils.update_single_submission_status(
+        new_status = utils.update_single_submission_status(
             status, add_writeup)
         syn.store(new_status)
 
@@ -35,11 +35,11 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
         writeup_queueid:   Write up evaluation queue id
         submission_queueid: Submission queue id
     '''
-    writeups = list(challengeutils.utils.evaluation_queue_query(
+    writeups = list(utils.evaluation_queue_query(
         syn,
         "select team, entityId, archived from evaluation_{} "
         "where status == 'VALIDATED'".format(writeup_queueid)))
-    submissions = list(challengeutils.utils.evaluation_queue_query(
+    submissions = list(utils.evaluation_queue_query(
         syn,
         "select objectId, team from evaluation_{} "
         "where status == 'SCORED'".format(submission_queueid)))

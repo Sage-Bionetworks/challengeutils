@@ -1,8 +1,11 @@
-import pytest
+import json
 import mock
-import challengeutils
-import synapseclient
+from mock import patch
+import os
+import pytest
 import re
+import challengeutils.utils
+import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 
 syn = mock.create_autospec(synapseclient.Synapse)
@@ -108,3 +111,132 @@ def test_topublic_update_single_submission_status():
         add_annotations, is_private=False)
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
+
+def test__check_date_range():
+    '''
+    Test checking date range
+    '''
+    date_str = '2019-05-26T23:59:59.062Z'
+    datetime1 = '2019-05-06 1:00'
+    datetime2 = '2019-06-01 1:00'
+    result = [challengeutils.utils._check_date_range(date_str, datetime1, datetime2),
+              challengeutils.utils._check_date_range(date_str, datetime2, None)]
+    expected_result = [True,False]
+    assert result == expected_result
+
+def test__get_contributors():
+    '''
+    Test getting contributors by evaluationID, status, and date range
+    '''
+    sub = synapseclient.Submission(evaluationId=123, entityId="syn1234", versionNumber=1,
+                                   contributors=[{"principalId": 321}], createdOn="2019-05-26T23:59:59.062Z")
+    bundle = [(sub, "temp")]
+    with patch.object(syn, "getSubmissionBundles",
+                      return_value=bundle) as patch_syn_get_bundles:
+        contributors = challengeutils.utils._get_contributors(
+            syn, 123, "SCORED","2019-05-06 1:00","2019-06-01 1:00")
+        patch_syn_get_bundles.assert_called_once_with(
+            123,
+            status="SCORED")
+        assert contributors == set([321])
+
+def test_get_contributors():
+    '''
+    Test getting contributors by a list of evaluation IDs
+    '''
+    contributors = set([321])
+    ids = [123]
+    with patch.object(challengeutils.utils, "_get_contributors",
+                      return_value=contributors) as patch_syn_get_bundles:
+        all_contributors = challengeutils.utils.get_contributors(
+            syn, ids, "SCORED")
+        assert all_contributors == set([321])
+
+def test_list_evaluations():
+    with mock.patch.object(
+            syn, "getEvaluationByContentSource") as patch_geteval:
+        challengeutils.utils.list_evaluations(syn, "syn1234")
+        patch_geteval.assert_called_once_with("syn1234")
+
+
+def test_defaultloc_download_submission():
+    '''
+    Download submission json object with default None location
+    '''
+    entity = synapseclient.Entity(concreteType='foo', id='syn123')
+    submission_dict = {
+        'dockerRepositoryName': 'foo',
+        'dockerDigest': 'foo',
+        'entity': entity,
+        'evaluationId': 12345,
+        'filePath': '/path/here'}
+    expected_submission_dict = {
+        'docker_repository': 'foo',
+        'docker_digest': 'foo',
+        'entity_id': entity['id'],
+        'entity_version': entity.get('versionNumber'),
+        'entity_type': entity.get('concreteType'),
+        'evaluation_id': 12345,
+        'file_path': '/path/here'}
+    with mock.patch.object(
+            syn, "getSubmission",
+            return_value=submission_dict) as patch_get_submission:
+        sub_dict = challengeutils.utils.download_submission(syn, "12345")
+        patch_get_submission.assert_called_once_with(
+            "12345", downloadLocation=None)
+        assert sub_dict == expected_submission_dict
+
+
+def test_specifyloc_download_submission():
+    '''
+    Download submission json object with specified location
+    '''
+    entity = synapseclient.Entity(
+        versionNumber=4, concreteType='foo', id='syn123')
+    submission_dict = {
+        'entity': entity,
+        'evaluationId': 12345,
+        'filePath': '/path/here'}
+    expected_submission_dict = {
+        'docker_repository': None,
+        'docker_digest': None,
+        'entity_id': entity['id'],
+        'entity_version': entity.get('versionNumber'),
+        'entity_type': entity.get('concreteType'),
+        'evaluation_id': 12345,
+        'file_path': '/path/here'}
+    with mock.patch.object(
+            syn, "getSubmission",
+            return_value=submission_dict) as patch_get_submission:
+        sub_dict = challengeutils.utils.download_submission(
+            syn, "12345", download_location=".")
+        patch_get_submission.assert_called_once_with(
+            "12345", downloadLocation=".")
+        assert sub_dict == expected_submission_dict
+
+
+def test_annotate_submission_with_json():
+    add_annotations = {'test': 2, 'test2': 2}
+    tempfile_path = "temp.json"
+    with open(tempfile_path, "w") as annotation_file:
+        json.dump(add_annotations, annotation_file)
+    status = {"foo": "bar"}
+    with mock.patch.object(
+            syn, "getSubmissionStatus",
+            return_value=status) as patch_get_submission, \
+        mock.patch.object(
+            challengeutils.utils, "update_single_submission_status",
+            return_value=status) as patch_update, \
+            mock.patch.object(syn, "store") as patch_syn_store:
+        challengeutils.utils.annotate_submission_with_json(
+            syn, "1234", tempfile_path,
+            to_public=False,
+            force_change_annotation_acl=False)
+        patch_get_submission.assert_called_once_with("1234")
+        patch_update.assert_called_once_with(
+            status, add_annotations,
+            to_public=False,
+            force_change_annotation_acl=False)
+        patch_syn_store.assert_called_once_with(status)
+    os.unlink(tempfile_path)
+

@@ -1,9 +1,18 @@
-import synapseclient
 import argparse
+import json
+import logging
+import os
 import pandas as pd
-from challengeutils import createchallenge, mirrorwiki, utils, \
-                           writeup_attacher, permissions, \
-                           download_current_lead_submission as dl_cur
+import synapseclient
+from synapseclient.retry import _with_retry
+from . import createchallenge
+from . import mirrorwiki
+from . import utils
+from . import writeup_attacher
+from . import permissions
+from . import download_current_lead_submission as dl_cur
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
@@ -54,6 +63,36 @@ def command_dl_cur_lead_sub(syn, args):
         args.status,
         args.cutoff_annotation,
         verbose=args.verbose)
+
+
+def command_list_evaluations(syn, args):
+    utils.list_evaluations(syn, args.projectid)
+
+
+def command_download_submission(syn, args):
+    submission_dict = utils.download_submission(
+        syn, args.submissionid, download_location=args.download_location)
+    if args.output:
+        filepath = submission_dict['file_path']
+        if filepath is not None:
+            os.rename(filepath, 'submission-' + args.submissionid)
+            filepath = 'submission-' + args.submissionid
+        submission_dict['file_path'] = 'submission-' + args.submissionid
+        with open(args.output, "w") as sub_out:
+            json.dump(submission_dict, sub_out)
+        logger.info(args.output)
+    else:
+        logger.info(submission_dict)
+
+
+def command_annotate_submission_with_json(syn, args):
+    _with_retry(lambda: utils.annotate_submission_with_json(
+        syn, args.submissionid,
+        args.annotation_values,
+        to_public=args.to_public,
+        force_change_annotation_acl=args.force_change_annotation_acl),
+        wait=3,
+        retries=10)
 
 
 def build_parser():
@@ -231,6 +270,63 @@ def build_parser():
 
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
+    parser_list_evals = subparsers.add_parser(
+        'listevaluations',
+        help='List all evaluation queues of a project')
+
+    parser_list_evals.add_argument(
+        "projectid",
+        type=str,
+        help='Synapse id of project')
+
+    parser_list_evals.set_defaults(func=command_list_evaluations)
+
+    parser_download_submission = subparsers.add_parser(
+        'downloadsubmission',
+        help='Download a Synapse submission')
+
+    parser_download_submission.add_argument(
+        "submissionid",
+        type=str,
+        help='Synapse id of submission')
+
+    parser_download_submission.add_argument(
+        "--download_location",
+        type=str,
+        help='Specify download location. Defaults to current working dir',
+        default=".")
+
+    parser_download_submission.add_argument(
+        "--output",
+        type=str,
+        help='Output json results into a file')
+
+    parser_download_submission.set_defaults(func=command_download_submission)
+
+    parser_annotate_sub = subparsers.add_parser(
+        'annotatesubmission',
+        help='Annotate a Synapse submission with a json file')
+
+    parser_annotate_sub.add_argument(
+        "submissionid",
+        help="Submission ID")
+    parser_annotate_sub.add_argument(
+        "annotation_values",
+        help="JSON file of annotations with key:value pair")
+    parser_annotate_sub.add_argument(
+        "-p", "--to_public",
+        help="Annotations are by default private except to queue "
+             "administrator(s), so change them to be public",
+        action='store_true')
+    parser_annotate_sub.add_argument(
+        "-f", "--force_change_annotation_acl",
+        help="Ability to update annotations if the key has "
+             "different ACLs, warning will occur if this parameter "
+             "isn't specified and the same key has different ACLs",
+        action='store_true')
+    parser_annotate_sub.set_defaults(
+        func=command_annotate_submission_with_json)
+
     return parser
 
 
@@ -246,8 +342,8 @@ def synapse_login(synapse_config):
     try:
         syn = synapseclient.login(silent=True)
     except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config, silent=True)
-        syn.login()
+        syn = synapseclient.Synapse(configPath=synapse_config)
+        syn.login(silent=True)
     return(syn)
 
 
