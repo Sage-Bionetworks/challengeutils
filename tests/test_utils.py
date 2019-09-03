@@ -1,5 +1,6 @@
 import json
 import mock
+from mock import patch
 import os
 import pytest
 import re
@@ -111,6 +112,45 @@ def test_topublic_update_single_submission_status():
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
 
+def test__check_date_range():
+    '''
+    Test checking date range
+    '''
+    date_str = '2019-05-26T23:59:59.062Z'
+    datetime1 = '2019-05-06 1:00'
+    datetime2 = '2019-06-01 1:00'
+    result = [challengeutils.utils._check_date_range(date_str, datetime1, datetime2),
+              challengeutils.utils._check_date_range(date_str, datetime2, None)]
+    expected_result = [True,False]
+    assert result == expected_result
+
+def test__get_contributors():
+    '''
+    Test getting contributors by evaluationID, status, and date range
+    '''
+    sub = synapseclient.Submission(evaluationId=123, entityId="syn1234", versionNumber=1,
+                                   contributors=[{"principalId": 321}], createdOn="2019-05-26T23:59:59.062Z")
+    bundle = [(sub, "temp")]
+    with patch.object(syn, "getSubmissionBundles",
+                      return_value=bundle) as patch_syn_get_bundles:
+        contributors = challengeutils.utils._get_contributors(
+            syn, 123, "SCORED","2019-05-06 1:00","2019-06-01 1:00")
+        patch_syn_get_bundles.assert_called_once_with(
+            123,
+            status="SCORED")
+        assert contributors == set([321])
+
+def test_get_contributors():
+    '''
+    Test getting contributors by a list of evaluation IDs
+    '''
+    contributors = set([321])
+    ids = [123]
+    with patch.object(challengeutils.utils, "_get_contributors",
+                      return_value=contributors) as patch_syn_get_bundles:
+        all_contributors = challengeutils.utils.get_contributors(
+            syn, ids, "SCORED")
+        assert all_contributors == set([321])
 
 def test_list_evaluations():
     with mock.patch.object(
@@ -199,3 +239,4 @@ def test_annotate_submission_with_json():
             force_change_annotation_acl=False)
         patch_syn_store.assert_called_once_with(status)
     os.unlink(tempfile_path)
+
