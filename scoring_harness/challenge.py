@@ -9,6 +9,7 @@ Author: thomas.yu
 from datetime import timedelta
 import importlib
 import logging
+import os
 
 import synapseclient
 from synapseclient import Evaluation
@@ -61,7 +62,7 @@ def import_config_py(config_path):
 
 def validate_single_submission(syn, submission, status,
                                validation_func, goldstandard_path,
-                               dry_run=False):
+                               dry_run=False, remove_cache=False):
     '''
     Validates a single submission
 
@@ -72,6 +73,7 @@ def validate_single_submission(syn, submission, status,
         validation_func: Function that validates (takes prediction filepath and
                          truth file)
         dry_run: Defaults to storing status (False)
+        remove_cache: Removes submission file from cache (default: False)
 
     Return:
         is_valid - Boolean value for whether submission is valid
@@ -100,6 +102,13 @@ def validate_single_submission(syn, submission, status,
 
     status.status = "VALIDATED" if is_valid else "INVALID"
 
+    # Remove submission file if cache clearing is requested.
+    if remove_cache:
+        try:
+            os.unlink(submission_input)
+        except TypeError:
+            pass
+
     if not is_valid:
         failure_reason = {"FAILURE_REASON": validation_message[0:1000]}
     else:
@@ -122,7 +131,8 @@ def validate(syn,
              status='RECEIVED',
              send_messages=False,
              acknowledge_receipt=False,
-             dry_run=False):
+             dry_run=False,
+             remove_cache=False):
     '''
     Validates all submissions with status = 'RECEIVED' by default and
     emails participants with validation results
@@ -138,6 +148,7 @@ def validate(syn,
         send_messages: Send messages
         acknowledge_receipt: Send validation results
         dry_run: Do not update Synapse
+        remove_cache: Clear cache of submission files
     '''
     evaluation = queue_info_dict['id']
     validation_func = queue_info_dict['validation_func']
@@ -158,7 +169,8 @@ def validate(syn,
 
         is_valid, error, message = validate_single_submission(syn, submission, sub_status,
                                                               validation_func, goldstandard_path,
-                                                              dry_run=dry_run)
+                                                              dry_run=dry_run,
+                                                              remove_cache=remove_cache)
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)
@@ -195,7 +207,7 @@ def validate(syn,
 
 def score_single_submission(syn, submission, status,
                             scoring_func, goldstandard_path,
-                            dry_run=False):
+                            dry_run=False, remove_cache=False):
     '''
     Scores a single submission
 
@@ -206,6 +218,7 @@ def score_single_submission(syn, submission, status,
         scoring_func: Function that scores (takes prediction filepath and
                       truth file)
         dry_run: Defaults to storing status (False)
+        remove_cache: Removes submission after scoring (default: False)
 
     Return:
         status - Annotated submission status
@@ -213,17 +226,25 @@ def score_single_submission(syn, submission, status,
     '''
     status.status = "INVALID"
     try:
-        sub_scores, message = scoring_func(submission.filePath, goldstandard_path)
+        sub_scores, message = scoring_func(
+            submission.filePath, goldstandard_path)
 
-        logger.info(f"scored: {submission.id} {submission.name} {submission.userId} {score}")
+        logger.info(
+            f"scored: {submission.id} {submission.name} {submission.userId} {score}")
 
         add_annotations = to_submission_status_annotations(sub_scores,
                                                            is_private=True)
-        status = challengeutils.utils.update_single_submission_status(status, add_annotations)
+        status = challengeutils.utils.update_single_submission_status(
+            status, add_annotations)
         status.status = "SCORED"
 
+        # Remove submission file after scoring if requested.
+        if remove_cache:
+            os.unlink(submission.filePath)
+
     except Exception as ex1:
-        logger.error(f'Error scoring submission {submission.name} {submission.id}:')
+        logger.error(
+            f'Error scoring submission {submission.name} {submission.id}:')
         logger.error(f'{type(ex1)} {ex1} {str(ex1)}')
         # ex1 only happens in this scope in python3,
         # so must store message as a variable
@@ -241,7 +262,8 @@ def score(syn,
           status='VALIDATED',
           send_messages=False,
           send_notifications=False,
-          dry_run=False):
+          dry_run=False,
+          remove_cache=False):
     '''
     Score all submissions with status = 'VALIDATED' by default and
     emails participants with scores
@@ -257,6 +279,7 @@ def score(syn,
         send_messages: Send messages
         send_notifications: Send notifications
         dry_run: Do not update Synapse
+        remove_cache: Clear cache of scored submissions
     '''
     evaluation = queue_info_dict['id']
     scoring_func = queue_info_dict['scoring_func']
@@ -275,9 +298,8 @@ def score(syn,
         if goldstandard_path is None:
             continue
         status, message = score_single_submission(syn, submission, sub_status,
-                                                  scoring_func,
-                                                  goldstandard_path,
-                                                  dry_run=dry_run)
+                                                  scoring_func, goldstandard_path,
+                                                  dry_run=dry_run, remove_cache=remove_cache)
 
         # send message AFTER storing status to ensure
         # we don't get repeat messages
@@ -323,7 +345,8 @@ def command_validate(syn, evaluation_queue_maps, args):
                      args.challenge_synid,
                      send_messages=args.send_messages,
                      acknowledge_receipt=args.acknowledge_receipt,
-                     dry_run=args.dry_run)
+                     dry_run=args.dry_run,
+                     remove_cache=args.remove_cache)
     else:
         validate(syn,
                  evaluation_queue_maps[args.evaluation],
@@ -331,7 +354,8 @@ def command_validate(syn, evaluation_queue_maps, args):
                  args.challenge_synid,
                  send_messages=args.send_messages,
                  acknowledge_receipt=args.acknowledge_receipt,
-                 dry_run=args.dry_run)
+                 dry_run=args.dry_run,
+                 remove_cache=args.remove_cache)
 
 
 def command_score(syn, evaluation_queue_maps, args):
@@ -346,7 +370,8 @@ def command_score(syn, evaluation_queue_maps, args):
                   args.challenge_synid,
                   send_messages=args.send_messages,
                   send_notifications=args.notifications,
-                  dry_run=args.dry_run)
+                  dry_run=args.dry_run,
+                  remove_cache=args.remove_cache)
     else:
         score(syn,
               evaluation_queue_maps[args.evaluation],
@@ -354,7 +379,8 @@ def command_score(syn, evaluation_queue_maps, args):
               args.challenge_synid,
               send_messages=args.send_messages,
               send_notifications=args.notifications,
-              dry_run=args.dry_run)
+              dry_run=args.dry_run,
+              remove_cache=args.remove_cache)
 
 
 def main(args):
@@ -388,7 +414,8 @@ def main(args):
     except Exception:
         raise ValueError("Error importing your python config script")
 
-    check_keys = set(["id", "validation_func", "scoring_func", "goldstandard_path"])
+    check_keys = set(
+        ["id", "validation_func", "scoring_func", "goldstandard_path"])
     evaluation_queue_maps = {}
     for queue in module.EVALUATION_QUEUES_CONFIG:
         if not check_keys.issubset(queue.keys()):
