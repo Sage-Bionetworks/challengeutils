@@ -66,7 +66,7 @@ def _submission_annotations_to_dict(annotations, is_private=True):
                        for annotation in annotations[annotation_type]
                        if annotation_type not in ['scopeId', 'objectId'] and
                        annotation['isPrivate'] == is_private}
-    return(annotation_dict)
+    return annotation_dict
 
 
 def update_single_submission_status(status, add_annotations, to_public=False,
@@ -353,9 +353,9 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
         change_to_status: Submission status to change a submission to.
                           Default is VALIDATED.
     '''
-    submission_bundle = syn.getSubmissionBundles(
-        evaluationid, status=submission_status)
-    for sub, status in submission_bundle:
+    submission_bundle = syn.getSubmissionBundles(evaluationid,
+                                                 status=submission_status)
+    for _, status in submission_bundle:
         status.status = change_to_status
         syn.store(status)
 
