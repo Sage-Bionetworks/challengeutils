@@ -1,3 +1,6 @@
+'''
+Functions that interact with the Synapse discussion API
+'''
 import json
 import requests
 QUERY_LIMIT = 1000
@@ -14,9 +17,9 @@ def _get_forum_obj(syn, synid):
     Returns:
         dict: Forum object
     '''
-    forum_obj = syn.restGET('/project/{projectid}/forum'.format(
-        projectid=synid))
-    return(forum_obj)
+    uri = '/project/{projectid}/forum'.format(projectid=synid)
+    forum_obj = syn.restGET(uri)
+    return forum_obj
 
 
 def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
@@ -36,12 +39,10 @@ def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
     """
     forum_obj = _get_forum_obj(syn, synid)
     forumid = forum_obj['id']
-
-    response = syn._GET_paginated(
-        '/forum/{forumid}/threads?filter={query_filter}'.format(
-            forumid=forumid, query_filter=query_filter),
-        limit=limit, offset=offset)
-    return(response)
+    uri = '/forum/{forumid}/threads?filter=''{query_filter}'.format(
+        forumid=forumid, query_filter=query_filter)
+    response = syn._GET_paginated(uri, limit=limit, offset=offset)
+    return response
 
 
 def get_thread_replies(syn, threadid, query_filter='EXCLUDE_DELETED',
@@ -63,7 +64,7 @@ def get_thread_replies(syn, threadid, query_filter='EXCLUDE_DELETED',
         '/thread/{threadid}/replies?filter={query_filter}'.format(
             threadid=threadid, query_filter=query_filter),
         limit=limit, offset=offset)
-    return(response)
+    return response
 
 
 def _get_text(syn, uri):
@@ -79,7 +80,7 @@ def _get_text(syn, uri):
     '''
     text_url = syn.restGET(uri)
     response = requests.get(text_url['messageUrl'].split("?")[0])
-    return(response)
+    return response
 
 
 def get_thread_text(syn, messagekey):
@@ -95,7 +96,7 @@ def get_thread_text(syn, messagekey):
     '''
     uri = "/thread/messageUrl?messageKey={key}".format(key=messagekey)
     thread_response = _get_text(syn, uri)
-    return(thread_response.text)
+    return thread_response.text
 
 
 def get_thread_reply_text(syn, messagekey):
@@ -112,7 +113,7 @@ def get_thread_reply_text(syn, messagekey):
     '''
     uri = "/reply/messageUrl?messageKey={key}".format(key=messagekey)
     thread_reply_response = _get_text(syn, uri)
-    return(thread_reply_response.text)
+    return thread_reply_response.text
 
 
 def get_forum_participants(syn, synid):
@@ -132,7 +133,7 @@ def get_forum_participants(syn, synid):
         unique_users = set(thread['activeAuthors'])
         users.update(unique_users)
     userprofiles = [syn.getUserProfile(user) for user in users]
-    return(userprofiles)
+    return userprofiles
 
 
 def create_thread(syn, synid, title, message):
@@ -150,13 +151,12 @@ def create_thread(syn, synid, title, message):
     '''
     forum_obj = _get_forum_obj(syn, synid)
     forumid = forum_obj['id']
-    discussion_thread_dict = {
-        'forumId': forumid,
-        'title': title,
-        'messageMarkdown': message}
-    thread_obj = syn.restPOST(
-        '/thread', body=json.dumps(discussion_thread_dict))
-    return(thread_obj)
+    discussion_thread_dict = {'forumId': forumid,
+                              'title': title,
+                              'messageMarkdown': message}
+    thread_obj = syn.restPOST('/thread',
+                              body=json.dumps(discussion_thread_dict))
+    return thread_obj
 
 
 def create_thread_reply(syn, threadid, message):
@@ -173,10 +173,21 @@ def create_thread_reply(syn, threadid, message):
     '''
     thread_reply_dict = {'threadId': threadid, 'messageMarkdown': message}
     reply_obj = syn.restPOST('/reply', body=json.dumps(thread_reply_dict))
-    return(reply_obj)
+    return reply_obj
 
 
-def get_entity_thread_num(syn, entityid):
+def get_project_threads(syn, entityid):
+    '''
+    Get the discussion threads that the entity has been
+    mentioned on
+
+    Args:
+        syn: Synapse object
+        entityid: Synapse Entity id
+
+    Returns:
+        threads
+    '''
     uri = "/entity/{entityid}/threads".format(entityid=entityid)
     results = syn._GET_paginated(uri)
-    return(results)
+    return results
