@@ -68,8 +68,8 @@ def test_get_forum_threads():
     with mock.patch.object(discussion,
                            "_get_forum_obj",
                            return_value=FORUM_OBJ) as patch_get_obj,\
-        mock.patch.object(syn,
-                          "_GET_paginated", return_value=response) as patch_syn_get:
+        mock.patch.object(syn, "_GET_paginated",
+                          return_value=response) as patch_syn_get:
         threads = discussion.get_forum_threads(syn, PROJECTID)
         patch_get_obj.assert_called_once_with(syn, PROJECTID)
         patch_syn_get.assert_called_once_with(
@@ -156,6 +156,7 @@ def test_get_forum_participants():
 
 
 def test_create_thread():
+    '''Test thread creation'''
     title = "my title here"
     message = "my message here"
     discussion_thread_dict = {'forumId': FORUM_OBJ['id'],
@@ -166,9 +167,7 @@ def test_create_thread():
                            return_value=FORUM_OBJ) as patch_get_obj,\
          mock.patch.object(syn, "restPOST",
                            return_value=THREAD_OBJ) as patch_restpost:
-        threadobj = discussion.create_thread(syn, PROJECTID,
-                                                            title, message)
-
+        threadobj = discussion.create_thread(syn, PROJECTID, title, message)
         patch_get_obj.assert_called_once_with(syn, PROJECTID)
         patch_restpost.assert_called_once_with(
             '/thread', body=json.dumps(discussion_thread_dict))
