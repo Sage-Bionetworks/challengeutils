@@ -176,7 +176,7 @@ def create_thread_reply(syn, threadid, message):
     return reply_obj
 
 
-def get_project_threads(syn, entityid):
+def get_entity_threads(syn, entityid):
     '''
     Get the discussion threads that the entity has been
     mentioned on
