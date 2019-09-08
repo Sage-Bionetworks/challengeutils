@@ -7,9 +7,9 @@ import re
 import challengeutils.utils
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
-
+from challengeutils.synapse import Synapse
 syn = mock.create_autospec(synapseclient.Synapse)
-
+Synapse._synapse_client = syn
 
 def test_raiseerror__switch_annotation_permission():
     '''
@@ -124,6 +124,7 @@ def test__check_date_range():
     expected_result = [True,False]
     assert result == expected_result
 
+
 def test__get_contributors():
     '''
     Test getting contributors by evaluationID, status, and date range
@@ -134,7 +135,7 @@ def test__get_contributors():
     with patch.object(syn, "getSubmissionBundles",
                       return_value=bundle) as patch_syn_get_bundles:
         contributors = challengeutils.utils._get_contributors(
-            syn, 123, "SCORED","2019-05-06 1:00","2019-06-01 1:00")
+            123, "SCORED","2019-05-06 1:00","2019-06-01 1:00")
         patch_syn_get_bundles.assert_called_once_with(
             123,
             status="SCORED")
@@ -149,13 +150,13 @@ def test_get_contributors():
     with patch.object(challengeutils.utils, "_get_contributors",
                       return_value=contributors) as patch_syn_get_bundles:
         all_contributors = challengeutils.utils.get_contributors(
-            syn, ids, "SCORED")
+            ids, "SCORED")
         assert all_contributors == set([321])
 
 def test_list_evaluations():
     with mock.patch.object(
             syn, "getEvaluationByContentSource") as patch_geteval:
-        challengeutils.utils.list_evaluations(syn, "syn1234")
+        challengeutils.utils.list_evaluations("syn1234")
         patch_geteval.assert_called_once_with("syn1234")
 
 
@@ -181,7 +182,7 @@ def test_defaultloc_download_submission():
     with mock.patch.object(
             syn, "getSubmission",
             return_value=submission_dict) as patch_get_submission:
-        sub_dict = challengeutils.utils.download_submission(syn, "12345")
+        sub_dict = challengeutils.utils.download_submission("12345")
         patch_get_submission.assert_called_once_with(
             "12345", downloadLocation=None)
         assert sub_dict == expected_submission_dict
@@ -209,7 +210,7 @@ def test_specifyloc_download_submission():
             syn, "getSubmission",
             return_value=submission_dict) as patch_get_submission:
         sub_dict = challengeutils.utils.download_submission(
-            syn, "12345", download_location=".")
+            "12345", download_location=".")
         patch_get_submission.assert_called_once_with(
             "12345", downloadLocation=".")
         assert sub_dict == expected_submission_dict
@@ -229,7 +230,7 @@ def test_annotate_submission_with_json():
             return_value=status) as patch_update, \
             mock.patch.object(syn, "store") as patch_syn_store:
         challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path,
+            "1234", tempfile_path,
             to_public=False,
             force_change_annotation_acl=False)
         patch_get_submission.assert_called_once_with("1234")

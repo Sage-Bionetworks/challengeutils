@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import synapseclient
 from synapseclient.retry import _with_retry
+from .synapse import Synapse
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
@@ -338,18 +339,9 @@ def perform_main(syn, args):
             raise
 
 
-def synapse_login(synapse_config):
-    try:
-        syn = synapseclient.login(silent=True)
-    except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config)
-        syn.login(silent=True)
-    return(syn)
-
-
 def main():
     args = build_parser().parse_args()
-    syn = synapse_login(args.synapse_config)
+    syn = Synapse().client(configPath=args.synapse_config)
     perform_main(syn, args)
 
 

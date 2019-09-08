@@ -4,6 +4,7 @@ import sys
 import urllib
 import datetime
 import synapseclient
+from .synapse import Synapse
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ def update_single_submission_status(status, add_annotations, to_public=False,
     return(status)
 
 
-def evaluation_queue_query(syn, uri, limit=20, offset=0):
+def evaluation_queue_query(uri, limit=20, offset=0):
     """
     This is to query the evaluation queue service.
     The limit parameter is set at 20 by default.
@@ -148,7 +149,7 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
     Yields:
         dict: A generator over some paginated results
     """
-
+    syn = Synapse.client()
     prev_num_results = sys.maxsize
     while prev_num_results > 0:
         rest_uri = "/evaluation/submission/query?query=" + \
@@ -166,7 +167,7 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challengeid(syn, entity):
+def get_challengeid(entity):
     """
     Function that gets the challenge id for a project
 
@@ -176,6 +177,7 @@ def get_challengeid(syn, entity):
     Returns:
         Challenge dictionary
     """
+    syn = Synapse().client()
     synid = synapseclient.utils.id_of(entity)
     challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
     return(challenge_obj)
@@ -228,7 +230,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     return(status)
 
 
-def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
+def update_all_submissions_annotation_acl(evaluationid, annotations,
                                           status='SCORED', is_private=False):
     """
     Function to change the acl of a list of known annotation keys on
@@ -241,6 +243,7 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
         status: ALL, VALIDATED, INVALID
         is_private: whether the annotation is private or not, default to True
     """
+    syn = Synapse().client()
     status = None if status == 'ALL' else status
     bundle = syn.getSubmissionBundles(evaluationid, status=status)
     for sub, status in bundle:
@@ -249,7 +252,7 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
         syn.store(new_status)
 
 
-def invite_member_to_team(syn, team, user=None, email=None, message=None):
+def invite_member_to_team(team, user=None, email=None, message=None):
     """
     Invite members to a team
 
@@ -261,6 +264,7 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
                but must specify one
         message: Message for people getting invited to the team
     """
+    syn = Synapse().client()
     teamid = syn.getTeam(team)['id']
     is_member = False
     invite = {'teamId': str(teamid)}
@@ -287,7 +291,7 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
     return None
 
 
-def register_team(syn, entity, team):
+def register_team(entity, team):
     '''
     Registers team to challenge
 
@@ -299,8 +303,8 @@ def register_team(syn, entity, team):
     Returns:
         Team id
     '''
-
-    challengeid = get_challengeid(syn, entity)['id']
+    syn = Synapse().client()
+    challengeid = get_challengeid(entity)['id']
     teamid = syn.getTeam(team)['id']
     challenge_object = {'challengeId': challengeid, 'teamId': teamid}
     registered_team = syn.restPOST(
@@ -309,7 +313,7 @@ def register_team(syn, entity, team):
     return(registered_team['teamId'])
 
 
-def change_submission_status(syn, submissionid, status='RECEIVED'):
+def change_submission_status(submissionid, status='RECEIVED'):
     '''
     Function to change a submission status
 
@@ -321,13 +325,14 @@ def change_submission_status(syn, submissionid, status='RECEIVED'):
     Returns:
         Updated submission status
     '''
+    syn = Synapse().client()
     sub_status = syn.getSubmissionStatus(submissionid)
     sub_status.status = status
     sub_status = syn.store(sub_status)
     return(sub_status)
 
 
-def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
+def change_all_submission_status(evaluationid, submission_status='SCORED',
                                  change_to_status='VALIDATED'):
     '''
     Function to change submission status of all submissions in a queue
@@ -342,6 +347,7 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
         change_to_status: Submission status to change a submission to.
                           Default is VALIDATED.
     '''
+    syn = Synapse().client()
     submission_bundle = syn.getSubmissionBundles(
         evaluationid, status=submission_status)
     for sub, status in submission_bundle:
@@ -358,7 +364,7 @@ class NewUserProfile(synapseclient.team.UserProfile):
         return(int(self['ownerId']))
 
 
-def _get_team_set(syn, team):
+def _get_team_set(team):
     '''
     Helper function to return a set of usernames
 
@@ -369,12 +375,13 @@ def _get_team_set(syn, team):
     Returns:
         Set of synapse user profiles in team
     '''
+    syn = Synapse().client()
     members = syn.getTeamMembers(team)
     members_set = set(NewUserProfile(**member['member']) for member in members)
     return(members_set)
 
 
-def team_members_diff(syn, a, b):
+def team_members_diff(a, b):
     '''
     Calculates the diff between teama and teamb
 
@@ -386,13 +393,13 @@ def team_members_diff(syn, a, b):
     Returns:
         Set of synapse user profiles in teama but not in teamb
     '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
+    uniq_teama_members = _get_team_set(a)
+    uniq_teamb_members = _get_team_set(b)
     members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
     return(members_not_in_teamb)
 
 
-def team_members_intersection(syn, a, b):
+def team_members_intersection(a, b):
     '''
     Calculates the intersection between teama and teamb
 
@@ -404,13 +411,13 @@ def team_members_intersection(syn, a, b):
     Returns:
         Set of synapse user profiles that belong in both teams
     '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
+    uniq_teama_members = _get_team_set(a)
+    uniq_teamb_members = _get_team_set(b)
     intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
     return(intersect_members)
 
 
-def team_members_union(syn, a, b):
+def team_members_union(a, b):
     '''
     Calculates the union between teama and teamb
 
@@ -422,8 +429,8 @@ def team_members_union(syn, a, b):
     Returns:
         Set of a combination of synapse user profiles from both teams
     '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
+    uniq_teama_members = _get_team_set(a)
+    uniq_teamb_members = _get_team_set(b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
 
@@ -452,7 +459,7 @@ def _check_date_range(date_str, start_datetime, end_datetime):
             result = date_obj <= end_obj
     return(result)
 
-def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
+def _get_contributors(evaluationid, status, start_datetime, end_datetime):
     '''
     Helper function to get contributors from a given evaluation id. 
     Note: the date and time is in UTC
@@ -467,6 +474,7 @@ def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
     Returns:
         Set of contributors' user ids
     '''
+    syn = Synapse().client()
     bundles = syn.getSubmissionBundles(evaluationid, status=status)
     contributors = set()
     for sub, _ in bundles:
@@ -475,7 +483,7 @@ def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
             contributors.update(principalids)
     return(contributors)
 
-def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+def get_contributors(evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
     '''
     Function to get contributors from a list of evaluation ids
     Note: the date and time is in UTC
@@ -492,12 +500,12 @@ def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, e
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_contributors(syn,evaluationid,status,start_datetime,end_datetime)
+        contributors = _get_contributors(evaluationid,status,start_datetime,end_datetime)
         all_contributors = all_contributors.union(contributors)
     return(all_contributors)
 
 
-def list_evaluations(syn, project):
+def list_evaluations(project):
     '''
     List evaluation queues of a Synapse project
 
@@ -505,6 +513,7 @@ def list_evaluations(syn, project):
         syn: Synapse object
         project: Synapse id/entity of project
     '''
+    syn = Synapse().client()
     evaluations = syn.getEvaluationByContentSource(project)
     for evaluation in evaluations:
         logger.info(
@@ -512,7 +521,7 @@ def list_evaluations(syn, project):
                                                   evalid=evaluation.id))
 
 
-def download_submission(syn, submissionid, download_location=None):
+def download_submission(submissionid, download_location=None):
     '''
     Download submission and return json
 
@@ -524,6 +533,8 @@ def download_submission(syn, submissionid, download_location=None):
     Returns:
         dict: submission json results
     '''
+    syn = Synapse().client()
+
     sub = syn.getSubmission(submissionid, downloadLocation=download_location)
     entity = sub['entity']
     result = {'docker_repository': sub.get("dockerRepositoryName"),
@@ -536,7 +547,7 @@ def download_submission(syn, submissionid, download_location=None):
     return(result)
 
 
-def annotate_submission_with_json(syn, submissionid, annotation_values,
+def annotate_submission_with_json(submissionid, annotation_values,
                                   to_public=False,
                                   force_change_annotation_acl=False):
     '''
@@ -551,6 +562,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         force_change_annotation_acl: Force change the annotation from
                                      private to public and vice versa.
     '''
+    syn = Synapse().client()
     status = syn.getSubmissionStatus(submissionid)
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
