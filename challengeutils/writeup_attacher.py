@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def _create_archive_writeup_project(syn, sub):
+def _create_archive_writeup(syn, sub):
     '''
     Creates the archived writeup project
 
@@ -31,6 +31,7 @@ def _create_archive_writeup_project(syn, sub):
                      f"{sub.id} {sub.entityId}")
     project_entity = synapseclient.Project(archived_name)
     entity = syn.store(project_entity)
+    synapseutils.copy(syn, sub.entityId, entity.id)
     return entity
 
 
@@ -50,8 +51,7 @@ def archive_writeup(syn, submissionid, rearchive=False):
                                sub_status.annotations['stringAnnos'])
     # check_if_archived will be an empty list if the annotation doesnt exist
     if not list(check_if_archived) or rearchive:
-        entity = _create_archive_writeup_project(syn, sub)
-        synapseutils.copy(syn, sub.entityId, entity.id)
+        entity = _create_archive_writeup(syn, sub)
         archived = {"archived": entity.id}
         sub_status = utils.update_single_submission_status(sub_status,
                                                            archived)
