@@ -117,19 +117,24 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
         writeup_queueid: Write up evaluation queue id
         submission_queueid: Submission queue id
     '''
-    writeup_query = (f"select objectId, submitterId, entityId, archived from evaluation_{writeup_queueid} "
+    writeup_query = ("select objectId, submitterId, entityId, archived "
+                     f"from evaluation_{writeup_queueid} "
                      "where status == 'VALIDATED'")
     writeups = list(utils.evaluation_queue_query(syn, writeup_query))
-    submission_query = (f"select objectId, submitterId from evaluation_{submission_queueid} "
+    submission_query = ("select objectId, submitterId from "
+                        f"evaluation_{submission_queueid} "
                         "where status == 'SCORED'")
     submissions = list(utils.evaluation_queue_query(syn, submission_query))
     writeupsdf = pd.DataFrame(writeups)
     submissionsdf = pd.DataFrame(submissions)
     # Must rename writeup submission objectId or there will be conflict
-    writeupsdf.rename(columns={"objectId": "writeup_submissionid"}, inplace=True)
+    writeupsdf.rename(columns={"objectId": "writeup_submissionid"},
+                      inplace=True)
     submissions_with_writeupsdf = submissionsdf.merge(writeupsdf,
                                                       on="submitterId",
                                                       how="left")
 
-    submissions_with_writeupsdf.apply(lambda row: attach_writeup_to_main_submission(row, syn),
+    submissions_with_writeupsdf.apply(lambda row:
+                                      attach_writeup_to_main_submission(row,
+                                                                        syn),
                                       axis=1)

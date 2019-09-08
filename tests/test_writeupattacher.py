@@ -1,11 +1,12 @@
 '''
 Testing writeup attacher
 '''
-import mock
 import time
+import mock
+import synapseclient
+
 import challengeutils.writeup_attacher
 from challengeutils.writeup_attacher import _create_archive_writeup_project
-import synapseclient
 
 
 syn = synapseclient.Synapse()
