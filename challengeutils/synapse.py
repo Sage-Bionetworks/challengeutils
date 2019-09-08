@@ -36,3 +36,10 @@ class Synapse:
 
         LOGGER.debug("Already have a Synapse client, returning it.")
         return cls._synapse_client
+
+    @classmethod
+    def reset(cls):
+        '''
+        Change synapse connection
+        '''
+        cls._synapse_client = None
