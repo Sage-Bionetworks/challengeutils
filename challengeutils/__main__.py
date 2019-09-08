@@ -22,7 +22,7 @@ def command_mirrorwiki(syn, args):
 
 
 def command_createchallenge(syn, args):
-    createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
+    createchallenge.createchallenge(args.challengename, args.livesiteid)
 
 
 def command_query(syn, args):
@@ -100,17 +100,14 @@ def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
         description='Challenge utility functions')
-    '''
-    parser.add_argument('-u', '--username', dest='synapseUser',
-                         help='Username used to connect to Synapse')
-    parser.add_argument('-p', '--password', dest='synapsePassword',
-                         help='Password used to connect to Synapse')
 
-    '''
-    parser.add_argument(
-        "-c", "--synapse_config",
-        default=synapseclient.client.CONFIG_FILE,
-        help="credentials file")
+    parser.add_argument("-c", "--synapse_config",
+                        default=synapseclient.client.CONFIG_FILE,
+                        help="credentials file")
+
+    parser.add_argument("--synapse_staging",
+                        help="Use synapse staging endpoint",
+                        action='store_true')
 
     subparsers = parser.add_subparsers(
         title='commands',
@@ -340,8 +337,15 @@ def perform_main(syn, args):
 
 
 def main():
+    '''Build argparser and perform functions'''
     args = build_parser().parse_args()
-    syn = Synapse().client(configPath=args.synapse_config)
+    # Determine synapse endpoint
+    if args.synapse_staging:
+        endpoint = synapseclient.client.STAGING_ENDPOINTS
+    else:
+        endpoint = synapseclient.client.PRODUCTION_ENDPOINTS
+    # explode endpoint dict
+    syn = Synapse().client(**endpoint, configPath=args.synapse_config)
     perform_main(syn, args)
 
 
