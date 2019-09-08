@@ -5,6 +5,7 @@ import time
 from mock import patch
 import synapseclient
 import synapseutils
+from synapseclient.annotations import to_submission_status_annotations
 
 import challengeutils.utils
 import challengeutils.writeup_attacher
@@ -39,13 +40,27 @@ def test__create_archive_writeup():
         patch_syn_copy.assert_called_once_with(syn, SUBMISSION.entityId,
                                                archive_proj.id)
 
-# def test_archive_writeup():
-#     with patch.object(syn, "getSubmission"
-#                       return_value=SUBMISSION) as patch_getsub,\
-#          patch.object(syn, "getSubmissionStatus") as patch_getsubstatus,\
-#          patch.object(challengeutils.writeup_attacher,
-#                       "_create_archive_writeup"
-#                       return_value=ENTITY) as patch_syn_copy,\
-#          patch.object(challengeutils.utils
-#                       "update_single_submission_status"):
-#         archive_proj = archive_writeup(syn, SUBMISSION.id)
+def test_alreadyarchived_archive_writeup():
+    '''
+    Test archive writeup if the archive annotation already exists
+    the project shouldn't be copied
+    '''
+    annotations = {"archived": "1"}
+    syn_annots = to_submission_status_annotations(annotations)
+    submission_status = synapseclient.SubmissionStatus(annotations=syn_annots)
+    with patch.object(syn, "getSubmission",
+                      return_value=SUBMISSION) as patch_getsub,\
+         patch.object(syn, "getSubmissionStatus",
+                      return_value=submission_status) as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "_create_archive_writeup") as patch_syn_copy,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status") as patch_update,\
+         patch.object(syn, "store") as patch_syn_store:
+        archive_proj = archive_writeup(syn, SUBMISSION.id)
+        patch_getsub.assert_called_once_with(SUBMISSION.id, downloadFile=False)
+        patch_getsubstatus.assert_called_once_with(SUBMISSION.id)
+        patch_syn_copy.assert_not_called()
+        patch_update.assert_not_called()
+        patch_syn_store.assert_not_called()
+        assert archive_proj is None

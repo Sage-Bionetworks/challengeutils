@@ -57,7 +57,7 @@ def archive_writeup(syn, submissionid, rearchive=False):
                                                            archived)
         syn.store(sub_status)
         return entity.id
-    return None
+    # return None
 
 
 def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
