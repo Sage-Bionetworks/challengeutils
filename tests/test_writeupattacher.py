@@ -53,14 +53,74 @@ def test_alreadyarchived_archive_writeup():
          patch.object(syn, "getSubmissionStatus",
                       return_value=submission_status) as patch_getsubstatus,\
          patch.object(challengeutils.writeup_attacher,
-                      "_create_archive_writeup") as patch_syn_copy,\
+                      "_create_archive_writeup") as patch__archive,\
          patch.object(challengeutils.utils,
                       "update_single_submission_status") as patch_update,\
          patch.object(syn, "store") as patch_syn_store:
         archive_proj = archive_writeup(syn, SUBMISSION.id)
         patch_getsub.assert_called_once_with(SUBMISSION.id, downloadFile=False)
         patch_getsubstatus.assert_called_once_with(SUBMISSION.id)
-        patch_syn_copy.assert_not_called()
+        patch__archive.assert_not_called()
         patch_update.assert_not_called()
         patch_syn_store.assert_not_called()
         assert archive_proj is None
+
+
+def test_notarchive_archive_writeup():
+    '''
+    Test archive writeup if there is not an archive
+    '''
+    return_project = synapseclient.Project("test", id="syn2222")
+    annotations = {"archived": "syn2222"}
+    syn_annots = to_submission_status_annotations(annotations)
+    archive_substatus = synapseclient.SubmissionStatus(annotations=syn_annots)
+    with patch.object(syn, "getSubmission",
+                      return_value=SUBMISSION) as patch_getsub,\
+         patch.object(syn, "getSubmissionStatus",
+                      return_value=archive_substatus) as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "_create_archive_writeup",
+                      return_value=return_project) as patch__archive,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status",
+                      return_value=archive_substatus) as patch_update,\
+         patch.object(syn, "store") as patch_syn_store:
+        archive_proj = archive_writeup(syn, SUBMISSION.id, rearchive=True)
+        patch_getsub.assert_called_once_with(SUBMISSION.id, downloadFile=False)
+        patch_getsubstatus.assert_called_once_with(SUBMISSION.id)
+        patch__archive.assert_called_once_with(syn, SUBMISSION)
+        patch_update.assert_called_once_with(archive_substatus,
+                                             annotations)
+        patch_syn_store.assert_called_once_with(archive_substatus)
+        assert archive_proj == return_project.id
+
+
+def test_forcerearchive_archive_writeup():
+    '''
+    Test archive writeup if there is already an archive but
+    rearchive=True
+    '''
+    submission_status = synapseclient.SubmissionStatus(annotations={})
+    return_project = synapseclient.Project("test", id="syn2222")
+    annotations = {"archived": "syn2222"}
+    syn_annots = to_submission_status_annotations(annotations)
+    archive_substatus = synapseclient.SubmissionStatus(annotations=syn_annots)
+    with patch.object(syn, "getSubmission",
+                      return_value=SUBMISSION) as patch_getsub,\
+         patch.object(syn, "getSubmissionStatus",
+                      return_value=submission_status) as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "_create_archive_writeup",
+                      return_value=return_project) as patch__archive,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status",
+                      return_value=archive_substatus) as patch_update,\
+         patch.object(syn, "store") as patch_syn_store:
+        archive_proj = archive_writeup(syn, SUBMISSION.id)
+        patch_getsub.assert_called_once_with(SUBMISSION.id, downloadFile=False)
+        patch_getsubstatus.assert_called_once_with(SUBMISSION.id)
+        patch__archive.assert_called_once_with(syn, SUBMISSION)
+        patch_update.assert_called_once_with(submission_status,
+                                             annotations)
+        patch_syn_store.assert_called_once_with(archive_substatus)
+        assert archive_proj == return_project.id
