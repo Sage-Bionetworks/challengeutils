@@ -27,7 +27,7 @@ def command_createchallenge(syn, args):
 
 def command_query(syn, args):
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
-        syn, args.uri, args.limit, args.offset)))
+        args.uri, args.limit, args.offset)))
     if args.outputfile is not None:
         querydf.to_csv(args.outputfile, index=False)
     else:
@@ -35,7 +35,7 @@ def command_query(syn, args):
 
 
 def command_change_status(syn, args):
-    print(utils.change_submission_status(syn, args.submissionid, args.status))
+    print(utils.change_submission_status(args.submissionid, args.status))
 
 
 def command_writeup_attach(syn, args):
@@ -67,12 +67,12 @@ def command_dl_cur_lead_sub(syn, args):
 
 
 def command_list_evaluations(syn, args):
-    utils.list_evaluations(syn, args.projectid)
+    utils.list_evaluations(args.projectid)
 
 
 def command_download_submission(syn, args):
     submission_dict = utils.download_submission(
-        syn, args.submissionid, download_location=args.download_location)
+        args.submissionid, download_location=args.download_location)
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -88,7 +88,7 @@ def command_download_submission(syn, args):
 
 def command_annotate_submission_with_json(syn, args):
     _with_retry(lambda: utils.annotate_submission_with_json(
-        syn, args.submissionid,
+        args.submissionid,
         args.annotation_values,
         to_public=args.to_public,
         force_change_annotation_acl=args.force_change_annotation_acl),
