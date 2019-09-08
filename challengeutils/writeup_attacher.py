@@ -58,7 +58,7 @@ def archive_writeup(syn, submissionid, rearchive=False):
                                                            archived)
         syn.store(sub_status)
         return entity.id
-    # return None
+    return None
 
 
 def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
@@ -67,6 +67,7 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
     store them in the destination synapse folder.
 
     Args:
+        syn: Synapse object
         evaluation: a synapse evaluation queue or its ID
         query: a query that will return the desired submissions.
                At least the ID must be returned. Defaults to:
