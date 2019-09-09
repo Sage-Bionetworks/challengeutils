@@ -3,9 +3,10 @@ import sys
 import synapseclient
 import synapseutils
 from . import utils
+from .synapse import Synapse
 
 
-def rename_submission_files(syn, evaluationid, download_location="./",
+def rename_submission_files(evaluationid, download_location="./",
                             status="SCORED"):
     '''
     This function renames the submission files of an evaluation queue.
@@ -20,23 +21,24 @@ def rename_submission_files(syn, evaluationid, download_location="./",
         download_location:  location to download files to (Default is ./)
         status: The submissions to download (Default is SCORED)
     '''
+    syn = Synapse().client()
     submission_bundle = syn.getSubmissionBundles(evaluationid, status=status)
-    for sub, status in submission_bundle:
+    for sub, _ in submission_bundle:
         if sub.get("teamId") is not None:
             submitter = syn.getTeam(sub.get("teamId"))['name']
         else:
             submitter = syn.getUserProfile(sub.userId)['userName']
         date = sub.createdOn
-        submission_ent = \
-            syn.getSubmission(sub.id, downloadLocation=download_location)
+        submission_ent = syn.getSubmission(sub.id,
+                                           downloadLocation=download_location)
         filename = os.path.basename(submission_ent.filePath)
-        newname = submitter+"___"+date+"___"+filename
+        newname = submitter+ "___" + date + "___" + filename
         newname = newname.replace(' ', '_')
         os.rename(filename, newname)
         print(newname)
 
 
-def create_team_wikis(syn, synid, templateid, tracker_table_synid):
+def create_team_wikis(synid, templateid, tracker_table_synid):
     """
     Function that creates wiki pages from a template by looking at teams that
     are registered for a challenge.  The teams that have a wiki made for them
@@ -48,6 +50,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
         trackerTableSynId: Synapse id of Table that tracks if wiki pages
                            have been made per team
     """
+    syn = Synapse().client()
 
     challenge_ent = syn.get(synid)
     challenge_obj = utils.get_challengeid(challenge_ent)
@@ -76,7 +79,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
             syn.store(tracking_table)
 
 
-def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
+def kill_docker_submission_over_quota(evaluation_id, quota=None):
     '''
     Kills any docker container that exceeds the run time quota
     Rerunning submissions will require setting TimeRemaining annotation
@@ -88,6 +91,8 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
         quota (int): Quota in milliseconds. Default is None.
                      One hour is 3600000.
     '''
+    syn = Synapse().client()
+
     if quota is None:
         quota = sys.maxsize
     else:
@@ -99,7 +104,7 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
 
     evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
     query_results = \
-        utils.evaluation_queue_query(syn, evaluation_query)
+        utils.evaluation_queue_query(evaluation_query)
 
     for result in query_results:
         last_updated = int(result[workflow_last_updated_key])

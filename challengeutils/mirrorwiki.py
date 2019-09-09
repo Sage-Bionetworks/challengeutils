@@ -2,12 +2,14 @@ import logging
 import re
 import synapseutils
 from synapseclient.exceptions import SynapseHTTPError
+from .synapse import Synapse
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def mirrorwiki(syn, entity, destination, force_merge=False):
+def mirrorwiki(entity, destination, force_merge=False):
     """
     This script is responsible for mirroring wiki pages
     It relies on the wiki titles between two Synapse Projects to be
@@ -24,6 +26,8 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
     Returns:
         nothing
     """
+    syn = Synapse().client()
+
     entity = syn.get(entity, downloadFile=False)
     destination = syn.get(destination, downloadFile=False)
     # TODO: getWikiHeaders fails when there is no wiki

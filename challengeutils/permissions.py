@@ -1,4 +1,6 @@
 import synapseclient
+from .synapse import Synapse
+
 VIEW = ["READ"]
 SUBMIT = ['READ', 'SUBMIT']
 DOWNLOAD = ['READ', 'DOWNLOAD']
@@ -25,8 +27,7 @@ ENTITY_PERMS_MAPPINGS = {'view': VIEW,
                          'remove': []}
 
 
-def _set_permissions(syn,
-                     syn_obj,
+def _set_permissions(syn_obj,
                      principalid,
                      permission_level):
     """
@@ -42,6 +43,7 @@ def _set_permissions(syn,
                           'remove' can be specified to delete the permissions
         principalid: Synapse id of a user or team.
     """
+    syn = Synapse().client()
     if isinstance(syn_obj, synapseclient.Evaluation):
         permission_level_mapping = EVALUATION_PERMS_MAPPINGS
     else:
@@ -51,19 +53,17 @@ def _set_permissions(syn,
         raise ValueError("permission_level must be one of these: {0}".format(
             ', '.join(permission_level_mapping.keys())))
 
-    syn.setPermissions(
-        syn_obj, principalId=principalid,
-        accessType=permission_level_mapping[permission_level])
+    syn.setPermissions(syn_obj, principalId=principalid,
+                       accessType=permission_level_mapping[permission_level])
 
 
-def set_evaluation_permissions(syn, evaluation, principalid,
+def set_evaluation_permissions(evaluation, principalid,
                                permission_level="view"):
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)
 
     Args:
-        syn: Synapse object
         evaluation: An Evaluation or Evaluation id
         principalid: Identifier of a user or group. To give anybody on the web
                      access, specify None.
@@ -72,10 +72,10 @@ def set_evaluation_permissions(syn, evaluation, principalid,
                           permissions for the principalid is deleted.
                           Default is 'view'
     """
+    syn = Synapse().client()
     # Get the evaluation to check for access / validity of entity
     evaluation = syn.getEvaluation(evaluation)
-    _set_permissions(
-        syn, evaluation, principalid, permission_level)
+    _set_permissions(evaluation, principalid, permission_level)
 
 
 def set_entity_permissions(syn, entity, principalid,
@@ -94,7 +94,7 @@ def set_entity_permissions(syn, entity, principalid,
                           permissions for the principalid is deleted.
                           Default is 'download'
     """
+    syn = Synapse().client()
     # Get the entity to check for access / validity of entity
     entity = syn.get(entity, downloadFile=False)
-    _set_permissions(
-        syn, entity, principalid, permission_level)
+    _set_permissions(entity, principalid, permission_level)

@@ -13,19 +13,19 @@ from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
-def command_mirrorwiki(syn, args):
-    mirrorwiki.mirrorwiki(
-        syn, args.entityid, args.destinationid, args.forceupdate)
+def command_mirrorwiki(_, args):
+    mirrorwiki.mirrorwiki(args.entityid, args.destinationid,
+                          args.forceupdate)
 
 
-def command_createchallenge(syn, args):
+def command_createchallenge(_, args):
     createchallenge.createchallenge(args.challengename, args.livesiteid)
 
 
-def command_query(syn, args):
+def command_query(_, args):
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         args.uri, args.limit, args.offset)))
     if args.outputfile is not None:
@@ -34,8 +34,9 @@ def command_query(syn, args):
         print(querydf.to_csv(index=False))
 
 
-def command_change_status(syn, args):
-    print(utils.change_submission_status(args.submissionid, args.status))
+def command_change_status(_, args):
+    print(utils.change_submission_status(args.submissionid,
+                                         args.status))
 
 
 def command_writeup_attach(syn, args):
@@ -43,16 +44,16 @@ def command_writeup_attach(syn, args):
         syn, args.writeupqueue, args.submissionqueue)
 
 
-def command_set_entity_acl(syn, args):
+def command_set_entity_acl(_, args):
     permissions.set_entity_permissions(
-        syn, args.entityid,
+        args.entityid,
         principalid=args.principalid,
         permission_level=args.permission_level)
 
 
-def command_set_evaluation_acl(syn, args):
+def command_set_evaluation_acl(_, args):
     permissions.set_evaluation_permissions(
-        syn, args.evaluationid,
+        args.evaluationid,
         principalid=args.principalid,
         permission_level=args.permission_level)
 
@@ -66,7 +67,7 @@ def command_dl_cur_lead_sub(syn, args):
         verbose=args.verbose)
 
 
-def command_list_evaluations(syn, args):
+def command_list_evaluations(_, args):
     utils.list_evaluations(args.projectid)
 
 
@@ -81,9 +82,9 @@ def command_download_submission(syn, args):
         submission_dict['file_path'] = 'submission-' + args.submissionid
         with open(args.output, "w") as sub_out:
             json.dump(submission_dict, sub_out)
-        logger.info(args.output)
+        LOGGER.info(args.output)
     else:
-        logger.info(submission_dict)
+        LOGGER.info(submission_dict)
 
 
 def command_annotate_submission_with_json(syn, args):
