@@ -93,21 +93,23 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     else:
         quota = int(quota)
 
-    workflow_last_updated_key = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
-    workflow_start_key = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
-    time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
+    workflowhook_key = "org.sagebionetworks.SynapseWorkflowHook"
+    workflow_last_updated_key = f"{workflowhook_key}.WorkflowLastUpdated"
+    workflow_start_key = f"{workflowhook_key}.ExecutionStarted"
+    time_remaining_key = f"{workflowhook_key}.TimeRemaining"
 
-    evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = \
-        utils.evaluation_queue_query(syn, evaluation_query)
+    evaluation_query = (f"select * from evaluation_{evaluation_id} where "
+                        "status == 'EVALUATION_IN_PROGRESS'")
+    query_results = utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
-        last_updated = int(result[workflow_last_updated_key])
-        start = int(result[workflow_start_key])
+        # If last updated and start doesn't exist, set to 0
+        last_updated = int(result.get(workflow_last_updated_key, 0))
+        start = int(result.get(workflow_start_key, 0))
         model_run_time = last_updated - start
         if model_run_time > quota:
             status = syn.getSubmissionStatus(result['objectId'])
             add_annotations = {time_remaining_key: 0}
-            status = utils.update_single_submission_status(
-                status, add_annotations)
+            status = utils.update_single_submission_status(status,
+                                                           add_annotations)
             syn.store(status)
