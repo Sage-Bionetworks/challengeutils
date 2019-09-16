@@ -96,6 +96,7 @@ def command_annotate_submission_with_json(syn, args):
 
 
 def command_send_email(syn, args):
+    """Command line interface to send Synapse email"""
     # Must escape the backslash and replace all \n with
     # html breaks
     message = args.message.replace("\\n", "<br>")
@@ -108,13 +109,7 @@ def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
         description='Challenge utility functions')
-    '''
-    parser.add_argument('-u', '--username', dest='synapseUser',
-                         help='Username used to connect to Synapse')
-    parser.add_argument('-p', '--password', dest='synapsePassword',
-                         help='Password used to connect to Synapse')
 
-    '''
     parser.add_argument(
         "-c", "--synapse_config",
         default=synapseclient.client.CONFIG_FILE,
