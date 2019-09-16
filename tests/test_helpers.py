@@ -3,25 +3,45 @@ Test challengeutils helper functions
 '''
 import mock
 from mock import patch
-from challengeutils import helpers, utils
+import pytest
 import synapseclient
-from synapseclient.annotations import to_submission_status_annotations
+from challengeutils import helpers, utils
 
 SYN = mock.create_autospec(synapseclient.Synapse)
-WORKFLOWHOOK_KEY = "org.sagebionetworks.SynapseWorkflowHook"
-WORKFLOW_LAST_UPDATED_KEY = f"{WORKFLOWHOOK_KEY}.WorkflowLastUpdated"
-WORKFLOW_START_KEY = f"{WORKFLOWHOOK_KEY}.ExecutionStarted"
-TIME_REMAINING_KEY = f"{WORKFLOWHOOK_KEY}.TimeRemaining"
+
 LAST_UPDATED_TIME = 1000000
 START_TIME = 10000
-DOCKER_SUB_ANNOTATION = {WORKFLOW_LAST_UPDATED_KEY: LAST_UPDATED_TIME,
-                         WORKFLOW_START_KEY: START_TIME,
+DOCKER_SUB_ANNOTATION = {helpers.WORKFLOW_LAST_UPDATED_KEY: LAST_UPDATED_TIME,
+                         helpers.WORKFLOW_START_KEY: START_TIME,
                          'objectId':"12345"}
 EVALUATION_ID = 111
 
+
+def test_noneintquota_kill_docker_submission_over_quota():
+    '''
+    ValueError is raised when none integer quota is passed in
+    '''
+    with pytest.raises(ValueError, match=r'quota must be an integer'):
+        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+                                                  quota="foo")
+
+
+def test_greaterthan0quota_kill_docker_submission_over_quota():
+    '''
+    ValueError is raised when quota of 0 or less is passed
+    '''
+    with pytest.raises(ValueError, match=r'quota must be larger than 0'):
+        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+                                                  quota=0)
+    with pytest.raises(ValueError, match=r'quota must be larger than 0'):
+        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+                                                  quota=-1)
+
+
 def test_noquota_kill_docker_submission_over_quota():
     '''
-    Test if no quota is set
+    Time remaining annotation should not be added
+    if no quota is set, the default is sys.maxsize.
     '''
     with patch.object(utils, "evaluation_queue_query",
                       return_value=[DOCKER_SUB_ANNOTATION]) as patch_query,\
@@ -41,8 +61,9 @@ def test_noquota_kill_docker_submission_over_quota():
 
 def test_notdocker_kill_docker_submission_over_quota():
     '''
-    Test if not a submission ran through the workflowhook
-    the submission will not have the right annotations
+    Time remaining annotation should not be added
+    if a submission is not validated/scored by the workflowhook
+    the submission will not have the right annotations,
     '''
     with patch.object(utils, "evaluation_queue_query",
                       return_value=[{}]) as patch_query,\
@@ -62,7 +83,8 @@ def test_notdocker_kill_docker_submission_over_quota():
 
 def test_underquota_kill_docker_submission_over_quota():
     '''
-    Test if the model is not over quota
+    Time remaining annotation should not be added
+    if the model is not over quota
     '''
     with patch.object(utils, "evaluation_queue_query",
                       return_value=[DOCKER_SUB_ANNOTATION]) as patch_query,\
@@ -85,10 +107,11 @@ def test_underquota_kill_docker_submission_over_quota():
 
 def test_overquota_kill_docker_submission_over_quota():
     '''
-    Test if the model is over the quota
+    Time remaining annotation should not be added
+    if the model is over the quota
     '''
     sub_status = {"annotations": []}
-    quota_over_annotations = {TIME_REMAINING_KEY: 0}
+    quota_over_annotations = {helpers.TIME_REMAINING_KEY: 0}
     with patch.object(utils, "evaluation_queue_query",
                       return_value=[DOCKER_SUB_ANNOTATION]) as patch_query,\
          patch.object(SYN, "getSubmissionStatus",
