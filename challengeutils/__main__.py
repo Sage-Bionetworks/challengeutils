@@ -25,15 +25,20 @@ def command_createchallenge(syn, args):
 
 
 def command_query(syn, args):
+    """Command line convenience function to call evaluation queue query"""
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
     if args.render:
-        submitter_names = [utils._get_submitter_name(syn, submitterid)
-                           for submitterid in querydf['submitterId']]
-        querydf['submitterName'] = submitter_names
-        createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
-                      for createdon in querydf['createdOn']]
-        querydf['createdOn'] = createdons
+        # Check if submitterId column exists
+        if querydf.get('submitterId') is not None:
+            submitter_names = [utils._get_submitter_name(syn, submitterid)
+                               for submitterid in querydf['submitterId']]
+            querydf['submitterName'] = submitter_names
+        # Check if createdOn column exists
+        if querydf.get('createdOn') is not None:
+            createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
+                          for createdon in querydf['createdOn']]
+            querydf['createdOn'] = createdons
     if args.outputfile is not None:
         querydf.to_csv(args.outputfile, index=False)
     else:

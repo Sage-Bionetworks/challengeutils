@@ -493,9 +493,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
 
 
 def _get_submitter_name(syn, submitterid):
-    '''
-    A submitterid can be team id or user id.  This is a conveninece function
-    that gets the team name or the username
+    """Get the Synapse team name or the username given a submitterid
 
     Args:
         syn: Synapse object
@@ -503,11 +501,12 @@ def _get_submitter_name(syn, submitterid):
 
     Returns:
         username or teamname
-    '''
+    """
+
     try:
         user = syn.getUserProfile(submitterid)
         submitter_name = user['userName']
     except SynapseHTTPError:
         team = syn.getTeam(submitterid)
         submitter_name = team['name']
-    return(submitter_name)
+    return submitter_name
