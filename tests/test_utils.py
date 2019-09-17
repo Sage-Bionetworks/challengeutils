@@ -205,7 +205,7 @@ def test_annotate_submission_with_json():
 def test_userid__get_submitter_name():
     """Get username if userid is passed in"""
     submitterid = 2222
-    userinfo = {"userName":"foo"}
+    userinfo = {"userName": "foo"}
     with mock.patch.object(syn, "getUserProfile",
                            return_value=userinfo) as patch_get_user,\
          mock.patch.object(syn, "getTeam") as patch_get_team:
