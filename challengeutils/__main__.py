@@ -38,8 +38,10 @@ def command_change_status(syn, args):
 
 
 def command_writeup_attach(syn, args):
-    writeup_attacher.attach_writeup(
-        syn, args.writeupqueue, args.submissionqueue)
+    """Command line helper for attaching writeup"""
+    writeup_attacher.attach_writeup(syn, args.writeupqueue,
+                                    args.submissionqueue,
+                                    status_key=args.statuskey)
 
 
 def command_set_entity_acl(syn, args):
@@ -202,6 +204,14 @@ def build_parser():
         "submissionqueue",
         type=str,
         help='Challenge submission queue evaluation id')
+
+    parser_attach_writeup.add_argument(
+        "--statuskey",
+        type=str,
+        choices=['STATUS', 'prediction_file_status'],
+        help='Submission status annotation key to look query. Defaults to STATUS',
+        default="STATUS")
+
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     parser_set_entity_acl = subparsers.add_parser(

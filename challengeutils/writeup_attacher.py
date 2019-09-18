@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _create_archive_writeup(syn, sub):
-    '''
+    """
     Creates the archived writeup project
 
     Args:
@@ -24,7 +24,7 @@ def _create_archive_writeup(syn, sub):
 
     Returns:
         Synapse Project entity
-    '''
+    """
     submission_name = sub.entity.name
     current_time_ms = int(round(time.time() * 1000))
     archived_name = (f"Archived {submission_name} {current_time_ms} "
@@ -36,14 +36,14 @@ def _create_archive_writeup(syn, sub):
 
 
 def archive_writeup(syn, submissionid, rearchive=False):
-    '''
+    """
     Archive one writeup submission
 
     Args:
         syn: Synapse object
         submissionid: Synapse submission objectId
         rearchive: Boolean value to rearchive a project or not
-    '''
+    """
     # retrieve file into cache and copy it to destination
     sub = syn.getSubmission(submissionid, downloadFile=False)
     sub_status = syn.getSubmissionStatus(submissionid)
@@ -63,7 +63,7 @@ def archive_writeup(syn, submissionid, rearchive=False):
 
 def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
     """
-    Archive the submissions for the given evaluation queue and
+    Archive submissions for the given evaluation queue and
     store them in the destination synapse folder.
 
     Args:
@@ -83,15 +83,15 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
 
 
 def attach_writeup_to_main_submission(row, syn):
-    '''
-    Helper function that attach the write up synapse id and archived
-    write up synapse id on the main submission
+    """
+    Attach the write up synapse id and archived write up synapse id on
+    the main submission
 
     Args:
         row: Dictionary row['submitterId'], row['objectId'], row['archived'],
-                row['entityId']
+             row['entityId']
         syn: synapse object
-    '''
+    """
     if pd.isnull(row['entityId']):
         logger.info(f"NO WRITEUP: {row['submitterId']}")
     else:
@@ -111,21 +111,26 @@ def attach_writeup_to_main_submission(row, syn):
         syn.store(new_status)
 
 
-def attach_writeup(syn, writeup_queueid, submission_queueid):
-    '''
+def attach_writeup(syn, writeup_queueid, submission_queueid,
+                   status_key="STATUS"):
+    """
     Attach the write up to the submission queue
 
     Args:
+        syn: Synapse object
         writeup_queueid: Write up evaluation queue id
         submission_queueid: Submission queue id
-    '''
+        status_key: Submission status annotation key to look query.
+                    Defaults to STATUS,
+                    but could be prediction_file_status (workflowhook)
+    """
     writeup_query = ("select objectId, submitterId, entityId, archived "
                      f"from evaluation_{writeup_queueid} "
-                     "where status == 'VALIDATED'")
+                     f"where {status_key} == 'VALIDATED'")
     writeups = list(utils.evaluation_queue_query(syn, writeup_query))
     submission_query = ("select objectId, submitterId from "
                         f"evaluation_{submission_queueid} "
-                        "where status == 'SCORED'")
+                        f"where {status_key} == 'SCORED'")
     submissions = list(utils.evaluation_queue_query(syn, submission_query))
     writeupsdf = pd.DataFrame(writeups)
     submissionsdf = pd.DataFrame(submissions)
