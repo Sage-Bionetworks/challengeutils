@@ -13,6 +13,8 @@ import challengeutils.writeup_attacher
 from challengeutils.writeup_attacher import _create_archive_writeup
 from challengeutils.writeup_attacher import archive_writeup
 from challengeutils.writeup_attacher import archive_writeups
+from challengeutils.writeup_attacher import attach_writeup_to_main_submission
+
 
 
 SYN = mock.create_autospec(synapseclient.Synapse)
@@ -20,6 +22,9 @@ ENTITY = synapseclient.File(name='test', parentId="syn123", id="syn222")
 SUBMISSION = synapseclient.Submission(name="wow", entityId=ENTITY['id'],
                                       evaluationId="123", versionNumber=2,
                                       entity=ENTITY, id=333)
+
+SUB_ANNOTATIONS = to_submission_status_annotations({"test": "1"})
+SUB_STATUS = synapseclient.SubmissionStatus(annotations=SUB_ANNOTATIONS)
 
 
 def test__create_archive_writeup():
@@ -134,12 +139,12 @@ def test_default_params_archive_writeups():
                       return_value=[(SUBMISSION, "test")]) as patch_getsub,\
          patch.object(challengeutils.writeup_attacher,
                       "archive_writeup",
-                      return_value="syn1234") as patch_archive_writep:
+                      return_value="syn1234") as patch_archive:
         archived = archive_writeups(SYN, 1234)
         patch_geteval.assert_called_once_with(1234)
         patch_getsub.assert_called_once_with(eval_obj, status="VALIDATED")
-        patch_archive_writep.assert_called_once_with(SYN, SUBMISSION.id,
-                                                     rearchive=False)
+        patch_archive.assert_called_once_with(SYN, SUBMISSION.id,
+                                              rearchive=False)
         assert archived == ['syn1234']
 
 
@@ -149,16 +154,16 @@ def test_nondefault_params_archive_writeups():
                                         name="test")
     with patch.object(SYN, "getEvaluation") as patch_geteval,\
          patch.object(SYN, "getSubmissionBundles",
-                      return_value=[(SUBMISSION, "test")]) as patch_getsub,\
+                      return_value=[(SUBMISSION, SUB_STATUS)]) as patch_getsub,\
          patch.object(challengeutils.writeup_attacher,
                       "archive_writeup",
-                      return_value="syn1234") as patch_archive_writep:
+                      return_value="syn1234") as patch_archive:
         archived = archive_writeups(SYN, eval_obj, status="SCORED",
                                     rearchive=True)
         patch_geteval.assert_not_called()
         patch_getsub.assert_called_once_with(eval_obj, status="SCORED")
-        patch_archive_writep.assert_called_once_with(SYN, SUBMISSION.id,
-                                                     rearchive=True)
+        patch_archive.assert_called_once_with(SYN, SUBMISSION.id,
+                                              rearchive=True)
         assert archived == ['syn1234']
 
 
@@ -168,15 +173,89 @@ def test_multiple_submissions_archive_writeups():
     """
     eval_obj = synapseclient.Evaluation(id="foo", contentSource="syn123",
                                         name="test")
-    returned_bundle = [(SUBMISSION, "test"), (SUBMISSION, "test")]
+    returned_bundle = [(SUBMISSION, SUB_STATUS), (SUBMISSION, SUB_STATUS)]
     with patch.object(SYN, "getEvaluation") as patch_geteval,\
          patch.object(SYN, "getSubmissionBundles",
                       return_value=returned_bundle) as patch_getsub,\
          patch.object(challengeutils.writeup_attacher,
                       "archive_writeup",
-                      return_value="syn1234") as patch_archive_writep:
+                      return_value="syn1234") as patch_archive:
         archived = archive_writeups(SYN, eval_obj)
         patch_geteval.assert_not_called()
         patch_getsub.assert_called_once_with(eval_obj, status="VALIDATED")
-        assert patch_archive_writep.call_count == 2
+        assert patch_archive.call_count == 2
         assert archived == ['syn1234', 'syn1234']
+
+
+def test_nullentity_attach_writeup_to_main_submission():
+    """Nothing should be called if no entityId"""
+    row = {"submitterId": '123',
+           'objectId': '2222',
+           'archived': "syn1234",
+           'entityId': float('nan')}
+    with patch.object(SYN, "getSubmissionStatus") as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "archive_writeup") as patch_archive,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status") as patch_update,\
+         patch.object(SYN, "store") as patch_synstore:
+        attach_writeup_to_main_submission(row, SYN)
+        patch_getsubstatus.assert_not_called()
+        patch_archive.assert_not_called()
+        patch_update.assert_not_called()
+        patch_synstore.assert_not_called()
+
+
+def test_alreadyarchived_attach_writeup_to_main_submission():
+    """Specify archived id if writeup has been archived"""
+    row = {"submitterId": '123',
+           'objectId': '2222',
+           'archived': "syn1234",
+           'entityId': "syn2222"}
+    add_writeup_dict = {'writeUp': row['entityId'],
+                        'archivedWriteUp': row['archived']}
+    add_writeup = to_submission_status_annotations(add_writeup_dict,
+                                                   is_private=False)
+    with patch.object(SYN, "getSubmissionStatus",
+                      return_value=SUB_STATUS) as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "archive_writeup") as patch_archive,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status",
+                      return_value=SUB_STATUS) as patch_update,\
+         patch.object(SYN, "store") as patch_synstore:
+        attach_writeup_to_main_submission(row, SYN)
+        patch_getsubstatus.assert_called_once_with(row['objectId'])
+        patch_archive.assert_not_called()
+        patch_update.assert_called_once_with(SUB_STATUS, add_writeup)
+        patch_synstore.assert_called_once_with(SUB_STATUS)
+
+
+
+def test_toarchive_attach_writeup_to_main_submission():
+    """Writeup must be archived if it hasn't already been archived"""
+    row = {"submitterId": '123',
+           'objectId': '2222',
+           'archived': None,
+           'entityId': "syn2222",
+           'writeup_submissionid': '3333'}
+    archived_synid = "syn3333"
+    add_writeup_dict = {'writeUp': row['entityId'],
+                        'archivedWriteUp': archived_synid}
+    add_writeup = to_submission_status_annotations(add_writeup_dict,
+                                                   is_private=False)
+    with patch.object(SYN, "getSubmissionStatus",
+                      return_value=SUB_STATUS) as patch_getsubstatus,\
+         patch.object(challengeutils.writeup_attacher,
+                      "archive_writeup",
+                      return_value=archived_synid) as patch_archive,\
+         patch.object(challengeutils.utils,
+                      "update_single_submission_status",
+                      return_value=SUB_STATUS) as patch_update,\
+         patch.object(SYN, "store") as patch_synstore:
+        attach_writeup_to_main_submission(row, SYN)
+        patch_getsubstatus.assert_called_once_with(row['objectId'])
+        patch_archive.assert_called_once_with(SYN,
+                                              row['writeup_submissionid'])
+        patch_update.assert_called_once_with(SUB_STATUS, add_writeup)
+        patch_synstore.assert_called_once_with(SUB_STATUS)
