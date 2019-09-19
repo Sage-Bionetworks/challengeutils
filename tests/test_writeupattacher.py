@@ -4,9 +4,10 @@ Testing writeup attacher
 import time
 import mock
 from mock import patch
+import pandas as pd
 import synapseclient
-import synapseutils
 from synapseclient.annotations import to_submission_status_annotations
+import synapseutils
 
 import challengeutils.utils
 import challengeutils.writeup_attacher
@@ -14,7 +15,7 @@ from challengeutils.writeup_attacher import _create_archive_writeup
 from challengeutils.writeup_attacher import archive_writeup
 from challengeutils.writeup_attacher import archive_writeups
 from challengeutils.writeup_attacher import attach_writeup_to_main_submission
-
+from challengeutils.writeup_attacher import archive_and_attach_writeups
 
 
 SYN = mock.create_autospec(synapseclient.Synapse)
@@ -199,7 +200,7 @@ def test_nullentity_attach_writeup_to_main_submission():
          patch.object(challengeutils.utils,
                       "update_single_submission_status") as patch_update,\
          patch.object(SYN, "store") as patch_synstore:
-        attach_writeup_to_main_submission(row, SYN)
+        attach_writeup_to_main_submission(SYN, row)
         patch_getsubstatus.assert_not_called()
         patch_archive.assert_not_called()
         patch_update.assert_not_called()
@@ -224,7 +225,7 @@ def test_alreadyarchived_attach_writeup_to_main_submission():
                       "update_single_submission_status",
                       return_value=SUB_STATUS) as patch_update,\
          patch.object(SYN, "store") as patch_synstore:
-        attach_writeup_to_main_submission(row, SYN)
+        attach_writeup_to_main_submission(SYN, row)
         patch_getsubstatus.assert_called_once_with(row['objectId'])
         patch_archive.assert_not_called()
         patch_update.assert_called_once_with(SUB_STATUS, add_writeup)
@@ -253,9 +254,72 @@ def test_toarchive_attach_writeup_to_main_submission():
                       "update_single_submission_status",
                       return_value=SUB_STATUS) as patch_update,\
          patch.object(SYN, "store") as patch_synstore:
-        attach_writeup_to_main_submission(row, SYN)
+        attach_writeup_to_main_submission(SYN, row)
         patch_getsubstatus.assert_called_once_with(row['objectId'])
         patch_archive.assert_called_once_with(SYN,
                                               row['writeup_submissionid'])
         patch_update.assert_called_once_with(SUB_STATUS, add_writeup)
         patch_synstore.assert_called_once_with(SUB_STATUS)
+
+
+def test_archive_and_attach_writeups():
+    """Archive and attach writeups"""
+    writeups = [{"submitterId": '123',
+                 'objectId': '2222',
+                 'archived': None,
+                 'entityId': "syn2222"}]
+
+    submissions = [{"submitterId": '123',
+                    'objectId': '3333'}]
+
+    firstquery = ("select objectId, submitterId, entityId, archived "
+                  "from evaluation_2 where STATUS == 'VALIDATED'")
+
+    secondquery = ("select objectId, submitterId from "
+                   "evaluation_3 where STATUS == 'SCORED'")
+    with patch.object(challengeutils.utils,
+                      "evaluation_queue_query",
+                      side_effect=[writeups,
+                                   submissions]) as patch_query,\
+         patch.object(challengeutils.writeup_attacher,
+                      "attach_writeup_to_main_submission") as patch_attach:
+        archive_and_attach_writeups(SYN, '2', '3')
+        assert patch_query.call_count == 2
+        calls = [mock.call(SYN, firstquery), mock.call(SYN, secondquery)]
+        patch_query.assert_has_calls(calls)
+        patch_attach.assert_called_once()
+
+
+def test_statuskey_archive_and_attach_writeups():
+    """Archive and attach writeups"""
+    writeups = [{"submitterId": '123',
+                'objectId': '2222',
+                'archived': None,
+                'entityId': "syn2222"},
+                {"submitterId": '234',
+                 'objectId': '5555',
+                 'archived': None,
+                 'entityId': "syn2222"}]
+
+    submissions = [{"submitterId": '123',
+                    'objectId': '3333'},
+                   {"submitterId": '234',
+                    'objectId': '4444'}]
+
+    firstquery = ("select objectId, submitterId, entityId, archived from "
+                  "evaluation_2 where prediction_file_status == 'VALIDATED'")
+
+    secondquery = ("select objectId, submitterId from evaluation_3 "
+                   "where prediction_file_status == 'SCORED'")
+    with patch.object(challengeutils.utils,
+                      "evaluation_queue_query",
+                      side_effect=[writeups,
+                                   submissions]) as patch_query,\
+         patch.object(challengeutils.writeup_attacher,
+                      "attach_writeup_to_main_submission") as patch_attach:
+        archive_and_attach_writeups(SYN, '2', '3',
+                                    status_key="prediction_file_status")
+        assert patch_query.call_count == 2
+        calls = [mock.call(SYN, firstquery), mock.call(SYN, secondquery)]
+        patch_query.assert_has_calls(calls)
+        assert patch_attach.call_count == 2

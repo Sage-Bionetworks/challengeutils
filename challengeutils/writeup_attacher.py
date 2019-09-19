@@ -87,16 +87,16 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
     return archived
 
 
-def attach_writeup_to_main_submission(row, syn):
+def attach_writeup_to_main_submission(syn, row):
     """
     Attach the write up synapse id and archived write up synapse id on
     the main submission
 
     Args:
+        syn: synapse object
         row: Dictionary row['submitterId'], row['objectId'], row['archived'],
              row['entityId'], row['writeup_submissionid'] (this is the
              submission id of the writeup)
-        syn: synapse object
     """
     if pd.isnull(row['entityId']):
         logger.info(f"NO WRITEUP: {row['submitterId']}")
@@ -138,6 +138,7 @@ def archive_and_attach_writeups(syn, writeup_queueid, submission_queueid,
                         f"evaluation_{submission_queueid} "
                         f"where {status_key} == 'SCORED'")
     submissions = list(utils.evaluation_queue_query(syn, submission_query))
+
     writeupsdf = pd.DataFrame(writeups)
     submissionsdf = pd.DataFrame(submissions)
     # Must rename writeup submission objectId or there will be conflict
@@ -148,6 +149,6 @@ def archive_and_attach_writeups(syn, writeup_queueid, submission_queueid,
                                                       how="left")
 
     submissions_with_writeupsdf.apply(lambda row:
-                                      attach_writeup_to_main_submission(row,
-                                                                        syn),
+                                      attach_writeup_to_main_submission(syn,
+                                                                        row),
                                       axis=1)
