@@ -1,8 +1,8 @@
-'''
+"""
 This module is responsible for attaching participant writeup submissions with
 the main challenge queues.  It also archives(copies) projects since there isn't
 currently an elegant way in Synapse to create snapshots of projects.
-'''
+"""
 import logging
 import time
 import pandas as pd
@@ -11,7 +11,7 @@ from synapseclient.annotations import to_submission_status_annotations
 import synapseutils
 from . import utils
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def _create_archive_writeup(syn, sub):
@@ -79,8 +79,8 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
     if not isinstance(evaluation, synapseclient.Evaluation):
         evaluation = syn.getEvaluation(evaluation)
 
-    logger.info(f"Archiving {evaluation.id} {evaluation.name}")
-    logger.info("-" * 60)
+    LOGGER.info(f"Archiving {evaluation.id} {evaluation.name}")
+    LOGGER.info("-" * 60)
     archived = [archive_writeup(syn, sub.id, rearchive=rearchive)
                 for sub, _ in syn.getSubmissionBundles(evaluation,
                                                        status=status)]
@@ -99,9 +99,9 @@ def attach_writeup_to_main_submission(syn, row):
              submission id of the writeup)
     """
     if pd.isnull(row['entityId']):
-        logger.info(f"NO WRITEUP: {row['submitterId']}")
+        LOGGER.info(f"NO WRITEUP: {row['submitterId']}")
     else:
-        logger.info(f"ADD WRITEUP: {row['submitterId']}")
+        LOGGER.info(f"ADD WRITEUP: {row['submitterId']}")
         status = syn.getSubmissionStatus(row['objectId'])
         add_writeup_dict = {'writeUp': row['entityId']}
         # If archiver hasnt been run, there won't be an archive

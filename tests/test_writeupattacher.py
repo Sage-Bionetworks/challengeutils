@@ -1,6 +1,4 @@
-'''
-Testing writeup attacher
-'''
+"""Testing writeup attacher"""
 import time
 import mock
 from mock import patch
