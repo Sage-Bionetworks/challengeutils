@@ -50,15 +50,16 @@ def archive_writeup(syn, submissionid, rearchive=False):
     # The .get accounts for if there is no stringAnnos
     check_if_archived = filter(lambda x: x.get("key") == "archived",
                                sub_status.annotations.get('stringAnnos', []))
+    archived_entity = list(check_if_archived)
     # check_if_archived will be an empty list if the annotation doesnt exist
-    if not list(check_if_archived) or rearchive:
+    if not archived_entity or rearchive:
         entity = _create_archive_writeup(syn, sub)
         archived = {"archived": entity.id}
         sub_status = utils.update_single_submission_status(sub_status,
                                                            archived)
         syn.store(sub_status)
         return entity.id
-    return None
+    return archived_entity[0]['value']
 
 
 def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
@@ -69,17 +70,21 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
     Args:
         syn: Synapse object
         evaluation: a synapse evaluation queue or its ID
-        query: a query that will return the desired submissions.
-               At least the ID must be returned. Defaults to:
-               'select * from evaluation_[EVAL_ID] where status=="SCORED"'
+        status: Annotation status of a submission. Defaults to VALIDATED
+        rearchive: Boolean value to rearchive a project or not
+
+    Returns:
+        List of archived entity ids
     """
     if not isinstance(evaluation, synapseclient.Evaluation):
         evaluation = syn.getEvaluation(evaluation)
 
     logger.info(f"Archiving {evaluation.id} {evaluation.name}")
     logger.info("-" * 60)
-    for sub, _ in syn.getSubmissionBundles(evaluation, status=status):
-        archive_writeup(syn, sub.id, rearchive=rearchive)
+    archived = [archive_writeup(syn, sub.id, rearchive=rearchive)
+                for sub, _ in syn.getSubmissionBundles(evaluation,
+                                                       status=status)]
+    return archived
 
 
 def attach_writeup_to_main_submission(row, syn):
@@ -111,8 +116,8 @@ def attach_writeup_to_main_submission(row, syn):
         syn.store(new_status)
 
 
-def attach_writeup(syn, writeup_queueid, submission_queueid,
-                   status_key="STATUS"):
+def archive_and_attach_writeups(syn, writeup_queueid, submission_queueid,
+                                status_key="STATUS"):
     """
     Attach the write up to the submission queue
 
