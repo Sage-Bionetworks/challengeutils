@@ -293,9 +293,9 @@ def test_archive_and_attach_writeups():
 def test_statuskey_archive_and_attach_writeups():
     """Archive and attach writeups"""
     writeups = [{"submitterId": '123',
-                'objectId': '2222',
-                'archived': None,
-                'entityId': "syn2222"},
+                 'objectId': '2222',
+                 'archived': None,
+                 'entityId': "syn2222"},
                 {"submitterId": '234',
                  'objectId': '5555',
                  'archived': None,
