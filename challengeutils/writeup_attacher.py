@@ -94,8 +94,8 @@ def attach_writeup_to_main_submission(row, syn):
 
     Args:
         row: Dictionary row['submitterId'], row['objectId'], row['archived'],
-             row['entityId'], row['writeup_submissionid'] (this is the submission id
-             of the writeup)
+             row['entityId'], row['writeup_submissionid'] (this is the
+             submission id of the writeup)
         syn: synapse object
     """
     if pd.isnull(row['entityId']):
