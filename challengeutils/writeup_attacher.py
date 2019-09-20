@@ -14,6 +14,21 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
+# def _create_copy_project(syn, entityid, project_name):
+#     """
+#     Create a copy of a project
+
+#     Args:
+#         syn: Synapse object
+#         entityid: Synapse entity id
+#         project_name: The new project name
+#     """
+#     project_entity = synapseclient.Project(new_project_name)
+#     entity = syn.store(project_entity)
+#     synapseutils.copy(syn, entityid, entity.id)
+#     return entity
+
+
 def _create_archive_writeup(syn, sub):
     """
     Creates the archived writeup project
@@ -29,20 +44,23 @@ def _create_archive_writeup(syn, sub):
     current_time_ms = int(round(time.time() * 1000))
     archived_name = (f"Archived {submission_name} {current_time_ms} "
                      f"{sub.id} {sub.entityId}")
+    #entity = _create_copy_project(syn, sub.entityId, archived_name)
     project_entity = synapseclient.Project(archived_name)
     entity = syn.store(project_entity)
     synapseutils.copy(syn, sub.entityId, entity.id)
     return entity
 
 
-def archive_writeup(syn, submissionid, rearchive=False):
+def archive_writeup_submission(syn, submissionid, rearchive=False):
     """
-    Archive one writeup submission
+    Archive one writeup submission by copying the submitted writeup
+    Project into a new Project.
 
     Args:
         syn: Synapse object
         submissionid: Synapse submission objectId
-        rearchive: Boolean value to rearchive a project or not
+        rearchive: Determine whether or not to re-archive the submitted
+                   Project. Default to False.
     """
     # retrieve file into cache and copy it to destination
     sub = syn.getSubmission(submissionid, downloadFile=False)
@@ -61,17 +79,19 @@ def archive_writeup(syn, submissionid, rearchive=False):
     return archived_entity[0]['value']
 
 
-def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
+def archive_writeup_submissions(syn, evaluation, status="VALIDATED",
+                                rearchive=False):
     """
-    Archive submissions for the given evaluation queue and
-    store them in the destination synapse folder.
+    Archive submissions for an evaluation queue that accepts writeup
+    submissions as Projects and store them in the destination synapse
+    folder.
 
     Args:
         syn: Synapse object
         evaluation: a synapse evaluation queue or its ID
         status: Annotation status of a submission. Defaults to VALIDATED
-        rearchive: Boolean value to rearchive a project or not
-
+        rearchive: Determine whether or not to re-archive the submitted
+                   Project. Default to False.
     Returns:
         List of archived entity ids
     """
@@ -80,7 +100,7 @@ def archive_writeups(syn, evaluation, status="VALIDATED", rearchive=False):
 
     LOGGER.info(f"Archiving {evaluation.id} {evaluation.name}")
     LOGGER.info("-" * 60)
-    archived = [archive_writeup(syn, sub.id, rearchive=rearchive)
+    archived = [archive_writeup_submission(syn, sub.id, rearchive=rearchive)
                 for sub, _ in syn.getSubmissionBundles(evaluation,
                                                        status=status)]
     return archived
@@ -107,7 +127,7 @@ def attach_writeup_to_main_submission(syn, row):
         if not pd.isnull(row['archived']) and row['archived'] is not None:
             add_writeup_dict['archivedWriteUp'] = row['archived']
         else:
-            archive_id = archive_writeup(syn, row['writeup_submissionid'])
+            archive_id = archive_writeup_submission(syn, row['writeup_submissionid'])
             add_writeup_dict['archivedWriteUp'] = archive_id
         add_writeup = to_submission_status_annotations(add_writeup_dict,
                                                        is_private=False)
