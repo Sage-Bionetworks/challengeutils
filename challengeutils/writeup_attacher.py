@@ -48,10 +48,9 @@ def archive_writeup(syn, submissionid, rearchive=False):
     sub = syn.getSubmission(submissionid, downloadFile=False)
     sub_status = syn.getSubmissionStatus(submissionid)
     # The .get accounts for if there is no stringAnnos
-    check_if_archived = filter(lambda x: x.get("key") == "archived",
-                               sub_status.annotations.get('stringAnnos', []))
-    archived_entity = list(check_if_archived)
-    # check_if_archived will be an empty list if the annotation doesnt exist
+    archived_entity = [x for x in sub_status.annotations.get('stringAnnos', [])
+                       if x.get("key") == "archived"]
+    # archived_entity will be an empty list if the annotation doesnt exist
     if not archived_entity or rearchive:
         entity = _create_archive_writeup(syn, sub)
         archived = {"archived": entity.id}
