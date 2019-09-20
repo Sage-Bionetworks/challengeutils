@@ -8,7 +8,7 @@ from synapseclient.retry import _with_retry
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
-from . import writeup_attacher
+from . import project_submission
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 logging.basicConfig(level=logging.INFO)
@@ -39,9 +39,9 @@ def command_change_status(syn, args):
 
 def command_writeup_attach(syn, args):
     """Command line helper for attaching writeup"""
-    writeup_attacher.archive_and_attach_writeups(syn, args.writeupqueue,
-                                                 args.submissionqueue,
-                                                 status_key=args.statuskey)
+    project_submission.archive_and_attach_writeups(syn, args.writeupqueue,
+                                                   args.submissionqueue,
+                                                   status_key=args.statuskey)
 
 
 def command_set_entity_acl(syn, args):
