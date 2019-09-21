@@ -15,22 +15,23 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
-# def create_copy_project(syn, entityid, project_name):
-#     """
-#     Create a copy of a project
+def create_copy_project(syn, entityid, project_name):
+    """
+    Create a copy of a project, currently does not check if the project
+    name specified already exists
 
-#     Args:
-#         syn: Synapse object
-#         entityid: Synapse entity id
-#         project_name: The new project name
-#     """
-#     project_entity = synapseclient.Project(new_project_name)
-#     entity = syn.store(project_entity)
-#     synapseutils.copy(syn, entityid, entity.id)
-#     return entity
+    Args:
+        syn: `synapseclient.Synapse` connection
+        entityid: Synapse entity id
+        project_name: The new project name
+    """
+    project_entity = synapseclient.Project(project_name)
+    entity = syn.store(project_entity)
+    synapseutils.copy(syn, entityid, entity.id)
+    return entity
 
 
-def _create_archive_project_submission(syn, submission):
+def _archive_project_submission(syn, submission):
     """
     Creates the archived writeup project
 
@@ -45,10 +46,8 @@ def _create_archive_project_submission(syn, submission):
     current_time_ms = int(round(time.time() * 1000))
     archived_name = (f"Archived {submission_name} {current_time_ms} "
                      f"{submission.id} {submission.entityId}")
-    #entity = _create_copy_project(syn, sub.entityId, archived_name)
-    archive_project = synapseclient.Project(archived_name)
-    archive_project_entity = syn.store(archive_project)
-    synapseutils.copy(syn, submission.entityId, archive_project_entity.id)
+    archive_project_entity = create_copy_project(syn, submission.entityId,
+                                                 archived_name)
     return archive_project_entity
 
 
@@ -76,7 +75,7 @@ def archive_project_submission(syn, submission, rearchive=False):
     # archived_entity will be an empty list if the annotation doesnt exist
     if not archived_entity or rearchive:
         LOGGER.info(f"Archiving project submission: {sub.id}")
-        entity = _create_archive_project_submission(syn, sub)
+        entity = _archive_project_submission(syn, sub)
         archived = {"archived": entity.id}
         sub_status = utils.update_single_submission_status(sub_status,
                                                            archived)
@@ -106,7 +105,7 @@ def archive_project_submissions(syn, evaluation,
     """
     evaluationid = id_of(evaluation)
     LOGGER.info(f"Archiving queue: {evaluationid}")
-    query = (f"select objectId from evaluation_{evaluationid}"
+    query = (f"select objectId from evaluation_{evaluationid} "
              f"where {status_key} == {status}")
     query_results = utils.evaluation_queue_query(syn, query)
 
