@@ -114,27 +114,30 @@ def archive_project_submissions(syn, evaluation,
     return archived
 
 
-def join_queues(syn, queue1, queue2, joinby, how="inner"):
+def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
     """
     Join two evaluation queues in a pandas dataframe
 
     Args:
-        queue1: Evaluation queue id 1
-        queue2: Evaluation queue id 2
-        joinby: Column to join by
+        evaluation1: first `synapseclient.Evaluation` or its id
+        evaluation2: second `synapseclient.Evaluation` or its id
+        on: Column to join by
         how: Type of merge to be performed. Default to inner.
 
     Returns:
         Joined queue
     """
-    queue1_query = (f"select * from evaluation_{queue1}")
-    queue1_results = list(utils.evaluation_queue_query(syn, queue1_query))
-    queue1df = pd.DataFrame(queue1_results)
+    evaluationid1 = id_of(evaluation1)
+    evaluationid2 = id_of(evaluation2)
 
-    queue2_query = (f"select * from evaluation_{queue2}")
-    queue2_results = list(utils.evaluation_queue_query(syn, queue2_query))
-    queue2df = pd.DataFrame(queue2_results)
-    joineddf = queue1df.merge(queue2df, on=joinby, how=how)
+    eval1_query = (f"select * from evaluation_{evaluationid1}")
+    evaluation1_results = list(utils.evaluation_queue_query(syn, eval1_query))
+    evaluation1df = pd.DataFrame(evaluation1_results)
+
+    eval2_query = (f"select * from evaluation_{evaluationid2}")
+    evaluation2_results = list(utils.evaluation_queue_query(syn, eval2_query))
+    evaluation2df = pd.DataFrame(evaluation2_results)
+    joineddf = evaluation1df.merge(evaluation2df, on=joinby, how=how)
 
     return joineddf
 
@@ -191,10 +194,10 @@ def archive_and_attach_project_submissions(syn, writeup_queueid,
                                 status="VALIDATED",
                                 rearchive=False)
 
-    subs_and_writeupsdf = join_queues(syn, submission_queueid,
-                                      writeup_queueid,
-                                      joinby="submitterId",
-                                      how="left")
+    subs_and_writeupsdf = join_evaluations(syn, submission_queueid,
+                                           writeup_queueid,
+                                           on="submitterId",
+                                           how="left")
 
     # Filter joined leaderboard
     # subs_and_writeupsdf = _filter_joined_leaderboard(subs_and_writeupsdf)
