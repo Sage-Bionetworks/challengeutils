@@ -148,31 +148,6 @@ def join_queues(syn, queue1, queue2, joinby, how="inner"):
 #     return subs_and_writeupsdf
 
 
-def annotate_submission(syn, submissionid, annotation_dict,
-                        to_public=False,
-                        force_change_annotation_acl=False):
-    """
-    Annotate submission with annotation values from a dict
-    Args:
-        syn: Synapse object
-        submissionid: Submission id
-        annotation_dict: Annotation dict
-        to_public: change these annotations from private to public
-                   (default is False)
-        force_change_annotation_acl: Force change the annotation from
-                                     private to public and vice versa.
-    """
-    status = syn.getSubmissionStatus(submissionid)
-    # Don't add any annotations that are None
-    annotation_dict = {key: annotation_dict[key] for key in annotation_dict
-                       if annotation_dict[key] is not None}
-    status = utils.update_single_submission_status(
-        status, annotation_dict,
-        to_public=to_public,
-        force_change_annotation_acl=force_change_annotation_acl)
-    status = syn.store(status)
-
-
 def archive_and_attach_project_submissions(syn, writeup_queueid,
                                            submission_queueid,
                                            status_key="STATUS"):
@@ -238,8 +213,8 @@ def archive_and_attach_project_submissions(syn, writeup_queueid,
 
     # objectId_x: objectIds from submission queue
     subs_and_writeupsdf.apply(lambda row:
-                              annotate_submission(syn,
-                                                  row['objectId_x'],
-                                                  row[annotation_keys],
-                                                  annotation_keys),
+                              utils.annotate_submission(syn,
+                                                        row['objectId_x'],
+                                                        row[annotation_keys],
+                                                        annotation_keys),
                               axis=1)
