@@ -130,11 +130,11 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
     evaluationid1 = id_of(evaluation1)
     evaluationid2 = id_of(evaluation2)
 
-    eval1_query = (f"select * from evaluation_{evaluationid1}")
+    eval1_query = f"select * from evaluation_{evaluationid1}"
     evaluation1_results = list(utils.evaluation_queue_query(syn, eval1_query))
     evaluation1df = pd.DataFrame(evaluation1_results)
 
-    eval2_query = (f"select * from evaluation_{evaluationid2}")
+    eval2_query = f"select * from evaluation_{evaluationid2}"
     evaluation2_results = list(utils.evaluation_queue_query(syn, eval2_query))
     evaluation2df = pd.DataFrame(evaluation2_results)
     joineddf = evaluation1df.merge(evaluation2df, on=joinby, how=how)
