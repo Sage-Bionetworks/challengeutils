@@ -469,7 +469,7 @@ def download_submission(syn, submissionid, download_location=None):
 def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   to_public=False,
                                   force_change_annotation_acl=False):
-    '''
+    """
     Annotate submission with annotation values from a json file
 
     Args:
@@ -480,12 +480,36 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
                    (default is False)
         force_change_annotation_acl: Force change the annotation from
                                      private to public and vice versa.
-    '''
-    status = syn.getSubmissionStatus(submissionid)
+    """
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
+    annotate_submission(
+        syn, submissionid, annotation_json,
+        to_public=to_public,
+        force_change_annotation_acl=force_change_annotation_acl)
+
+
+def annotate_submission(syn, submissionid, annotation_dict,
+                        to_public=False,
+                        force_change_annotation_acl=False):
+    """
+    Annotate submission with annotation values from a dict
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        annotation_dict: Annotation dict
+        to_public: change these annotations from private to public
+                   (default is False)
+        force_change_annotation_acl: Force change the annotation from
+                                     private to public and vice versa.
+    """
+    status = syn.getSubmissionStatus(submissionid)
+    # Don't add any annotations that are None
+    annotation_dict = {key: annotation_dict[key] for key in annotation_dict
+                       if annotation_dict[key] is not None}
     status = update_single_submission_status(
-        status, annotation_json,
+        status, annotation_dict,
         to_public=to_public,
         force_change_annotation_acl=force_change_annotation_acl)
     status = syn.store(status)
