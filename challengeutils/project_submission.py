@@ -7,7 +7,6 @@ import logging
 import time
 import pandas as pd
 import synapseclient
-from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.utils import id_of
 import synapseutils
 from . import utils
