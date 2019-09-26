@@ -252,7 +252,7 @@ class Challenge:
             # so must store message as a variable
             message = str(ex1)
 
-        if not dry_run:
+        if not self.dry_run:
             status = self.syn.store(status)
         return(status, message)
 

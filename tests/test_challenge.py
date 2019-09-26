@@ -3,16 +3,18 @@ Test scoring harness functions
 '''
 import mock
 import synapseclient
-from scoring_harness.challenge import score_single_submission
-from scoring_harness.challenge import score
-from scoring_harness.challenge import validate_single_submission
-from scoring_harness.challenge import validate
+from scoring_harness.challenge import Challenge
+# from scoring_harness.challenge import score_single_submission
+# from scoring_harness.challenge import score
+# from scoring_harness.challenge import validate_single_submission
+# from scoring_harness.challenge import validate
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 SCORES = {"score": 5}
 MESSAGE = "passed"
 ERROR_MESSAGE = "error for days"
-
+CHALLENGE_RUN = Challenge(SYN, dry_run=False, send_messages=False,
+                          acknowledge_receipt=False, remove_cache=False)
 
 def validation_func(path, truth):
     return(True, MESSAGE)
@@ -41,12 +43,11 @@ SYN_USERPROFILE = synapseclient.UserProfile(ownerId="111")
 
 
 def test_score_single_submission():
-    '''
-    Test scoring of single submission
-    '''
+    """Test scoring of single submission"""
+    CHALLENGE_RUN.dry_run = True
     status = synapseclient.SubmissionStatus(status="VALIDATED")
-    status, message = score_single_submission(
-        SYN, SUBMISSION, status, scoring_func, "path", dry_run=True)
+    status, message = CHALLENGE_RUN.score_single_submission(
+        SUBMISSION, status, scoring_func, "path")
     expected_status = {
         "annotations": {
             "longAnnos": [{
