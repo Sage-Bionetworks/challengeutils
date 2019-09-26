@@ -181,17 +181,17 @@ class Challenge:
                 _remove_cached_submission(submission.filePath)
             # send message AFTER storing status to ensure
             # we don't get repeat messages
-            profile = syn.getUserProfile(submission.userId)
+            profile = self.syn.getUserProfile(submission.userId)
             if is_valid:
                 messages.validation_passed(syn=self.syn,
-                                        userids=[submission.userId],
-                                        acknowledge_receipt=self.acknowledge_receipt,
-                                        dry_run=self.dry_run,
-                                        username=get_user_name(profile),
-                                        queue_name=evaluation.name,
-                                        submission_id=submission.id,
-                                        submission_name=submission.name,
-                                        challenge_synid=challenge_synid)
+                                           userids=[submission.userId],
+                                           acknowledge_receipt=self.acknowledge_receipt,
+                                           dry_run=self.dry_run,
+                                           username=get_user_name(profile),
+                                           queue_name=evaluation.name,
+                                           submission_id=submission.id,
+                                           submission_name=submission.name,
+                                           challenge_synid=challenge_synid)
             else:
                 if isinstance(error, AssertionError):
                     send_to = [submission.userId]
@@ -201,15 +201,15 @@ class Challenge:
                     username = "Challenge Administrator"
 
                 messages.validation_failed(syn=self.syn,
-                                        userids=send_to,
-                                        send_messages=self.send_messages,
-                                        dry_run=self.dry_run,
-                                        username=username,
-                                        queue_name=evaluation.name,
-                                        submission_id=submission.id,
-                                        submission_name=submission.name,
-                                        message=message,
-                                        challenge_synid=challenge_synid)
+                                           userids=send_to,
+                                           send_messages=self.send_messages,
+                                           dry_run=self.dry_run,
+                                           username=username,
+                                           queue_name=evaluation.name,
+                                           submission_id=submission.id,
+                                           submission_name=submission.name,
+                                           message=message,
+                                           challenge_synid=challenge_synid)
         LOGGER.info("-" * 20)
 
     def score_single_submission(self, submission, status,
@@ -303,28 +303,28 @@ class Challenge:
                 _remove_cached_submission(submission.filePath)
             # send message AFTER storing status to ensure
             # we don't get repeat messages
-            profile = syn.getUserProfile(submission.userId)
+            profile = self.syn.getUserProfile(submission.userId)
 
             if status.status == 'SCORED':
                 messages.scoring_succeeded(syn=self.syn,
-                                        userids=[submission.userId],
-                                        send_messages=self.send_messages,
-                                        dry_run=self.dry_run,
-                                        message=message,
-                                        username=get_user_name(profile),
-                                        queue_name=evaluation.name,
-                                        submission_name=submission.name,
-                                        submission_id=submission.id,
-                                        challenge_synid=challenge_synid)
+                                           userids=[submission.userId],
+                                           send_messages=self.send_messages,
+                                           dry_run=self.dry_run,
+                                           message=message,
+                                           username=get_user_name(profile),
+                                           queue_name=evaluation.name,
+                                           submission_name=submission.name,
+                                           submission_id=submission.id,
+                                           challenge_synid=challenge_synid)
             else:
                 messages.scoring_error(syn=self.syn,
-                                    userids=admin_user_ids,
-                                    send_messages=self.send_messages,
-                                    dry_run=self.dry_run,
-                                    message=message,
-                                    username="Challenge Administrator,",
-                                    queue_name=evaluation.name,
-                                    submission_name=submission.name,
-                                    submission_id=submission.id,
-                                    challenge_synid=challenge_synid)
+                                       userids=admin_user_ids,
+                                       send_messages=self.send_messages,
+                                       dry_run=self.dry_run,
+                                       message=message,
+                                       username="Challenge Administrator,",
+                                       queue_name=evaluation.name,
+                                       submission_name=submission.name,
+                                       submission_id=submission.id,
+                                       challenge_synid=challenge_synid)
         LOGGER.info("-" * 20)
