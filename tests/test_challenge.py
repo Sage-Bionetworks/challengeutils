@@ -131,7 +131,6 @@ def test_score():
               "syn1234",
               status='VALIDATED',
               send_messages=False,
-              send_notifications=False,
               dry_run=False)
         patch_getevaluation.assert_called_once_with(QUEUE_INFO_DICT['id'])
         patch_get_bundles.assert_called_once_with(

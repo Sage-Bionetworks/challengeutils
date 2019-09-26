@@ -264,7 +264,6 @@ def score(syn,
           challenge_synid,
           status='VALIDATED',
           send_messages=False,
-          send_notifications=False,
           dry_run=False,
           remove_cache=False):
     '''
@@ -374,7 +373,6 @@ def command_score(syn, evaluation_queue_maps, args):
                   args.admin_user_ids,
                   args.challenge_synid,
                   send_messages=args.send_messages,
-                  send_notifications=args.notifications,
                   dry_run=args.dry_run,
                   remove_cache=args.remove_cache)
     else:
@@ -383,7 +381,6 @@ def command_score(syn, evaluation_queue_maps, args):
               args.admin_user_ids,
               args.challenge_synid,
               send_messages=args.send_messages,
-              send_notifications=args.notifications,
               dry_run=args.dry_run,
               remove_cache=args.remove_cache)
 
