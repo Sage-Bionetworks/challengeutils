@@ -17,8 +17,8 @@ import challengeutils.utils
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
 
 
 def get_user_name(profile):
@@ -89,7 +89,7 @@ def validate_single_submission(syn, submission, status,
         validation_message - Error message
     '''
     validation_error = None
-    logger.info("validating {} {}".format(submission.id, submission.name))
+    LOGGER.info("validating {} {}".format(submission.id, submission.name))
     try:
         # Account for if submissions aren't files
         if submission.filePath is None:
@@ -100,7 +100,7 @@ def validate_single_submission(syn, submission, status,
                                                        goldstandard_path)
     except Exception as ex1:
         is_valid = False
-        logger.error("Exception during validation: {} {} {}".format(type(ex1),
+        LOGGER.error("Exception during validation: {} {} {}".format(type(ex1),
                                                                     ex1,
                                                                     str(ex1)))
         # ex1 only happens in this scope in python3,
@@ -158,8 +158,8 @@ def validate(syn,
     if not isinstance(evaluation, Evaluation):
         evaluation = syn.getEvaluation(evaluation)
 
-    logger.info("Validating {} {}".format(evaluation.id, evaluation.name))
-    logger.info("-" * 20)
+    LOGGER.info("Validating {} {}".format(evaluation.id, evaluation.name))
+    LOGGER.info("-" * 20)
 
     submission_bundles = syn.getSubmissionBundles(evaluation, status=status)
     for submission, sub_status in submission_bundles:
@@ -206,7 +206,7 @@ def validate(syn,
                                        submission_name=submission.name,
                                        message=message,
                                        challenge_synid=challenge_synid)
-    logger.info("-" * 20)
+    LOGGER.info("-" * 20)
 
 
 def score_single_submission(syn, submission, status,
@@ -233,7 +233,7 @@ def score_single_submission(syn, submission, status,
         sub_scores, message = scoring_func(
             submission.filePath, goldstandard_path)
 
-        logger.info(
+        LOGGER.info(
             f"scored: {submission.id} {submission.name} {submission.userId} {score}")
 
         add_annotations = to_submission_status_annotations(sub_scores,
@@ -243,9 +243,9 @@ def score_single_submission(syn, submission, status,
         status.status = "SCORED"
 
     except Exception as ex1:
-        logger.error(
+        LOGGER.error(
             f'Error scoring submission {submission.name} {submission.id}:')
-        logger.error(f'{type(ex1)} {ex1} {str(ex1)}')
+        LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
         # ex1 only happens in this scope in python3,
         # so must store message as a variable
         message = str(ex1)
@@ -287,8 +287,8 @@ def score(syn,
     if not isinstance(evaluation, Evaluation):
         evaluation = syn.getEvaluation(evaluation)
 
-    logger.info(f'Scoring {evaluation.id} {evaluation.name}')
-    logger.info("-" * 20)
+    LOGGER.info(f'Scoring {evaluation.id} {evaluation.name}')
+    LOGGER.info("-" * 20)
     submission_bundle = syn.getSubmissionBundles(evaluation, status=status)
     for submission, sub_status in submission_bundle:
         # refetch the submission so that we get the file path
@@ -328,4 +328,4 @@ def score(syn,
                                    submission_name=submission.name,
                                    submission_id=submission.id,
                                    challenge_synid=challenge_synid)
-    logger.info("-" * 20)
+    LOGGER.info("-" * 20)
