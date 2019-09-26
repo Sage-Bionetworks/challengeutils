@@ -6,18 +6,15 @@ http://python-docs.synapse.org/
 
 Author: thomas.yu
 '''
-from datetime import timedelta
 import importlib
 import logging
 import os
 
-import synapseclient
 from synapseclient import Evaluation
-from synapseclient.exceptions import SynapseAuthenticationError
-from synapseclient.exceptions import SynapseNoCredentialsError
+
 from synapseclient.annotations import to_submission_status_annotations
 import challengeutils.utils
-from . import lock, messages
+from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
@@ -332,130 +329,3 @@ def score(syn,
                                    submission_id=submission.id,
                                    challenge_synid=challenge_synid)
     logger.info("-" * 20)
-
-
-# ==================================================
-#  Handlers for commands
-# ==================================================
-def command_validate(syn, evaluation_queue_maps, args):
-    '''
-    Validate command handler
-    '''
-    if args.evaluation is None:
-        for queueid in evaluation_queue_maps:
-            validate(syn,
-                     evaluation_queue_maps[queueid],
-                     args.admin_user_ids,
-                     args.challenge_synid,
-                     send_messages=args.send_messages,
-                     acknowledge_receipt=args.acknowledge_receipt,
-                     dry_run=args.dry_run,
-                     remove_cache=args.remove_cache)
-    else:
-        validate(syn,
-                 evaluation_queue_maps[args.evaluation],
-                 args.admin_user_ids,
-                 args.challenge_synid,
-                 send_messages=args.send_messages,
-                 acknowledge_receipt=args.acknowledge_receipt,
-                 dry_run=args.dry_run,
-                 remove_cache=args.remove_cache)
-
-
-def command_score(syn, evaluation_queue_maps, args):
-    '''
-    Score command handler
-    '''
-    if args.evaluation is None:
-        for queueid in evaluation_queue_maps:
-            score(syn,
-                  evaluation_queue_maps[queueid],
-                  args.admin_user_ids,
-                  args.challenge_synid,
-                  send_messages=args.send_messages,
-                  dry_run=args.dry_run,
-                  remove_cache=args.remove_cache)
-    else:
-        score(syn,
-              evaluation_queue_maps[args.evaluation],
-              args.admin_user_ids,
-              args.challenge_synid,
-              send_messages=args.send_messages,
-              dry_run=args.dry_run,
-              remove_cache=args.remove_cache)
-
-
-def main(args):
-    '''
-    Main method that executes validate / scoring
-    '''
-    # Synapse login
-    try:
-        syn = synapseclient.Synapse(debug=args.debug)
-        syn.login(email=args.user, password=args.password, silent=True)
-    except (SynapseAuthenticationError, SynapseNoCredentialsError):
-        raise ValueError(
-            "Must provide Synapse credentials as parameters or "
-            "store them as environmental variables.")
-
-    # Check challenge synid
-    try:
-        challenge_ent = syn.get(args.challenge_synid)
-        challenge_name = challenge_ent.name
-    except Exception:
-        raise ValueError(
-            "Must provide correct Synapse id of challenge site or "
-            "have permissions to access challenge the site")
-
-    # TODO: Check challenge admin ids
-    if args.admin_user_ids is None:
-        args.admin_user_ids = [syn.getUserProfile()['ownerId']]
-
-    try:
-        module = import_config_py(args.config_path)
-    except Exception:
-        raise ValueError("Error importing your python config script")
-
-    check_keys = set(
-        ["id", "validation_func", "scoring_func", "goldstandard_path"])
-    evaluation_queue_maps = {}
-    for queue in module.EVALUATION_QUEUES_CONFIG:
-        if not check_keys.issubset(queue.keys()):
-            raise KeyError("You must specify 'id', 'validation_func', 'scoring_func', "
-                           "'goldstandard_path' for each of your evaluation queues"
-                           "in your EVALUATION_QUEUES_CONFIG")
-        evaluation_queue_maps[queue['id']] = queue
-
-    if args.evaluation is not None:
-        check_queue_in_config = [eval_queue in evaluation_queue_maps
-                                 for eval_queue in args.evaluation]
-        if not all(check_queue_in_config):
-            raise ValueError("If evaluation is specified, must match an 'id' "
-                             "in EVALUATION_QUEUES_CONFIG")
-    # Acquire lock, don't run two scoring scripts at once
-    try:
-        update_lock = lock.acquire_lock_or_fail('challenge',
-                                                max_age=timedelta(hours=4))
-    except lock.LockedException:
-        logger.error("Is the scoring script already running? "
-                     "Can't acquire lock.")
-        # can't acquire lock, so return error code 75 which is a
-        # temporary error according to /usr/include/sysexits.h
-        return 75
-
-    try:
-        args.func(syn, evaluation_queue_maps, args)
-    except Exception as ex1:
-        logger.error('Error in challenge.py:')
-        logger.error(f'{type(ex1)} {ex1} {str(ex1)}')
-        if args.admin_user_ids:
-            messages.error_notification(syn=syn,
-                                        send_notifications=args.notifications,
-                                        userids=args.admin_user_ids,
-                                        dry_run=args.dry_run,
-                                        message=str(ex1),
-                                        queue_name=challenge_name)
-
-    finally:
-        update_lock.release()
-    return 0
