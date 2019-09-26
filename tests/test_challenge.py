@@ -2,6 +2,7 @@
 Test scoring harness functions
 '''
 import mock
+from mock import patch
 import synapseclient
 from scoring_harness.challenge import Challenge
 # from scoring_harness.challenge import score_single_submission
@@ -16,17 +17,19 @@ ERROR_MESSAGE = "error for days"
 CHALLENGE_RUN = Challenge(SYN, dry_run=False, send_messages=False,
                           acknowledge_receipt=False, remove_cache=False)
 
+
 def validation_func(path, truth):
+    """Test validation function"""
     return(True, MESSAGE)
 
 
 def scoring_func(path, truth):
-    '''Test scoring function'''
+    """Test scoring function"""
     return(SCORES, MESSAGE)
 
 
 def invalid_func(path, truth):
-    '''Test invalid function'''
+    """Test invalid function"""
     raise ValueError(ERROR_MESSAGE)
 
 
@@ -78,11 +81,10 @@ def test_storestatus_score_single_submission():
     }
     store_return = "return me"
     status = synapseclient.SubmissionStatus(status="VALIDATED")
-    with mock.patch.object(
-            SYN, "store",
-            return_value=store_return) as patch_store:
-        status, message = score_single_submission(
-            SYN, SUBMISSION, status, scoring_func, "path")
+    with patch.object(SYN, "store",
+                      return_value=store_return) as patch_store:
+        status, message = CHALLENGE_RUN.score_single_submission(
+            SUBMISSION, status, scoring_func, "path")
         patch_store.assert_called_once_with(expected_status)
         # Return the stored status
         assert status == store_return
