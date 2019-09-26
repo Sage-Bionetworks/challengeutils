@@ -60,9 +60,20 @@ def import_config_py(config_path):
     return module
 
 
+def _remove_cached_submission(submission_file):
+    """Remove submission file if cache clearing is requested
+
+    Args:
+        submission_file: Input submission"""
+    try:
+        os.unlink(submission_file)
+    except TypeError:
+        pass
+
+
 def validate_single_submission(syn, submission, status,
                                validation_func, goldstandard_path,
-                               dry_run=False, remove_cache=False):
+                               dry_run=False):
     '''
     Validates a single submission
 
@@ -101,13 +112,6 @@ def validate_single_submission(syn, submission, status,
         validation_message = str(ex1)
 
     status.status = "VALIDATED" if is_valid else "INVALID"
-
-    # Remove submission file if cache clearing is requested.
-    if remove_cache:
-        try:
-            os.unlink(submission_input)
-        except TypeError:
-            pass
 
     if not is_valid:
         failure_reason = {"FAILURE_REASON": validation_message[0:1000]}
@@ -169,8 +173,11 @@ def validate(syn,
 
         is_valid, error, message = validate_single_submission(syn, submission, sub_status,
                                                               validation_func, goldstandard_path,
-                                                              dry_run=dry_run,
-                                                              remove_cache=remove_cache)
+                                                              dry_run=dry_run)
+
+        # Remove submission file if cache clearing is requested.
+        if remove_cache:
+            _remove_cached_submission(submission.filePath)
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)
@@ -207,7 +214,7 @@ def validate(syn,
 
 def score_single_submission(syn, submission, status,
                             scoring_func, goldstandard_path,
-                            dry_run=False, remove_cache=False):
+                            dry_run=False):
     '''
     Scores a single submission
 
@@ -237,10 +244,6 @@ def score_single_submission(syn, submission, status,
         status = challengeutils.utils.update_single_submission_status(
             status, add_annotations)
         status.status = "SCORED"
-
-        # Remove submission file after scoring if requested.
-        if remove_cache:
-            os.unlink(submission.filePath)
 
     except Exception as ex1:
         logger.error(
@@ -299,8 +302,10 @@ def score(syn,
             continue
         status, message = score_single_submission(syn, submission, sub_status,
                                                   scoring_func, goldstandard_path,
-                                                  dry_run=dry_run, remove_cache=remove_cache)
-
+                                                  dry_run=dry_run)
+        # Remove submission file after scoring if requested.
+        if remove_cache:
+            _remove_cached_submission(submission.filePath)
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         profile = syn.getUserProfile(submission.userId)

@@ -140,8 +140,7 @@ def test_score():
         patch_score_single.assert_called_once_with(
             SYN, SUBMISSION, status,
             scoring_func, QUEUE_INFO_DICT['goldstandard_path'],
-            dry_run=False,
-            remove_cache=False)
+            dry_run=False)
         patch_get_user.assert_called_once_with(SUBMISSION.userId)
         patch_send.assert_called_once_with(syn=SYN,
                                            userids=[SUBMISSION.userId],
@@ -285,8 +284,7 @@ def test_validate():
         patch_validate_single.assert_called_once_with(
             SYN, SUBMISSION, status,
             validation_func, QUEUE_INFO_DICT['goldstandard_path'],
-            dry_run=False,
-            remove_cache=False)
+            dry_run=False)
         patch_get_user.assert_called_once_with(SUBMISSION.userId)
         patch_send.assert_called_once_with(syn=SYN,
                                            userids=[SUBMISSION.userId],
