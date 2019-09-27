@@ -12,7 +12,7 @@ import os
 from synapseclient import Evaluation
 
 from synapseclient.annotations import to_submission_status_annotations
-import challengeutils.utils
+from challengeutils.utils import update_single_submission_status
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -75,14 +75,13 @@ class Challenge:
         self.acknowledge_receipt = acknowledge_receipt
         self.remove_cache = remove_cache
 
-    def validate_single_submission(self, submission, status,
+    def validate_single_submission(self, submission,
                                    validation_func, goldstandard_path):
         """
         Validate a single submission
 
         Args:
             submission: Submission object
-            status: Submission Status object
             validation_func: Function that validates (takes prediction filepath and
                              truth file)
             goldstandard_path: Path to goldstandard
@@ -111,21 +110,65 @@ class Challenge:
             validation_error = ex1
             validation_message = str(ex1)
 
-        status.status = "VALIDATED" if is_valid else "INVALID"
+        return {'valid': is_valid,
+                'error': validation_error,
+                'message': validation_message}
+
+    def _store_submission_validation_status(self, sub_status,
+                                            validation_info):
+        """Update submission with validation status"""
+        is_valid = validation_info['valid']
+        message = validation_info['message']
+        sub_status.status = "VALIDATED" if is_valid else "INVALID"
         if not is_valid:
-            failure_reason = {"FAILURE_REASON": validation_message[0:1000]}
+            failure_reason = {"FAILURE_REASON": message[0:1000]}
         else:
             failure_reason = {"FAILURE_REASON": ''}
 
         add_annotations = to_submission_status_annotations(failure_reason,
                                                            is_private=False)
-        status = challengeutils.utils.update_single_submission_status(
-            status, add_annotations)
-
+        sub_status = update_single_submission_status(sub_status,
+                                                     add_annotations)
         if not self.dry_run:
             status = self.syn.store(status)
-        return (is_valid, validation_error, validation_message)
 
+    def _send_validation_email(self, validation_info, admin_user_ids,
+                               queue_name, submission, challenge_synid):
+        # send message AFTER storing status to ensure
+        # we don't get repeat messages
+        is_valid = validation_info['valid']
+        error = validation_info['error']
+        message = validation_info['message']
+
+        profile = self.syn.getUserProfile(submission.userId)
+        if is_valid:
+            messages.validation_passed(syn=self.syn,
+                                        userids=[submission.userId],
+                                        acknowledge_receipt=self.acknowledge_receipt,
+                                        dry_run=self.dry_run,
+                                        username=get_user_name(profile),
+                                        queue_name=queue_name,
+                                        submission_id=submission.id,
+                                        submission_name=submission.name,
+                                        challenge_synid=challenge_synid)
+        else:
+            if isinstance(error, AssertionError):
+                send_to = [submission.userId]
+                username = get_user_name(profile)
+            else:
+                send_to = admin_user_ids
+                username = "Challenge Administrator"
+
+            messages.validation_failed(syn=self.syn,
+                                        userids=send_to,
+                                        send_messages=self.send_messages,
+                                        dry_run=self.dry_run,
+                                        username=username,
+                                        queue_name=queue_name,
+                                        submission_id=submission.id,
+                                        submission_name=submission.name,
+                                        message=message,
+                                        challenge_synid=challenge_synid)
     def validate(self,
                  queue_info_dict,
                  admin_user_ids,
@@ -162,45 +205,21 @@ class Challenge:
             # getSubmissionBundles
             submission = self.syn.getSubmission(submission)
 
-            is_valid, error, message = self.validate_single_submission(submission,
-                                                                       sub_status,
-                                                                       validation_func,
-                                                                       goldstandard_path)
+            validation_info = self.validate_single_submission(submission,
+                                                              validation_func,
+                                                              goldstandard_path)
+            
+            self._store_submission_validation_status(sub_status,
+                                                     validation_info)
 
             # Remove submission file if cache clearing is requested.
             if self.remove_cache:
                 _remove_cached_submission(submission.filePath)
-            # send message AFTER storing status to ensure
-            # we don't get repeat messages
-            profile = self.syn.getUserProfile(submission.userId)
-            if is_valid:
-                messages.validation_passed(syn=self.syn,
-                                           userids=[submission.userId],
-                                           acknowledge_receipt=self.acknowledge_receipt,
-                                           dry_run=self.dry_run,
-                                           username=get_user_name(profile),
-                                           queue_name=evaluation.name,
-                                           submission_id=submission.id,
-                                           submission_name=submission.name,
-                                           challenge_synid=challenge_synid)
-            else:
-                if isinstance(error, AssertionError):
-                    send_to = [submission.userId]
-                    username = get_user_name(profile)
-                else:
-                    send_to = admin_user_ids
-                    username = "Challenge Administrator"
 
-                messages.validation_failed(syn=self.syn,
-                                           userids=send_to,
-                                           send_messages=self.send_messages,
-                                           dry_run=self.dry_run,
-                                           username=username,
-                                           queue_name=evaluation.name,
-                                           submission_id=submission.id,
-                                           submission_name=submission.name,
-                                           message=message,
-                                           challenge_synid=challenge_synid)
+            # Send validation related emails
+            self._send_validation_email(validation_info, admin_user_ids,
+                                        evaluation.name, submission,
+                                        challenge_synid)
         LOGGER.info("-" * 20)
 
     def score_single_submission(self, submission, status,
