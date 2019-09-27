@@ -159,7 +159,7 @@ class Challenge:
         goldstandard_path = queue_info_dict['goldstandard_path']
 
         if not isinstance(evaluation, Evaluation):
-            evaluation = syn.getEvaluation(evaluation)
+            evaluation = self.syn.getEvaluation(evaluation)
 
         LOGGER.info("Validating {} {}".format(evaluation.id, evaluation.name))
         LOGGER.info("-" * 20)
