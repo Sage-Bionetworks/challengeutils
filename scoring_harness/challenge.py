@@ -41,20 +41,7 @@ def get_user_name(profile):
     return " ".join(names)
 
 
-def import_config_py(config_path):
-    '''
-    Uses importlib to import users configuration
 
-    Args:
-        config_path: Path to configuration python script
-
-    Returns:
-        module
-    '''
-    spec = importlib.util.spec_from_file_location("config", config_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def _remove_cached_submission(submission_file):
