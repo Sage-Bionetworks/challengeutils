@@ -239,30 +239,31 @@ class Challenge:
             message - scoring message (errors/success)
         '''
         status.status = "INVALID"
-        try:
-            sub_scores, message = scoring_func(
-                submission.filePath, goldstandard_path)
+        #try:
+        sub_scores, message = scoring_func(
+            submission.filePath, goldstandard_path)
 
-            LOGGER.info(f"scored: {submission.id} {submission.name} "
-                        f"{submission.userId} {sub_scores}")
+        LOGGER.info(f"scored: {submission.id} {submission.name} "
+                    f"{submission.userId} {sub_scores}")
 
-            add_annotations = to_submission_status_annotations(sub_scores,
-                                                               is_private=True)
-            status = challengeutils.utils.update_single_submission_status(
-                status, add_annotations)
-            status.status = "SCORED"
+        add_annotations = to_submission_status_annotations(sub_scores,
+                                                           is_private=True)
+        status = update_single_submission_status(status, add_annotations)
+        status.status = "SCORED"
 
-        except Exception as ex1:
-            LOGGER.error(
-                f'Error scoring submission {submission.name} {submission.id}:')
-            LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
-            # ex1 only happens in this scope in python3,
-            # so must store message as a variable
-            message = str(ex1)
+        # except Exception as ex1:
+        #     LOGGER.error(
+        #         f'Error scoring submission {submission.name} {submission.id}:')
+        #     LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
+        #     # ex1 only happens in this scope in python3,
+        #     # so must store message as a variable
+        #     message = str(ex1)
 
         if not self.dry_run:
             status = self.syn.store(status)
-        return(status, message)
+        # return(status, message)
+        return status
+
 
 
     def score(self,
@@ -321,15 +322,15 @@ class Challenge:
                                            submission_name=submission.name,
                                            submission_id=submission.id,
                                            challenge_synid=challenge_synid)
-            else:
-                messages.scoring_error(syn=self.syn,
-                                       userids=admin_user_ids,
-                                       send_messages=self.send_messages,
-                                       dry_run=self.dry_run,
-                                       message=message,
-                                       username="Challenge Administrator,",
-                                       queue_name=evaluation.name,
-                                       submission_name=submission.name,
-                                       submission_id=submission.id,
-                                       challenge_synid=challenge_synid)
+            # else:
+            #     messages.scoring_error(syn=self.syn,
+            #                            userids=admin_user_ids,
+            #                            send_messages=self.send_messages,
+            #                            dry_run=self.dry_run,
+            #                            message=message,
+            #                            username="Challenge Administrator,",
+            #                            queue_name=evaluation.name,
+            #                            submission_name=submission.name,
+            #                            submission_id=submission.id,
+            #                            challenge_synid=challenge_synid)
         LOGGER.info("-" * 20)
