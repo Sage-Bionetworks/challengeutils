@@ -130,7 +130,7 @@ class Challenge:
         sub_status = update_single_submission_status(sub_status,
                                                      add_annotations)
         if not self.dry_run:
-            status = self.syn.store(status)
+            sub_status = self.syn.store(sub_status)
 
     def _send_validation_email(self, validation_info, admin_user_ids,
                                queue_name, submission, challenge_synid):
