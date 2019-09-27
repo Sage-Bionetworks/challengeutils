@@ -6,7 +6,6 @@ http://python-docs.synapse.org/
 
 Author: thomas.yu
 '''
-import importlib
 import logging
 import os
 
@@ -22,7 +21,7 @@ LOGGER.setLevel(logging.INFO)
 
 
 def get_user_name(profile):
-    '''
+    """
     Get name of Synapse user
 
     Args:
@@ -30,7 +29,7 @@ def get_user_name(profile):
 
     Returns:
         Synapse name or username
-    '''
+    """
     names = []
     if 'firstName' in profile and profile['firstName']:
         names.append(profile['firstName'].strip())
@@ -41,21 +40,33 @@ def get_user_name(profile):
     return " ".join(names)
 
 
-
-
-
 def _remove_cached_submission(submission_file):
-    """Remove submission file if cache clearing is requested
+    """
+    Remove submission file if cache clearing is requested
 
     Args:
-        submission_file: Input submission"""
+        submission_file: Input submission
+    """
     try:
         os.unlink(submission_file)
     except TypeError:
         pass
 
+
 class Challenge:
-    """Run Challenge Object"""
+    """
+    Run Challenge Object
+
+    Args:
+        syn: Synapse object
+        dry_run: Do not update Synapse. Default is False.
+        send_messages: Send validation error and scoring status messages.
+                       Default is False.
+        remove_cache: Removes submission file from cache. Default is False.
+        acknowledge_receipt: Send validation succeeded message.
+                             Default is False.
+    """
+
     def __init__(self, syn, dry_run=False, send_messages=False,
                  acknowledge_receipt=False, remove_cache=False):
         self.syn = syn
@@ -66,23 +77,21 @@ class Challenge:
 
     def validate_single_submission(self, submission, status,
                                    validation_func, goldstandard_path):
-        '''
-        Validates a single submission
+        """
+        Validate a single submission
 
         Args:
-            syn: Synapse object
             submission: Submission object
             status: Submission Status object
             validation_func: Function that validates (takes prediction filepath and
                              truth file)
-            dry_run: Defaults to storing status (False)
-            remove_cache: Removes submission file from cache (default: False)
+            goldstandard_path: Path to goldstandard
 
         Return:
             is_valid - Boolean value for whether submission is valid
             validation_error - Type of Python error (Assertion, ValueError...)
             validation_message - Error message
-        '''
+        """
         validation_error = None
         LOGGER.info("validating {} {}".format(submission.id, submission.name))
         try:
@@ -95,16 +104,14 @@ class Challenge:
                                                            goldstandard_path)
         except Exception as ex1:
             is_valid = False
-            LOGGER.error("Exception during validation: {} {} {}".format(type(ex1),
-                                                                        ex1,
-                                                                        str(ex1)))
+            LOGGER.error("Exception during validation: "
+                         f"{type(ex1)} {ex1} {str(ex1)}")
             # ex1 only happens in this scope in python3,
             # so must store validation_error as a variable
             validation_error = ex1
             validation_message = str(ex1)
 
         status.status = "VALIDATED" if is_valid else "INVALID"
-
         if not is_valid:
             failure_reason = {"FAILURE_REASON": validation_message[0:1000]}
         else:
@@ -136,10 +143,6 @@ class Challenge:
             challenge_synid: Synapse id of challenge project
             status: submissions with this status to validate. Default to
                     RECEIVED
-            send_messages: Send messages
-            acknowledge_receipt: Send validation results
-            dry_run: Do not update Synapse
-            remove_cache: Clear cache of submission files
         '''
         evaluation = queue_info_dict['id']
         validation_func = queue_info_dict['validation_func']
@@ -151,7 +154,8 @@ class Challenge:
         LOGGER.info("Validating {} {}".format(evaluation.id, evaluation.name))
         LOGGER.info("-" * 20)
 
-        submission_bundles = self.syn.getSubmissionBundles(evaluation, status=status)
+        submission_bundles = self.syn.getSubmissionBundles(evaluation,
+                                                           status=status)
         for submission, sub_status in submission_bundles:
             # refetch the submission so that we get the file path
             # to be later replaced by a "downloadFiles" flag on
@@ -205,13 +209,11 @@ class Challenge:
         Scores a single submission
 
         Args:
-            syn: Synapse object
             submission: Submission object
             status: Submission Status object
             scoring_func: Function that scores (takes prediction filepath and
                         truth file)
-            dry_run: Defaults to storing status (False)
-            remove_cache: Removes submission after scoring (default: False)
+            goldstandard_path: Path to goldstandard
 
         Return:
             status - Annotated submission status
@@ -261,10 +263,6 @@ class Challenge:
             challenge_synid: Synapse id of challenge project
             status: submissions with this status to score. Default to
                     VALIDATED
-            send_messages: Send messages
-            send_notifications: Send notifications
-            dry_run: Do not update Synapse
-            remove_cache: Clear cache of scored submissions
         '''
         evaluation = queue_info_dict['id']
         scoring_func = queue_info_dict['scoring_func']
@@ -275,7 +273,8 @@ class Challenge:
 
         LOGGER.info(f'Scoring {evaluation.id} {evaluation.name}')
         LOGGER.info("-" * 20)
-        submission_bundle = self.syn.getSubmissionBundles(evaluation, status=status)
+        submission_bundle = self.syn.getSubmissionBundles(evaluation,
+                                                          status=status)
         for submission, sub_status in submission_bundle:
             # refetch the submission so that we get the file path
             submission = self.syn.getSubmission(submission)

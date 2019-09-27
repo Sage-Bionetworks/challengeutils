@@ -1,6 +1,7 @@
 """Run challenge invoker"""
 #! /usr/bin/env python3
 import argparse
+import importlib
 import logging
 from datetime import timedelta
 
@@ -8,9 +9,7 @@ import synapseclient
 from synapseclient.exceptions import SynapseAuthenticationError
 from synapseclient.exceptions import SynapseNoCredentialsError
 
-import scoring_harness.challenge
 from scoring_harness.challenge import Challenge
-from scoring_harness.challenge import import_config_py
 from scoring_harness import lock, messages
 
 
@@ -93,8 +92,8 @@ def main(args):
     except Exception:
         raise ValueError("Error importing your python config script")
 
-    check_keys = set(
-        ["id", "validation_func", "scoring_func", "goldstandard_path"])
+    check_keys = set(["id", "validation_func", "scoring_func",
+                      "goldstandard_path"])
     evaluation_queue_maps = {}
     for queue in module.EVALUATION_QUEUES_CONFIG:
         if not check_keys.issubset(queue.keys()):
