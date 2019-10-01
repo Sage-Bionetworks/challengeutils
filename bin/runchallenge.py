@@ -86,7 +86,6 @@ def main(args):
             "have permissions to access challenge the site")
 
     # TODO: Check challenge admin ids
-    print(args.admin_user_ids)
     if args.admin_user_ids is None:
         args.admin_user_ids = [syn.getUserProfile()['ownerId']]
 
