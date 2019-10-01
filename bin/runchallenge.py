@@ -10,7 +10,7 @@ from synapseclient.exceptions import SynapseNoCredentialsError
 
 import scoring_harness.challenge
 from scoring_harness.challenge import validate, score, import_config_py
-from scoring_harness.challenge import lock, messages
+from scoring_harness import lock, messages
 
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -86,6 +86,7 @@ def main(args):
             "have permissions to access challenge the site")
 
     # TODO: Check challenge admin ids
+    print(args.admin_user_ids)
     if args.admin_user_ids is None:
         args.admin_user_ids = [syn.getUserProfile()['ownerId']]
 
@@ -151,12 +152,6 @@ if __name__ == '__main__':
                         nargs='?',
                         default=None)
 
-    parser.add_argument('-a',
-                        "--admin-user-ids",
-                        help="Synapse user ids. Defaults to the user running the script",
-                        nargs='?',
-                        default=None)
-
     parser.add_argument("-u",
                         "--user",
                         help="UserName",
@@ -196,12 +191,25 @@ if __name__ == '__main__':
 
     parser_validate = subparsers.add_parser('validate',
                                             help="Validate all RECEIVED submissions to an evaluation")
-    parser_validate.set_defaults(
-        func=scoring_harness.challenge.command_validate)
+    # Add these subparsers after because it takes multiple arguments
+    parser_validate.add_argument('-a',
+                                 "--admin-user-ids",
+                                 help="Synapse user ids. Defaults to the user running the script",
+                                 nargs='+',
+                                 default=None)
+
+    parser_validate.set_defaults(func=command_validate)
 
     parser_score = subparsers.add_parser('score',
                                          help="Score all VALIDATED submissions to an evaluation")
-    parser_score.set_defaults(func=scoring_harness.challenge.command_score)
+    # Add these subparsers after
+    parser_score.add_argument('-a',
+                              "--admin-user-ids",
+                              help="Synapse user ids. Defaults to the user running the script",
+                              nargs='+',
+                              default=None)
+
+    parser_score.set_defaults(func=command_score)
 
     args = parser.parse_args()
     LOGGER.info("=" * 30)
