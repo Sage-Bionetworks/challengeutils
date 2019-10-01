@@ -153,12 +153,6 @@ if __name__ == '__main__':
                         nargs='?',
                         default=None)
 
-    parser.add_argument('-a',
-                        "--admin-user-ids",
-                        help="Synapse user ids. Defaults to the user running the script",
-                        nargs='?',
-                        default=None)
-
     parser.add_argument("-u",
                         "--user",
                         help="UserName",
@@ -198,10 +192,25 @@ if __name__ == '__main__':
 
     parser_validate = subparsers.add_parser('validate',
                                             help="Validate all RECEIVED submissions to an evaluation")
+
+    # Add these subparsers after because it takes multiple arguments
+    parser_validate.add_argument('-a',
+                                 "--admin-user-ids",
+                                 help="Synapse user ids. Defaults to the user running the script",
+                                 nargs='+',
+                                 default=None)
+
     parser_validate.set_defaults(func=command_validate)
 
     parser_score = subparsers.add_parser('score',
                                          help="Score all VALIDATED submissions to an evaluation")
+    # Add these subparsers after
+    parser_score.add_argument('-a',
+                              "--admin-user-ids",
+                              help="Synapse user ids. Defaults to the user running the script",
+                              nargs='+',
+                              default=None)
+
     parser_score.set_defaults(func=command_score)
 
     args = parser.parse_args()
