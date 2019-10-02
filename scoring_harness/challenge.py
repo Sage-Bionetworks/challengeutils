@@ -52,6 +52,53 @@ def _remove_cached_submission(submission_file):
     except TypeError:
         pass
 
+def validate_single_submission(submission, validation_func,
+                               goldstandard_path):
+    """
+    Validate a single submission
+
+    Args:
+        submission: Submission object
+        validation_func: Function that validates (takes prediction filepath and
+                            truth file)
+        goldstandard_path: Path to goldstandard
+
+    Return:
+        is_valid - Boolean value for whether submission is valid
+        validation_error - Type of Python error (Assertion, ValueError...)
+        validation_message - Error message
+    """
+    validation_error = None
+    LOGGER.info("validating {} {}".format(submission.id, submission.name))
+    try:
+        # Account for if submissions aren't files
+        if submission.filePath is None:
+            submission_input = submission
+        else:
+            submission_input = submission.filePath
+
+        validation_status = validation_func(submission_input,
+                                            goldstandard_path)
+
+        is_valid = validation_status['valid']
+        annotations = validation_status['annotations']
+        validation_message = validation_status['message']
+
+    except Exception as ex1:
+        is_valid = False
+        LOGGER.error("Exception during validation: "
+                     f"{type(ex1)} {ex1} {str(ex1)}")
+        # ex1 only happens in this scope in python3,
+        # so must store validation_error as a variable
+        annotations = {}
+        validation_error = ex1
+        validation_message = str(ex1)
+
+    return {'valid': is_valid,
+            'annotations': annotations,
+            'error': validation_error,
+            'message': validation_message}
+
 
 class Challenge:
     """
@@ -75,57 +122,19 @@ class Challenge:
         self.acknowledge_receipt = acknowledge_receipt
         self.remove_cache = remove_cache
 
-    def validate_single_submission(self, submission,
-                                   validation_func, goldstandard_path):
-        """
-        Validate a single submission
-
-        Args:
-            submission: Submission object
-            validation_func: Function that validates (takes prediction filepath and
-                             truth file)
-            goldstandard_path: Path to goldstandard
-
-        Return:
-            is_valid - Boolean value for whether submission is valid
-            validation_error - Type of Python error (Assertion, ValueError...)
-            validation_message - Error message
-        """
-        validation_error = None
-        LOGGER.info("validating {} {}".format(submission.id, submission.name))
-        try:
-            # Account for if submissions aren't files
-            if submission.filePath is None:
-                submission_input = submission
-            else:
-                submission_input = submission.filePath
-            is_valid, validation_message = validation_func(submission_input,
-                                                           goldstandard_path)
-        except Exception as ex1:
-            is_valid = False
-            LOGGER.error("Exception during validation: "
-                         f"{type(ex1)} {ex1} {str(ex1)}")
-            # ex1 only happens in this scope in python3,
-            # so must store validation_error as a variable
-            validation_error = ex1
-            validation_message = str(ex1)
-
-        return {'valid': is_valid,
-                'error': validation_error,
-                'message': validation_message}
-
     def _store_submission_validation_status(self, sub_status,
                                             validation_info):
         """Update submission with validation status"""
         is_valid = validation_info['valid']
         message = validation_info['message']
+        annotation = validation_info['annotations']
         sub_status.status = "VALIDATED" if is_valid else "INVALID"
         if not is_valid:
-            failure_reason = {"FAILURE_REASON": message[0:1000]}
+            annotation["FAILURE_REASON"] = message[0:1000]
         else:
-            failure_reason = {"FAILURE_REASON": ''}
+            annotation["FAILURE_REASON"] = ''
 
-        add_annotations = to_submission_status_annotations(failure_reason,
+        add_annotations = to_submission_status_annotations(annotation,
                                                            is_private=False)
         sub_status = update_single_submission_status(sub_status,
                                                      add_annotations)
@@ -143,14 +152,14 @@ class Challenge:
         profile = self.syn.getUserProfile(submission.userId)
         if is_valid:
             messages.validation_passed(syn=self.syn,
-                                        userids=[submission.userId],
-                                        acknowledge_receipt=self.acknowledge_receipt,
-                                        dry_run=self.dry_run,
-                                        username=get_user_name(profile),
-                                        queue_name=queue_name,
-                                        submission_id=submission.id,
-                                        submission_name=submission.name,
-                                        challenge_synid=challenge_synid)
+                                       userids=[submission.userId],
+                                       acknowledge_receipt=self.acknowledge_receipt,
+                                       dry_run=self.dry_run,
+                                       username=get_user_name(profile),
+                                       queue_name=queue_name,
+                                       submission_id=submission.id,
+                                       submission_name=submission.name,
+                                       challenge_synid=challenge_synid)
         else:
             if isinstance(error, AssertionError):
                 send_to = [submission.userId]
@@ -160,15 +169,15 @@ class Challenge:
                 username = "Challenge Administrator"
 
             messages.validation_failed(syn=self.syn,
-                                        userids=send_to,
-                                        send_messages=self.send_messages,
-                                        dry_run=self.dry_run,
-                                        username=username,
-                                        queue_name=queue_name,
-                                        submission_id=submission.id,
-                                        submission_name=submission.name,
-                                        message=message,
-                                        challenge_synid=challenge_synid)
+                                       userids=send_to,
+                                       send_messages=self.send_messages,
+                                       dry_run=self.dry_run,
+                                       username=username,
+                                       queue_name=queue_name,
+                                       submission_id=submission.id,
+                                       submission_name=submission.name,
+                                       message=message,
+                                       challenge_synid=challenge_synid)
     def validate(self,
                  queue_info_dict,
                  admin_user_ids,
@@ -205,10 +214,10 @@ class Challenge:
             # getSubmissionBundles
             submission = self.syn.getSubmission(submission)
 
-            validation_info = self.validate_single_submission(submission,
-                                                              validation_func,
-                                                              goldstandard_path)
-            
+            validation_info = validate_single_submission(submission,
+                                                         validation_func,
+                                                         goldstandard_path)
+
             self._store_submission_validation_status(sub_status,
                                                      validation_info)
 
@@ -239,31 +248,29 @@ class Challenge:
             message - scoring message (errors/success)
         '''
         status.status = "INVALID"
-        #try:
-        sub_scores, message = scoring_func(
-            submission.filePath, goldstandard_path)
+        try:
+            score_status = scoring_func(submission.filePath, goldstandard_path)
+            annotations = score_status['annotations']
+            message = score_status['message']
+            LOGGER.info(f"scored: {submission.id} {submission.name} "
+                        f"{submission.userId} {annotations}")
 
-        LOGGER.info(f"scored: {submission.id} {submission.name} "
-                    f"{submission.userId} {sub_scores}")
-
-        add_annotations = to_submission_status_annotations(sub_scores,
-                                                           is_private=True)
-        status = update_single_submission_status(status, add_annotations)
-        status.status = "SCORED"
-
-        # except Exception as ex1:
-        #     LOGGER.error(
-        #         f'Error scoring submission {submission.name} {submission.id}:')
-        #     LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
-        #     # ex1 only happens in this scope in python3,
-        #     # so must store message as a variable
-        #     message = str(ex1)
+            add_annotations = to_submission_status_annotations(annotations,
+                                                               is_private=True)
+            status = update_single_submission_status(status, add_annotations)
+            status.status = "SCORED"
+        except Exception as ex1:
+            LOGGER.error(
+                f'Error scoring submission {submission.name} {submission.id}:')
+            LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
+            # ex1 only happens in this scope in python3,
+            # so must store message as a variable
+            message = str(ex1)
 
         if not self.dry_run:
             status = self.syn.store(status)
-        # return(status, message)
-        return status
-
+        return(status, message)
+        # return status
 
 
     def score(self,
@@ -322,15 +329,15 @@ class Challenge:
                                            submission_name=submission.name,
                                            submission_id=submission.id,
                                            challenge_synid=challenge_synid)
-            # else:
-            #     messages.scoring_error(syn=self.syn,
-            #                            userids=admin_user_ids,
-            #                            send_messages=self.send_messages,
-            #                            dry_run=self.dry_run,
-            #                            message=message,
-            #                            username="Challenge Administrator,",
-            #                            queue_name=evaluation.name,
-            #                            submission_name=submission.name,
-            #                            submission_id=submission.id,
-            #                            challenge_synid=challenge_synid)
+            else:
+                messages.scoring_error(syn=self.syn,
+                                       userids=admin_user_ids,
+                                       send_messages=self.send_messages,
+                                       dry_run=self.dry_run,
+                                       message=message,
+                                       username="Challenge Administrator,",
+                                       queue_name=evaluation.name,
+                                       submission_name=submission.name,
+                                       submission_id=submission.id,
+                                       challenge_synid=challenge_synid)
         LOGGER.info("-" * 20)
