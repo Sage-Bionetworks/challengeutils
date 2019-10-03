@@ -1,25 +1,11 @@
 """This is the baseclass for what happens to a submission"""
 import logging
-import os
-from .submission_pipeline import EvaluationQueuePipeline
+from .helper import EvaluationQueuePipeline
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
-
-
-def _remove_cached_submission(submission_file):
-    """
-    Remove submission file if cache clearing is requested
-
-    Args:
-        submission_file: Input submission
-    """
-    try:
-        os.unlink(submission_file)
-    except TypeError:
-        pass
 
 
 class EvaluationQueueValidater(EvaluationQueuePipeline):
