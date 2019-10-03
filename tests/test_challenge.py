@@ -60,8 +60,8 @@ SUBMISSION = synapseclient.Submission(
 SUBMISSION_STATUS = synapseclient.SubmissionStatus(status="RECEIVED")
 EVALUATION = synapseclient.Evaluation(
     name="foo", id="222", contentSource="syn12")
-SYN_USERPROFILE = synapseclient.UserProfile(ownerId="111")
-
+SYN_USERPROFILE = synapseclient.UserProfile(ownerId="111", userName="foo")
+CHALLENGE_SYNID = "syn1234"
 
 def test_score_single_submission(challenge_runner):
     """Test scoring of single submission"""
@@ -144,12 +144,10 @@ def test_score(challenge_runner):
                       return_value=(status, "message")) as patch_score_single,\
          patch.object(SYN, "getUserProfile",
                       return_value=SYN_USERPROFILE) as patch_get_user,\
-         patch.object(messages, "scoring_succeeded") as patch_send,\
-         patch.object(scoring_harness.challenge, "get_user_name",
-                      return_value="foo") as patch_get_user_name:
+         patch.object(messages, "scoring_succeeded") as patch_send:
         challenge_runner.score(QUEUE_INFO_DICT,
                                [1],
-                               "syn1234",
+                               CHALLENGE_SYNID,
                                status='VALIDATED')
         patch_getevaluation.assert_called_once_with(QUEUE_INFO_DICT['id'])
         patch_get_bundles.assert_called_once_with(
@@ -164,12 +162,11 @@ def test_score(challenge_runner):
                                            send_messages=False,
                                            dry_run=False,
                                            message="message",
-                                           username="foo",
+                                           username=SYN_USERPROFILE.userName,
                                            queue_name=EVALUATION.name,
                                            submission_name=SUBMISSION.name,
                                            submission_id=SUBMISSION.id,
-                                           challenge_synid="syn1234")
-        patch_get_user_name.assert_called_once_with(SYN_USERPROFILE)
+                                           challenge_synid=CHALLENGE_SYNID)
 
 
 def test_valid_validate_single_submission():
@@ -200,18 +197,21 @@ def test_invalid_validate_single_submission():
     assert validation_status['annotations'] == {}
 
 
-def test___store_submission_validation_status(challenge_runner):
+def test_valid__store_submission_validation_status(challenge_runner):
     """Test storing of submission validation status"""
     expected_validation_status = {'valid': True,
                                   'annotations': VALIDATION_ANNOTATIONS,
                                   'error': None,
                                   'message': MESSAGE}
     expected_status = synapseclient.SubmissionStatus(status="VALIDATED")
+    # This is just to make sure that update_single_submission_status
+    # has uses the annotations returned by to_submission_status...
+    fake_return_annots = 'add'
     with patch.object(SYN, "store") as patch_store,\
-         patch.object(synapseclient.annotations,
+         patch.object(scoring_harness.challenge,
                       "to_submission_status_annotations",
-                      return_value='add') as patch_toannot,\
-         patch.object(challengeutils.utils,
+                      return_value=fake_return_annots) as patch_toannot,\
+         patch.object(scoring_harness.challenge,
                       "update_single_submission_status",
                       return_value=expected_status) as patch_update:
         challenge_runner._store_submission_validation_status(
@@ -219,38 +219,118 @@ def test___store_submission_validation_status(challenge_runner):
         patch_toannot.assert_called_once_with({"FAILURE_REASON": '', 'foo': 'bar'},
                                               is_private=False)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
-                                             'add')
-
+                                             fake_return_annots)
         patch_store.assert_called_once_with(expected_status)
 
 
-# def test_storeinvalid_validate_single_submission(challenge_runner):
-#     '''
-#     Test storing of status
-#     '''
-#     status = synapseclient.SubmissionStatus(status="VALIDATED")
-#     with patch.object(SYN, "store") as patch_store,\
-#          patch.object(synapseclient.annotations,
-#                       "to_submission_status_annotations") as patch_toannot:
-#         status = synapseclient.SubmissionStatus(status="VALIDATED")
-#         valid, error, message = challenge_runner.validate_single_submission(
-#             SUBMISSION, status, invalid_func, "path")
-#         patch_toannot.assert_called_once_with({"FAILURE_REASON": ERROR_MESSAGE,
-#                                                 is_private=False})
-#         expected_status = {
-#             "annotations": {
-#                 'stringAnnos': [{
-#                     "isPrivate": False,
-#                     "key": "FAILURE_REASON",
-#                     "value": ERROR_MESSAGE
-#                 }]
-#             },
-#             "status": "INVALID"
-#         }
-#         assert not valid
-#         assert isinstance(error, ValueError)
-#         assert message == ERROR_MESSAGE
-#         patch_store.assert_called_once_with(expected_status)
+def test_invalid__store_submission_validation_status(challenge_runner):
+    """Test error message cutoff at 1000"""
+    message = ERROR_MESSAGE*1000
+    expected_validation_status = {'valid': False,
+                                  'annotations': VALIDATION_ANNOTATIONS,
+                                  'error': ValueError,
+                                  'message': message}
+    expected_status = synapseclient.SubmissionStatus(status="VALIDATED")
+    # This is just to make sure that update_single_submission_status
+    # has uses the annotations returned by to_submission_status...
+    fake_return_annots = 'add'
+    with patch.object(SYN, "store") as patch_store,\
+         patch.object(scoring_harness.challenge,
+                      "to_submission_status_annotations",
+                      return_value=fake_return_annots) as patch_toannot,\
+         patch.object(scoring_harness.challenge,
+                      "update_single_submission_status",
+                      return_value=expected_status) as patch_update:
+        challenge_runner._store_submission_validation_status(
+            SUBMISSION_STATUS, expected_validation_status)
+        annot = {"FAILURE_REASON": message[:1000], 'foo': 'bar'}
+        patch_toannot.assert_called_once_with(annot, is_private=False)
+        patch_update.assert_called_once_with(SUBMISSION_STATUS,
+                                             fake_return_annots)
+        patch_store.assert_called_once_with(expected_status)
+
+
+def test_valid__send_validation_email(challenge_runner):
+    """Test sending validation success email"""
+    expected_validation_status = {'valid': True,
+                                  'annotations': VALIDATION_ANNOTATIONS,
+                                  'error': None,
+                                  'message': MESSAGE}
+    with patch.object(messages, "validation_passed") as patch_send,\
+         patch.object(SYN, "getUserProfile",
+                      return_value=SYN_USERPROFILE) as patch_get_user:
+        challenge_runner._send_validation_email(expected_validation_status,
+                                                [1],
+                                                EVALUATION.name,
+                                                SUBMISSION,
+                                                CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+        patch_send.assert_called_once_with(syn=SYN,
+                                           userids=[SUBMISSION.userId],
+                                           acknowledge_receipt=False,
+                                           dry_run=False,
+                                           username=SYN_USERPROFILE.userName,
+                                           queue_name=EVALUATION.name,
+                                           submission_name=SUBMISSION.name,
+                                           submission_id=SUBMISSION.id,
+                                           challenge_synid=CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+
+
+def test_error__send_validation_email(challenge_runner):
+    """Test sending validation function error email"""
+    expected_validation_status = {'valid': False,
+                                  'annotations': VALIDATION_ANNOTATIONS,
+                                  'error': ValueError(),
+                                  'message': ERROR_MESSAGE}
+    with patch.object(messages, "validation_failed") as patch_send,\
+         patch.object(SYN, "getUserProfile",
+                      return_value=SYN_USERPROFILE) as patch_get_user:
+        challenge_runner._send_validation_email(expected_validation_status,
+                                                [1],
+                                                EVALUATION.name,
+                                                SUBMISSION,
+                                                CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+        patch_send.assert_called_once_with(syn=SYN,
+                                           userids=[1],
+                                           send_messages=False,
+                                           dry_run=False,
+                                           username="Challenge Administrator",
+                                           queue_name=EVALUATION.name,
+                                           submission_name=SUBMISSION.name,
+                                           submission_id=SUBMISSION.id,
+                                           message=ERROR_MESSAGE,
+                                           challenge_synid=CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+
+
+def test_invalid__send_validation_email(challenge_runner):
+    """Test invalid submission email"""
+    expected_validation_status = {'valid': False,
+                                  'annotations': VALIDATION_ANNOTATIONS,
+                                  'error': AssertionError(),
+                                  'message': ERROR_MESSAGE}
+    with patch.object(messages, "validation_failed") as patch_send,\
+         patch.object(SYN, "getUserProfile",
+                      return_value=SYN_USERPROFILE) as patch_get_user:
+        challenge_runner._send_validation_email(expected_validation_status,
+                                                [1],
+                                                EVALUATION.name,
+                                                SUBMISSION,
+                                                CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
+        patch_send.assert_called_once_with(syn=SYN,
+                                           userids=[SUBMISSION.userId],
+                                           send_messages=False,
+                                           dry_run=False,
+                                           username=SYN_USERPROFILE.userName,
+                                           queue_name=EVALUATION.name,
+                                           submission_name=SUBMISSION.name,
+                                           submission_id=SUBMISSION.id,
+                                           message=ERROR_MESSAGE,
+                                           challenge_synid=CHALLENGE_SYNID)
+        patch_get_user.assert_called_once_with(SUBMISSION.userId)
 
 
 def test_validate(challenge_runner):
@@ -264,40 +344,33 @@ def test_validate(challenge_runner):
     - send emails
     '''
     status = synapseclient.SubmissionStatus(status="SCORED")
-
+    validation_info = {'valid': True,
+                       'annotations': VALIDATION_ANNOTATIONS,
+                       'error': None,
+                       'message': MESSAGE}
     with patch.object(SYN, "getEvaluation",
                       return_value=EVALUATION) as patch_getevaluation,\
          patch.object(SYN, "getSubmissionBundles",
                       return_value=[(SUBMISSION, status)]) as patch_get_bundles,\
          patch.object(SYN, "getSubmission",
                       return_value=SUBMISSION) as patch_get_sub,\
-         patch.object(Challenge, "validate_single_submission",
-                      return_value=(status,
-                                    ValueError("foo"),
-                                    "message")) as patch_validate_single,\
-         patch.object(SYN, "getUserProfile",
-                      return_value=SYN_USERPROFILE) as patch_get_user,\
-         patch.object(messages, "validation_passed") as patch_send,\
-         patch.object(scoring_harness.challenge, "get_user_name",
-                      return_value="foo") as patch_get_user_name:
+         patch.object(scoring_harness.challenge,
+                      "validate_single_submission",
+                      return_value=validation_info) as patch_validate_single,\
+         patch.object(challenge_runner,
+                      "_store_submission_validation_status") as patch_store,\
+         patch.object(challenge_runner,
+                      "_send_validation_email") as patch_send:
         challenge_runner.validate(QUEUE_INFO_DICT, [1],
-                                  "syn1234", status='RECEIVED')
+                                  CHALLENGE_SYNID, status='RECEIVED')
         patch_getevaluation.assert_called_once_with(QUEUE_INFO_DICT['id'])
         patch_get_bundles.assert_called_once_with(
             EVALUATION,
             status='RECEIVED')
         patch_get_sub.assert_called_once_with(SUBMISSION)
         patch_validate_single.assert_called_once_with(
-            SUBMISSION, status,
-            validation_func, QUEUE_INFO_DICT['goldstandard_path'])
-        patch_get_user.assert_called_once_with(SUBMISSION.userId)
-        patch_send.assert_called_once_with(syn=SYN,
-                                           userids=[SUBMISSION.userId],
-                                           acknowledge_receipt=False,
-                                           dry_run=False,
-                                           username="foo",
-                                           queue_name=EVALUATION.name,
-                                           submission_name=SUBMISSION.name,
-                                           submission_id=SUBMISSION.id,
-                                           challenge_synid="syn1234")
-        patch_get_user_name.assert_called_once_with(SYN_USERPROFILE)
+            SUBMISSION, validation_func, QUEUE_INFO_DICT['goldstandard_path'])
+        patch_store.assert_called_once_with(status, validation_info)
+        patch_send.assert_called_once_with(validation_info, [1],
+                                           EVALUATION.name, SUBMISSION,
+                                           CHALLENGE_SYNID)

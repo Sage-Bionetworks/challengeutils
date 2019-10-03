@@ -20,24 +20,25 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
 
-def get_user_name(profile):
-    """
-    Get name of Synapse user
+# def get_user_name(userid):
+#     """
+#     Get name of Synapse user
 
-    Args:
-        profile: syn.getUserProfile()
+#     Args:
+#         userid: Synapse user id
 
-    Returns:
-        Synapse name or username
-    """
-    names = []
-    if 'firstName' in profile and profile['firstName']:
-        names.append(profile['firstName'].strip())
-    if 'lastName' in profile and profile['lastName']:
-        names.append(profile['lastName'].strip())
-    if not names:
-        names.append(profile['userName'])
-    return " ".join(names)
+#     Returns:
+#         Synapse name or username
+#     """
+#     profile = syn.getUserProfile(userid)
+#     names = []
+#     if 'firstName' in profile and profile['firstName']:
+#         names.append(profile['firstName'].strip())
+#     if 'lastName' in profile and profile['lastName']:
+#         names.append(profile['lastName'].strip())
+#     if not names:
+#         names.append(profile['userName'])
+#     return " ".join(names)
 
 
 def _remove_cached_submission(submission_file):
@@ -155,7 +156,7 @@ class Challenge:
                                        userids=[submission.userId],
                                        acknowledge_receipt=self.acknowledge_receipt,
                                        dry_run=self.dry_run,
-                                       username=get_user_name(profile),
+                                       username=profile.userName,
                                        queue_name=queue_name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,
@@ -163,7 +164,7 @@ class Challenge:
         else:
             if isinstance(error, AssertionError):
                 send_to = [submission.userId]
-                username = get_user_name(profile)
+                username = profile.userName
             else:
                 send_to = admin_user_ids
                 username = "Challenge Administrator"
@@ -324,7 +325,7 @@ class Challenge:
                                            send_messages=self.send_messages,
                                            dry_run=self.dry_run,
                                            message=message,
-                                           username=get_user_name(profile),
+                                           username=profile.userName,
                                            queue_name=evaluation.name,
                                            submission_name=submission.name,
                                            submission_id=submission.id,
