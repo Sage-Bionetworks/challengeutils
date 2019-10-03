@@ -22,7 +22,7 @@ def _remove_cached_submission(submission_file):
         pass
 
 
-class EvaluationQueueValidation(EvaluationQueuePipeline):
+class EvaluationQueueScorer(EvaluationQueuePipeline):
 
     def interact_with_submission(self, submission):
         submission = self.syn.getSubmission(submission)
