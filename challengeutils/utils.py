@@ -2,8 +2,11 @@ import json
 import logging
 import sys
 import urllib
+import datetime
 import synapseclient
+from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -428,6 +431,75 @@ def team_members_union(syn, a, b):
     return(union_members)
 
 
+def _check_date_range(date_str, start_datetime, end_datetime):
+    '''
+    Helper function to check if the date is within range
+    Note: the date and time is in UTC
+
+    Args:
+        date_str: date string 
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+    
+    Returns:
+        boolean
+    '''
+    result = True
+    if(start_datetime is not None or end_datetime is not None):
+        date_obj = datetime.datetime.strptime(date_str,'%Y-%m-%dT%H:%M:%S.%fZ')
+        if(start_datetime is not None):
+            start_obj = datetime.datetime.strptime(start_datetime,'%Y-%m-%d %H:%M')
+            result = date_obj >= start_obj
+        if(end_datetime is not None):
+            end_obj = datetime.datetime.strptime(end_datetime,'%Y-%m-%d %H:%M')
+            result = date_obj <= end_obj
+    return(result)
+
+def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
+    '''
+    Helper function to get contributors from a given evaluation id. 
+    Note: the date and time is in UTC
+
+    Args:
+        syn: Synapse object
+        evaluationid: evaluation id
+        submission_status: Submission status
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    bundles = syn.getSubmissionBundles(evaluationid, status=status)
+    contributors = set()
+    for sub, _ in bundles:
+        if((sub.createdOn, start_datetime, end_datetime)):
+            principalids = set(contributor['principalId'] for contributor in sub.contributors)
+            contributors.update(principalids)
+    return(contributors)
+
+def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+    '''
+    Function to get contributors from a list of evaluation ids
+    Note: the date and time is in UTC
+
+    Args:
+        syn: Synapse object
+        evaluationids: a list of evaluation ids 
+        status: Submission status. Default = SCORED
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    all_contributors = set()
+    for evaluationid in evaluationids:
+        contributors = _get_contributors(syn,evaluationid,status,start_datetime,end_datetime)
+        all_contributors = all_contributors.union(contributors)
+    return(all_contributors)
+
+
 def list_evaluations(syn, project):
     '''
     List evaluation queues of a Synapse project
@@ -528,3 +600,23 @@ def copy_project(syn, project, new_project_name):
     new_project = syn.store(new_project_entity)
     synapseutils.copy(syn, project_ent.id, new_project.id)
     return new_project
+
+
+def _get_submitter_name(syn, submitterid):
+    """Get the Synapse team name or the username given a submitterid
+
+    Args:
+        syn: Synapse object
+        submitterid: submitter id
+
+    Returns:
+        username or teamname
+    """
+
+    try:
+        user = syn.getUserProfile(submitterid)
+        submitter_name = user['userName']
+    except SynapseHTTPError:
+        team = syn.getTeam(submitterid)
+        submitter_name = team['name']
+    return submitter_name
