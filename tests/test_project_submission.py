@@ -5,11 +5,10 @@ from mock import patch
 import pandas as pd
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
-import synapseutils
+
 
 import challengeutils.utils
 import challengeutils.project_submission
-from challengeutils.project_submission import create_copy_project
 from challengeutils.project_submission import _archive_project_submission
 from challengeutils.project_submission import archive_project_submission
 from challengeutils.project_submission import archive_project_submissions
@@ -38,8 +37,8 @@ def test__archive_project_submission():
     return_project = synapseclient.Project(archived_name, id="syn888")
     # The time value is multipled by 1000
     with patch.object(time, "time", return_value=10), \
-         patch.object(challengeutils.project_submission,
-                      "create_copy_project",
+         patch.object(challengeutils.utils,
+                      "copy_project",
                       return_value=return_project) as patch_create:
         archive_proj = _archive_project_submission(SYN, SUBMISSION)
         assert archive_proj == return_project
