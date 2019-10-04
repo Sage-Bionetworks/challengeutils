@@ -28,22 +28,6 @@ SUB_ANNOTATIONS = to_submission_status_annotations({"test": "1"})
 SUB_STATUS = synapseclient.SubmissionStatus(annotations=SUB_ANNOTATIONS)
 
 
-def test_create_copy_project():
-    """Create new Synapse Project then copy content to it"""
-    archived_name = "new project"
-    project = synapseclient.Project(archived_name)
-    return_project = synapseclient.Project(archived_name, id="syn888")
-    with patch.object(SYN, "store",
-                      return_value=return_project) as patch_syn_store,\
-         patch.object(synapseutils, "copy") as patch_syn_copy:
-        archived_project = create_copy_project(SYN, SUBMISSION.entityId,
-                                               archived_name)
-        assert archived_project == return_project
-        patch_syn_store.assert_called_once_with(project)
-        patch_syn_copy.assert_called_once_with(SYN, SUBMISSION.entityId,
-                                               archived_project.id)
-
-
 def test__archive_project_submission():
     """Create archive project submission"""
     archived_name = (f"Archived {SUBMISSION.entity.name} 10000 "

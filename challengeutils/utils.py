@@ -3,6 +3,7 @@ import logging
 import sys
 import urllib
 import synapseclient
+import synapseutils
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -508,3 +509,22 @@ def annotate_submission(syn, submissionid, annotation_dict,
         to_public=to_public,
         force_change_annotation_acl=force)
     status = syn.store(status)
+
+
+def copy_project(syn, project, new_project_name):
+    """
+    Create a copy of a project, currently does not check if the project
+    name specified already exists
+
+    Args:
+        syn: `synapseclient.Synapse` connection
+        project: Synapse Project or its Synapse id
+        project_name: The new project name
+    """
+    project_ent = syn.get(project)
+    if not isinstance(project_ent, synapseclient.Project):
+        raise ValueError("Did not pass in synapse project")
+    new_project_entity = synapseclient.Project(new_project_name)
+    new_project = syn.store(new_project_entity)
+    synapseutils.copy(syn, project_ent.id, new_project.id)
+    return new_project

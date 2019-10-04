@@ -1,12 +1,16 @@
+"""Test challengeutils.utils"""
 import json
-import mock
-import os
-import pytest
 import re
-import challengeutils.utils
-import synapseclient
 import tempfile
+
+import mock
+from mock import patch
+import pytest
+import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
+import synapseutils
+
+import challengeutils.utils
 
 syn = mock.create_autospec(synapseclient.Synapse)
 
@@ -216,3 +220,34 @@ def test_annotate_submission_with_json():
             syn, "1234", add_annotations,
             to_public=False,
             force=False)
+
+
+def test_project_copy_project():
+    """Create new Synapse Project then copy content to it"""
+    archived_name = "new project"
+    project = synapseclient.Project(archived_name)
+    return_new_project = synapseclient.Project(archived_name, id="syn888")
+    old_project = synapseclient.Project("old", id="123")
+    with patch.object(syn, "get",
+                      return_value=old_project) as patch_syn_store,\
+         patch.object(syn, "store",
+                      return_value=return_new_project) as patch_syn_store,\
+         patch.object(synapseutils, "copy") as patch_syn_copy:
+        archived_project = challengeutils.utils.copy_project(syn,
+                                                             old_project.id,
+                                                             archived_name)
+        assert archived_project == return_new_project
+        patch_syn_store.assert_called_once_with(project)
+        patch_syn_copy.assert_called_once_with(syn, old_project.id,
+                                               archived_project.id)
+
+
+def test_folder_copy_project():
+    """ValueError thrown if anything other entity than project
+    is passed in"""
+    archived_name = "new project"
+    old_folder = synapseclient.Folder("old", parentId="123")
+    with patch.object(syn, "get",
+                      return_value=old_folder) as patch_syn_store,\
+         pytest.raises(ValueError, match="Did not pass in synapse project"):
+        challengeutils.utils.copy_project(syn, old_folder, archived_name)
