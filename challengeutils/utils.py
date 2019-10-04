@@ -491,7 +491,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
 
 def annotate_submission(syn, submissionid, annotation_dict,
                         to_public=False,
-                        force_change_annotation_acl=False):
+                        force=False):
     """
     Annotate submission with annotation values from a dict
 
