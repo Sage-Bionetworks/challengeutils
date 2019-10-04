@@ -191,7 +191,7 @@ def test_annotate_submission():
         challengeutils.utils.annotate_submission(
             syn, "1234", to_add_annotations,
             to_public=False,
-            force_change_annotation_acl=False)
+            force=False)
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
             status, added_annotations,
@@ -211,8 +211,8 @@ def test_annotate_submission_with_json():
         challengeutils.utils.annotate_submission_with_json(
             syn, "1234", tmp.name,
             to_public=False,
-            force_change_annotation_acl=False)
+            force=False)
         patch_annotate.assert_called_once_with(
             syn, "1234", add_annotations,
             to_public=False,
-            force_change_annotation_acl=False)
+            force=False)

@@ -467,8 +467,7 @@ def download_submission(syn, submissionid, download_location=None):
 
 
 def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  to_public=False,
-                                  force_change_annotation_acl=False):
+                                  **kwargs):
     """
     Annotate submission with annotation values from a json file
 
@@ -478,20 +477,16 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         annotation_values: Annotation json file
         to_public: change these annotations from private to public
                    (default is False)
-        force_change_annotation_acl: Force change the annotation from
-                                     private to public and vice versa.
+        force: Force change the annotation from private to public and
+               vice versa.
     """
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
-    annotate_submission(
-        syn, submissionid, annotation_json,
-        to_public=to_public,
-        force_change_annotation_acl=force_change_annotation_acl)
+    annotate_submission(syn, submissionid, annotation_json, **kwargs)
 
 
 def annotate_submission(syn, submissionid, annotation_dict,
-                        to_public=False,
-                        force=False):
+                        to_public=False, force=False):
     """
     Annotate submission with annotation values from a dict
 
@@ -501,8 +496,8 @@ def annotate_submission(syn, submissionid, annotation_dict,
         annotation_dict: Annotation dict
         to_public: change these annotations from private to public
                    (default is False)
-        force_change_annotation_acl: Force change the annotation from
-                                     private to public and vice versa.
+        force: Force change the annotation from private to public and
+               vice versa.
     """
     status = syn.getSubmissionStatus(submissionid)
     # Don't add any annotations that are None
@@ -511,5 +506,5 @@ def annotate_submission(syn, submissionid, annotation_dict,
     status = update_single_submission_status(
         status, annotation_dict,
         to_public=to_public,
-        force_change_annotation_acl=force_change_annotation_acl)
+        force_change_annotation_acl=force)
     status = syn.store(status)
