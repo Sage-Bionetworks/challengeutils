@@ -5,6 +5,7 @@ import pytest
 import re
 import challengeutils.utils
 import synapseclient
+import tempfile
 from synapseclient.annotations import to_submission_status_annotations
 
 syn = mock.create_autospec(synapseclient.Synapse)
@@ -175,27 +176,43 @@ def test_specifyloc_download_submission():
         assert sub_dict == expected_submission_dict
 
 
-def test_annotate_submission_with_json():
-    add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = "temp.json"
-    with open(tempfile_path, "w") as annotation_file:
-        json.dump(add_annotations, annotation_file)
+def test_annotate_submission():
+    """Annotate submission with dict.  Make sure annotation values of None
+    aren't added"""
+    to_add_annotations = {'test': 2, 'test2': 2, 'notnone': None}
     status = {"foo": "bar"}
-    with mock.patch.object(
-            syn, "getSubmissionStatus",
-            return_value=status) as patch_get_submission, \
-        mock.patch.object(
-            challengeutils.utils, "update_single_submission_status",
-            return_value=status) as patch_update, \
-            mock.patch.object(syn, "store") as patch_syn_store:
-        challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path,
+    added_annotations = {'test': 2, 'test2': 2}
+    with mock.patch.object(syn, "getSubmissionStatus",
+                           return_value=status) as patch_get_submission, \
+         mock.patch.object(challengeutils.utils,
+                           "update_single_submission_status",
+                           return_value=status) as patch_update, \
+         mock.patch.object(syn, "store") as patch_syn_store:
+        challengeutils.utils.annotate_submission(
+            syn, "1234", to_add_annotations,
             to_public=False,
-            force_change_annotation_acl=False)
+            force=False)
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
-            status, add_annotations,
+            status, added_annotations,
             to_public=False,
             force_change_annotation_acl=False)
         patch_syn_store.assert_called_once_with(status)
-    os.unlink(tempfile_path)
+
+
+def test_annotate_submission_with_json():
+    """Annotate submission with json should call annotate submission"""
+    add_annotations = {'test': 2, 'test2': 2}
+    tmp = tempfile.NamedTemporaryFile()
+    with open(tmp.name, "w") as annotation_file:
+        json.dump(add_annotations, annotation_file)
+    with mock.patch.object(challengeutils.utils,
+                           "annotate_submission") as patch_annotate:
+        challengeutils.utils.annotate_submission_with_json(
+            syn, "1234", tmp.name,
+            to_public=False,
+            force=False)
+        patch_annotate.assert_called_once_with(
+            syn, "1234", add_annotations,
+            to_public=False,
+            force=False)
