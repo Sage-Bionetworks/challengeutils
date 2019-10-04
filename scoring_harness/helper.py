@@ -29,6 +29,9 @@ def get_admin(syn, admin):
 
 class EvaluationQueuePipeline:
     """Pipeline for submissions that are submitted to evaluation queues"""
+    _status = "RECEIVED"
+    _success_status = None
+
     def __init__(self, syn, evaluation, interaction_func,
                  goldstandard_path, **kwargs):
         self.syn = syn
@@ -54,7 +57,30 @@ class EvaluationQueuePipeline:
                    'annotations': {},
                    'message': 'Success!'}
         """
-        raise NotImplementedError
+        # raise NotImplementedError
+        submission = self.syn.getSubmission(submission)
+        try:
+            interaction_status = self.interaction_func(submission,
+                                                       self.goldstandard_path)
+            is_valid = interaction_status['valid']
+            annotations = interaction_status['annotations']
+            validation_error = None
+            validation_message = interaction_status['message']
+        except Exception as ex1:
+            LOGGER.error("Exception during validation: "
+                         f"{type(ex1)} {ex1} {str(ex1)}")
+            # ex1 only happens in this scope in python3,
+            # so must store validation_error as a variable
+            is_valid = False
+            annotations = {}
+            validation_error = ex1
+            validation_message = str(ex1)
+
+        submission_info = {'valid': is_valid,
+                           'error': validation_error,
+                           'annotations': annotations,
+                           'message': validation_message}
+        return submission_info
 
     def store_submission_status(self, sub_status, submission_info):
         """Store submission status
@@ -67,6 +93,8 @@ class EvaluationQueuePipeline:
         sub_status = update_single_submission_status(sub_status,
                                                      annotations,
                                                      to_public=True)
+        sub_status.status = self._success_status if submission_info['valid'] else "INVALID"
+
         if not self.dry_run:
             sub_status = self.syn.store(sub_status)
 
@@ -85,7 +113,7 @@ class EvaluationQueuePipeline:
         LOGGER.info(f"Evaluating {self.evaluation.name} "
                     f"({self.evaluation.id})")
         submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
-                                                           status=status)
+                                                           status=self._status)
         for submission, sub_status in submission_bundles:
             LOGGER.info(f"Interacting with submission: {submission.id}")
             # refetch the submission so that we get the file path

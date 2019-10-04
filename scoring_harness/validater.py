@@ -10,35 +10,10 @@ LOGGER.setLevel(logging.INFO)
 
 class EvaluationQueueValidater(EvaluationQueuePipeline):
 
-    def interact_with_submission(self, submission):
-        submission = self.syn.getSubmission(submission)
-        try:
-            if submission.filePath is None:
-                submission_input = submission
-            else:
-                submission_input = submission.filePath
-            interaction_status = self.interaction_func(submission_input,
-                                                       self.goldstandard_path)
-            is_valid = interaction_status['valid']
-            annotations = interaction_status['annotations']
-            validation_error = None
-            validation_message = interaction_status['message']
-        except Exception as ex1:
-            LOGGER.error("Exception during validation: "
-                         f"{type(ex1)} {ex1} {str(ex1)}")
-            # ex1 only happens in this scope in python3,
-            # so must store validation_error as a variable
-            is_valid = False
-            annotations = {}
-            validation_error = ex1
-            validation_message = str(ex1)
+    _success_status = "VALIDATED"
 
-        submission_info = {'valid': is_valid,
-                           'error': validation_error,
-                           'annotations': annotations,
-                           'message': validation_message}
-        return submission_info
-
+    def _interaction_function():
+        # do stuff with submission
 
     def notify(self, submission, submission_info):
         """Notify submitter or admin"""
