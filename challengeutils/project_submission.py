@@ -125,7 +125,7 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
         how: Type of merge to be performed. Default to inner.
 
     Returns:
-        Joined queue
+        Joined evaluations
     """
     evaluationid1 = id_of(evaluation1)
     evaluationid2 = id_of(evaluation2)
