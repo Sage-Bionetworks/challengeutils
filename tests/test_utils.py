@@ -282,16 +282,18 @@ def test_project_copy_project():
         patch_syn_copy.assert_called_once_with(syn, old_project.id,
                                                archived_project.id)
 
-
-def test_folder_copy_project():
+@pytest.mark.parametrize("invalid_input",
+                         [synapseclient.Folder("old", parentId="123"),
+                          synapseclient.File("old", parentId="123"),
+                          synapseclient.Schema("old", parentId="123")])
+def test_invalid_copy_project(invalid_input):
     """ValueError thrown if anything other entity than project
     is passed in"""
     archived_name = "new project"
-    old_folder = synapseclient.Folder("old", parentId="123")
     with patch.object(syn, "get",
-                      return_value=old_folder) as patch_syn_store,\
+                      return_value=invalid_input) as patch_syn_store,\
          pytest.raises(ValueError, match="Did not pass in synapse project"):
-        challengeutils.utils.copy_project(syn, old_folder, archived_name)
+        challengeutils.utils.copy_project(syn, invalid_input, archived_name)
 
 
 def test_userid__get_submitter_name():
