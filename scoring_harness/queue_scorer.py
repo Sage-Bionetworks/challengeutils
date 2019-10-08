@@ -13,15 +13,16 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
     _success_status = "SCORED"
 
     def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, **kwargs):
+                 remove_cache=False, send_messages=False, **kwargs):
         EvaluationQueueProcessor.__init__(self, syn, evaluation,
                                           admin_user_ids=None, dry_run=False,
                                           remove_cache=False, **kwargs)
+        self.send_messages = send_messages
 
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
 
-    def notify(self, submission, submission_info, send_messages):
+    def notify(self, submission, submission_info):
         """Notify submitter or admin"""
         # send message AFTER storing status to ensure
         # we don't get repeat messages
@@ -32,7 +33,7 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
         if is_valid:
             messages.scoring_succeeded(syn=self.syn,
                                        userids=[submission.userId],
-                                       send_messages=send_messages,
+                                       send_messages=self.send_messages,
                                        dry_run=self.dry_run,
                                        message=message,
                                        username=profile.userName,
@@ -43,7 +44,7 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
         else:
             messages.scoring_error(syn=self.syn,
                                    userids=self.admin_user_ids,
-                                   send_messages=send_messages,
+                                   send_messages=self.send_messages,
                                    dry_run=self.dry_run,
                                    message=message,
                                    username="Challenge Administrator,",

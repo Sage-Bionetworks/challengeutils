@@ -1,6 +1,6 @@
 """Challenge configuration"""
-from scoring_harness.base_validator import EvaluationQueueValidator
-from scoring_harness.base_scorer import EvaluationQueueScorer
+from scoring_harness.queue_validator import EvaluationQueueValidator
+from scoring_harness.queue_scorer import EvaluationQueueScorer
 
 class Validate(EvaluationQueueValidator):
 

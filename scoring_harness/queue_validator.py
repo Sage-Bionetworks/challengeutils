@@ -12,16 +12,18 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
     _success_status = "VALIDATED"
 
     def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, **kwargs):
+                 remove_cache=False, acknowledge_receipt=False,
+                 send_messages=False, **kwargs):
         EvaluationQueueProcessor.__init__(self, syn, evaluation,
                                           admin_user_ids=None, dry_run=False,
                                           remove_cache=False, **kwargs)
+        self.acknowledge_receipt = acknowledge_receipt
+        self.send_messages = send_messages
 
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
 
-    def notify(self, submission, submission_info,
-               send_messages=False, acknowledge_receipt=False):
+    def notify(self, submission, submission_info):
         """Notify submitter or admin"""
         # send message AFTER storing status to ensure
         # we don't get repeat messages
@@ -33,7 +35,7 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
         if is_valid:
             messages.validation_passed(syn=self.syn,
                                        userids=[submission.userId],
-                                       acknowledge_receipt=acknowledge_receipt,
+                                       acknowledge_receipt=self.acknowledge_receipt,
                                        dry_run=self.dry_run,
                                        username=profile.userName,
                                        queue_name=self.evaluation.name,
@@ -50,7 +52,7 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
 
             messages.validation_failed(syn=self.syn,
                                        userids=send_to,
-                                       send_messages=send_messages,
+                                       send_messages=self.send_messages,
                                        dry_run=self.dry_run,
                                        username=username,
                                        queue_name=self.evaluation.name,

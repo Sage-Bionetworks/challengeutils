@@ -92,7 +92,7 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
 
             # Notify submitter
             if not self.dry_run:
-                self.notify(submission, submission_info, **self.kwargs)
+                self.notify(submission, submission_info)
 
         LOGGER.info("-" * 20)
 
@@ -159,6 +159,6 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
             LOGGER.debug(sub_status)
 
     @abstractmethod
-    def notify(self, submission, submission_info, **kwargs):
+    def notify(self, submission, submission_info):
         """Notify submitter or admin"""
         pass
