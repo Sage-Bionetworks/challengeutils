@@ -159,6 +159,6 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
             LOGGER.debug(sub_status)
 
     @abstractmethod
-    def notify(self, submission, submission_info):
+    def notify(self, submission, submission_info, **kwargs):
         """Notify submitter or admin"""
         pass
