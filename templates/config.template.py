@@ -4,11 +4,10 @@ from scoring_harness.base_scorer import EvaluationQueueScorer
 
 class Validate(EvaluationQueueValidator):
 
-    def interaction_func(self, submission, **kwargs):
+    def interaction_func(self, submission, goldstandard_path):
         assert submission.filePath is not None, \
             "Submission must be a Synapse File and not Project/Folder"
-        goldstandard = kwargs.get("goldstandard_path")
-        LOGGER.info(goldstandard)
+        print(goldstandard_path)
         is_valid = True
         message = "Passed Validation"
         annotations = {'round': 1}
@@ -19,9 +18,8 @@ class Validate(EvaluationQueueValidator):
 
 class Score(EvaluationQueueScorer):
 
-    def interaction_func(self, submission, **kwargs):
-        goldstandard = kwargs.get("goldstandard_path")
-        LOGGER.info(goldstandard)
+    def interaction_func(self, submission, goldstandard_path):
+        print(goldstandard_path)
         auc = 4
         bac = 3
         score = 1

@@ -20,15 +20,14 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
 
-    def notify(self, submission, submission_info, **kwargs):
+    def notify(self, submission, submission_info,
+               send_messages=False, acknowledge_receipt=False):
         """Notify submitter or admin"""
         # send message AFTER storing status to ensure
         # we don't get repeat messages
         is_valid = submission_info['valid']
         error = submission_info['error']
         message = submission_info['message']
-        send_messages = kwargs.get("send_messages")
-        acknowledge_receipt = kwargs.get("acknowledge_receipt")
 
         profile = self.syn.getUserProfile(submission.userId)
         if is_valid:

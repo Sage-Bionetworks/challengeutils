@@ -92,7 +92,7 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
 
             # Notify submitter
             if not self.dry_run:
-                self.notify(submission, submission_info)
+                self.notify(submission, submission_info, **self.kwargs)
 
         LOGGER.info("-" * 20)
 
