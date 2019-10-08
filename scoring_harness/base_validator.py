@@ -1,6 +1,6 @@
 """This is the baseclass for what happens to a submission"""
 import logging
-from .helper import EvaluationQueueProcessor
+from .base_processor import EvaluationQueueProcessor
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -21,7 +21,7 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
         assert submission.filePath is not None, \
             "Submission must be a Synapse File and not Project/Folder"
         goldstandard = kwargs.get("goldstandard")
-        print(goldstandard)
+        LOGGER.info(goldstandard)
         is_valid = True
         message = "Passed Validation"
         annotations = {'round': 1}
