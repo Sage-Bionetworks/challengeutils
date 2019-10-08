@@ -1,6 +1,6 @@
 """This is the baseclass for what happens to a submission"""
 import logging
-from .helper import EvaluationQueuePipeline
+from .helper import EvaluationQueueProcessor
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
 
-class EvaluationQueueValidater(EvaluationQueuePipeline):
+class EvaluationQueueValidator(EvaluationQueueProcessor):
 
     _success_status = "VALIDATED"
 

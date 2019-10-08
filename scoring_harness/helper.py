@@ -1,4 +1,5 @@
 """This is the baseclass for what happens to a submission"""
+from abc import ABCMeta, abstractmethod
 import logging
 import os
 from challengeutils.utils import update_single_submission_status
@@ -27,22 +28,78 @@ def get_admin(syn, admin):
     return admin
 
 
-class EvaluationQueuePipeline:
-    """Pipeline for submissions that are submitted to evaluation queues"""
+class EvaluationQueueProcessor(metaclass=ABCMeta):
+    """Processor for submissions that are submitted to evaluation queues
+
+    Attributes:
+        syn: Synapse object
+        evaluation: synapseclient.Evaluation object
+        admin_user_ids: List of Synapse user ids.  Default is the Synapse user
+            running the processor.
+        dry_run: Do not update Synapse. Default is False.
+        remove_cache: Removes submission file from cache. Default is False.
+    """
+    # Status of submissions to process
     _status = "RECEIVED"
+    # Successful submissions will be placed in this status
     _success_status = None
 
-    def __init__(self, syn, evaluation, interaction_func,
-                 goldstandard_path, **kwargs):
+    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
+                 remove_cache=False, **kwargs):
+        """Init EvaluationQueueProcessor
+
+        Args:
+            syn: Synapse object
+            evaluation: synapseclient.Evaluation object
+            dry_run: Do not update Synapse. Default is False.
+            admin_user_ids: List of Synapse user ids.  Default is the Synapse
+                            user running the processor.
+            remove_cache: Removes submission file from cache.
+                          Default is False.
+        """
         self.syn = syn
         self.evaluation = syn.getEvaluation(evaluation)
-        self.interaction_func = interaction_func
-        self.goldstandard_path = goldstandard_path
-        self.admin_user_ids = get_admin(syn, kwargs.get("admin_user_ids"))
-        self.dry_run = kwargs.get("dry_run", False)
-        self.send_messages = kwargs.get("send_messages", False)
-        self.remove_cache = kwargs.get("remove_cache", False)
+        self.admin_user_ids = get_admin(syn, admin_user_ids)
+        self.dry_run = dry_run
+        self.remove_cache = remove_cache
+        self.kwargs = kwargs
 
+    def __call__(self):
+        """
+        Submission pipeline
+        - Get submissions
+        - Interact with the submission
+        - Store the submission status
+        - Notify submitter or admin about submission status
+        """
+        LOGGER.info("-" * 20)
+        LOGGER.info(f"Evaluating {self.evaluation.name} "
+                    f"({self.evaluation.id})")
+        submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
+                                                           status=self._status)
+        for submission, sub_status in submission_bundles:
+            LOGGER.info(f"Interacting with submission: {submission.id}")
+            # refetch the submission so that we get the file path
+            # to be later replaced by a "downloadFiles" flag on
+            # getSubmissionBundles
+            submission_info = self.interact_with_submission(submission)
+
+            self.store_submission_status(sub_status, submission_info)
+
+            # Remove submission file if cache clearing is requested.
+            if self.remove_cache:
+                _remove_cached_submission(submission.filePath)
+
+            # Notify submitter
+            if not self.dry_run:
+                self.notify(submission, submission_info)
+
+        LOGGER.info("-" * 20)
+
+    @abstractmethod
+    def interaction_func(self, submission, **kwargs):
+        """Do one thing with submission"""
+        pass
 
     def interact_with_submission(self, submission):
         """
@@ -61,7 +118,7 @@ class EvaluationQueuePipeline:
         submission = self.syn.getSubmission(submission)
         try:
             interaction_status = self.interaction_func(submission,
-                                                       self.goldstandard_path)
+                                                       **self.kwargs)
             is_valid = interaction_status['valid']
             annotations = interaction_status['annotations']
             validation_error = None
@@ -93,41 +150,15 @@ class EvaluationQueuePipeline:
         sub_status = update_single_submission_status(sub_status,
                                                      annotations,
                                                      to_public=True)
-        sub_status.status = self._success_status if submission_info['valid'] else "INVALID"
+        is_valid = submission_info['valid']
+        sub_status.status = self._success_status if is_valid else "INVALID"
 
         if not self.dry_run:
             sub_status = self.syn.store(sub_status)
+        else:
+            LOGGER.debug(sub_status)
 
+    @abstractmethod
     def notify(self, submission, submission_info):
         """Notify submitter or admin"""
-
-    def pipeline(self, status):
-        """
-        Submission pipeline
-        - Get submissions
-        - Interact with the submission
-        - Store the submission status
-        - Notify submitter or admin about submission status
-        """
-        LOGGER.info("-" * 20)
-        LOGGER.info(f"Evaluating {self.evaluation.name} "
-                    f"({self.evaluation.id})")
-        submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
-                                                           status=self._status)
-        for submission, sub_status in submission_bundles:
-            LOGGER.info(f"Interacting with submission: {submission.id}")
-            # refetch the submission so that we get the file path
-            # to be later replaced by a "downloadFiles" flag on
-            # getSubmissionBundles
-            submission_info = self.interact_with_submission(submission)
-
-            self.store_submission_status(sub_status, submission_info)
-
-            # Remove submission file if cache clearing is requested.
-            if self.remove_cache:
-                _remove_cached_submission(submission.filePath)
-
-            # Send validation related emails
-            self.notify(submission, submission_info)
-
-        LOGGER.info("-" * 20)
+        pass
