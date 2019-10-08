@@ -19,17 +19,7 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
                                           remove_cache=False, **kwargs)
 
     def interaction_func(self, submission, **kwargs):
-        goldstandard = kwargs.get("goldstandard")
-        LOGGER.info(goldstandard)
-        auc = 4
-        bac = 3
-        score = 1
-        score_dict = dict(auc=round(auc, 4), bac=bac, score=score)
-        message = f"Your submission ({submission.name}) has been scored!"
-        score_status = {'valid': True,
-                        'annotations': score_dict,
-                        'message': message}
-        return score_status
+        raise NotImplementedError
 
     def notify(self, submission, submission_info, **kwargs):
         """Notify submitter or admin"""

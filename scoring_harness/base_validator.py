@@ -18,17 +18,7 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
                                           remove_cache=False, **kwargs)
 
     def interaction_func(self, submission, **kwargs):
-        assert submission.filePath is not None, \
-            "Submission must be a Synapse File and not Project/Folder"
-        goldstandard = kwargs.get("goldstandard")
-        LOGGER.info(goldstandard)
-        is_valid = True
-        message = "Passed Validation"
-        annotations = {'round': 1}
-        submission_info = {'valid': is_valid,
-                           'annotations': annotations,
-                           'message': message}
-        return submission_info
+        raise NotImplementedError
 
     def notify(self, submission, submission_info, **kwargs):
         """Notify submitter or admin"""
