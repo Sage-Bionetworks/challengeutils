@@ -1,6 +1,7 @@
 """Run challenge invoker"""
 #! /usr/bin/env python3
 import argparse
+import importlib
 import logging
 from datetime import timedelta
 
@@ -8,8 +9,7 @@ import synapseclient
 from synapseclient.exceptions import SynapseAuthenticationError
 from synapseclient.exceptions import SynapseNoCredentialsError
 
-import scoring_harness.challenge
-from scoring_harness.challenge import validate, score, import_config_py
+from scoring_harness.challenge import Challenge
 from scoring_harness import lock, messages
 
 
@@ -18,51 +18,49 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
 
+def import_config_py(config_path):
+    '''
+    Uses importlib to import users configuration
+
+    Args:
+        config_path: Path to configuration python script
+
+    Returns:
+        module
+    '''
+    spec = importlib.util.spec_from_file_location("config", config_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 # ==================================================
 #  Handlers for commands
 # ==================================================
-def command_validate(syn, evaluation_queue_maps, args):
+def command_validate(evaluation_queue_maps, challenge_runner):
     """Validate command handler"""
     if args.evaluation is None:
         for queueid in evaluation_queue_maps:
-            validate(syn,
-                     evaluation_queue_maps[queueid],
-                     args.admin_user_ids,
-                     args.challenge_synid,
-                     send_messages=args.send_messages,
-                     acknowledge_receipt=args.acknowledge_receipt,
-                     dry_run=args.dry_run,
-                     remove_cache=args.remove_cache)
+            challenge_runner.validate(evaluation_queue_maps[queueid],
+                                      args.admin_user_ids,
+                                      args.challenge_synid)
     else:
-        validate(syn,
-                 evaluation_queue_maps[args.evaluation],
-                 args.admin_user_ids,
-                 args.challenge_synid,
-                 send_messages=args.send_messages,
-                 acknowledge_receipt=args.acknowledge_receipt,
-                 dry_run=args.dry_run,
-                 remove_cache=args.remove_cache)
+        challenge_runner.validate(evaluation_queue_maps[args.evaluation],
+                                  args.admin_user_ids,
+                                  args.challenge_synid)
 
 
-def command_score(syn, evaluation_queue_maps, args):
+def command_score(evaluation_queue_maps, challenge_runner):
     """Score command handler"""
     if args.evaluation is None:
         for queueid in evaluation_queue_maps:
-            score(syn,
-                  evaluation_queue_maps[queueid],
-                  args.admin_user_ids,
-                  args.challenge_synid,
-                  send_messages=args.send_messages,
-                  dry_run=args.dry_run,
-                  remove_cache=args.remove_cache)
+            challenge_runner.score(evaluation_queue_maps[queueid],
+                                   args.admin_user_ids,
+                                   args.challenge_synid)
     else:
-        score(syn,
-              evaluation_queue_maps[args.evaluation],
-              args.admin_user_ids,
-              args.challenge_synid,
-              send_messages=args.send_messages,
-              dry_run=args.dry_run,
-              remove_cache=args.remove_cache)
+        challenge_runner.score(evaluation_queue_maps[args.evaluation],
+                               args.admin_user_ids,
+                               args.challenge_synid)
 
 
 def main(args):
@@ -94,8 +92,8 @@ def main(args):
     except Exception:
         raise ValueError("Error importing your python config script")
 
-    check_keys = set(
-        ["id", "validation_func", "scoring_func", "goldstandard_path"])
+    check_keys = set(["id", "validation_func", "scoring_func",
+                      "goldstandard_path"])
     evaluation_queue_maps = {}
     for queue in module.EVALUATION_QUEUES_CONFIG:
         if not check_keys.issubset(queue.keys()):
@@ -121,8 +119,12 @@ def main(args):
         # temporary error according to /usr/include/sysexits.h
         return 75
 
+    challenge_runner = Challenge(syn, dry_run=args.dry_run,
+                                 send_messages=args.send_messages,
+                                 acknowledge_receipt=args.acknowledge_receipt,
+                                 remove_cache=args.remove_cache)
     try:
-        args.func(syn, evaluation_queue_maps, args)
+        args.func(evaluation_queue_maps, challenge_runner)
     except Exception as ex1:
         LOGGER.error('Error in challenge.py:')
         LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
@@ -190,6 +192,7 @@ if __name__ == '__main__':
 
     parser_validate = subparsers.add_parser('validate',
                                             help="Validate all RECEIVED submissions to an evaluation")
+
     # Add these subparsers after because it takes multiple arguments
     parser_validate.add_argument('-a',
                                  "--admin-user-ids",

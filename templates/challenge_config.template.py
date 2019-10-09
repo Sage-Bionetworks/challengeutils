@@ -54,7 +54,11 @@ def validate_func(submission_path, goldstandard_path):
         "Submission must be a Synapse File and not Project/Folder"
     is_valid = True
     message = "Passed Validation"
-    return is_valid, message
+    validation_annotations = {'round': 1}
+    validation_status = {'valid': is_valid,
+                         'annotations'': validation_annotations,
+                         'message': message}
+    return validation_status
 
 
 def validate_writeup(submission, goldstandard_path, syn,
@@ -104,7 +108,10 @@ def validate_writeup(submission, goldstandard_path, syn,
         if syn_error.response.status_code == 403:
             raise AssertionError("\n".join(share_with))
         raise syn_error
-    return True, "Validated!"
+    validation_status = {'valid': True,
+                         'annotations': {},
+                         'message': "Validated!"}
+    return validation_status
 
 
 def score1(submission_path, goldstandard_path):
@@ -125,8 +132,10 @@ def score1(submission_path, goldstandard_path):
     score = 1
     score_dict = dict(auc=round(auc, 4), bac=bac, score=score)
     message = "Your submission has been scored!"
-    return(score_dict, message)
-
+    score_status = {'valid': True,
+                    'annotations': score_dict,
+                    'message': message}
+    return score_status
 
 def score2(submission_path, goldstandard_path):
     '''
@@ -147,7 +156,10 @@ def score2(submission_path, goldstandard_path):
     score = 1
     score_dict = dict(auc=round(auc, 4), bac=bac, score=score)
     message = "Your submission has been scored!"
-    return(score_dict, message)
+    score_status = {'valid': True,
+                    'annotations': score_dict,
+                    'message': message}
+    return score_status
 
 
 EVALUATION_QUEUES_CONFIG = [
