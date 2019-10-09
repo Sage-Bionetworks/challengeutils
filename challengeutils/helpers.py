@@ -1,9 +1,15 @@
+'''
+Challenge helper functions
+'''
 import os
 import sys
 import time
 import synapseclient
 import synapseutils
 from . import utils
+WORKFLOW_LAST_UPDATED_KEY = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
+WORKFLOW_START_KEY = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
+TIME_REMAINING_KEY = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
 
 
 def rename_submission_files(syn, evaluationid, download_location="./",
@@ -77,7 +83,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
             syn.store(tracking_table)
 
 
-def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
+def kill_docker_submission_over_quota(syn, evaluation_id, quota=sys.maxsize):
     '''
     Kills any docker container that exceeds the run time quota
     Rerunning submissions will require setting TimeRemaining annotation
@@ -86,30 +92,28 @@ def kill_docker_submission_over_quota(syn, evaluation_id, quota=None):
     Args:
         syn (obj): Synapse object
         evaluation_id (int): Synapse evaluation queue id
-        quota (int): Quota in milliseconds. Default is None.
+        quota (int): Quota in milliseconds. Default is sys.maxsize.
                      One hour is 3600000.
     '''
-    if quota is None:
-        quota = sys.maxsize
-    else:
-        quota = int(quota)
+    if not isinstance(quota, int):
+        raise ValueError("quota must be an integer")
+    if quota <= 0:
+        raise ValueError("quota must be larger than 0")
 
-    workflow_last_updated_key = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
-    workflow_start_key = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
-    time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
-
-    evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
+    evaluation_query = (f"select * from evaluation_{evaluation_id} where "
+                        "status == 'EVALUATION_IN_PROGRESS'")
     query_results = utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
-        last_updated = int(result[workflow_last_updated_key])
-        start = int(result[workflow_start_key])
+        # If last updated and start doesn't exist, set to 0
+        last_updated = int(result.get(WORKFLOW_LAST_UPDATED_KEY, 0))
+        start = int(result.get(WORKFLOW_START_KEY, 0))
         model_run_time = last_updated - start
         if model_run_time > quota:
             status = syn.getSubmissionStatus(result['objectId'])
-            add_annotations = {time_remaining_key: 0}
-            status = utils.update_single_submission_status(
-                status, add_annotations)
+            add_annotations = {TIME_REMAINING_KEY: 0}
+            status = utils.update_single_submission_status(status,
+                                                           add_annotations)
             syn.store(status)
 
     # Rerunning submissions will require setting this
