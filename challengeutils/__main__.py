@@ -52,9 +52,10 @@ def command_change_status(syn, args):
 
 def command_writeup_attach(syn, args):
     """Command line helper for attaching writeup"""
-    project_submission.archive_and_attach_writeups(syn, args.writeupqueue,
-                                                   args.submissionqueue,
-                                                   status_key=args.statuskey)
+    project_submission.archive_and_attach_project_submissions(
+        syn, args.writeupqueue,
+        args.submissionqueue,
+        status_key=args.statuskey)
 
 
 def command_set_entity_acl(syn, args):

@@ -105,7 +105,7 @@ def archive_project_submissions(syn, evaluation,
     evaluationid = id_of(evaluation)
     LOGGER.info(f"Archiving queue: {evaluationid}")
     query = (f"select objectId from evaluation_{evaluationid} "
-             f"where {status_key} == {status}")
+             f"where {status_key} == '{status}'")
     query_results = utils.evaluation_queue_query(syn, query)
 
     archived = [archive_project_submission(syn, query_result['objectId'],
@@ -114,7 +114,7 @@ def archive_project_submissions(syn, evaluation,
     return archived
 
 
-def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
+def join_evaluations(syn, evaluation1, evaluation2, on, how="inner"):
     """
     Join two evaluation queues in a pandas dataframe
 
@@ -137,8 +137,7 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
     eval2_query = f"select * from evaluation_{evaluationid2}"
     evaluation2_results = list(utils.evaluation_queue_query(syn, eval2_query))
     evaluation2df = pd.DataFrame(evaluation2_results)
-    joineddf = evaluation1df.merge(evaluation2df, on=joinby, how=how)
-
+    joineddf = evaluation1df.merge(evaluation2df, on=on, how=how)
     return joineddf
 
 
@@ -217,6 +216,6 @@ def archive_and_attach_project_submissions(syn, writeup_queueid,
     subs_and_writeupsdf.apply(lambda row:
                               utils.annotate_submission(syn,
                                                         row['objectId_x'],
-                                                        row[annotation_keys],
+                                                        row[annotation_keys].to_dict(),
                                                         annotation_keys),
                               axis=1)
