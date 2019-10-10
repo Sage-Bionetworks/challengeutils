@@ -77,6 +77,22 @@ def test_valid_store_submission_status(process):
         patch_store.assert_called_once_with(status)
 
 
+def test_dryrun_store_submission_status(process):
+    """Dryrun of store submission status"""
+    process.dry_run=True
+    status = copy.deepcopy(SUBMISSION_STATUS)
+    with patch.object(scoring_harness.base_processor,
+                      "update_single_submission_status",
+                      return_value=status) as patch_update,\
+         patch.object(SYN, "store") as patch_store:
+        process.store_submission_status(process, SUBMISSION_STATUS, SUB_INFO)
+        patch_update.assert_called_once_with(SUBMISSION_STATUS,
+                                             SUB_INFO['annotations'],
+                                             to_public=True)
+        status.status = process._success_status
+        patch_store.assert_not_called()
+
+
 def test_abc_class(process):
     """Test ABC class"""
     with pytest.raises(TypeError, match="Can't instantiate abstract class "
@@ -156,3 +172,27 @@ def test_removecache_call(process):
         patch_store.assert_called_once_with(SUBMISSION_STATUS, SUB_INFO)
         patch_remove.assert_called_once_with(SUBMISSION.filePath)
         patch_notify.assert_called_once_with(SUBMISSION, SUB_INFO)
+
+
+def test_dryrun_call(process):
+    """Test dryrun call
+    - get bundles
+    - interact with submission
+    - store submission status
+    - remove cache
+    - notify
+    """
+    process.dry_run = True
+    bundle = [(SUBMISSION, SUBMISSION_STATUS)]
+    with patch.object(SYN, "getSubmissionBundles",
+                      return_value=bundle) as patch_get_bundles,\
+         patch.object(process, "interact_with_submission",
+                      return_value=SUB_INFO) as patch_interact,\
+         patch.object(process, "store_submission_status") as patch_store,\
+         patch.object(process, "notify") as patch_notify:
+        process.__call__(process)
+        patch_get_bundles.assert_called_once_with(EVALUATION,
+                                                  status='RECEIVED')
+        patch_interact.assert_called_once_with(SUBMISSION)
+        patch_store.assert_called_once_with(SUBMISSION_STATUS, SUB_INFO)
+        patch_notify.assert_not_called()
