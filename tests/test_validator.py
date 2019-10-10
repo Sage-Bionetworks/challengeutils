@@ -33,37 +33,6 @@ SUB_INFO = {'valid': True,
             'message': MESSAGE}
 
 
-def test_init():
-    """Test class initialization"""
-    with patch.object(SYN, "getEvaluation",
-                      return_value=EVALUATION) as patch_get_eval,\
-         patch.object(SYN, "getUserProfile",
-                      return_value={'ownerId': 1111}) as patch_getuser:
-        EvaluationQueueValidator(SYN, EVALUATION.id,
-                                 admin_user_ids=None,
-                                 dry_run=False,
-                                 remove_cache=False,
-                                 acknowledge_receipt=False,
-                                 send_messages=False)
-        patch_get_eval.assert_called_once_with(EVALUATION.id)
-        patch_getuser.assert_called_once_with()
-
-
-def test_specifyadmin_init():
-    """Test specifyin admin initialization"""
-    with patch.object(SYN, "getEvaluation",
-                      return_value=EVALUATION) as patch_get_eval,\
-         patch.object(SYN, "getUserProfile") as patch_getuser:
-        EvaluationQueueValidator(SYN, EVALUATION,
-                                 admin_user_ids=[1, 3],
-                                 dry_run=False,
-                                 remove_cache=False,
-                                 acknowledge_receipt=False,
-                                 send_messages=False)
-        patch_get_eval.assert_called_once_with(EVALUATION)
-        patch_getuser.assert_not_called()
-
-
 @pytest.fixture
 def validator():
     """Invoke validator, must patch get evaluation"""

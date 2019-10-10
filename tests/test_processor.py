@@ -33,20 +33,73 @@ SUB_INFO = {'valid': True,
             'error': None,
             'message': MESSAGE}
 
+
+class Processor(EvaluationQueueProcessor):
+    """Create class that extends ABCmeta class"""
+    _success_status = "VALIDATED"
+
+    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
+                 remove_cache=False, **kwargs):
+        EvaluationQueueProcessor.__init__(self, syn, evaluation,
+                                          admin_user_ids=admin_user_ids,
+                                          dry_run=dry_run,
+                                          remove_cache=remove_cache, **kwargs)
+
+    def interaction_func(self, submission, **kwargs):
+        pass
+
+    def notify(self, submission, submission_info):
+        pass
+
+
+def test_abc_class():
+    """Test ABC class"""
+    with pytest.raises(TypeError, match="Can't instantiate abstract class "
+                                        "EvaluationQueueProcessor with "
+                                        "abstract methods interaction_func, "
+                                        "notify"):
+        EvaluationQueueProcessor()
+
+
+def test_init():
+    """Test default initialization"""
+    with patch.object(SYN, "getEvaluation",
+                      return_value=EVALUATION) as patch_get_eval,\
+         patch.object(SYN, "getUserProfile",
+                      return_value={'ownerId': 1111}) as patch_getuser:
+        proc = Processor(SYN, EVALUATION.id)
+        patch_get_eval.assert_called_once_with(EVALUATION.id)
+        patch_getuser.assert_called_once_with()
+        assert proc.admin_user_ids == [1111]
+        assert not proc.dry_run
+        assert not proc.remove_cache
+
+
+def test_specifyadmin_init():
+    """Test specify parameters initialization"""
+    with patch.object(SYN, "getEvaluation",
+                      return_value=EVALUATION) as patch_get_eval,\
+         patch.object(SYN, "getUserProfile") as patch_getuser:
+        proc = Processor(SYN, EVALUATION, admin_user_ids=[1, 3],
+                         dry_run=True, remove_cache=True,
+                         foo="bar", doo="doo")
+        patch_get_eval.assert_called_once_with(EVALUATION)
+        patch_getuser.assert_not_called()
+        assert proc.admin_user_ids == [1, 3]
+        assert proc.dry_run
+        assert proc.remove_cache
+        assert proc.kwargs == {'foo': 'bar', 'doo': 'doo'}
+
+
 @pytest.fixture
-def process():
-    """Invoke challenge runner"""
-    processor = EvaluationQueueProcessor
-    processor.syn = SYN
-    processor.evaluation = EVALUATION
-    processor.dry_run = False
-    processor.remove_cache = False
-    processor.kwargs = {}
-    processor._success_status = "VALIDATED"
-    return processor
+def processor():
+    """Invoke processor, must patch get evaluation"""
+    with patch.object(SYN, "getEvaluation", return_value=EVALUATION):
+        process = Processor(SYN, EVALUATION)
+    return process
 
 
-def test_invalid_store_submission_status(process):
+def test_invalid_store_submission_status(processor):
     """Storing of invalid submissions"""
     status = copy.deepcopy(SUBMISSION_STATUS)
     info = copy.deepcopy(SUB_INFO)
@@ -55,7 +108,7 @@ def test_invalid_store_submission_status(process):
                       "update_single_submission_status",
                       return_value=status) as patch_update,\
          patch.object(SYN, "store") as patch_store:
-        process.store_submission_status(process, SUBMISSION_STATUS, info)
+        processor.store_submission_status(SUBMISSION_STATUS, info)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
                                              to_public=True)
@@ -63,70 +116,61 @@ def test_invalid_store_submission_status(process):
         patch_store.assert_called_once_with(status)
 
 
-def test_valid_store_submission_status(process):
+def test_valid_store_submission_status(processor):
     """Storing of valid submissions"""
     status = copy.deepcopy(SUBMISSION_STATUS)
     with patch.object(scoring_harness.base_processor,
                       "update_single_submission_status",
                       return_value=status) as patch_update,\
          patch.object(SYN, "store") as patch_store:
-        process.store_submission_status(process, SUBMISSION_STATUS, SUB_INFO)
+        processor.store_submission_status(SUBMISSION_STATUS, SUB_INFO)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
                                              to_public=True)
-        status.status = process._success_status
+        status.status = processor._success_status
         patch_store.assert_called_once_with(status)
 
 
-def test_dryrun_store_submission_status(process):
+def test_dryrun_store_submission_status(processor):
     """Dryrun of store submission status"""
-    process.dry_run=True
+    processor.dry_run = True
     status = copy.deepcopy(SUBMISSION_STATUS)
     with patch.object(scoring_harness.base_processor,
                       "update_single_submission_status",
                       return_value=status) as patch_update,\
          patch.object(SYN, "store") as patch_store:
-        process.store_submission_status(process, SUBMISSION_STATUS, SUB_INFO)
+        processor.store_submission_status(SUBMISSION_STATUS, SUB_INFO)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
                                              to_public=True)
-        status.status = process._success_status
+        status.status = processor._success_status
         patch_store.assert_not_called()
 
 
-def test_abc_class(process):
-    """Test ABC class"""
-    with pytest.raises(TypeError, match="Can't instantiate abstract class "
-                                        "EvaluationQueueProcessor with "
-                                        "abstract methods interaction_func, "
-                                        "notify"):
-        process()
-
-
-def test_valid_interact_with_submission(process):
+def test_valid_interact_with_submission(processor):
     """No error with interaction function"""
     with patch.object(SYN, "getSubmission",
                       return_value=BUNDLE) as patch_get_bundles,\
-         patch.object(process, "interaction_func",
+         patch.object(processor, "interaction_func",
                       return_value=SUB_INFO) as patch_interact:
-        submission_info = process.interact_with_submission(process, SUBMISSION)
+        submission_info = processor.interact_with_submission(SUBMISSION)
         assert submission_info == SUB_INFO
 
 
-def test_invalid_interact_with_submission(process):
+def test_invalid_interact_with_submission(processor):
     """Raise error with interaction function"""
     with patch.object(SYN, "getSubmission",
                       return_value=BUNDLE) as patch_get_bundles,\
-         patch.object(process, "interaction_func",
+         patch.object(processor, "interaction_func",
                       side_effect=ValueError("test")) as patch_interact:
-        submission_info = process.interact_with_submission(process, SUBMISSION)
+        submission_info = processor.interact_with_submission(SUBMISSION)
         assert not submission_info['valid']
         assert isinstance(submission_info['error'], ValueError)
         assert submission_info['message'] == 'test'
         assert submission_info['annotations'] == {}
 
 
-def test_default_call(process):
+def test_default_call(processor):
     """Test call
     - get bundles
     - interact with submission
@@ -135,11 +179,11 @@ def test_default_call(process):
     """
     with patch.object(SYN, "getSubmissionBundles",
                       return_value=BUNDLE) as patch_get_bundles,\
-         patch.object(process, "interact_with_submission",
+         patch.object(processor, "interact_with_submission",
                       return_value=SUB_INFO) as patch_interact,\
-         patch.object(process, "store_submission_status") as patch_store,\
-         patch.object(process, "notify") as patch_notify:
-        process.__call__(process)
+         patch.object(processor, "store_submission_status") as patch_store,\
+         patch.object(processor, "notify") as patch_notify:
+        processor()
         patch_get_bundles.assert_called_once_with(EVALUATION,
                                                   status='RECEIVED')
         patch_interact.assert_called_once_with(SUBMISSION)
@@ -147,7 +191,7 @@ def test_default_call(process):
         patch_notify.assert_called_once_with(SUBMISSION, SUB_INFO)
 
 
-def test_removecache_call(process):
+def test_removecache_call(processor):
     """Test call
     - get bundles
     - interact with submission
@@ -155,18 +199,18 @@ def test_removecache_call(process):
     - remove cache
     - notify
     """
-    process.remove_cache = True
+    processor.remove_cache = True
 
     bundle = [(SUBMISSION, SUBMISSION_STATUS)]
     with patch.object(SYN, "getSubmissionBundles",
                       return_value=bundle) as patch_get_bundles,\
-         patch.object(process, "interact_with_submission",
+         patch.object(processor, "interact_with_submission",
                       return_value=SUB_INFO) as patch_interact,\
-         patch.object(process, "store_submission_status") as patch_store,\
+         patch.object(processor, "store_submission_status") as patch_store,\
          patch.object(scoring_harness.base_processor,
                       "_remove_cached_submission") as patch_remove,\
-         patch.object(process, "notify") as patch_notify:
-        process.__call__(process)
+         patch.object(processor, "notify") as patch_notify:
+        processor()
         patch_get_bundles.assert_called_once_with(EVALUATION,
                                                   status='RECEIVED')
         patch_interact.assert_called_once_with(SUBMISSION)
@@ -175,7 +219,7 @@ def test_removecache_call(process):
         patch_notify.assert_called_once_with(SUBMISSION, SUB_INFO)
 
 
-def test_dryrun_call(process):
+def test_dryrun_call(processor):
     """Test dryrun call
     - get bundles
     - interact with submission
@@ -183,15 +227,15 @@ def test_dryrun_call(process):
     - remove cache
     - notify
     """
-    process.dry_run = True
+    processor.dry_run = True
     bundle = [(SUBMISSION, SUBMISSION_STATUS)]
     with patch.object(SYN, "getSubmissionBundles",
                       return_value=bundle) as patch_get_bundles,\
-         patch.object(process, "interact_with_submission",
+         patch.object(processor, "interact_with_submission",
                       return_value=SUB_INFO) as patch_interact,\
-         patch.object(process, "store_submission_status") as patch_store,\
-         patch.object(process, "notify") as patch_notify:
-        process.__call__(process)
+         patch.object(processor, "store_submission_status") as patch_store,\
+         patch.object(processor, "notify") as patch_notify:
+        processor()
         patch_get_bundles.assert_called_once_with(EVALUATION,
                                                   status='RECEIVED')
         patch_interact.assert_called_once_with(SUBMISSION)
