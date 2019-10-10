@@ -48,7 +48,7 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
                                    send_messages=self.send_messages,
                                    dry_run=self.dry_run,
                                    message=message,
-                                   username="Challenge Administrator,",
+                                   username="Challenge Administrator",
                                    queue_name=self.evaluation.name,
                                    submission_name=submission.name,
                                    submission_id=submission.id,

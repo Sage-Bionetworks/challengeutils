@@ -38,11 +38,7 @@ def validator():
     """Invoke validator, must patch get evaluation"""
     with patch.object(SYN, "getEvaluation", return_value=EVALUATION):
         validate = EvaluationQueueValidator(SYN, EVALUATION,
-                                            admin_user_ids=[1, 3],
-                                            dry_run=False,
-                                            remove_cache=False,
-                                            acknowledge_receipt=False,
-                                            send_messages=False)
+                                            admin_user_ids=[1, 3])
     return validate
 
 
