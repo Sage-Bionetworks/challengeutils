@@ -58,7 +58,7 @@ def test_abc_class():
                                         "EvaluationQueueProcessor with "
                                         "abstract methods interaction_func, "
                                         "notify"):
-        EvaluationQueueProcessor()
+        EvaluationQueueProcessor(SYN, EVALUATION)
 
 
 def test_init():
