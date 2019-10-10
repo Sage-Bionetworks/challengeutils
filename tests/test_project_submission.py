@@ -153,7 +153,7 @@ def test_default_params_archive_project_submissions():
     """Archive project submissions given evaluation queue"""
     eval_obj = synapseclient.Evaluation(id=1234, contentSource="syn123",
                                         name="test")
-    query = "select objectId from evaluation_1234 where STATUS == VALIDATED"
+    query = "select objectId from evaluation_1234 where STATUS == 'VALIDATED'"
     query_results = [{'objectId': SUBMISSION.id}]
     with patch.object(challengeutils.utils, "evaluation_queue_query",
                       return_value=query_results) as patch_query,\
@@ -172,7 +172,7 @@ def test_nondefault_params_archive_project_submissions():
     params"""
     eval_obj = synapseclient.Evaluation(id=1234, contentSource="syn123",
                                         name="test")
-    query = "select objectId from evaluation_1234 where prediction == SCORED"
+    query = "select objectId from evaluation_1234 where prediction == 'SCORED'"
     query_results = [{'objectId': SUBMISSION.id}]
     with patch.object(challengeutils.utils, "evaluation_queue_query",
                       return_value=query_results) as patch_query,\
@@ -197,7 +197,7 @@ def test_multiple_submissions_archive_project_submissions():
     eval_obj = synapseclient.Evaluation(id=1234, contentSource="syn123",
                                         name="test")
     query_results = [{'objectId': SUBMISSION.id}, {'objectId': SUBMISSION.id}]
-    query = "select objectId from evaluation_1234 where STATUS == VALIDATED"
+    query = "select objectId from evaluation_1234 where STATUS == 'VALIDATED'"
 
     with patch.object(challengeutils.utils, "evaluation_queue_query",
                       return_value=query_results) as patch_query,\
