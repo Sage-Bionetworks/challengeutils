@@ -129,6 +129,7 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
             # ex1 only happens in this scope in python3,
             # so must store validation_error as a variable
             is_valid = False
+            # TODO: allow for annotations to be added even if error
             annotations = {}
             validation_error = ex1
             validation_message = str(ex1)
