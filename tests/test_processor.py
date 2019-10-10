@@ -31,7 +31,6 @@ SUB_INFO = {'valid': True,
             'error': None,
             'message': MESSAGE}
 
-
 @pytest.fixture
 def process():
     """Invoke challenge runner"""
