@@ -5,7 +5,9 @@ Test scoring harness functions
 import copy
 import mock
 from mock import patch
+import os
 import pytest
+
 import synapseclient
 
 import scoring_harness.base_processor
@@ -195,3 +197,10 @@ def test_dryrun_call(process):
         patch_interact.assert_called_once_with(SUBMISSION)
         patch_store.assert_called_once_with(SUBMISSION_STATUS, SUB_INFO)
         patch_notify.assert_not_called()
+
+@pytest.mark.parametrize("valid_input", [("foo", None)])
+def test_file_remove_cached_submission(valid_input):
+    """Remove cache"""
+    with patch.object(os, "unlink") as patch_unlink:
+        scoring_harness.base_processor._remove_cached_submission(valid_input)
+        patch_unlink.assert_called_once_with(valid_input)
