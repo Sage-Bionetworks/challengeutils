@@ -15,8 +15,10 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
                  remove_cache=False, acknowledge_receipt=False,
                  send_messages=False, **kwargs):
         EvaluationQueueProcessor.__init__(self, syn, evaluation,
-                                          admin_user_ids=None, dry_run=False,
-                                          remove_cache=False, **kwargs)
+                                          admin_user_ids=admin_user_ids,
+                                          dry_run=dry_run,
+                                          remove_cache=remove_cache,
+                                          **kwargs)
         self.acknowledge_receipt = acknowledge_receipt
         self.send_messages = send_messages
 
