@@ -591,7 +591,7 @@ def copy_project(syn, project, new_project_name):
     Args:
         syn: `synapseclient.Synapse` connection
         project: Synapse Project or its Synapse id
-        project_name: The new project name
+        new_project_name: The new project name
     """
     project_ent = syn.get(project)
     if not isinstance(project_ent, synapseclient.Project):
