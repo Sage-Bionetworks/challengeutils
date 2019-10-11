@@ -270,7 +270,7 @@ def test_project_copy_project():
     return_new_project = synapseclient.Project(archived_name, id="syn888")
     old_project = synapseclient.Project("old", id="123")
     with patch.object(syn, "get",
-                      return_value=old_project) as patch_syn_store,\
+                      return_value=old_project) as patch_syn_get,\
          patch.object(syn, "store",
                       return_value=return_new_project) as patch_syn_store,\
          patch.object(synapseutils, "copy") as patch_syn_copy:
@@ -278,6 +278,7 @@ def test_project_copy_project():
                                                              old_project.id,
                                                              archived_name)
         assert archived_project == return_new_project
+        patch_syn_get.assert_called_once_with(old_project.id)
         patch_syn_store.assert_called_once_with(project)
         patch_syn_copy.assert_called_once_with(syn, old_project.id,
                                                archived_project.id)
@@ -291,9 +292,10 @@ def test_invalid_copy_project(invalid_input):
     is passed in"""
     archived_name = "new project"
     with patch.object(syn, "get",
-                      return_value=invalid_input) as patch_syn_store,\
+                      return_value=invalid_input) as patch_syn_get,\
          pytest.raises(ValueError, match="Did not pass in synapse project"):
         challengeutils.utils.copy_project(syn, invalid_input, archived_name)
+        patch_syn_get.assert_called_once_with(invalid_input)
 
 
 def test_userid__get_submitter_name():
