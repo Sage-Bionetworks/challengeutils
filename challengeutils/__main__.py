@@ -127,6 +127,13 @@ def command_kill_docker_over_quota(syn, args):
                                               quota=args.quota)
 
 
+def command_validate_docker(syn, args):
+
+
+    validate_docker.validate(syn, args.submissionid, args.synapse_config)
+    with open(args.results, 'w') as o:
+        o.write(json.dumps(result))
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -397,6 +404,21 @@ def build_parser():
         type=int,
         help="Time quota submission has to run in milliseconds")
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+
+    parser_validate_docker = subparsers.add_parser(
+        'validatedocker',
+        help='Validate Docker container')
+
+    parser_validate_docker.add_argument("-p", "--docker_repository",
+                                        required=True, help="Submission File")
+    parser_validate_docker.add_argument("-d", "--docker_digest",
+                                        required=True, help="Submission File")
+    parser_validate_docker.add_argument("-r", "--results", required=True,
+                                        help="validation results")
+    parser_validate_docker.add_argument("-c", "--synapse_config",
+                                        required=True, help="credentials file")
+    parser_validate_docker.set_defaults(func=command_validate_docker)
+
 
     return parser
 
