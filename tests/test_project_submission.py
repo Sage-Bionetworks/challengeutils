@@ -328,4 +328,3 @@ def test_statuskey_archive_and_attach_writeups():
                                          'archivedWriteUp': 'syn4444'},
                            ['writeUp', 'archivedWriteUp'])]
         patch_annotate.assert_has_calls(calls, any_order=True)
-
