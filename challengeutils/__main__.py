@@ -139,7 +139,7 @@ def build_parser():
         help="credentials file")
 
     parser.add_argument('-v', '--version', action='version',
-                        version='Synapse Client {}'.format(__version__))
+                        version='challengeutils {}'.format(__version__))
 
     subparsers = parser.add_subparsers(
         title='commands',
