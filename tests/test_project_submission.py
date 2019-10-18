@@ -5,11 +5,10 @@ from mock import patch
 import pandas as pd
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
-import synapseutils
+
 
 import challengeutils.utils
 import challengeutils.project_submission
-from challengeutils.project_submission import create_copy_project
 from challengeutils.project_submission import _archive_project_submission
 from challengeutils.project_submission import archive_project_submission
 from challengeutils.project_submission import archive_project_submissions
@@ -28,22 +27,6 @@ SUB_STATUS = synapseclient.SubmissionStatus(annotations=SUB_ANNOTATIONS)
 WRITEUP_QUEUEID = '2'
 SUBMISSION_QUEUEID = '3'
 
-def test_create_copy_project():
-    """Create new Synapse Project then copy content to it"""
-    archived_name = "new project"
-    project = synapseclient.Project(archived_name)
-    return_project = synapseclient.Project(archived_name, id="syn888")
-    with patch.object(SYN, "store",
-                      return_value=return_project) as patch_syn_store,\
-         patch.object(synapseutils, "copy") as patch_syn_copy:
-        archived_project = create_copy_project(SYN, SUBMISSION.entityId,
-                                               archived_name)
-        assert archived_project == return_project
-        patch_syn_store.assert_called_once_with(project)
-        patch_syn_copy.assert_called_once_with(SYN, SUBMISSION.entityId,
-                                               archived_project.id)
-
-
 def test__archive_project_submission():
     """Create archive project submission"""
     archived_name = (f"Archived {SUBMISSION.entity.name} 10000 "
@@ -54,8 +37,8 @@ def test__archive_project_submission():
     return_project = synapseclient.Project(archived_name, id="syn888")
     # The time value is multipled by 1000
     with patch.object(time, "time", return_value=10), \
-         patch.object(challengeutils.project_submission,
-                      "create_copy_project",
+         patch.object(challengeutils.utils,
+                      "copy_project",
                       return_value=return_project) as patch_create:
         archive_proj = _archive_project_submission(SYN, SUBMISSION)
         assert archive_proj == return_project

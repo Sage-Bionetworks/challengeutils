@@ -1,14 +1,18 @@
+"""Test challengeutils.utils"""
 import json
+import re
+import tempfile
+
 import mock
 from mock import patch
-import os
 import pytest
-import re
-import challengeutils.utils
+
 import synapseclient
-import tempfile
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
+import synapseutils
+
+import challengeutils.utils
 
 syn = mock.create_autospec(synapseclient.Synapse)
 
@@ -257,6 +261,41 @@ def test_annotate_submission_with_json():
             syn, "1234", add_annotations,
             to_public=False,
             force=False)
+
+
+def test_project_copy_project():
+    """Create new Synapse Project then copy content to it"""
+    archived_name = "new project"
+    project = synapseclient.Project(archived_name)
+    return_new_project = synapseclient.Project(archived_name, id="syn888")
+    old_project = synapseclient.Project("old", id="123")
+    with patch.object(syn, "get",
+                      return_value=old_project) as patch_syn_get,\
+         patch.object(syn, "store",
+                      return_value=return_new_project) as patch_syn_store,\
+         patch.object(synapseutils, "copy") as patch_syn_copy:
+        archived_project = challengeutils.utils.copy_project(syn,
+                                                             old_project.id,
+                                                             archived_name)
+        assert archived_project == return_new_project
+        patch_syn_get.assert_called_once_with(old_project.id)
+        patch_syn_store.assert_called_once_with(project, createOrUpdate=False)
+        patch_syn_copy.assert_called_once_with(syn, old_project.id,
+                                               archived_project.id)
+
+@pytest.mark.parametrize("invalid_input",
+                         [synapseclient.Folder("old", parentId="123"),
+                          synapseclient.File("old", parentId="123"),
+                          synapseclient.Schema("old", parentId="123")])
+def test_invalid_copy_project(invalid_input):
+    """ValueError thrown if anything other entity than project
+    is passed in"""
+    archived_name = "new project"
+    with patch.object(syn, "get",
+                      return_value=invalid_input) as patch_syn_get,\
+         pytest.raises(ValueError, match="Did not pass in synapse project"):
+        challengeutils.utils.copy_project(syn, invalid_input, archived_name)
+        patch_syn_get.assert_called_once_with(invalid_input)
 
 
 def test_userid__get_submitter_name():

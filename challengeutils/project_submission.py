@@ -8,26 +8,9 @@ import time
 import pandas as pd
 import synapseclient
 from synapseclient.utils import id_of
-import synapseutils
 from . import utils
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-
-def create_copy_project(syn, entityid, project_name):
-    """
-    Create a copy of a project, currently does not check if the project
-    name specified already exists
-
-    Args:
-        syn: `synapseclient.Synapse` connection
-        entityid: Synapse entity id
-        project_name: The new project name
-    """
-    project_entity = synapseclient.Project(project_name)
-    entity = syn.store(project_entity)
-    synapseutils.copy(syn, entityid, entity.id)
-    return entity
 
 
 def _archive_project_submission(syn, submission):
@@ -45,8 +28,8 @@ def _archive_project_submission(syn, submission):
     current_time_ms = int(round(time.time() * 1000))
     archived_name = (f"Archived {submission_name} {current_time_ms} "
                      f"{submission.id} {submission.entityId}")
-    archive_project_entity = create_copy_project(syn, submission.entityId,
-                                                 archived_name)
+    archive_project_entity = utils.copy_project(syn, submission.entityId,
+                                                archived_name)
     return archive_project_entity
 
 
