@@ -597,7 +597,9 @@ def copy_project(syn, project, new_project_name):
     if not isinstance(project_ent, synapseclient.Project):
         raise ValueError("Did not pass in synapse project")
     new_project_entity = synapseclient.Project(new_project_name)
-    new_project = syn.store(new_project_entity)
+    # Set create or update to be False so that if you pass in
+    # a project name that already exists, this function
+    new_project = syn.store(new_project_entity, createOrUpdate=False)
     synapseutils.copy(syn, project_ent.id, new_project.id)
     return new_project
 

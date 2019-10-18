@@ -279,7 +279,7 @@ def test_project_copy_project():
                                                              archived_name)
         assert archived_project == return_new_project
         patch_syn_get.assert_called_once_with(old_project.id)
-        patch_syn_store.assert_called_once_with(project)
+        patch_syn_store.assert_called_once_with(project, createOrUpdate=False)
         patch_syn_copy.assert_called_once_with(syn, old_project.id,
                                                archived_project.id)
 
