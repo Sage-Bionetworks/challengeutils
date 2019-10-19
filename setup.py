@@ -11,6 +11,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     python_requires='>=3.5',
+    scripts=['bin/runchallenge.py'],
     entry_points={
         'console_scripts': ['challengeutils = challengeutils.__main__:main']},
     install_requires=[

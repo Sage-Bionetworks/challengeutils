@@ -1,7 +1,12 @@
 import json
+import logging
 import sys
 import urllib
+import datetime
 import synapseclient
+from synapseclient.exceptions import SynapseHTTPError
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def _switch_annotation_permission(add_annotations,
@@ -422,3 +427,156 @@ def team_members_union(syn, a, b):
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
     return(union_members)
+
+
+def _check_date_range(date_str, start_datetime, end_datetime):
+    '''
+    Helper function to check if the date is within range
+    Note: the date and time is in UTC
+
+    Args:
+        date_str: date string 
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+    
+    Returns:
+        boolean
+    '''
+    result = True
+    if(start_datetime is not None or end_datetime is not None):
+        date_obj = datetime.datetime.strptime(date_str,'%Y-%m-%dT%H:%M:%S.%fZ')
+        if(start_datetime is not None):
+            start_obj = datetime.datetime.strptime(start_datetime,'%Y-%m-%d %H:%M')
+            result = date_obj >= start_obj
+        if(end_datetime is not None):
+            end_obj = datetime.datetime.strptime(end_datetime,'%Y-%m-%d %H:%M')
+            result = date_obj <= end_obj
+    return(result)
+
+def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
+    '''
+    Helper function to get contributors from a given evaluation id. 
+    Note: the date and time is in UTC
+
+    Args:
+        syn: Synapse object
+        evaluationid: evaluation id
+        submission_status: Submission status
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    bundles = syn.getSubmissionBundles(evaluationid, status=status)
+    contributors = set()
+    for sub, _ in bundles:
+        if((sub.createdOn, start_datetime, end_datetime)):
+            principalids = set(contributor['principalId'] for contributor in sub.contributors)
+            contributors.update(principalids)
+    return(contributors)
+
+def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+    '''
+    Function to get contributors from a list of evaluation ids
+    Note: the date and time is in UTC
+
+    Args:
+        syn: Synapse object
+        evaluationids: a list of evaluation ids 
+        status: Submission status. Default = SCORED
+        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+
+    Returns:
+        Set of contributors' user ids
+    '''
+    all_contributors = set()
+    for evaluationid in evaluationids:
+        contributors = _get_contributors(syn,evaluationid,status,start_datetime,end_datetime)
+        all_contributors = all_contributors.union(contributors)
+    return(all_contributors)
+
+
+def list_evaluations(syn, project):
+    '''
+    List evaluation queues of a Synapse project
+
+    Args:
+        syn: Synapse object
+        project: Synapse id/entity of project
+    '''
+    evaluations = syn.getEvaluationByContentSource(project)
+    for evaluation in evaluations:
+        logger.info(
+            "Evaluation- {name}({evalid})".format(name=evaluation.name,
+                                                  evalid=evaluation.id))
+
+
+def download_submission(syn, submissionid, download_location=None):
+    '''
+    Download submission and return json
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        download_location: Location to download submission
+
+    Returns:
+        dict: submission json results
+    '''
+    sub = syn.getSubmission(submissionid, downloadLocation=download_location)
+    entity = sub['entity']
+    result = {'docker_repository': sub.get("dockerRepositoryName"),
+              'docker_digest': sub.get("dockerDigest"),
+              'entity_id': entity['id'],
+              'entity_version': entity.get('versionNumber'),
+              'entity_type': entity.get('concreteType'),
+              'evaluation_id': sub['evaluationId'],
+              'file_path': sub['filePath']}
+    return(result)
+
+
+def annotate_submission_with_json(syn, submissionid, annotation_values,
+                                  to_public=False,
+                                  force_change_annotation_acl=False):
+    '''
+    Annotate submission with annotation values from a json file
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        annotation_values: Annotation json file
+        to_public: change these annotations from private to public
+                   (default is False)
+        force_change_annotation_acl: Force change the annotation from
+                                     private to public and vice versa.
+    '''
+    status = syn.getSubmissionStatus(submissionid)
+    with open(annotation_values) as json_data:
+        annotation_json = json.load(json_data)
+    status = update_single_submission_status(
+        status, annotation_json,
+        to_public=to_public,
+        force_change_annotation_acl=force_change_annotation_acl)
+    status = syn.store(status)
+
+
+def _get_submitter_name(syn, submitterid):
+    """Get the Synapse team name or the username given a submitterid
+
+    Args:
+        syn: Synapse object
+        submitterid: submitter id
+
+    Returns:
+        username or teamname
+    """
+
+    try:
+        user = syn.getUserProfile(submitterid)
+        submitter_name = user['userName']
+    except SynapseHTTPError:
+        team = syn.getTeam(submitterid)
+        submitter_name = team['name']
+    return submitter_name
