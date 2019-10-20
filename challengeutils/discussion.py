@@ -3,6 +3,7 @@ Functions that interact with the Synapse discussion API
 '''
 import json
 import requests
+import synapseclient
 QUERY_LIMIT = 1000
 
 
@@ -191,3 +192,78 @@ def get_entity_threads(syn, entityid):
     uri = "/entity/{entityid}/threads".format(entityid=entityid)
     results = syn._GET_paginated(uri)
     return results
+
+
+class DiscussionApi:
+    """Discussion API calls"""
+    def __init__(self, syn=None):
+        if syn is None:
+            syn = synapseclient.login()
+        self.syn = syn
+
+    def get_project_forum(self, projectid):
+        """Get the Forum's metadata for a given project ID.
+        https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html
+        """
+        return self.syn.restGET(f'/project/{projectid}/forum')
+
+    def get_forum(self, forumid):
+        """Get the Forum's metadata for a given forum ID.
+        https://rest-docs.synapse.org/rest/GET/forum/forumId.html
+        """
+        return self.syn.restGET(f'/forum/{forumid}')
+
+    def get_forum_threads(self, forumid, query_filter='EXCLUDE_DELETED',
+                          limit=20, offset=0):
+        """Get N number of threads for a given forum ID
+        https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html
+
+        Args:
+
+            forumid: Forum ID
+            query_filter:  filter forum threads returned. Can be NO_FILTER,
+                        DELETED_ONLY, EXCLUDE_DELETED.
+                        Defaults to EXCLUDE_DELETED.
+
+        Yields:
+            list: Forum threads
+        """
+        uri = f'/forum/{forumid}/threads?filter={query_filter}'
+        return self.syn._GET_paginated(uri, limit=limit, offset=offset)
+
+    def post_thread(self, forumid, title, message):
+        """Create a new thread in a forum
+        https://rest-docs.synapse.org/rest/POST/thread.html
+
+        Args:
+            forumid: Forum ID
+            title: Title of thread
+            message: Content of thread
+
+        Returns:
+            DiscussionThreadBundle
+        """
+        request_obj = {'forumId': forumid,
+                       'title': title,
+                       'messageMarkdown': message}
+        return self.syn.restPOST('/thread',
+                                 body=json.dumps(request_obj))
+
+    def get_threads_referencing_entity(self, entityid, limit=20, offset=0):
+        """
+        Get N number of threads that belongs to projects user can
+        view and references the given entity
+
+        Args:
+            syn: Synapse object
+            entityid: Synapse Entity id
+
+        Yields:
+            DiscussionThreadBundles
+        """
+        return self.syn._GET_paginated(f"/entity/{entityid}/threads",
+                                       limit=limit, offset=offset)
+
+    def get_thread(self, threadid):
+        """Get a thread and its statistic given its ID"""
+        return self.syn.restGET(f"/thread/{threadid}")
