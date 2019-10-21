@@ -375,7 +375,7 @@ class DiscussionApi:
         """
         return self.syn._GET_paginated(f'/forum/{forumid}/moderators')
 
-    def get_threads_referencing_entities(self, entityid_list):
+    def get_threadcount_referencing_entities(self, entityid_list):
         """Get list of entity and count pairs, with count is the number of
         threads that belongs to projects user can view and references
         the given entity.
