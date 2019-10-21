@@ -253,6 +253,7 @@ class DiscussionApi:
         """
         Get N number of threads that belongs to projects user can
         view and references the given entity
+        https://rest-docs.synapse.org/rest/GET/entity/id/threads.html
 
         Args:
             syn: Synapse object
@@ -265,5 +266,121 @@ class DiscussionApi:
                                        limit=limit, offset=offset)
 
     def get_thread(self, threadid):
-        """Get a thread and its statistic given its ID"""
+        """Get a thread and its statistic given its ID
+        https://rest-docs.synapse.org/rest/GET/thread/threadId.html
+        """
         return self.syn.restGET(f"/thread/{threadid}")
+
+    def update_thread_title(self, threadid):
+        """Update title of a thread
+        https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html
+        """
+        return self.syn.restPOST(f"/thread/{threadid}/title")
+
+    def update_thread_message(self, threadid):
+        """Update message of a thread
+        https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html
+        """
+        return self.syn.restPOST(f"/thread/{threadid}/message")
+
+    def delete_thread(self, threadid):
+        """Delete thread
+        https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html
+        """
+        return self.syn.restDELETE(f"/thread/{threadid}")
+
+    def restore_thread(self, threadid):
+        """Restore a deleted thread
+        https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html
+        """
+        return self.syn.restPUT(f"/thread/{threadid}/restore")
+
+    def pin_thread(self, threadid):
+        """Pin a thread
+        https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html
+        """
+        return self.syn.restPUT(f"/thread/{threadid}/pin")
+
+    def unpin_thread(self, threadid):
+        """Unpin a thread
+        https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html
+        """
+        return self.syn.restPUT(f"/thread/{threadid}/unpin")
+
+    def get_thread_message_url(self, messagekey):
+        """message URL of a thread. The message URL is the URL
+        to download the file which contains the thread message.
+        https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html
+        """
+        return self.syn.restGET(f"/thread/messageUrl?messageKey={messagekey}")
+
+    def post_reply(self, threadid, message):
+        """Create a new thread in a forum
+        https://rest-docs.synapse.org/rest/POST/reply.html
+
+        Args:
+            threadid: Thread ID
+            message: Content of reply
+
+        Returns:
+            DiscussionReplyBundle
+        """
+        create_reply = {'threadId': threadid, 'messageMarkdown': message}
+        return self.syn.restPOST('/reply', body=json.dumps(create_reply))
+
+    def get_reply(self, replyid):
+        """Get a reply"""
+        return self.syn.restGET(f'/reply/{replyid}')
+
+    def get_thread_replies(self, threadid, query_filter='EXCLUDE_DELETED',
+                           limit=20, offset=0):
+        """Get N number of replies for a given thread ID
+        https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html
+
+        Args:
+            threadid: Forum thread id
+            query_filter:  filter forum thread replies returned.
+                           Can be NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+                           Defaults to EXCLUDE_DELETED.
+        Yields:
+            list: Forum threads replies
+        """
+        replies = f'/thread/{threadid}/replies?filter={query_filter}'
+        return self.syn._GET_paginated(replies, limit=limit, offset=offset)
+
+    def get_reply_message_url(self, messagekey):
+        """message URL of a thread. The message URL is the URL
+        to download the file which contains the thread message.
+        https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html
+        """
+        return self.syn.restGET(f"/reply/messageUrl?messageKey={messagekey}")
+
+    def get_forum_threadcount(self, forumid, query_filter='EXCLUDE_DELETED'):
+        """Total number of threads given forum ID
+        https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html
+        """
+        threadcount = f'/forum/{forumid}/threadcount?filter={query_filter}'
+        return self.syn.restGET(threadcount)
+
+    def get_thread_replycount(self, threadid, query_filter='EXCLUDE_DELETED'):
+        """Total number of replies given thread ID
+        https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html
+        """
+        replycount = f'/thread/{threadid}/replycount?filter={query_filter}'
+        return self.syn.restGET(replycount)
+
+    def get_forum_moderators(self, forumid):
+        """Get moderators given a forum ID
+        https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html
+        """
+        return self.syn._GET_paginated(f'/forum/{forumid}/moderators')
+
+    def get_threads_referencing_entities(self, entityid_list):
+        """Get list of entity and count pairs, with count is the number of
+        threads that belongs to projects user can view and references
+        the given entity.
+        https://rest-docs.synapse.org/rest/POST/entity/threadcounts.html
+        """
+        entities = {'idList': entityid_list}
+        return self.syn.restPOST('/entity/threadcounts',
+                                 body=json.dumps(entities))
