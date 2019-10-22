@@ -3,7 +3,11 @@ Functions that interact with the Synapse discussion API
 '''
 import json
 import requests
+
 import synapseclient
+
+from syn_models.forum import Forum
+
 QUERY_LIMIT = 1000
 
 
@@ -205,13 +209,13 @@ class DiscussionApi:
         """Get the Forum's metadata for a given project ID.
         https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html
         """
-        return self.syn.restGET(f'/project/{projectid}/forum')
+        return Forum(**self.syn.restGET(f'/project/{projectid}/forum'))
 
     def get_forum(self, forumid):
         """Get the Forum's metadata for a given forum ID.
         https://rest-docs.synapse.org/rest/GET/forum/forumId.html
         """
-        return self.syn.restGET(f'/forum/{forumid}')
+        return Forum(**self.syn.restGET(f'/forum/{forumid}'))
 
     def get_forum_threads(self, forumid, query_filter='EXCLUDE_DELETED',
                           limit=20, offset=0):
