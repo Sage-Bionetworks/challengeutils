@@ -37,51 +37,38 @@ def import_config_py(config_path):
 # ==================================================
 #  Handlers for commands
 # ==================================================
-def command_validate(evaluation_queue_maps, challenge_runner):
-    """Validate command handler"""
-    if args.evaluation is None:
-        for queueid in evaluation_queue_maps:
-            challenge_runner.validate(evaluation_queue_maps[queueid],
-                                      args.admin_user_ids,
-                                      args.challenge_synid)
-    else:
-        challenge_runner.validate(evaluation_queue_maps[args.evaluation],
-                                  args.admin_user_ids,
-                                  args.challenge_synid)
+def command_validate(syn, evaluation_queue_maps):
+    """Validate"""
+    for queueid in evaluation_queue_maps:
+        validator = evaluation_queue_maps[queueid]['validation_func']
+        goldstandard = evaluation_queue_maps[queueid]['goldstandard_path']
+        invoke = validator(syn, queueid, goldstandard_path=goldstandard)
+        invoke()
 
 
-def command_score(evaluation_queue_maps, challenge_runner):
-    """Score command handler"""
-    if args.evaluation is None:
-        for queueid in evaluation_queue_maps:
-            challenge_runner.score(evaluation_queue_maps[queueid],
-                                   args.admin_user_ids,
-                                   args.challenge_synid)
-    else:
-        challenge_runner.score(evaluation_queue_maps[args.evaluation],
-                               args.admin_user_ids,
-                               args.challenge_synid)
+def command_score(syn, evaluation_queue_maps):
+    """Score"""
+    for queueid in evaluation_queue_maps:
+        scorer = evaluation_queue_maps[queueid]['scoring_func']
+        goldstandard = evaluation_queue_maps[queueid]['goldstandard_path']
+        invoke = scorer(syn, queueid, goldstandard_path=goldstandard)
+        invoke()
 
 
 def main(args):
     """Main method that executes validate / scoring"""
     # Synapse login
     try:
-        syn = synapseclient.Synapse(debug=args.debug)
-        syn.login(email=args.user, password=args.password, silent=True)
+        if args.synapse_config is not None:
+            syn = synapseclient.Synapse(debug=args.debug,
+                                        configPath=args.synapse_config)
+        else:
+            syn = synapseclient.Synapse(debug=args.debug)
+        syn.login(silent=True)
     except (SynapseAuthenticationError, SynapseNoCredentialsError):
         raise ValueError(
             "Must provide Synapse credentials as parameters or "
             "store them as environmental variables.")
-
-    # Check challenge synid
-    try:
-        challenge_ent = syn.get(args.challenge_synid)
-        challenge_name = challenge_ent.name
-    except Exception:
-        raise ValueError(
-            "Must provide correct Synapse id of challenge site or "
-            "have permissions to access challenge the site")
 
     # TODO: Check challenge admin ids
     if args.admin_user_ids is None:
@@ -102,12 +89,12 @@ def main(args):
                            "in your EVALUATION_QUEUES_CONFIG")
         evaluation_queue_maps[queue['id']] = queue
 
-    if args.evaluation is not None:
-        check_queue_in_config = [eval_queue in evaluation_queue_maps
-                                 for eval_queue in args.evaluation]
-        if not all(check_queue_in_config):
-            raise ValueError("If evaluation is specified, must match an 'id' "
-                             "in EVALUATION_QUEUES_CONFIG")
+    # if args.evaluation is not None:
+    #     check_queue_in_config = [eval_queue in evaluation_queue_maps
+    #                              for eval_queue in args.evaluation]
+    #     if not all(check_queue_in_config):
+    #         raise ValueError("If evaluation is specified, must match an 'id' "
+    #                          "in EVALUATION_QUEUES_CONFIG")
     # Acquire lock, don't run two scoring scripts at once
     try:
         update_lock = lock.acquire_lock_or_fail('challenge',
@@ -119,49 +106,25 @@ def main(args):
         # temporary error according to /usr/include/sysexits.h
         return 75
 
-    challenge_runner = Challenge(syn, dry_run=args.dry_run,
-                                 send_messages=args.send_messages,
-                                 acknowledge_receipt=args.acknowledge_receipt,
-                                 remove_cache=args.remove_cache)
-    try:
-        args.func(evaluation_queue_maps, challenge_runner)
-    except Exception as ex1:
-        LOGGER.error('Error in challenge.py:')
-        LOGGER.error(f'{type(ex1)} {ex1} {str(ex1)}')
-        if args.admin_user_ids:
-            messages.error_notification(syn=syn,
-                                        send_notifications=args.notifications,
-                                        userids=args.admin_user_ids,
-                                        dry_run=args.dry_run,
-                                        message=str(ex1),
-                                        queue_name=challenge_name)
+    if args.validate:
+        command_validate(syn, evaluation_queue_maps)
 
-    finally:
-        update_lock.release()
+    if args.score:
+        command_score(syn, evaluation_queue_maps)
+
+    update_lock.release()
+
     return 0
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("challenge_synid",
-                        help="Synapse id of challenge project")
+
     parser.add_argument("config_path",
                         help="path to config.py")
-    parser.add_argument("--evaluation",
-                        help="Evaluation id(s) to validate/score.  If not specified, script "
-                             "will validate/score all evaluations set in EVALUATION_QUEUES_CONFIG",
-                        nargs='?',
-                        default=None)
 
-    parser.add_argument("-u",
-                        "--user",
-                        help="UserName",
-                        default=None)
-
-    parser.add_argument("-p",
-                        "--password",
-                        help="Password",
-                        default=None)
+    parser.add_argument("-c", "--synapse_config",
+                        help="Path to Synapse Config File")
 
     parser.add_argument("--notifications",
                         help="Send error notifications to challenge admins",
@@ -188,30 +151,19 @@ if __name__ == '__main__':
                         help="Show verbose error output from Synapse API calls",
                         action="store_true")
 
-    subparsers = parser.add_subparsers(title="subcommand")
-
-    parser_validate = subparsers.add_parser('validate',
-                                            help="Validate all RECEIVED submissions to an evaluation")
-
     # Add these subparsers after because it takes multiple arguments
-    parser_validate.add_argument('-a',
-                                 "--admin-user-ids",
-                                 help="Synapse user ids. Defaults to the user running the script",
-                                 nargs='+',
-                                 default=None)
+    parser.add_argument('-a',
+                        "--admin-user-ids",
+                        help="Synapse user ids. Defaults to the user running the script",
+                        nargs='+',
+                        default=None)
 
-    parser_validate.set_defaults(func=command_validate)
+    interact = parser.add_mutually_exclusive_group(required=True)
 
-    parser_score = subparsers.add_parser('score',
-                                         help="Score all VALIDATED submissions to an evaluation")
-    # Add these subparsers after
-    parser_score.add_argument('-a',
-                              "--admin-user-ids",
-                              help="Synapse user ids. Defaults to the user running the script",
-                              nargs='+',
-                              default=None)
-
-    parser_score.set_defaults(func=command_score)
+    interact.add_argument('--validate', action="store_true",
+                          help="Validate RECEIVED submissions to an evaluation")
+    interact.add_argument('--score', action="store_true",
+                          help="Score VALIDATED submissions to an evaluation")
 
     args = parser.parse_args()
     LOGGER.info("=" * 30)
