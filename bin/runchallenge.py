@@ -9,8 +9,7 @@ import synapseclient
 from synapseclient.exceptions import SynapseAuthenticationError
 from synapseclient.exceptions import SynapseNoCredentialsError
 
-from scoring_harness.challenge import Challenge
-from scoring_harness import lock, messages
+from scoring_harness import lock
 
 
 logging.basicConfig(format='%(asctime)s %(message)s')
