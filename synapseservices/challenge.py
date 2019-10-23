@@ -111,7 +111,7 @@ class Challenge(Service):
         """
         return self._etag
 
-    @etag.setter
+    @participant_teamid.setter
     def participant_teamid(self, participant_teamid):
         """Sets the participant_teamid of this Challenge.
 
