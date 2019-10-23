@@ -1,10 +1,13 @@
+import datetime
 import json
 import logging
 import sys
 import urllib
-import datetime
+
 import synapseclient
 from synapseclient.exceptions import SynapseHTTPError
+
+from synapseservices.challenge import Challenge
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -178,8 +181,9 @@ def get_challengeid(syn, entity):
         Challenge dictionary
     """
     synid = synapseclient.utils.id_of(entity)
-    challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
-    return(challenge_obj)
+    challenge = syn.restGET("/entity/%s/challenge" % synid)
+    challenge_obj = Challenge(**challenge)
+    return challenge_obj
 
 
 def _change_annotation_acl(annotations, key, annotation_type, is_private=True):

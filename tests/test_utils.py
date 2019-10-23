@@ -4,10 +4,14 @@ from mock import patch
 import os
 import pytest
 import re
-import challengeutils.utils
+import uuid
+
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
+
+import challengeutils.utils
+from synapseservices.challenge import Challenge
 
 syn = mock.create_autospec(synapseclient.Synapse)
 
@@ -269,3 +273,24 @@ def test_teamid__get_submitter_name():
         assert submittername == teaminfo['name']
         patch_get_user.assert_called_once_with(submitterid)
         patch_get_team.assert_called_once_with(submitterid)
+
+
+
+def test_get_challengeid():
+    projectid = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    participant_teamid = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=projectid,
+                              etag=etag,
+                              participantTeamId=participant_teamid)
+    rest_return = {'id': chalid,
+                   'projectId': projectid,
+                   'etag': etag,
+                   'participantTeamId': participant_teamid}
+    with patch.object(syn, "restGET",
+                      return_value=rest_return) as patch_rest_get:
+        chal = challengeutils.utils.get_challengeid(syn, projectid)
+        patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
+        assert chal == challenge_obj
