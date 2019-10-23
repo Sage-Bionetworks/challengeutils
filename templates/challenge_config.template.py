@@ -33,7 +33,7 @@ class Score(EvaluationQueueScorer):
         return score_status
 
 
-class ValidateProject(EvaluationQueueScorer):
+class ValidateProject(EvaluationQueueValidator):
     """Template for ValidateProject submissions"""
     def interaction_func(self, submission, goldstandard_path,
                          public=True, admin=None):
