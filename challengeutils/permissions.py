@@ -1,17 +1,18 @@
+"""Convenience functions to set permissions on Synapse entities,
+without having to know the granular access control list"""
 import synapseclient
+
 VIEW = ["READ"]
 SUBMIT = ['READ', 'SUBMIT']
 DOWNLOAD = ['READ', 'DOWNLOAD']
 EDIT = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
 EDIT_AND_DELETE = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE', 'DELETE']
 SCORE = ['READ', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION']
-ADMIN_EVALS = [
-    'DELETE_SUBMISSION', 'DELETE', 'SUBMIT', 'UPDATE',
-    'CREATE', 'READ', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION',
-    'CHANGE_PERMISSIONS']
-ADMIN = [
-    'DELETE', 'CHANGE_SETTINGS', 'MODERATE', 'CREATE', 'READ',
-    'DOWNLOAD', 'UPDATE', 'CHANGE_PERMISSIONS']
+ADMIN_EVALS = ['DELETE_SUBMISSION', 'DELETE', 'SUBMIT', 'UPDATE',
+               'CREATE', 'READ', 'UPDATE_SUBMISSION',
+               'READ_PRIVATE_SUBMISSION', 'CHANGE_PERMISSIONS']
+ADMIN = ['DELETE', 'CHANGE_SETTINGS', 'MODERATE', 'CREATE', 'READ',
+         'DOWNLOAD', 'UPDATE', 'CHANGE_PERMISSIONS']
 EVALUATION_PERMS_MAPPINGS = {'view': VIEW,
                              'submit': SUBMIT,
                              'score': SCORE,
@@ -25,10 +26,7 @@ ENTITY_PERMS_MAPPINGS = {'view': VIEW,
                          'remove': []}
 
 
-def _set_permissions(syn,
-                     syn_obj,
-                     principalid,
-                     permission_level):
+def _set_permissions(syn, syn_obj, principalid, permission_level):
     """
     Helper function to set the ACL on entity or evaluation
 
@@ -51,9 +49,8 @@ def _set_permissions(syn,
         raise ValueError("permission_level must be one of these: {0}".format(
             ', '.join(permission_level_mapping.keys())))
 
-    syn.setPermissions(
-        syn_obj, principalId=principalid,
-        accessType=permission_level_mapping[permission_level])
+    syn.setPermissions(syn_obj, principalId=principalid,
+                       accessType=permission_level_mapping[permission_level])
 
 
 def set_evaluation_permissions(syn, evaluation, principalid,
@@ -74,8 +71,7 @@ def set_evaluation_permissions(syn, evaluation, principalid,
     """
     # Get the evaluation to check for access / validity of entity
     evaluation = syn.getEvaluation(evaluation)
-    _set_permissions(
-        syn, evaluation, principalid, permission_level)
+    _set_permissions(syn, evaluation, principalid, permission_level)
 
 
 def set_entity_permissions(syn, entity, principalid,
@@ -96,5 +92,4 @@ def set_entity_permissions(syn, entity, principalid,
     """
     # Get the entity to check for access / validity of entity
     entity = syn.get(entity, downloadFile=False)
-    _set_permissions(
-        syn, entity, principalid, permission_level)
+    _set_permissions(syn, entity, principalid, permission_level)

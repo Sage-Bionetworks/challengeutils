@@ -10,6 +10,7 @@ import re
 import challengeutils.utils
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
+from synapseclient.exceptions import SynapseHTTPError
 
 syn = mock.create_autospec(synapseclient.Synapse)
 
@@ -259,3 +260,31 @@ def test_annotate_submission_with_json():
         patch_syn_store.assert_called_once_with(status)
     os.unlink(tempfile_path)
 
+
+def test_userid__get_submitter_name():
+    """Get username if userid is passed in"""
+    submitterid = 2222
+    userinfo = {"userName": "foo"}
+    with mock.patch.object(syn, "getUserProfile",
+                           return_value=userinfo) as patch_get_user,\
+         mock.patch.object(syn, "getTeam") as patch_get_team:
+        submittername = challengeutils.utils._get_submitter_name(syn,
+                                                                 submitterid)
+        assert submittername == userinfo['userName']
+        patch_get_user.assert_called_once_with(submitterid)
+        patch_get_team.assert_not_called()
+
+
+def test_teamid__get_submitter_name():
+    """Get teamname if teamid is passed in"""
+    submitterid = 2222
+    teaminfo = {"name": "foo"}
+    with mock.patch.object(syn, "getUserProfile",
+                           side_effect=SynapseHTTPError) as patch_get_user,\
+         mock.patch.object(syn, "getTeam",
+                           return_value=teaminfo) as patch_get_team:
+        submittername = challengeutils.utils._get_submitter_name(syn,
+                                                                 submitterid)
+        assert submittername == teaminfo['name']
+        patch_get_user.assert_called_once_with(submitterid)
+        patch_get_team.assert_called_once_with(submitterid)

@@ -11,6 +11,8 @@ from . import utils
 from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
+from . import helpers
+from .__version__ import __version__
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -25,8 +27,20 @@ def command_createchallenge(syn, args):
 
 
 def command_query(syn, args):
+    """Command line convenience function to call evaluation queue query"""
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
+    if args.render:
+        # Check if submitterId column exists
+        if querydf.get('submitterId') is not None:
+            submitter_names = [utils._get_submitter_name(syn, submitterid)
+                               for submitterid in querydf['submitterId']]
+            querydf['submitterName'] = submitter_names
+        # Check if createdOn column exists
+        if querydf.get('createdOn') is not None:
+            createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
+                          for createdon in querydf['createdOn']]
+            querydf['createdOn'] = createdons
     if args.outputfile is not None:
         querydf.to_csv(args.outputfile, index=False)
     else:
@@ -95,21 +109,37 @@ def command_annotate_submission_with_json(syn, args):
         retries=10)
 
 
+def command_send_email(syn, args):
+    """Command line interface to send Synapse email"""
+    # Must escape the backslash and replace all \n with
+    # html breaks
+    message = args.message.replace("\\n", "<br>")
+    syn.sendMessage(userIds=args.userids,
+                    messageSubject=args.subject,
+                    messageBody=message)
+
+
+def command_kill_docker_over_quota(syn, args):
+    '''
+    Command line helper to kill docker submissions
+    over the quota
+    '''
+    helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
+                                              quota=args.quota)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
         description='Challenge utility functions')
-    '''
-    parser.add_argument('-u', '--username', dest='synapseUser',
-                         help='Username used to connect to Synapse')
-    parser.add_argument('-p', '--password', dest='synapsePassword',
-                         help='Password used to connect to Synapse')
 
-    '''
     parser.add_argument(
         "-c", "--synapse_config",
         default=synapseclient.client.CONFIG_FILE,
         help="credentials file")
+
+    parser.add_argument('-v', '--version', action='version',
+                        version='challengeutils {}'.format(__version__))
 
     subparsers = parser.add_subparsers(
         title='commands',
@@ -163,6 +193,10 @@ def build_parser():
         help="File that you want your query results to be written to."
              "If not specified, it is written as stdout.",
         default=None)
+    parser_query.add_argument(
+        "--render",
+        action='store_true',
+        help="Renders submitterId and createdOn values in leaderboard")
     parser_query.add_argument(
         "--limit",
         type=int,
@@ -326,6 +360,47 @@ def build_parser():
         action='store_true')
     parser_annotate_sub.set_defaults(
         func=command_annotate_submission_with_json)
+
+    parser_send_email = subparsers.add_parser(
+        'sendemail',
+        help='Send a Synapse email')
+
+    parser_send_email.add_argument(
+        "--userids",
+        type=str,
+        help='List of user ids',
+        nargs="+",
+        required=True)
+
+    parser_send_email.add_argument(
+        "--subject",
+        type=str,
+        help='Email message subject',
+        required=True)
+
+    parser_send_email.add_argument(
+        "--message",
+        type=str,
+        help='Email message body',
+        required=True)
+
+    parser_send_email.set_defaults(func=command_send_email)
+
+
+    parser_kill_docker = subparsers.add_parser(
+        'killdockeroverquota',
+        help='Kill Docker submissions over the quota')
+
+    parser_kill_docker.add_argument(
+        "evaluationid",
+        type=str,
+        help='Synapse evaluation queue id')
+
+    parser_kill_docker.add_argument(
+        "quota",
+        type=int,
+        help="Time quota submission has to run in milliseconds")
+    parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
 
     return parser
 

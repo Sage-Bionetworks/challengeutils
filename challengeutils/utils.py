@@ -7,8 +7,11 @@ import sys
 import urllib
 import datetime
 import synapseclient
+
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
+from synapseclient.exceptions import SynapseHTTPError
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -585,3 +588,23 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         to_public=to_public,
         force_change_annotation_acl=force_change_annotation_acl)
     status = syn.store(status)
+
+
+def _get_submitter_name(syn, submitterid):
+    """Get the Synapse team name or the username given a submitterid
+
+    Args:
+        syn: Synapse object
+        submitterid: submitter id
+
+    Returns:
+        username or teamname
+    """
+
+    try:
+        user = syn.getUserProfile(submitterid)
+        submitter_name = user['userName']
+    except SynapseHTTPError:
+        team = syn.getTeam(submitterid)
+        submitter_name = team['name']
+    return submitter_name
