@@ -1,13 +1,13 @@
-'''
+"""
 Challenge utility functions
-'''
+"""
+import datetime
 import json
 import logging
 import sys
 import urllib
-import datetime
-import synapseclient
 
+import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
