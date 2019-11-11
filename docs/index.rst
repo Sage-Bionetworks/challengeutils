@@ -1,20 +1,14 @@
-.. Synapse Challenge Utilities documentation master file, created by
+.. challengeutils documentation master file, created by
    sphinx-quickstart on Sun Nov 10 18:08:14 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Synapse Challenge Utilities's documentation!
+Welcome to challengeutils' documentation!
 =======================================================
 
+Synapse challenge utility functions
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   challengeutils

@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Synapse Challenge Utilities'
+project = 'challengeutils'
 copyright = '2019, Thomas Yu'
 author = 'Thomas Yu'
 
@@ -108,7 +108,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SynapseChallengeUtilitiesdoc'
+htmlhelp_basename = 'challengeutilsdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -135,7 +135,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'SynapseChallengeUtilities.tex', 'Synapse Challenge Utilities Documentation',
+    (master_doc, 'challengeutils.tex', 'challengeutils Documentation',
      'Thomas Yu', 'manual'),
 ]
 
@@ -145,7 +145,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'synapsechallengeutilities', 'Synapse Challenge Utilities Documentation',
+    (master_doc, 'challengeutils', 'challengeutils Documentation',
      [author], 1)
 ]
 
@@ -156,8 +156,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'SynapseChallengeUtilities', 'Synapse Challenge Utilities Documentation',
-     author, 'SynapseChallengeUtilities', 'One line description of project.',
+    (master_doc, 'challengeutils', 'challengeutils Documentation',
+     author, 'challengeutils', 'Synapse challenge helper functions.',
      'Miscellaneous'),
 ]
 
