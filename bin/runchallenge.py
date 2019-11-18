@@ -65,9 +65,8 @@ def main(args):
             syn = synapseclient.Synapse(debug=args.debug)
         syn.login(silent=True)
     except (SynapseAuthenticationError, SynapseNoCredentialsError):
-        raise ValueError(
-            "Must provide Synapse credentials as parameters or "
-            "store them as environmental variables.")
+        raise ValueError("Must provide Synapse credentials as parameters or "
+                         "through a Synapse config file.")
 
     # TODO: Check challenge admin ids
     if args.admin_user_ids is None:
@@ -88,12 +87,16 @@ def main(args):
                            "in your EVALUATION_QUEUES_CONFIG")
         evaluation_queue_maps[queue['id']] = queue
 
-    # if args.evaluation is not None:
-    #     check_queue_in_config = [eval_queue in evaluation_queue_maps
-    #                              for eval_queue in args.evaluation]
-    #     if not all(check_queue_in_config):
-    #         raise ValueError("If evaluation is specified, must match an 'id' "
-    #                          "in EVALUATION_QUEUES_CONFIG")
+    if args.evaluation:
+        try:
+            eval_queues = {evalid: evaluation_queue_maps[evalid]
+                           for evalid in args.evaluation}
+        except KeyError:
+            raise ValueError("If evaluation is specified, must match an 'id' "
+                             "in EVALUATION_QUEUES_CONFIG")
+    else:
+        eval_queues = evaluation_queue_maps
+
     # Acquire lock, don't run two scoring scripts at once
     try:
         update_lock = lock.acquire_lock_or_fail('challenge',
@@ -106,10 +109,10 @@ def main(args):
         return 75
 
     if args.validate:
-        command_validate(syn, evaluation_queue_maps)
+        command_validate(syn, eval_queues)
 
     if args.score:
-        command_score(syn, evaluation_queue_maps)
+        command_score(syn, eval_queues)
 
     update_lock.release()
 
@@ -154,6 +157,12 @@ if __name__ == '__main__':
     parser.add_argument('-a',
                         "--admin-user-ids",
                         help="Synapse user ids. Defaults to the user running the script",
+                        nargs='+',
+                        default=None)
+
+    parser.add_argument("--evaluation",
+                        help="Evaluation id(s) to validate/score.  If not specified, script "
+                             "will validate/score all evaluations set in EVALUATION_QUEUES_CONFIG",
                         nargs='+',
                         default=None)
 
