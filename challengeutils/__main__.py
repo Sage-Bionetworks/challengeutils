@@ -239,9 +239,8 @@ def build_parser():
     parser_attach_writeup.add_argument(
         "--statuskey",
         type=str,
-        choices=['STATUS', 'prediction_file_status'],
-        help='Submission status annotation key to look query. Defaults to STATUS',
-        default="STATUS")
+        help='Submission status annotation key to look query. Defaults to status',
+        default="status")
 
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
@@ -392,7 +391,6 @@ def build_parser():
         required=True)
 
     parser_send_email.set_defaults(func=command_send_email)
-
 
     parser_kill_docker = subparsers.add_parser(
         'killdockeroverquota',
