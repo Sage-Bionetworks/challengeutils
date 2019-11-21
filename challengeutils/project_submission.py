@@ -134,7 +134,7 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
 
 def archive_and_attach_project_submissions(syn, writeup_queueid,
                                            submission_queueid,
-                                           status_key="STATUS"):
+                                           status_key="status"):
     """
     Attach the write up to the submission queue
 
@@ -169,7 +169,7 @@ def archive_and_attach_project_submissions(syn, writeup_queueid,
     # Drop all duplicated so that one submission is linked with one writeup
     # One writeup can be linked to many submissions, but not the other way
     # around
-    subs_and_writeupsdf.drop_duplicates('objectId_x', inplace=True)             
+    subs_and_writeupsdf.drop_duplicates('objectId_x', inplace=True)
 
     # Must rename writeup submission objectId or there will be conflict
     # entityId_y: writeUp Project ids
@@ -193,12 +193,13 @@ def archive_and_attach_project_submissions(syn, writeup_queueid,
         # Replace all float('nan') values with None
         else:
             null_ind = subs_and_writeupsdf[key].isnull()
-            subs_and_writeupsdf[key][null_ind] = None
+            subs_and_writeupsdf.loc[null_ind, key] = None
 
     # objectId_x: objectIds from submission queue
     subs_and_writeupsdf.apply(lambda row:
                               utils.annotate_submission(syn,
                                                         row['objectId_x'],
-                                                        row[annotation_keys].to_dict(),
+                                                        row[annotation_keys].to_dict(
+                                                        ),
                                                         annotation_keys),
                               axis=1)
