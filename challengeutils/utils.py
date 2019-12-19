@@ -180,16 +180,19 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challengeid(syn, entity):
-    """
-    Function that gets the challenge id for a project
+def get_challenge(syn, entity):
+    """Get the Challenge associated with a Project.
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
 
     Args:
-        entity: An Entity or Synapse ID to lookup
+        entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        Challenge dictionary
+        A Challenge object as a dictionary.    
     """
+    
     synid = synapseclient.utils.id_of(entity)
     challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
     return challenge_obj
