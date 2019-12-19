@@ -1,4 +1,11 @@
 """Challenge configuration"""
+import time
+
+from synapseclient import Submission, Project, AUTHENTICATED_USERS
+from synapseclient.exceptions import SynapseHTTPError
+import synapseutils
+
+from challengeutils import permissions
 from scoring_harness.queue_validator import EvaluationQueueValidator
 from scoring_harness.queue_scorer import EvaluationQueueScorer
 
@@ -35,21 +42,18 @@ class Score(EvaluationQueueScorer):
 
 class ValidateProject(EvaluationQueueValidator):
     """Template for ValidateProject submissions"""
-    def interaction_func(self, submission, goldstandard_path,
-                         public=True, admin=None):
+    def interaction_func(self, submission, public=True, admin=None):
         """Validates Projects
 
         Args:
             submission: Submission object
-            goldstandard_path: Unused
+
             public: If the writeup needs to be public. Defaults to True
             admin: Specify Synapse userid that writeup needs to be
                    shared with
         Returns:
             validation status dict
         """
-        from synapseclient import Submission, Project, AUTHENTICATED_USERS
-        from synapseclient.exceptions import SynapseHTTPError
 
         not_writeup_error = (
             "This is the writeup submission queue - submission must be a "
@@ -89,6 +93,40 @@ class ValidateProject(EvaluationQueueValidator):
         return validation_status
 
 
+class ArchiveProject(EvaluationQueueScorer):
+    """Template for ArchiveProject submissions"""
+    _success_status = "ACCEPTED"
+
+    def interaction_func(self, submission, admin):
+        """Archives Project Submissions
+
+        Args:
+            submission: Submission object
+            admin: Specify Synapse userid/team for archive to be
+                   shared with
+        Returns:
+            archive status dict
+        """
+
+        project_entity = Project('Archived {} {} {} {}'.format(
+            submission.name.replace("&", "+").replace("'", ""),
+            int(round(time.time() * 1000)),
+            submission.id,
+            submission.entityId))
+        new_project_entity = self.syn.store(project_entity)
+        permissions.set_entity_permissions(self.syn, new_project_entity,
+                                           admin, "admin")
+
+        synapseutils.copy(self.syn, submission.entityId,
+                          new_project_entity.id)
+        archived = {"archived": new_project_entity.id}
+
+        archive_status = {'valid': True,
+                          'annotations': archived,
+                          'message': "Archived!"}
+        return archive_status
+
+
 EVALUATION_QUEUES_CONFIG = [
     {'id': 1,
      'func': Validate,
@@ -97,9 +135,10 @@ EVALUATION_QUEUES_CONFIG = [
      'func': Score,
      'kwargs': {'goldstandard_path': 'path/to/sc1gold.txt'}},
     {'id': 2,
-     'func': Validate,
-     'kwargs': {'goldstandard_path': 'path/to/sc2gold.txt'}},
+     'func': ValidateProject,
+     'kwargs': {'public': True,
+                'admin': 'foo'}},
     {'id': 2,
-     'func': Score,
-     'kwargs': {'goldstandard_path': 'path/to/sc2gold.txt'}}
+     'func': ArchiveProject,
+     'kwargs': {'admin': 'foo'}}
 ]
