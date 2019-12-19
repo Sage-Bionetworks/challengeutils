@@ -317,7 +317,7 @@ def register_team(syn, entity, team):
         Team id
     '''
 
-    challengeid = get_challengeid(syn, entity)['id']
+    challengeid = get_challenge(syn, entity)['id']
     teamid = syn.getTeam(team)['id']
     challenge_object = {'challengeId': challengeid, 'teamId': teamid}
     registered_team = syn.restPOST(
