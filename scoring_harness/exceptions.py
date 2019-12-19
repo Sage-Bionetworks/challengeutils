@@ -1,6 +1,6 @@
-'''
+"""
 Define Python user-defined exceptions
-'''
+"""
 
 
 class Error(Exception):
