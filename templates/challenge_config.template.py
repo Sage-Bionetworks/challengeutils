@@ -90,16 +90,16 @@ class ValidateProject(EvaluationQueueValidator):
 
 
 EVALUATION_QUEUES_CONFIG = [
-    {
-        'id': 1,
-        'scoring_func': Score,
-        'validation_func': Validate,
-        'goldstandard_path': 'path/to/sc1gold.txt'
-    },
-    {
-        'id': 2,
-        'scoring_func': Score,
-        'validation_func': Validate,
-        'goldstandard_path': 'path/to/sc2gold.txt'
-    }
+    {'id': 1,
+     'func': Validate,
+     'kwargs': {'goldstandard_path': 'path/to/sc1gold.txt'}},
+    {'id': 1,
+     'func': Score,
+     'kwargs': {'goldstandard_path': 'path/to/sc1gold.txt'}},
+    {'id': 2,
+     'func': Validate,
+     'kwargs': {'goldstandard_path': 'path/to/sc2gold.txt'}},
+    {'id': 2,
+     'func': Score,
+     'kwargs': {'goldstandard_path': 'path/to/sc2gold.txt'}}
 ]
