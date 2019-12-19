@@ -1,5 +1,5 @@
 '''
-Functions that interact with the Synapse discussion API
+Interact with Synapse discussion API endpoints.
 '''
 import json
 import requests
