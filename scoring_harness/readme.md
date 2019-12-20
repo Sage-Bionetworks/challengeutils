@@ -3,7 +3,7 @@ Python Challenge Scoring Harness
 
 In a perfect world, Synapse would automatically validate, score, annotate submissions and email participants for you.  Sadly, we do not live in a perfect world! 
 
-Fortunately, we have created `challenge.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for received submissions to an evaluation queue and validate/score these submissions.
+Fortunately, we have created `runqueue.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for received submissions to an evaluation queue and validate/score these submissions.
 
 If you have no idea what evaluation queues or challenge are, then please turn back around.  If you are curious about setting up a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge before continuing. 
 
@@ -26,22 +26,15 @@ Please make a copy of the `challenge_config.template.py` as a start to creating 
 
 You will need to add an evaluation queue for each question in your challenge and write appropriate validation and scoring functions. Then, customize the messages with challenge specific help for your solvers.  Information about evaluation queues can be found [here](https://docs.synapse.org/articles/evaluation_queues.html)
 
-In your configuration file **challenge_config.template.py**, you can add in separate `validate`, `score1`, `score2`, and `score...` functions for each question in your challenge.  You can name these functions anything you want as long as you set up a evaluation queue and function or file mapping.  
+In your configuration file **challenge_config.template.py**, you can add in separate `Validate`, `Score` functions for each question in your challenge.  You can name these functions anything you want as long as you set up a evaluation queue and function or file mapping.
 ```
 EVALUATION_QUEUES_CONFIG = [
-    {
-        'id': 1,
-        'scoring_func': score1
-        'validation_func': validate_func
-        'goldstandard': 'path/to/sc1gold.txt'
-    },
-    {
-        'id': 2,
-        'scoring_func': score2
-        'validation_func': validate_func
-        'goldstandard': 'path/to/sc2gold.txt'
-
-    }
+    {'id': 1,
+     'func': Validate,
+     'kwargs': {'goldstandard_path': 'path/to/sc1gold.txt'}},
+    {'id': 1,
+     'func': Score,
+     'kwargs': {'goldstandard_path': 'path/to/sc1gold.txt'}}
 ]
 ```
 
@@ -53,13 +46,13 @@ Here are some examples on how to run the script.
 
 ```
 # See all the available parameters
-runchallenge.py -h
+runqueue.py -h
 
 # Validation
-runchallenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt validate
+runqueue.py challenge_config.template.py --send-messages --notifications --acknowledge-receipt validate
 
 # Scoring
-runchallenge.py syn1234 challenge_config.template.py --send-messages --notifications --acknowledge-receipt score
+runqueue.py challenge_config.template.py --send-messages --notifications --acknowledge-receipt score
 
 ```
 
@@ -86,6 +79,6 @@ It is very typical for validation and scoring to occur every 5 to 10 minutes, as
 Paste this into the file:
 
 	# minute (m), hour (h), day of month (dom), month (mon)                      
-	*/10 * * * * runchallenge.py ....
+	*/10 * * * * runqueue.py ....
 
 Note: the first 5 * stand for minute (m), hour (h), day of month (dom), and month (mon). The configuration to have a job be done every ten minutes would look something like */10 * * * *

@@ -57,7 +57,7 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
     """
 
     challenge_ent = syn.get(synid)
-    challenge_obj = utils.get_challengeid(challenge_ent)
+    challenge_obj = utils.get_challenge(challenge_ent)
     registered_teams = syn._GET_paginated(
         "/challenge/{}/challengeTeam".format(challenge_obj['id']))
     for i in registered_teams:
