@@ -6,7 +6,7 @@ import requests
 
 import synapseclient
 
-from syn_models.forum import Forum
+from synapseservices.forum import Forum
 
 QUERY_LIMIT = 1000
 
