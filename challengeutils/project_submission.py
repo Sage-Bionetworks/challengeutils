@@ -3,98 +3,15 @@ This module is responsible for attaching participant writeup submissions with
 the main challenge queues.  It also archives(copies) projects since there isn't
 currently an elegant way in Synapse to create snapshots of projects.
 """
+from abc import ABCMeta, abstractmethod
 import logging
-import time
+
 import pandas as pd
-import synapseclient
 from synapseclient.utils import id_of
 from . import utils
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-
-def _archive_project_submission(syn, submission):
-    """
-    Creates the archived writeup project
-
-    Args:
-        syn: `synapseclient.Synapse` connection
-        submission: `synapseclient.Submission` object
-
-    Returns:
-        Archived `synapseclient.Project` object
-    """
-    submission_name = submission.entity.name
-    current_time_ms = int(round(time.time() * 1000))
-    archived_name = (f"Archived {submission_name} {current_time_ms} "
-                     f"{submission.id} {submission.entityId}")
-    archive_project_entity = utils.copy_project(syn, submission.entityId,
-                                                archived_name)
-    return archive_project_entity
-
-
-def archive_project_submission(syn, submission, rearchive=False):
-    """
-    Archive one writeup submission by copying the submitted writeup
-    Project into a new Project.
-
-    Args:
-        syn: `synapseclient.Synapse` connection
-        submission: `synapseclient.Submission` or its id
-        rearchive: Determine whether or not to re-archive the submitted
-                   Project. Default to False.
-
-    Returns:
-        Synapse entity id of archived project
-    """
-    # retrieve file into cache and copy it to destination
-    if not isinstance(submission, synapseclient.Submission):
-        sub = syn.getSubmission(submission, downloadFile=False)
-    sub_status = syn.getSubmissionStatus(submission)
-    # The .get accounts for if there is no stringAnnos
-    archived_entity = [x for x in sub_status.annotations.get('stringAnnos', [])
-                       if x.get("key") == "archived"]
-    # archived_entity will be an empty list if the annotation doesnt exist
-    if not archived_entity or rearchive:
-        LOGGER.info(f"Archiving project submission: {sub.id}")
-        entity = _archive_project_submission(syn, sub)
-        archived = {"archived": entity.id}
-        sub_status = utils.update_single_submission_status(sub_status,
-                                                           archived)
-        syn.store(sub_status)
-        return entity.id
-    return archived_entity[0]['value']
-
-
-def archive_project_submissions(syn, evaluation,
-                                status_key="STATUS",
-                                status="VALIDATED",
-                                rearchive=False):
-    """
-    Archive submissions for an evaluation queue that accepts writeup
-    submissions as Projects and store them in the destination synapse
-    folder.
-
-    Args:
-        syn: `synapseclient.Synapse` connection
-        evaluation: `synapseclient.Evaluation` or its id
-        status: Annotation status of a submission. Defaults to VALIDATED
-        rearchive: Determine whether or not to re-archive the submitted
-                   Project. Default to False.
-
-    Returns:
-        List of archived entity ids
-    """
-    evaluationid = id_of(evaluation)
-    LOGGER.info(f"Archiving queue: {evaluationid}")
-    query = (f"select objectId from evaluation_{evaluationid} "
-             f"where {status_key} == '{status}'")
-    query_results = utils.evaluation_queue_query(syn, query)
-
-    archived = [archive_project_submission(syn, query_result['objectId'],
-                                           rearchive=rearchive)
-                for query_result in query_results]
-    return archived
 
 
 def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
@@ -124,82 +41,72 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
     return joineddf
 
 
-# def _filter_joined_leaderboard(subs_and_writeupsdf):
-#     validated = subs_and_writeupsdf[f'{status_key}_y'] == "VALIDATED"
-#     subs_and_writeupsdf = subs_and_writeupsdf[validated]
-#     scored = subs_and_writeupsdf[f'{status_key}_x'] == "SCORED"
-#     subs_and_writeupsdf = subs_and_writeupsdf[scored]
-#     return subs_and_writeupsdf
-
-
-def archive_and_attach_project_submissions(syn, writeup_queueid,
-                                           submission_queueid,
-                                           status_key="status"):
+class JoinFilterAnnotateQueues(metaclass=ABCMeta):
     """
-    Attach the write up to the submission queue
-
-    Args:
-        syn: `synapseclient.Synapse` connection
-        writeup_queueid: Write up evaluation queue id
-        submission_queueid: Submission queue id
-        status_key: Submission status annotation key to look query.
-                    Defaults to STATUS,
-                    but could be prediction_file_status (workflowhook)
+    Join queue 1 values with queue 2
+    Filter joined queues to keep specific values
+    Annotate queue 1 with respective queue 2 annotation values
     """
-    archive_project_submissions(syn, writeup_queueid,
-                                status_key=status_key,
-                                status="VALIDATED",
-                                rearchive=False)
+    def __init__(self, syn, queue1, queue2, joinby="submitterId",
+                 status_key="status", annotation_keys=[]):
+        self.syn = syn
+        self.queue1 = queue1
+        self.queue2 = queue2
+        self.joinby = joinby
+        self.status_key = status_key
+        self.annotation_keys = annotation_keys
 
-    subs_and_writeupsdf = join_evaluations(syn, submission_queueid,
-                                           writeup_queueid,
-                                           joinby="submitterId",
-                                           how="left")
+    def join(self):
+        """Join leaderboards"""
+        joineddf = join_evaluations(self.syn, self.queue1, self.queue2,
+                                    self.joinby, how="inner")
+        return joineddf
 
-    # Filter joined leaderboard
-    # subs_and_writeupsdf = _filter_joined_leaderboard(subs_and_writeupsdf)
-    validated = subs_and_writeupsdf[f'{status_key}_y'] == "VALIDATED"
-    subs_and_writeupsdf = subs_and_writeupsdf[validated]
-    scored = subs_and_writeupsdf[f'{status_key}_x'] == "SCORED"
-    subs_and_writeupsdf = subs_and_writeupsdf[scored]
-    # Sort by submission id, because submission ids the bigger the submission
-    # id, the more recent the submission
-    subs_and_writeupsdf = subs_and_writeupsdf.sort_values("objectId_y",
-                                                          ascending=False)
-    # Drop all duplicated so that one submission is linked with one writeup
-    # One writeup can be linked to many submissions, but not the other way
-    # around
-    subs_and_writeupsdf.drop_duplicates('objectId_x', inplace=True)
+    @abstractmethod
+    def filter(self, joineddf):
+        """Filters joined queues"""
 
-    # Must rename writeup submission objectId or there will be conflict
-    # entityId_y: writeUp Project ids
-    # archived: archived Project ids
-    column_remap = {'entityId_y': 'writeUp',
-                    'archived': 'archivedWriteUp'}
+    def annotate(self, joineddf, annotation_keys):
+        """Annotates queue1 with specified annotation keys"""
+        joineddf.apply(lambda row:
+                       utils.annotate_submission(self.syn,
+                                                 row['objectId_x'],
+                                                 row[annotation_keys].to_dict(),
+                                                 annotation_keys),
+                                                 axis=1)
 
-    subs_and_writeupsdf.rename(columns=column_remap,
-                               inplace=True)
+    def __call__(self):
+        """Joins, filters and annotates queue1"""
+        joined_leaderboarddf = self.join()
+        filtered_leaderboarddf = self.filter(joined_leaderboarddf)
+        self.annotate(filtered_leaderboarddf,
+                      annotation_keys=self.annotation_keys)
 
-    subs_and_writeupsdf.drop_duplicates("submitterId", inplace=True)
 
-    annotation_keys = ['writeUp', 'archivedWriteUp']
+class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
+    """Join writeup queue with main challenge queue"""
+    def filter(self, joineddf):
+        """Filters joined queues"""
+        # Filter joined leaderboard
+        validated = joineddf[f'{self.status_key}_y'] == "VALIDATED"
+        joineddf = joineddf[validated]
+        scored = joineddf[f'{self.status_key}_x'] == "SCORED"
+        joineddf = joineddf[scored]
+        # Sort by submission id, because submission ids the bigger
+        # the submission id, the more recent the submission
+        joineddf = joineddf.sort_values("objectId_y", ascending=False)
+        # Drop all duplicated so that one submission is linked with one
+        # writeup. One writeup can be linked to many submissions, but not
+        # the other way around
+        joineddf.drop_duplicates('objectId_x', inplace=True)
 
-    # None value is added because annotate_submission replies on an `is None`
-    # check
-    for key in annotation_keys:
-        # Add column with None values if the column doesn't exist
-        if subs_and_writeupsdf.get(key) is None:
-            subs_and_writeupsdf[key] = None
-        # Replace all float('nan') values with None
-        else:
-            null_ind = subs_and_writeupsdf[key].isnull()
-            subs_and_writeupsdf.loc[null_ind, key] = None
+        # Must rename writeup submission objectId or there will be conflict
+        # entityId_y: writeUp Project ids
+        # archived: archived Project ids
+        column_remap = {'entityId_y': 'writeUp',
+                        'archived': 'archivedWriteUp'}
 
-    # objectId_x: objectIds from submission queue
-    subs_and_writeupsdf.apply(lambda row:
-                              utils.annotate_submission(syn,
-                                                        row['objectId_x'],
-                                                        row[annotation_keys].to_dict(
-                                                        ),
-                                                        annotation_keys),
-                              axis=1)
+        joineddf.rename(columns=column_remap, inplace=True)
+
+        joineddf.drop_duplicates("submitterId", inplace=True)
+        return joineddf
