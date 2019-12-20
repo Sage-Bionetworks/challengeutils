@@ -1,7 +1,7 @@
-from .base_model import Model, deserialize_model
+from .base_service import Service, deserialize_model
 
 
-class Forum(Model):
+class Forum(Service):
     def __init__(self, id=None, projectId=None, etag=None):
 
         self.openapi_types = {

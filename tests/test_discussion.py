@@ -4,14 +4,22 @@ Test challengeutils.discussion functions
 import json
 import mock
 import requests
-import synapseclient
-from challengeutils import discussion
 
-syn = synapseclient.Synapse()
+import synapseclient
+
+from challengeutils import discussion
+from challengeutils.discussion import DiscussionApi
+
+from synapseservices.forum import Forum
+
+syn = mock.create_autospec(synapseclient.Synapse)
+api = DiscussionApi(syn)
+
 PROJECTID = "syn100000"
-FORUM_OBJ = {'etag': 'foo',
-             'id': '444',
-             'projectId': PROJECTID}
+FORUM_DICT = {'etag': 'foo',
+              'id': '444',
+              'projectId': PROJECTID}
+FORUM_OBJ = Forum(**FORUM_DICT)
 THREAD_OBJ = {'messageKey': '333/3333/22222-5d2224e-222-222-2222sdfasdf',
               'numberOfReplies': 0,
               'isPinned': False,
@@ -27,7 +35,7 @@ THREAD_OBJ = {'messageKey': '333/3333/22222-5d2224e-222-222-2222sdfasdf',
               'lastActivity': '2019-06-27T04:01:25.000Z',
               'id': '5583',
               'projectId': PROJECTID,
-              'forumId': FORUM_OBJ['id']}
+              'forumId': FORUM_OBJ.id}
 REPLY_OBJ = {'threadId': THREAD_OBJ['id'],
              'messageKey': '222/2222/22222/2222-5b222f4-4a62-bde7-2222222',
              'modifiedOn': '2019-06-27T04:07:56.000Z',
@@ -38,7 +46,7 @@ REPLY_OBJ = {'threadId': THREAD_OBJ['id'],
              'id': '18763',
              'projectId': PROJECTID,
              'createdOn': '2019-06-27T04:07:56.000Z',
-             'forumId': FORUM_OBJ['id']}
+             'forumId': FORUM_OBJ.id}
 
 
 class TextResponseMock:
@@ -48,13 +56,13 @@ class TextResponseMock:
     text = "text"
 
 
-def test__get_forum_obj():
+def test__get_project_forum():
     '''
     Test getting forum object
     '''
     with mock.patch.object(syn, "restGET",
-                           return_value=FORUM_OBJ) as patch_syn_restget:
-        forum = discussion._get_forum_obj(syn, PROJECTID)
+                           return_value=FORUM_DICT) as patch_syn_restget:
+        forum = api.get_project_forum(PROJECTID)
         assert forum == FORUM_OBJ
         patch_syn_restget.assert_called_once_with(
             '/project/{}/forum'.format(PROJECTID))
@@ -65,17 +73,17 @@ def test_get_forum_threads():
     Test get forum threads
     '''
     response = [THREAD_OBJ]
-    with mock.patch.object(discussion,
-                           "_get_forum_obj",
+    with mock.patch.object(DiscussionApi,
+                           "get_project_forum",
                            return_value=FORUM_OBJ) as patch_get_obj,\
-        mock.patch.object(syn, "_GET_paginated",
+        mock.patch.object(DiscussionApi,
+                          "get_forum_threads",
                           return_value=response) as patch_syn_get:
         threads = discussion.get_forum_threads(syn, PROJECTID)
-        patch_get_obj.assert_called_once_with(syn, PROJECTID)
-        patch_syn_get.assert_called_once_with(
-            '/forum/{forumid}/threads?filter={query_filter}'.format(
-                forumid=FORUM_OBJ['id'], query_filter="EXCLUDE_DELETED"),
-            limit=20, offset=0)
+        patch_get_obj.assert_called_once_with(PROJECTID)
+        patch_syn_get.assert_called_once_with(FORUM_OBJ.id,
+                                              query_filter="EXCLUDE_DELETED",
+                                              limit=20, offset=0)
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
         assert threads == response
@@ -88,7 +96,7 @@ def test_get_thread_replies():
     response = [REPLY_OBJ]
     with mock.patch.object(syn, "_GET_paginated",
                            return_value=response) as patch_syn_get:
-        replies = discussion.get_thread_replies(syn, 222)
+        replies = api.get_thread_replies(222)
         patch_syn_get.assert_called_once_with(
             '/thread/{threadid}/replies?filter={query_filter}'.format(
                 threadid=222, query_filter="EXCLUDE_DELETED"),
@@ -118,25 +126,32 @@ def test__get_text():
 def test_get_thread_text():
     '''Test get thread text'''
     messagekey = THREAD_OBJ['messageKey']
-    with mock.patch.object(discussion,
+    with mock.patch.object(DiscussionApi,
+                           "get_thread_message_url",
+                           return_value='wwwww') as patch_get_url,\
+        mock.patch.object(discussion,
                            "_get_text",
                            return_value=TextResponseMock) as patch_get_text:
         thread_text = discussion.get_thread_text(syn, messagekey)
-        uri = "/thread/messageUrl?messageKey={key}".format(key=messagekey)
+        patch_get_url.assert_called_once_with(messagekey)
         assert thread_text == 'text'
-        patch_get_text.assert_called_once_with(syn, uri)
+        patch_get_text.assert_called_once_with(syn, 'wwwww')
 
 
 def test_get_thread_reply_text():
     '''Test get thread reply'''
     messagekey = REPLY_OBJ['messageKey']
-    with mock.patch.object(discussion,
+
+    with mock.patch.object(DiscussionApi,
+                           "get_reply_message_url",
+                           return_value='wwwww') as patch_get_url,\
+        mock.patch.object(discussion,
                            "_get_text",
                            return_value=TextResponseMock) as patch_get_text:
         thread_text = discussion.get_thread_reply_text(syn, messagekey)
-        uri = "/reply/messageUrl?messageKey={key}".format(key=messagekey)
+        patch_get_url.assert_called_once_with(messagekey)
         assert thread_text == 'text'
-        patch_get_text.assert_called_once_with(syn, uri)
+        patch_get_text.assert_called_once_with(syn, 'wwwww')
 
 
 def test_get_forum_participants():
@@ -159,16 +174,16 @@ def test_create_thread():
     '''Test thread creation'''
     title = "my title here"
     message = "my message here"
-    discussion_thread_dict = {'forumId': FORUM_OBJ['id'],
+    discussion_thread_dict = {'forumId': FORUM_OBJ.id,
                               'title': title,
                               'messageMarkdown': message}
-    with mock.patch.object(discussion,
-                           "_get_forum_obj",
+    with mock.patch.object(DiscussionApi,
+                           "get_project_forum",
                            return_value=FORUM_OBJ) as patch_get_obj,\
          mock.patch.object(syn, "restPOST",
                            return_value=THREAD_OBJ) as patch_restpost:
         threadobj = discussion.create_thread(syn, PROJECTID, title, message)
-        patch_get_obj.assert_called_once_with(syn, PROJECTID)
+        patch_get_obj.assert_called_once_with(PROJECTID)
         patch_restpost.assert_called_once_with(
             '/thread', body=json.dumps(discussion_thread_dict))
         assert threadobj == THREAD_OBJ
@@ -181,8 +196,7 @@ def test_create_thread_reply():
                          'messageMarkdown': message}
     with mock.patch.object(syn, "restPOST",
                            return_value=REPLY_OBJ) as patch_get_obj:
-        replyobj = discussion.create_thread_reply(syn, THREAD_OBJ['id'],
-                                                  message)
+        replyobj = api.post_reply(THREAD_OBJ['id'], message)
         patch_get_obj.assert_called_once_with(
             '/reply', body=json.dumps(thread_reply_dict))
         assert replyobj == REPLY_OBJ
@@ -193,9 +207,9 @@ def test_get_entity_threads():
     response = [THREAD_OBJ]
     with mock.patch.object(syn, "_GET_paginated",
                            return_value=response) as patch_syn_get:
-        entity_threads = discussion.get_entity_threads(syn, PROJECTID)
+        entity_threads = api.get_threads_referencing_entity(PROJECTID)
         uri = "/entity/{entityid}/threads".format(entityid=PROJECTID)
-        patch_syn_get.assert_called_once_with(uri)
+        patch_syn_get.assert_called_once_with(uri, limit=20, offset=0)
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
         assert entity_threads == response

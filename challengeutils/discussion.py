@@ -220,7 +220,7 @@ def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
     """
     api = DiscussionApi(syn)
     forum_obj = api.get_project_forum(synid)
-    response = api.get_forum_threads(forum_obj['id'],
+    response = api.get_forum_threads(forum_obj.id,
                                      query_filter=query_filter,
                                      limit=limit, offset=offset)
     return response
@@ -312,5 +312,5 @@ def create_thread(syn, synid, title, message):
     '''
     api = DiscussionApi(syn)
     forum_obj = api.get_project_forum(synid)
-    thread_obj = api.post_thread(forum_obj['id'], title, message)
+    thread_obj = api.post_thread(forum_obj.id, title, message)
     return thread_obj
