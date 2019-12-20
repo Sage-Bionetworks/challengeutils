@@ -12,6 +12,8 @@ from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
 
+from synapseservices.challenge import Challenge
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -194,7 +196,8 @@ def get_challenge(syn, entity):
     """
     
     synid = synapseclient.utils.id_of(entity)
-    challenge_obj = syn.restGET("/entity/%s/challenge" % synid)
+    challenge = syn.restGET("/entity/%s/challenge" % synid)
+    challenge_obj = Challenge(**challenge)
     return challenge_obj
 
 
