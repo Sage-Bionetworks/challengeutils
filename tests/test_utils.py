@@ -1,3 +1,6 @@
+'''
+Test challengeutils.utils functions
+'''
 import json
 import mock
 from mock import patch
@@ -117,17 +120,31 @@ def test_topublic_update_single_submission_status():
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
 
-def test__check_date_range():
+def test_valid__check_date_range():
     '''
-    Test checking date range
+    Test checking valid date range
     '''
     date_str = '2019-05-26T23:59:59.062Z'
     datetime1 = '2019-05-06 1:00'
     datetime2 = '2019-06-01 1:00'
-    result = [challengeutils.utils._check_date_range(date_str, datetime1, datetime2),
-              challengeutils.utils._check_date_range(date_str, datetime2, None)]
-    expected_result = [True,False]
-    assert result == expected_result
+    result = challengeutils.utils._check_date_range(date_str,
+                                                    datetime1,
+                                                    datetime2)
+    assert result
+
+
+def test_invalid__check_date_range():
+    '''
+    Test checking invalid date range
+    '''
+    date_str = '2019-05-26T23:59:59.062Z'
+    datetime1 = '2019-05-06 1:00'
+    datetime2 = '2019-06-01 1:00'
+    result = challengeutils.utils._check_date_range(date_str,
+                                                    datetime2,
+                                                    None)
+    assert not result
+
 
 def test__get_contributors():
     '''
@@ -145,6 +162,7 @@ def test__get_contributors():
             status="SCORED")
         assert contributors == set([321])
 
+
 def test_get_contributors():
     '''
     Test getting contributors by a list of evaluation IDs
@@ -156,6 +174,7 @@ def test_get_contributors():
         all_contributors = challengeutils.utils.get_contributors(
             syn, ids, "SCORED")
         assert all_contributors == set([321])
+
 
 def test_list_evaluations():
     with mock.patch.object(
@@ -276,7 +295,7 @@ def test_teamid__get_submitter_name():
 
 
 
-def test_get_challengeid():
+def test_get_challenge():
     projectid = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
     etag = str(uuid.uuid1())
@@ -291,6 +310,6 @@ def test_get_challengeid():
                    'participantTeamId': participant_teamid}
     with patch.object(syn, "restGET",
                       return_value=rest_return) as patch_rest_get:
-        chal = challengeutils.utils.get_challengeid(syn, projectid)
+        chal = challengeutils.utils.get_challenge(syn, projectid)
         patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
         assert chal == challenge_obj

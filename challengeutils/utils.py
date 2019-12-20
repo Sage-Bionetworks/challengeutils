@@ -1,3 +1,6 @@
+"""
+Challenge utility functions
+"""
 import datetime
 import json
 import logging
@@ -5,9 +8,12 @@ import sys
 import urllib
 
 import synapseclient
+from synapseclient.annotations import to_submission_status_annotations
+from synapseclient.annotations import is_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
 
 from synapseservices.challenge import Challenge
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -35,19 +41,37 @@ def _switch_annotation_permission(add_annotations,
         pass
     elif sum(check_key) > 0 and force_change_annotation_acl:
         # Filter out the annotations that have changed ACL
-        existing_annotations = {
-            key: existing_annotations[key]
-            for key in existing_annotations
-            if key not in add_annotations}
+        existing_annotations = {key: existing_annotations[key]
+                                for key in existing_annotations
+                                if key not in add_annotations}
     else:
-        change_keys = [
-            key for key in existing_annotations if key in add_annotations]
+        change_keys = [key for key in existing_annotations
+                       if key in add_annotations]
         raise ValueError(
             "You are trying to change the ACL of these annotation key(s): {}."
             " Either change the annotation key or specify "
             "force_change_annotation_acl=True".format(
                 ", ".join(change_keys)))
-    return(existing_annotations)
+    return existing_annotations
+
+
+def _submission_annotations_to_dict(annotations, is_private=True):
+    '''
+    Convert private / public submission status objects to dictionary
+
+    Args:
+        annotations: Synapse submission status object
+        is_private: Private or public annotations
+
+    Returns:
+        dictionary with annotation key value pairs
+    '''
+    annotation_dict = {annotation['key']: annotation['value']
+                       for annotation_type in annotations
+                       for annotation in annotations[annotation_type]
+                       if annotation_type not in ['scopeId', 'objectId'] and
+                       annotation['isPrivate'] == is_private}
+    return annotation_dict
 
 
 def update_single_submission_status(status, add_annotations, to_public=False,
@@ -69,70 +93,59 @@ def update_single_submission_status(status, add_annotations, to_public=False,
         Updated submission status
 
     """
-    existing_annotations = status.get("annotations", dict())
-    private_annotations = {
-        annotation['key']: annotation['value']
-        for annotation_type in existing_annotations
-        for annotation in existing_annotations[annotation_type]
-        if annotation_type not in ['scopeId', 'objectId'] and
-        annotation['isPrivate']}
+    existing_annots = status.get("annotations", dict())
+    private_annotations = _submission_annotations_to_dict(existing_annots,
+                                                          is_private=True)
 
-    public_annotations = {
-        annotation['key']: annotation['value']
-        for annotation_type in existing_annotations
-        for annotation in existing_annotations[annotation_type]
-        if annotation_type not in ['scopeId', 'objectId']
-        and not annotation['isPrivate']}
+    public_annotations = _submission_annotations_to_dict(existing_annots,
+                                                         is_private=False)
 
-    if not synapseclient.annotations.is_submission_status_annotations(
-            add_annotations):
+    if not is_submission_status_annotations(add_annotations):
         private_added_annotations = dict() if to_public else add_annotations
         public_added_annotations = add_annotations if to_public else dict()
     else:
-        private_added_annotations = {
-            annotation['key']: annotation['value']
-            for annotation_type in add_annotations
-            for annotation in add_annotations[annotation_type]
-            if annotation_type not in ['scopeId', 'objectId']
-            and annotation['isPrivate']}
+        private_added_annotations = _submission_annotations_to_dict(
+            add_annotations, is_private=True)
 
-        public_added_annotations = {
-            annotation['key']: annotation['value']
-            for annotation_type in add_annotations
-            for annotation in add_annotations[annotation_type]
-            if annotation_type not in ['scopeId', 'objectId']
-            and not annotation['isPrivate']}
+        public_added_annotations = _submission_annotations_to_dict(
+            add_annotations, is_private=False)
 
     # If you add a private annotation that appears in the public annotation,
     # it switches
-    private_annotations = _switch_annotation_permission(
-        public_added_annotations, private_annotations,
-        force_change_annotation_acl)
-    public_annotations = _switch_annotation_permission(
-        private_added_annotations, public_annotations,
-        force_change_annotation_acl)
+    private_annotations = _switch_annotation_permission(public_added_annotations,
+                                                        private_annotations,
+                                                        force_change_annotation_acl)
+
+    public_annotations = _switch_annotation_permission(private_added_annotations,
+                                                       public_annotations,
+                                                       force_change_annotation_acl)
 
     private_annotations.update(private_added_annotations)
     public_annotations.update(public_added_annotations)
 
-    priv = synapseclient.annotations.to_submission_status_annotations(
-        private_annotations, is_private=True)
-    pub = synapseclient.annotations.to_submission_status_annotations(
-        public_annotations, is_private=False)
-    # Combined private and public annotations into one
+    priv = to_submission_status_annotations(private_annotations,
+                                            is_private=True)
+    pub = to_submission_status_annotations(public_annotations,
+                                           is_private=False)
+    # Combined private and public annotations into
+    # one Submission.Status.annotation
+    combined_annotations = {'stringAnnos': [],
+                            'longAnnos': [],
+                            'doubleAnnos': []}
     for annotation_type in ['stringAnnos', 'longAnnos', 'doubleAnnos']:
-        if priv.get(annotation_type) is not None and \
-                pub.get(annotation_type) is not None:
-            if pub.get(annotation_type) is not None:
-                priv[annotation_type].extend(pub[annotation_type])
-            else:
-                priv[annotation_type] = pub[annotation_type]
-        elif priv.get(annotation_type) is None and \
-                pub.get(annotation_type) is not None:
-            priv[annotation_type] = pub[annotation_type]
-
-    status['annotations'] = priv
-    return(status)
+        private_annotation = priv.get(annotation_type)
+        public_annotation = pub.get(annotation_type)
+        private_annotation_exists = private_annotation is not None
+        public_annotation_exists = public_annotation is not None
+        if private_annotation_exists:
+            combined_annotations[annotation_type].extend(private_annotation)
+        if public_annotation_exists:
+            combined_annotations[annotation_type].extend(public_annotation)
+        # Remove annotation key if doesn't exist
+        if not private_annotation_exists and not public_annotation_exists:
+            combined_annotations.pop(annotation_type)
+    status['annotations'] = combined_annotations
+    return status
 
 
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
@@ -160,26 +173,28 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
                 uri, limit, offset))
         page = syn.restGET(rest_uri)
         # results = page['results'] if 'results' in page else page['children']
-        results = [{
-            page['headers'][index]:value
-            for index, value in enumerate(row['values'])}
-            for row in page['rows']]
+        results = [{page['headers'][index]:value
+                    for index, value in enumerate(row['values'])}
+                   for row in page['rows']]
         prev_num_results = len(results)
         for result in results:
             offset += 1
             yield result
 
 
-def get_challengeid(syn, entity):
-    """
-    Function that gets the challenge id for a project
+def get_challenge(syn, entity):
+    """Get the Challenge associated with a Project.
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
 
     Args:
-        entity: An Entity or Synapse ID to lookup
+        entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        Challenge dictionary
+        A Challenge object as a dictionary.    
     """
+    
     synid = synapseclient.utils.id_of(entity)
     challenge = syn.restGET("/entity/%s/challenge" % synid)
     challenge_obj = Challenge(**challenge)
@@ -201,11 +216,11 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
 
     '''
     if annotations.get(annotation_type) is not None:
-        check = list(filter(
-            lambda x: x.get('key') == key, annotations[annotation_type]))
-        if len(check) > 0:
+        check = list(filter(lambda x: x.get('key') == key,
+                            annotations[annotation_type]))
+        if check:
             check[0]['isPrivate'] = is_private
-    return(annotations)
+    return annotations
 
 
 def change_submission_annotation_acl(status, annotations, is_private=False):
@@ -230,7 +245,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
         submission_annotations = _change_annotation_acl(
             submission_annotations, key, "longAnnos", is_private)
     status.annotations = submission_annotations
-    return(status)
+    return status
 
 
 def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
@@ -248,9 +263,9 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
     """
     status = None if status == 'ALL' else status
     bundle = syn.getSubmissionBundles(evaluationid, status=status)
-    for sub, status in bundle:
-        new_status = change_submission_annotation_acl(
-            status, annotations, is_private=is_private)
+    for _, status in bundle:
+        new_status = change_submission_annotation_acl(status, annotations,
+                                                      is_private=is_private)
         syn.store(new_status)
 
 
@@ -305,13 +320,13 @@ def register_team(syn, entity, team):
         Team id
     '''
 
-    challengeid = get_challengeid(syn, entity)['id']
+    challengeid = get_challenge(syn, entity)['id']
     teamid = syn.getTeam(team)['id']
     challenge_object = {'challengeId': challengeid, 'teamId': teamid}
     registered_team = syn.restPOST(
         '/challenge/%s/challengeTeam' % challengeid,
         json.dumps(challenge_object))
-    return(registered_team['teamId'])
+    return registered_team['teamId']
 
 
 def change_submission_status(syn, submissionid, status='RECEIVED'):
@@ -329,7 +344,7 @@ def change_submission_status(syn, submissionid, status='RECEIVED'):
     sub_status = syn.getSubmissionStatus(submissionid)
     sub_status.status = status
     sub_status = syn.store(sub_status)
-    return(sub_status)
+    return sub_status
 
 
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
@@ -347,9 +362,9 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
         change_to_status: Submission status to change a submission to.
                           Default is VALIDATED.
     '''
-    submission_bundle = syn.getSubmissionBundles(
-        evaluationid, status=submission_status)
-    for sub, status in submission_bundle:
+    submission_bundle = syn.getSubmissionBundles(evaluationid,
+                                                 status=submission_status)
+    for _, status in submission_bundle:
         status.status = change_to_status
         syn.store(status)
 
@@ -360,7 +375,7 @@ class NewUserProfile(synapseclient.team.UserProfile):
     SYNPY-879
     '''
     def __hash__(self):
-        return(int(self['ownerId']))
+        return int(self['ownerId'])
 
 
 def _get_team_set(syn, team):
@@ -376,7 +391,7 @@ def _get_team_set(syn, team):
     '''
     members = syn.getTeamMembers(team)
     members_set = set(NewUserProfile(**member['member']) for member in members)
-    return(members_set)
+    return members_set
 
 
 def team_members_diff(syn, a, b):
@@ -394,7 +409,7 @@ def team_members_diff(syn, a, b):
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
-    return(members_not_in_teamb)
+    return members_not_in_teamb
 
 
 def team_members_intersection(syn, a, b):
@@ -412,7 +427,7 @@ def team_members_intersection(syn, a, b):
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
-    return(intersect_members)
+    return intersect_members
 
 
 def team_members_union(syn, a, b):
@@ -430,7 +445,7 @@ def team_members_union(syn, a, b):
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)
-    return(union_members)
+    return union_members
 
 
 def _check_date_range(date_str, start_datetime, end_datetime):
@@ -439,35 +454,44 @@ def _check_date_range(date_str, start_datetime, end_datetime):
     Note: the date and time is in UTC
 
     Args:
-        date_str: date string 
-        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
-        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
-    
+        date_str: date string
+        start_datetime: start date time in YYYY-MM-DD H:M format,
+                        example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format,
+                      example: 2019-01-01 23:59
+
     Returns:
         boolean
     '''
     result = True
-    if(start_datetime is not None or end_datetime is not None):
-        date_obj = datetime.datetime.strptime(date_str,'%Y-%m-%dT%H:%M:%S.%fZ')
-        if(start_datetime is not None):
-            start_obj = datetime.datetime.strptime(start_datetime,'%Y-%m-%d %H:%M')
+    if start_datetime is not None or end_datetime is not None:
+        date_obj = datetime.datetime.strptime(date_str,
+                                              '%Y-%m-%dT%H:%M:%S.%fZ')
+        if start_datetime is not None:
+            start_obj = datetime.datetime.strptime(start_datetime,
+                                                   '%Y-%m-%d %H:%M')
             result = date_obj >= start_obj
-        if(end_datetime is not None):
-            end_obj = datetime.datetime.strptime(end_datetime,'%Y-%m-%d %H:%M')
+        if end_datetime is not None:
+            end_obj = datetime.datetime.strptime(end_datetime,
+                                                 '%Y-%m-%d %H:%M')
             result = date_obj <= end_obj
-    return(result)
+    return result
 
-def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
+
+def _get_contributors(syn, evaluationid, status,
+                      start_datetime, end_datetime):
     '''
-    Helper function to get contributors from a given evaluation id. 
+    Helper function to get contributors from a given evaluation id.
     Note: the date and time is in UTC
 
     Args:
         syn: Synapse object
         evaluationid: evaluation id
         submission_status: Submission status
-        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:00
-        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+        start_datetime: start date time in YYYY-MM-DD H:M format,
+                        example: 2019-01-01 23:00
+        end_datetime: end date time in YYYY-MM-DD H:M format,
+                      example: 2019-01-01 23:59
 
     Returns:
         Set of contributors' user ids
@@ -475,31 +499,37 @@ def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
     bundles = syn.getSubmissionBundles(evaluationid, status=status)
     contributors = set()
     for sub, _ in bundles:
-        if((sub.createdOn, start_datetime, end_datetime)):
-            principalids = set(contributor['principalId'] for contributor in sub.contributors)
+        if _check_date_range(sub.createdOn, start_datetime, end_datetime):
+            principalids = set(contributor['principalId']
+                               for contributor in sub.contributors)
             contributors.update(principalids)
-    return(contributors)
+    return contributors
 
-def get_contributors(syn, evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+
+def get_contributors(syn, evaluationids, status='SCORED',
+                     start_datetime=None, end_datetime=None):
     '''
     Function to get contributors from a list of evaluation ids
     Note: the date and time is in UTC
 
     Args:
         syn: Synapse object
-        evaluationids: a list of evaluation ids 
+        evaluationids: a list of evaluation ids
         status: Submission status. Default = SCORED
-        start_datetime: start date time in YYYY-MM-DD H:M format, example: 2019-01-01 1:00
-        end_datetime: end date time in YYYY-MM-DD H:M format, example: 2019-01-01 23:59
+        start_datetime: start date time in YYYY-MM-DD H:M format,
+                        example: 2019-01-01 1:00
+        end_datetime: end date time in YYYY-MM-DD H:M format,
+                      example: 2019-01-01 23:59
 
     Returns:
         Set of contributors' user ids
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_contributors(syn,evaluationid,status,start_datetime,end_datetime)
+        contributors = _get_contributors(syn, evaluationid, status,
+                                         start_datetime, end_datetime)
         all_contributors = all_contributors.union(contributors)
-    return(all_contributors)
+    return all_contributors
 
 
 def list_evaluations(syn, project):
@@ -538,7 +568,7 @@ def download_submission(syn, submissionid, download_location=None):
               'entity_type': entity.get('concreteType'),
               'evaluation_id': sub['evaluationId'],
               'file_path': sub['filePath']}
-    return(result)
+    return result
 
 
 def annotate_submission_with_json(syn, submissionid, annotation_values,
