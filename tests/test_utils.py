@@ -2,19 +2,16 @@
 import json
 import re
 import tempfile
+import uuid
 
 import mock
 from mock import patch
 import pytest
-import re
-import uuid
 
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
-
-import challengeutils.utils
 
 import challengeutils.utils
 from synapseservices.challenge import Challenge
