@@ -66,21 +66,21 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
     def filter(self, joineddf):
         """Filters joined queues"""
 
-    def annotate(self, joineddf, annotation_keys):
+    def annotate(self, joineddf, keys):
         """Annotates queue1 with specified annotation keys"""
         joineddf.apply(lambda row:
                        utils.annotate_submission(self.syn,
                                                  row['objectId_x'],
-                                                 row[annotation_keys].to_dict(),
-                                                 annotation_keys),
-                                                 axis=1)
+                                                 row[keys].to_dict(),
+                                                 keys),
+                       axis=1)
 
     def __call__(self):
         """Joins, filters and annotates queue1"""
         joined_leaderboarddf = self.join()
         filtered_leaderboarddf = self.filter(joined_leaderboarddf)
         self.annotate(filtered_leaderboarddf,
-                      annotation_keys=self.annotation_keys)
+                      keys=self.annotation_keys)
 
 
 class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
