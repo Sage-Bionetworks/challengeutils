@@ -53,7 +53,6 @@ def _set_permissions(syn_obj,
     if permission_level not in permission_level_mapping.keys():
         raise ValueError("permission_level must be one of these: {0}".format(
             ', '.join(permission_level_mapping.keys())))
-
     syn.setPermissions(syn_obj, principalId=principalid,
                        accessType=permission_level_mapping[permission_level])
 

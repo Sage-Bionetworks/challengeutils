@@ -5,9 +5,16 @@ from mock import patch, create_autospec
 import synapseclient
 
 from challengeutils import permissions
+from challengeutils.synapse import Synapse
 
 SYN = create_autospec(synapseclient.Synapse)
 SET_PERMS = {"set"}
+
+
+@pytest.fixture(autouse=True)
+def syn_connection(monkeypatch):
+    """Remove requests.sessions.Session.request for all tests."""
+    monkeypatch.setattr(Synapse, "_synapse_client", SYN)
 
 
 @pytest.mark.parametrize("entity,principalid,permission_level,mapped", [
@@ -39,7 +46,7 @@ def test__set_permissions(entity, principalid, permission_level, mapped):
     #(entity, principalid, permission_level, mapped) = test_data
     with patch.object(SYN, "setPermissions",
                       return_value=SET_PERMS) as patch_set_permission:
-        permissions._set_permissions(SYN, entity, principalid=principalid,
+        permissions._set_permissions(entity, principalid=principalid,
                                      permission_level=permission_level)
         patch_set_permission.assert_called_once_with(entity,
                                                      principalId=principalid,
@@ -50,6 +57,6 @@ def test_wrong_permission_level():
     """Error raised if incorrect permission level is passed in"""
     with pytest.raises(ValueError,
                        match=r'permission_level must be one of these:.*'):
-        permissions._set_permissions(SYN, synapseclient.Entity(),
+        permissions._set_permissions(synapseclient.Entity(),
                                      principalid="3",
                                      permission_level="foo")

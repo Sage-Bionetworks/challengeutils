@@ -1,6 +1,7 @@
 """Test get team stats"""
 import mock
 
+import pytest
 import synapseclient
 
 import challengeutils.utils
@@ -32,8 +33,13 @@ def get_team_member_results(*args):
     return TEAM_MEMBER_MAP[args]
 
 SYN = mock.create_autospec(synapseclient.Synapse)
-Synapse._synapse_client = SYN
 SYN.getTeamMembers.side_effect = get_team_member_results
+
+
+@pytest.fixture(autouse=True)
+def syn_connection(monkeypatch):
+    """Remove requests.sessions.Session.request for all tests."""
+    monkeypatch.setattr(Synapse, "_synapse_client", SYN)
 
 
 def test__get_team_set():

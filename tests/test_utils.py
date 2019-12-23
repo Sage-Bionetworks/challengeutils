@@ -18,7 +18,14 @@ from challengeutils.synapse import Synapse
 from synapseservices.challenge import Challenge
 
 syn = mock.create_autospec(synapseclient.Synapse)
-Synapse._synapse_client = syn
+#MySynapse._synapse_client = syn
+
+
+@pytest.fixture(autouse=True)
+def syn_connection(monkeypatch):
+    """Remove requests.sessions.Session.request for all tests."""
+    monkeypatch.setattr(Synapse, "_synapse_client", syn)
+
 
 def test_raiseerror__switch_annotation_permission():
     '''
@@ -274,8 +281,7 @@ def test_userid__get_submitter_name():
     with mock.patch.object(syn, "getUserProfile",
                            return_value=userinfo) as patch_get_user,\
          mock.patch.object(syn, "getTeam") as patch_get_team:
-        submittername = challengeutils.utils._get_submitter_name(syn,
-                                                                 submitterid)
+        submittername = challengeutils.utils._get_submitter_name(submitterid)
         assert submittername == userinfo['userName']
         patch_get_user.assert_called_once_with(submitterid)
         patch_get_team.assert_not_called()
@@ -289,8 +295,7 @@ def test_teamid__get_submitter_name():
                            side_effect=SynapseHTTPError) as patch_get_user,\
          mock.patch.object(syn, "getTeam",
                            return_value=teaminfo) as patch_get_team:
-        submittername = challengeutils.utils._get_submitter_name(syn,
-                                                                 submitterid)
+        submittername = challengeutils.utils._get_submitter_name(submitterid)
         assert submittername == teaminfo['name']
         patch_get_user.assert_called_once_with(submitterid)
         patch_get_team.assert_called_once_with(submitterid)
@@ -312,6 +317,6 @@ def test_get_challenge():
                    'participantTeamId': participant_teamid}
     with patch.object(syn, "restGET",
                       return_value=rest_return) as patch_rest_get:
-        chal = challengeutils.utils.get_challenge(syn, projectid)
+        chal = challengeutils.utils.get_challenge(projectid)
         patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
         assert chal == challenge_obj

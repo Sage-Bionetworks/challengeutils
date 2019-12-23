@@ -4,8 +4,11 @@ Test challengeutils helper functions
 import mock
 from mock import patch
 import pytest
+
 import synapseclient
+
 from challengeutils import helpers, utils
+from challengeutils.synapse import Synapse
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 
@@ -17,25 +20,29 @@ DOCKER_SUB_ANNOTATION = {helpers.WORKFLOW_LAST_UPDATED_KEY: LAST_UPDATED_TIME,
 EVALUATION_ID = 111
 
 
+@pytest.fixture(autouse=True)
+def syn_connection(monkeypatch):
+    """Remove requests.sessions.Session.request for all tests."""
+    monkeypatch.setattr(Synapse, "_synapse_client", SYN)
+
+
 def test_noneintquota_kill_docker_submission_over_quota():
     '''
     ValueError is raised when none integer quota is passed in
     '''
     with pytest.raises(ValueError, match=r'quota must be an integer'):
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID,
                                                   quota="foo")
 
 
-def test_greaterthan0quota_kill_docker_submission_over_quota():
+@pytest.mark.parametrize("invalid_input", [0, -1])
+def test_greaterthan0quota_kill_docker_submission_over_quota(invalid_input):
     '''
     ValueError is raised when quota of 0 or less is passed
     '''
     with pytest.raises(ValueError, match=r'quota must be larger than 0'):
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
-                                                  quota=0)
-    with pytest.raises(ValueError, match=r'quota must be larger than 0'):
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
-                                                  quota=-1)
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID,
+                                                  quota=invalid_input)
 
 
 def test_noquota_kill_docker_submission_over_quota():
@@ -50,10 +57,10 @@ def test_noquota_kill_docker_submission_over_quota():
          patch.object(utils,
                       "update_single_submission_status") as patch_update, \
          patch.object(SYN, "store") as patch_synstore:
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID)
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID)
         query = ("select * from evaluation_{} where "
                  "status == 'EVALUATION_IN_PROGRESS'").format(EVALUATION_ID)
-        patch_query.assert_called_once_with(SYN, query)
+        patch_query.assert_called_once_with(query)
         patch_getstatus.assert_not_called()
         patch_update.assert_not_called()
         patch_synstore.assert_not_called()
@@ -72,10 +79,10 @@ def test_notdocker_kill_docker_submission_over_quota():
          patch.object(utils,
                       "update_single_submission_status") as patch_update, \
          patch.object(SYN, "store") as patch_synstore:
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID)
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID)
         query = ("select * from evaluation_{} where "
                  "status == 'EVALUATION_IN_PROGRESS'").format(EVALUATION_ID)
-        patch_query.assert_called_once_with(SYN, query)
+        patch_query.assert_called_once_with(query)
         patch_getstatus.assert_not_called()
         patch_update.assert_not_called()
         patch_synstore.assert_not_called()
@@ -95,11 +102,11 @@ def test_underquota_kill_docker_submission_over_quota():
          patch.object(SYN, "store") as patch_synstore:
         # Set quota thats greater than the runtime
         quota = LAST_UPDATED_TIME - START_TIME + 9000
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID,
                                                   quota=quota)
         query = ("select * from evaluation_{} where "
                  "status == 'EVALUATION_IN_PROGRESS'").format(EVALUATION_ID)
-        patch_query.assert_called_once_with(SYN, query)
+        patch_query.assert_called_once_with(query)
         patch_getstatus.assert_not_called()
         patch_update.assert_not_called()
         patch_synstore.assert_not_called()
@@ -121,11 +128,11 @@ def test_overquota_kill_docker_submission_over_quota():
          patch.object(SYN, "store") as patch_synstore:
         # Set quota thats lower than the runtime
         quota = LAST_UPDATED_TIME - START_TIME - 9000
-        helpers.kill_docker_submission_over_quota(SYN, EVALUATION_ID,
+        helpers.kill_docker_submission_over_quota(EVALUATION_ID,
                                                   quota=quota)
         query = ("select * from evaluation_{} where "
                  "status == 'EVALUATION_IN_PROGRESS'").format(EVALUATION_ID)
-        patch_query.assert_called_once_with(SYN, query)
+        patch_query.assert_called_once_with(query)
         objectid = DOCKER_SUB_ANNOTATION['objectId']
         patch_getstatus.assert_called_once_with(objectid)
         patch_update.assert_called_once_with(sub_status,

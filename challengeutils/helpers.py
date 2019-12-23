@@ -106,7 +106,7 @@ def kill_docker_submission_over_quota(evaluation_id, quota=sys.maxsize):
 
     evaluation_query = (f"select * from evaluation_{evaluation_id} where "
                         "status == 'EVALUATION_IN_PROGRESS'")
-    query_results = utils.evaluation_queue_query(syn, evaluation_query)
+    query_results = utils.evaluation_queue_query(evaluation_query)
 
     for result in query_results:
         # If last updated and start doesn't exist, set to 0
@@ -124,7 +124,7 @@ def kill_docker_submission_over_quota(evaluation_id, quota=sys.maxsize):
     # annotation to a positive integer
 
 
-def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
+def archive_writeup(evaluation, stat="VALIDATED", reArchive=False):
     """
     Archive the submissions for the given evaluation queue and
     store them in the destination synapse folder.
@@ -134,6 +134,7 @@ def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
                   At least the ID must be returned. Defaults to:
                   'select * from evaluation_[EVAL_ID] where status=="SCORED"'
     """
+    syn = Synapse().client()
     if type(evaluation) != synapseclient.Evaluation:
         evaluation = syn.getEvaluation(evaluation)
 
