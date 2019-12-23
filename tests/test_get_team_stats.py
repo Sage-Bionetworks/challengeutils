@@ -31,14 +31,13 @@ TEAM_MEMBER_MAP = {(1,): MEMBERS1,
 def get_team_member_results(*args):
     return TEAM_MEMBER_MAP[args]
 
-
-syn = mock.create_autospec(synapseclient.Synapse)
-Synapse._synapse_client = syn
-syn.getTeamMembers.side_effect = get_team_member_results
+SYN = mock.create_autospec(synapseclient.Synapse)
+Synapse._synapse_client = SYN
+SYN.getTeamMembers.side_effect = get_team_member_results
 
 
 def test__get_team_set():
-    with mock.patch.object(syn, "getTeamMembers",
+    with mock.patch.object(SYN, "getTeamMembers",
                            return_value=MEMBERS1) as patch_syn_get_members:
         members_set = challengeutils.utils._get_team_set(1)
         assert members_set == set([MEMBER1, MEMBER2, MEMBER3, MEMBER4])
