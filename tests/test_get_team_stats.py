@@ -1,54 +1,60 @@
+"""Test get team stats"""
 import mock
-import challengeutils.utils
+
 import synapseclient
 
-member1 = challengeutils.utils.NewUserProfile(
-    ownerId='1234', firstName='test', lastName='foo', userName='temp')
-member2 = challengeutils.utils.NewUserProfile(ownerId='2345')
-member3 = challengeutils.utils.NewUserProfile(ownerId='3456')
-member4 = challengeutils.utils.NewUserProfile(ownerId='4567')
-member5 = challengeutils.utils.NewUserProfile(ownerId='4444')
-member6 = challengeutils.utils.NewUserProfile(ownerId='5555')
+import challengeutils.utils
+from challengeutils.synapse import Synapse
 
-members1 = [{'member': member1},
-            {'member': member2},
-            {'member': member3},
-            {'member': member4}]
-members2 = [{'member': member1},
-            {'member': member2},
-            {'member': member5},
-            {'member': member6}]
-team_member_map = {
-    (1,): members1,
-    (2,): members2}
+MEMBER1 = challengeutils.utils.NewUserProfile(ownerId='1234',
+                                              firstName='test',
+                                              lastName='foo',
+                                              userName='temp')
+MEMBER2 = challengeutils.utils.NewUserProfile(ownerId='2345')
+MEMBER3 = challengeutils.utils.NewUserProfile(ownerId='3456')
+MEMBER4 = challengeutils.utils.NewUserProfile(ownerId='4567')
+MEMBER5 = challengeutils.utils.NewUserProfile(ownerId='4444')
+MEMBER6 = challengeutils.utils.NewUserProfile(ownerId='5555')
+
+MEMBERS1 = [{'member': MEMBER1},
+            {'member': MEMBER2},
+            {'member': MEMBER3},
+            {'member': MEMBER4}]
+MEMBERS2 = [{'member': MEMBER1},
+            {'member': MEMBER2},
+            {'member': MEMBER5},
+            {'member': MEMBER6}]
+TEAM_MEMBER_MAP = {(1,): MEMBERS1,
+                   (2,): MEMBERS2}
 
 
 def get_team_member_results(*args):
-    return(team_member_map[args])
+    return TEAM_MEMBER_MAP[args]
 
 
 syn = mock.create_autospec(synapseclient.Synapse)
+Synapse._synapse_client = syn
 syn.getTeamMembers.side_effect = get_team_member_results
 
 
 def test__get_team_set():
-    with mock.patch.object(syn, "getTeamMembers", return_value=members1)\
-         as patch_syn_get_team_members:
-        members_set = challengeutils.utils._get_team_set(syn, 1)
-        assert members_set == set([member1, member2, member3, member4])
-        patch_syn_get_team_members.assert_called_once_with(1)
+    with mock.patch.object(syn, "getTeamMembers",
+                           return_value=MEMBERS1) as patch_syn_get_members:
+        members_set = challengeutils.utils._get_team_set(1)
+        assert members_set == set([MEMBER1, MEMBER2, MEMBER3, MEMBER4])
+        patch_syn_get_members.assert_called_once_with(1)
 
 
 def test_team_members_diff():
-    assert challengeutils.utils.team_members_diff(syn, 1, 2) == \
-        set([member4, member3])
+    assert challengeutils.utils.team_members_diff(1, 2) == \
+        set([MEMBER4, MEMBER3])
 
 
 def test_team_members_intersection():
-    assert challengeutils.utils.team_members_intersection(syn, 1, 2) == \
-        set([member1, member2])
+    assert challengeutils.utils.team_members_intersection(1, 2) == \
+        set([MEMBER1, MEMBER2])
 
 
 def test_team_members_union():
-    assert challengeutils.utils.team_members_union(syn, 1, 2) == \
-        set([member1, member2, member3, member4, member5, member6])
+    assert challengeutils.utils.team_members_union(1, 2) == \
+        set([MEMBER1, MEMBER2, MEMBER3, MEMBER4, MEMBER5, MEMBER6])
