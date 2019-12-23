@@ -18,23 +18,23 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
-def command_mirrorwiki(_, args):
+def command_mirrorwiki(args):
     mirrorwiki.mirrorwiki(args.entityid, args.destinationid,
                           args.forceupdate)
 
 
-def command_createchallenge(_, args):
+def command_createchallenge(args):
     createchallenge.createchallenge(args.challengename, args.livesiteid)
 
 
-def command_query(_, args):
+def command_query(args):
     """Command line convenience function to call evaluation queue query"""
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         args.uri, args.limit, args.offset)))
     if args.render:
         # Check if submitterId column exists
         if querydf.get('submitterId') is not None:
-            submitter_names = [utils._get_submitter_name(syn, submitterid)
+            submitter_names = [utils._get_submitter_name(submitterid)
                                for submitterid in querydf['submitterId']]
             querydf['submitterName'] = submitter_names
         # Check if createdOn column exists
@@ -48,44 +48,43 @@ def command_query(_, args):
         print(querydf.to_csv(index=False))
 
 
-def command_change_status(_, args):
+def command_change_status(args):
     print(utils.change_submission_status(args.submissionid,
                                          args.status))
 
 
-def command_writeup_attach(syn, args):
-    writeup_attacher.attach_writeup(
-        syn, args.writeupqueue, args.submissionqueue)
+def command_writeup_attach(args):
+    writeup_attacher.attach_writeup(args.writeupqueue,
+                                    args.submissionqueue)
 
 
-def command_set_entity_acl(_, args):
+def command_set_entity_acl(args):
     permissions.set_entity_permissions(
         args.entityid,
         principalid=args.principalid,
         permission_level=args.permission_level)
 
 
-def command_set_evaluation_acl(_, args):
+def command_set_evaluation_acl(args):
     permissions.set_evaluation_permissions(
         args.evaluationid,
         principalid=args.principalid,
         permission_level=args.permission_level)
 
 
-def command_dl_cur_lead_sub(syn, args):
+def command_dl_cur_lead_sub(args):
     dl_cur.download_current_lead_sub(
-        syn,
         args.submissionid,
         args.status,
         args.cutoff_annotation,
         verbose=args.verbose)
 
 
-def command_list_evaluations(_, args):
+def command_list_evaluations(args):
     utils.list_evaluations(args.projectid)
 
 
-def command_download_submission(syn, args):
+def command_download_submission(args):
     submission_dict = utils.download_submission(
         args.submissionid, download_location=args.download_location)
     if args.output:
@@ -101,7 +100,7 @@ def command_download_submission(syn, args):
         LOGGER.info(submission_dict)
 
 
-def command_annotate_submission_with_json(syn, args):
+def command_annotate_submission_with_json(args):
     _with_retry(lambda: utils.annotate_submission_with_json(
         args.submissionid,
         args.annotation_values,
@@ -111,17 +110,18 @@ def command_annotate_submission_with_json(syn, args):
         retries=10)
 
 
-def command_send_email(syn, args):
+def command_send_email(args):
     """Command line interface to send Synapse email"""
     # Must escape the backslash and replace all \n with
     # html breaks
+    syn = Synapse().client()
     message = args.message.replace("\\n", "<br>")
     syn.sendMessage(userIds=args.userids,
                     messageSubject=args.subject,
                     messageBody=message)
 
 
-def command_kill_docker_over_quota(syn, args):
+def command_kill_docker_over_quota(args):
     '''
     Command line helper to kill docker submissions
     over the quota
@@ -410,10 +410,10 @@ def build_parser():
     return parser
 
 
-def perform_main(syn, args):
+def perform_main(args):
     if 'func' in args:
         try:
-            args.func(syn, args)
+            args.func(args)
         except Exception:
             raise
 
@@ -427,8 +427,8 @@ def main():
     else:
         endpoint = synapseclient.client.PRODUCTION_ENDPOINTS
     # explode endpoint dict
-    syn = Synapse().client(**endpoint, configPath=args.synapse_config)
-    perform_main(syn, args)
+    Synapse().client(**endpoint, configPath=args.synapse_config)
+    perform_main(args)
 
 
 if __name__ == "__main__":

@@ -193,7 +193,7 @@ def get_challenge(entity):
         entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        A Challenge object as a dictionary.    
+        A Challenge object as a dictionary. 
     """
     syn = Synapse().client()
     synid = synapseclient.utils.id_of(entity)
@@ -323,7 +323,7 @@ def register_team(entity, team):
         Team id
     '''
     syn = Synapse().client()
-    challengeid = get_challenge(syn, entity)['id']
+    challengeid = get_challenge(entity)['id']
     teamid = syn.getTeam(team)['id']
     challenge_object = {'challengeId': challengeid, 'teamId': teamid}
     registered_team = syn.restPOST(
@@ -511,7 +511,9 @@ def _get_contributors(evaluationid, status, start_datetime, end_datetime):
             contributors.update(principalids)
     return contributors
 
-def get_contributors(evaluationids, status='SCORED', start_datetime=None, end_datetime=None):
+
+def get_contributors(evaluationids, status='SCORED',
+                     start_datetime=None, end_datetime=None):
     '''
     Function to get contributors from a list of evaluation ids
     Note: the date and time is in UTC
@@ -530,7 +532,8 @@ def get_contributors(evaluationids, status='SCORED', start_datetime=None, end_da
     '''
     all_contributors = set()
     for evaluationid in evaluationids:
-        contributors = _get_contributors(evaluationid,status,start_datetime,end_datetime)
+        contributors = _get_contributors(evaluationid, status,
+                                         start_datetime, end_datetime)
         all_contributors = all_contributors.union(contributors)
     return all_contributors
 
@@ -603,7 +606,7 @@ def annotate_submission_with_json(submissionid, annotation_values,
     status = syn.store(status)
 
 
-def _get_submitter_name(syn, submitterid):
+def _get_submitter_name(submitterid):
     """Get the Synapse team name or the username given a submitterid
 
     Args:
@@ -613,7 +616,7 @@ def _get_submitter_name(syn, submitterid):
     Returns:
         username or teamname
     """
-
+    syn = Synapse().client()
     try:
         user = syn.getUserProfile(submitterid)
         submitter_name = user['userName']
