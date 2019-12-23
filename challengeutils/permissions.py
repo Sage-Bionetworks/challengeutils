@@ -1,4 +1,7 @@
+"""Convenience functions to set permissions on Synapse entities,
+without having to know the granular access control list"""
 import synapseclient
+
 from .synapse import Synapse
 
 VIEW = ["READ"]
@@ -7,13 +10,11 @@ DOWNLOAD = ['READ', 'DOWNLOAD']
 EDIT = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
 EDIT_AND_DELETE = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE', 'DELETE']
 SCORE = ['READ', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION']
-ADMIN_EVALS = [
-    'DELETE_SUBMISSION', 'DELETE', 'SUBMIT', 'UPDATE',
-    'CREATE', 'READ', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION',
-    'CHANGE_PERMISSIONS']
-ADMIN = [
-    'DELETE', 'CHANGE_SETTINGS', 'MODERATE', 'CREATE', 'READ',
-    'DOWNLOAD', 'UPDATE', 'CHANGE_PERMISSIONS']
+ADMIN_EVALS = ['DELETE_SUBMISSION', 'DELETE', 'SUBMIT', 'UPDATE',
+               'CREATE', 'READ', 'UPDATE_SUBMISSION',
+               'READ_PRIVATE_SUBMISSION', 'CHANGE_PERMISSIONS']
+ADMIN = ['DELETE', 'CHANGE_SETTINGS', 'MODERATE', 'CREATE', 'READ',
+         'DOWNLOAD', 'UPDATE', 'CHANGE_PERMISSIONS']
 EVALUATION_PERMS_MAPPINGS = {'view': VIEW,
                              'submit': SUBMIT,
                              'score': SCORE,

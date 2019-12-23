@@ -1,13 +1,22 @@
+'''
+Test challengeutils.utils functions
+'''
 import json
 import mock
 from mock import patch
 import os
 import pytest
 import re
-import challengeutils.utils
+import uuid
+
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
+from synapseclient.exceptions import SynapseHTTPError
+
+import challengeutils.utils
 from challengeutils.synapse import Synapse
+from synapseservices.challenge import Challenge
+
 syn = mock.create_autospec(synapseclient.Synapse)
 Synapse._synapse_client = syn
 
@@ -112,17 +121,31 @@ def test_topublic_update_single_submission_status():
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
 
-def test__check_date_range():
+def test_valid__check_date_range():
     '''
-    Test checking date range
+    Test checking valid date range
     '''
     date_str = '2019-05-26T23:59:59.062Z'
     datetime1 = '2019-05-06 1:00'
     datetime2 = '2019-06-01 1:00'
-    result = [challengeutils.utils._check_date_range(date_str, datetime1, datetime2),
-              challengeutils.utils._check_date_range(date_str, datetime2, None)]
-    expected_result = [True,False]
-    assert result == expected_result
+    result = challengeutils.utils._check_date_range(date_str,
+                                                    datetime1,
+                                                    datetime2)
+    assert result
+
+
+def test_invalid__check_date_range():
+    '''
+    Test checking invalid date range
+    '''
+    date_str = '2019-05-26T23:59:59.062Z'
+    datetime1 = '2019-05-06 1:00'
+    datetime2 = '2019-06-01 1:00'
+    result = challengeutils.utils._check_date_range(date_str,
+                                                    datetime2,
+                                                    None)
+    assert not result
+
 
 
 def test__get_contributors():
@@ -141,6 +164,7 @@ def test__get_contributors():
             status="SCORED")
         assert contributors == set([321])
 
+
 def test_get_contributors():
     '''
     Test getting contributors by a list of evaluation IDs
@@ -152,6 +176,7 @@ def test_get_contributors():
         all_contributors = challengeutils.utils.get_contributors(
             ids, "SCORED")
         assert all_contributors == set([321])
+
 
 def test_list_evaluations():
     with mock.patch.object(
@@ -241,3 +266,52 @@ def test_annotate_submission_with_json():
         patch_syn_store.assert_called_once_with(status)
     os.unlink(tempfile_path)
 
+
+def test_userid__get_submitter_name():
+    """Get username if userid is passed in"""
+    submitterid = 2222
+    userinfo = {"userName": "foo"}
+    with mock.patch.object(syn, "getUserProfile",
+                           return_value=userinfo) as patch_get_user,\
+         mock.patch.object(syn, "getTeam") as patch_get_team:
+        submittername = challengeutils.utils._get_submitter_name(syn,
+                                                                 submitterid)
+        assert submittername == userinfo['userName']
+        patch_get_user.assert_called_once_with(submitterid)
+        patch_get_team.assert_not_called()
+
+
+def test_teamid__get_submitter_name():
+    """Get teamname if teamid is passed in"""
+    submitterid = 2222
+    teaminfo = {"name": "foo"}
+    with mock.patch.object(syn, "getUserProfile",
+                           side_effect=SynapseHTTPError) as patch_get_user,\
+         mock.patch.object(syn, "getTeam",
+                           return_value=teaminfo) as patch_get_team:
+        submittername = challengeutils.utils._get_submitter_name(syn,
+                                                                 submitterid)
+        assert submittername == teaminfo['name']
+        patch_get_user.assert_called_once_with(submitterid)
+        patch_get_team.assert_called_once_with(submitterid)
+
+
+
+def test_get_challenge():
+    projectid = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    participant_teamid = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=projectid,
+                              etag=etag,
+                              participantTeamId=participant_teamid)
+    rest_return = {'id': chalid,
+                   'projectId': projectid,
+                   'etag': etag,
+                   'participantTeamId': participant_teamid}
+    with patch.object(syn, "restGET",
+                      return_value=rest_return) as patch_rest_get:
+        chal = challengeutils.utils.get_challenge(syn, projectid)
+        patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
+        assert chal == challenge_obj

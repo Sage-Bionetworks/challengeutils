@@ -1,9 +1,16 @@
+'''
+Challenge helper functions
+'''
 import os
 import sys
+import time
 import synapseclient
 import synapseutils
 from . import utils
 from .synapse import Synapse
+WORKFLOW_LAST_UPDATED_KEY = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
+WORKFLOW_START_KEY = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
+TIME_REMAINING_KEY = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
 
 
 def rename_submission_files(evaluationid, download_location="./",
@@ -53,7 +60,7 @@ def create_team_wikis(synid, templateid, tracker_table_synid):
     syn = Synapse().client()
 
     challenge_ent = syn.get(synid)
-    challenge_obj = utils.get_challengeid(challenge_ent)
+    challenge_obj = utils.get_challenge(challenge_ent)
     registered_teams = syn._GET_paginated(
         "/challenge/{}/challengeTeam".format(challenge_obj['id']))
     for i in registered_teams:
@@ -79,7 +86,7 @@ def create_team_wikis(synid, templateid, tracker_table_synid):
             syn.store(tracking_table)
 
 
-def kill_docker_submission_over_quota(evaluation_id, quota=None):
+def kill_docker_submission_over_quota(evaluation_id, quota=sys.maxsize):
     '''
     Kills any docker container that exceeds the run time quota
     Rerunning submissions will require setting TimeRemaining annotation
@@ -88,31 +95,69 @@ def kill_docker_submission_over_quota(evaluation_id, quota=None):
     Args:
         syn (obj): Synapse object
         evaluation_id (int): Synapse evaluation queue id
-        quota (int): Quota in milliseconds. Default is None.
+        quota (int): Quota in milliseconds. Default is sys.maxsize.
                      One hour is 3600000.
     '''
     syn = Synapse().client()
+    if not isinstance(quota, int):
+        raise ValueError("quota must be an integer")
+    if quota <= 0:
+        raise ValueError("quota must be larger than 0")
 
-    if quota is None:
-        quota = sys.maxsize
-    else:
-        quota = int(quota)
-
-    workflow_last_updated_key = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
-    workflow_start_key = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
-    time_remaining_key = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
-
-    evaluation_query = "select * from evaluation_{} where status == 'EVALUATION_IN_PROGRESS'".format(evaluation_id)
-    query_results = \
-        utils.evaluation_queue_query(evaluation_query)
+    evaluation_query = (f"select * from evaluation_{evaluation_id} where "
+                        "status == 'EVALUATION_IN_PROGRESS'")
+    query_results = utils.evaluation_queue_query(syn, evaluation_query)
 
     for result in query_results:
-        last_updated = int(result[workflow_last_updated_key])
-        start = int(result[workflow_start_key])
+        # If last updated and start doesn't exist, set to 0
+        last_updated = int(result.get(WORKFLOW_LAST_UPDATED_KEY, 0))
+        start = int(result.get(WORKFLOW_START_KEY, 0))
         model_run_time = last_updated - start
         if model_run_time > quota:
             status = syn.getSubmissionStatus(result['objectId'])
-            add_annotations = {time_remaining_key: 0}
-            status = utils.update_single_submission_status(
-                status, add_annotations)
+            add_annotations = {TIME_REMAINING_KEY: 0}
+            status = utils.update_single_submission_status(status,
+                                                           add_annotations)
+            syn.store(status)
+
+    # Rerunning submissions will require setting this
+    # annotation to a positive integer
+
+
+def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
+    """
+    Archive the submissions for the given evaluation queue and
+    store them in the destination synapse folder.
+
+    :param evaluation: a synapse evaluation queue or its ID
+    :param query: a query that will return the desired submissions.
+                  At least the ID must be returned. Defaults to:
+                  'select * from evaluation_[EVAL_ID] where status=="SCORED"'
+    """
+    if type(evaluation) != synapseclient.Evaluation:
+        evaluation = syn.getEvaluation(evaluation)
+
+    print("\n\nArchiving", evaluation.id, evaluation.name)
+    print("-" * 60)
+
+    for sub, status in syn.getSubmissionBundles(evaluation, status=stat):
+        # retrieve file into cache and copy it to destination
+        checkIfArchived = filter(
+            lambda x: x.get("key") == "archived",
+            status.annotations['stringAnnos'])
+        if len(list(checkIfArchived)) == 0 or reArchive:
+            projectEntity = synapseclient.Project(
+                'Archived {} {} {} {}'.format(
+                    sub.name.replace("&", "+").replace("'", ""),
+                    int(round(time.time() * 1000)),
+                    sub.id,
+                    sub.entityId))
+            entity = syn.store(projectEntity)
+            adminPriv = [
+                'DELETE', 'DOWNLOAD', 'CREATE', 'READ', 'CHANGE_PERMISSIONS',
+                'UPDATE', 'MODERATE', 'CHANGE_SETTINGS']
+            syn.setPermissions(entity, "3324230", adminPriv)
+            synapseutils.copy(syn, sub.entityId, entity.id)
+            archived = {"archived": entity.id}
+            status = utils.update_single_submission_status(status, archived)
             syn.store(status)
