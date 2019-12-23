@@ -2,22 +2,21 @@
 Manage Synapse connection
 '''
 import logging
+
 import synapseclient
 from synapseclient.exceptions import SynapseAuthenticationError
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
 class Synapse:
-    '''
-    Define Synapse class
-    '''
+    """Define Synapse class"""
     _synapse_client = None
 
     @classmethod
     def client(cls, syn_user=None, syn_pass=None, *args, **kwargs):
-        """
-        Gets a logged in instance of the synapseclient.
+        """Gets a logged in instance of the synapseclient.
 
         Args:
             syn_user: Synapse username
@@ -39,7 +38,5 @@ class Synapse:
 
     @classmethod
     def reset(cls):
-        '''
-        Change synapse connection
-        '''
+        """Change synapse connection"""
         cls._synapse_client = None
