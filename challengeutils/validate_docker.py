@@ -46,6 +46,8 @@ def _get_bearer_token(docker_request_url, user, password):
 def validate_docker(syn, docker_repository, docker_digest,
                     index_endpoint="https://docker.synapse.org"):
     """Validates docker repository + sha digest
+    This function requires users to have a synapse config file using
+    synapse username and password
 
     Args:
         syn: Synapse connection
