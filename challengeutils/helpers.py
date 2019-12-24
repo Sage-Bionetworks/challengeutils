@@ -2,7 +2,6 @@
 Challenge helper functions
 '''
 import os
-import requests
 import sys
 import time
 
