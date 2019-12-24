@@ -2,11 +2,15 @@
 Challenge helper functions
 '''
 import os
+import requests
 import sys
 import time
+
 import synapseclient
 import synapseutils
+
 from . import utils
+
 WORKFLOW_LAST_UPDATED_KEY = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
 WORKFLOW_START_KEY = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
 TIME_REMAINING_KEY = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
@@ -157,3 +161,17 @@ def archive_writeup(syn, evaluation, stat="VALIDATED", reArchive=False):
             archived = {"archived": entity.id}
             status = utils.update_single_submission_status(status, archived)
             syn.store(status)
+
+
+def validate_docker(syn, docker_repo, docker_digest,
+                    index_endpoint="https://docker.synapse.org"):
+    docker_repo = docker_repo.replace("docker.synapse.org/", "")
+    requests.get('https://repo-prod.prod.sagebase.org/docker/v1/bearerToken?service=docker.synapse.org')
+    bearer_token = syn.restGET('https://repo-prod.prod.sagebase.org/docker/v1/bearerToken?service=http://docker.synapse.org')
+    docker_request_url = '{0}/v2/{1}/manifests/{2}'.format(index_endpoint,
+                                                           docker_repo,
+                                                           docker_digest)
+    headers = {'Authorization': f'Bearer {bearer_token["token"]}'}
+    headers = {'Authorization': f'Bearer {token}'}
+
+    resp = requests.get(docker_request_url, headers=headers)
