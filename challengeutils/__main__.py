@@ -12,6 +12,7 @@ from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
+from .__version__ import __version__
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -143,6 +144,9 @@ def build_parser():
         "-c", "--synapse_config",
         default=synapseclient.client.CONFIG_FILE,
         help="credentials file")
+
+    parser.add_argument('-v', '--version', action='version',
+                        version='challengeutils {}'.format(__version__))
 
     subparsers = parser.add_subparsers(
         title='commands',
