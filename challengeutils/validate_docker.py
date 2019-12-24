@@ -3,7 +3,14 @@ import requests
 
 
 def _get_bearer_token_url(docker_request_url):
-    """Gets bearer token URL"""
+    """Gets bearer token URL
+    
+    Args:
+        docker_request_url: Full Docker request URL
+    
+    Returns:
+        Docker bearer token URL
+    """
     initial_request = requests.get(docker_request_url)
     auth_headers = initial_request.headers['Www-Authenticate'].replace('"', '').split(",")
     for head in auth_headers:
@@ -17,6 +24,16 @@ def _get_bearer_token_url(docker_request_url):
 
 
 def _get_bearer_token(docker_request_url, user, password):
+    """Gets Docker bearer token
+
+    Args:
+        docker_request_url: Full Docker request URL
+        user: Synapse username
+        password: Synapse password
+
+    Returns:
+        Bearer token
+    """
     bearer_token_url = _get_bearer_token_url(docker_request_url)
     auth_string = user + ":" + password
     auth = base64.b64encode(auth_string.encode()).decode()
