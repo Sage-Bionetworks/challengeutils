@@ -134,17 +134,17 @@ def command_kill_docker_over_quota(syn, args):
 def command_validate_docker(syn, args):
     """Validates Docker image"""
     # This will put all print statements into f
-    f = io.StringIO()
-    with redirect_stdout(f):
+    string = io.StringIO()
+    with redirect_stdout(string):
         valid = validate_docker.validate_docker_submission(syn,
                                                            args.submissionid)
-    invalid_reasons = f.getvalue()
+    invalid_reasons = string.getvalue()
 
     status = "VALIDATED" if valid else "INVALID"
     result = {'docker_image_errors': invalid_reasons,
               'docker_image_status': status}
-    with open(args.results, 'w') as o:
-        o.write(json.dumps(result))
+    with open(args.results, 'w') as out:
+        out.write(json.dumps(result))
 
 
 def build_parser():
