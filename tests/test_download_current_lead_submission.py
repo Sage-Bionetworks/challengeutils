@@ -1,8 +1,10 @@
 """Test download current lead submission"""
+import os
+import tempfile
+
 import mock
 from mock import patch
 import pytest
-
 import synapseclient
 
 from challengeutils import utils
@@ -34,3 +36,38 @@ def test_get_submitterid_from_submission_id():
                                                               verbose=False)
         patch_query.assert_called_once()
         assert submitter == 1
+
+
+def test_get_submitters_lead_submission():
+    """Tests getting of lead submission"""
+    submission = synapseclient.Submission(evaluationId='2', entityId='2',
+                                          versionNumber='3')
+    temp = tempfile.NamedTemporaryFile()
+    submission.filePath = temp.name
+
+    with patch.object(utils, "evaluation_queue_query",
+                      return_value=[{'objectId': 1}]) as patch_query,\
+        patch.object(SYN, "getSubmission",
+                     return_value=submission) as patch_getsub:
+        dl_file = dl_cur.get_submitters_lead_submission(SYN,
+                                                        SUBMISSIONID,
+                                                        QUEUEID,
+                                                        "key",
+                                                        verbose=False)
+        patch_query.assert_called_once()
+        patch_getsub.assert_called_once_with(1, downloadLocation='.')
+        assert dl_file == "previous_submission.csv"
+        os.unlink("previous_submission.csv")
+
+
+def test_none_get_submitters_lead_submission():
+    """Tests getting of submitter id"""
+    with patch.object(utils, "evaluation_queue_query",
+                      return_value=[]) as patch_query:
+        dl_file = dl_cur.get_submitters_lead_submission(SYN,
+                                                        SUBMISSIONID,
+                                                        QUEUEID,
+                                                        "key",
+                                                        verbose=False)
+        patch_query.assert_called_once()
+        assert dl_file is None
