@@ -22,7 +22,7 @@ def get_submitterid_from_submission_id(syn, submissionid, queue,
     generator = utils.evaluation_queue_query(syn, query)
     lst = list(generator)
     if not lst:
-        raise Exception('submission id {} not in queue'.format(submissionid))
+        raise ValueError('submission id {} not in queue'.format(submissionid))
     submission_dict = lst[0]
     submitterid = submission_dict['submitterId']
     if verbose:
