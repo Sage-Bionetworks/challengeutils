@@ -1,10 +1,14 @@
 import argparse
+from contextlib import redirect_stdout
+import io
 import json
 import logging
 import os
+
 import pandas as pd
 import synapseclient
 from synapseclient.retry import _with_retry
+
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
@@ -12,7 +16,9 @@ from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
+from . import validate_docker
 from .__version__ import __version__
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -105,8 +111,8 @@ def command_annotate_submission_with_json(syn, args):
         args.annotation_values,
         to_public=args.to_public,
         force_change_annotation_acl=args.force_change_annotation_acl),
-        wait=3,
-        retries=10)
+                wait=3,
+                retries=10)
 
 
 def command_send_email(syn, args):
@@ -120,20 +126,26 @@ def command_send_email(syn, args):
 
 
 def command_kill_docker_over_quota(syn, args):
-    '''
-    Command line helper to kill docker submissions
-    over the quota
-    '''
+    """Kills docker submissions over the quota"""
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 
 
 def command_validate_docker(syn, args):
+    """Validates Docker image"""
+    # This will put all print statements into f
+    f = io.StringIO()
+    with redirect_stdout(f):
+        valid = validate_docker.validate_docker_submission(syn,
+                                                           args.submissionid)
+    invalid_reasons = f.getvalue()
 
-
-    validate_docker.validate(syn, args.submissionid, args.synapse_config)
+    status = "VALIDATED" if valid else "INVALID"
+    result = {'docker_image_errors': invalid_reasons,
+              'docker_image_status': status}
     with open(args.results, 'w') as o:
         o.write(json.dumps(result))
+
 
 def build_parser():
     """Builds the argument parser and returns the result."""
