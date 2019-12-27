@@ -425,14 +425,10 @@ def build_parser():
         'validatedocker',
         help='Validate Docker container')
 
-    parser_validate_docker.add_argument("-p", "--docker_repository",
-                                        required=True, help="Submission File")
-    parser_validate_docker.add_argument("-d", "--docker_digest",
-                                        required=True, help="Submission File")
+    parser_validate_docker.add_argument("-s", "--submissionid",
+                                        required=True, help="Submission id")
     parser_validate_docker.add_argument("-r", "--results", required=True,
                                         help="validation results")
-    parser_validate_docker.add_argument("-c", "--synapse_config",
-                                        required=True, help="credentials file")
     parser_validate_docker.set_defaults(func=command_validate_docker)
 
 
