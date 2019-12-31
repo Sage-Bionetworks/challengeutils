@@ -28,6 +28,23 @@ logger = logging.getLogger(__name__)
 # DREAM_CHALLENGE_TEMPLATE_SYNID = "syn2769515"  # Template 1.0
 DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
+LIVE_PAGE_MARKDOWN = (
+    '## Banner\n\n'
+    '{row}\n {column width=3}\n'
+    '${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
+    '{column}\n {column width=9} \n'
+    '###! There are ${teammembercount?teamId=%s} preregistered participants. Join them now!\n '
+    '{column}\n{row}\n'
+    '\n---\n\n'
+    '## Overview\n\n<font size=4>**Goal:**</font>\n\n<font size=4>**Motivation:**</font>\n'
+    '\n---\n\n'
+    '## Timeline\n\n'
+    '\n---\n\n'
+    '## Challenge Organizers\n\n'
+    '\n---\n\n'
+    '## Funders/Sponsors/Data Contributors/Journal Partners:\n\n'
+)
+
 
 def create_project(syn, project_name):
     """Creates Synapse Project
@@ -108,25 +125,9 @@ def create_live_page(syn, project, teamid):
         project: Synapse project
         teamid: Synapse team id of participant team
     """
-    live_page_markdown = (
-        '## Banner\n\n\n'
-        '**Pre-Registration Open:**\n'
-        '**Launch:**\n'
-        '**Close:**\n\n\n\n'
-        '${jointeam?teamId=%s&isChallenge=true&isMemberMessage=You are '
-        'Pre-registered&text=Pre-register&successMessage='
-        'Successfully joined&isSimpleRequestButton=true}\n> Number of Pre-'
-        'registered Participants: ${teammembercount?teamId=%s}\n> Click [here]'
-        '(http://s3.amazonaws.com/geoloc.sagebase.org/%s.html) to see where '
-        'in the world solvers are coming from. \n\n'
-        '#### OVERVIEW - high level (same as DREAM website?) - for '
-        'journalists, funders, and participants\n\n\n'
-        '#### Challenge Organizers / Scientific Advisory Board:\n\n'
-        '#### Data Contributors:\n\n'
-        '#### Journal Partners:\n\n'
-        '#### Funders and Sponsors:') % (teamid, teamid, teamid)
+    markdown = LIVE_PAGE_MARKDOWN % (teamid, teamid)
     syn.store(synapseclient.Wiki(title='', owner=project,
-                                 markdown=live_page_markdown))
+                                 markdown=markdown))
 
 
 def create_challenge_widget(syn, project_live, team_part_id):
