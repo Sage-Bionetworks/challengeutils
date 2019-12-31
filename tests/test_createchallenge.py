@@ -145,3 +145,24 @@ def test_nouse_existing_create_team():
                                              can_public_join=can_public_join)
         assert teamid == team['id']
         patch_get.assert_called_once_with(team_name)
+
+
+def test__update_wikipage_string():
+    """Makes sure that wiki strings are replaced with right values"""
+    challengeid = str(uuid.uuid1())
+    teamid = str(uuid.uuid1())
+    challenge_name = str(uuid.uuid1())
+    synid = str(uuid.uuid1())
+    wiki_string = ("challengeId=0,{teamId},"
+                   "teamId=0,#!Map:0,{challengeName},projectId=syn0")
+    expected_string = ("challengeId={challengeid},{teamid},"
+                       "teamId={teamid},#!Map:{teamid},{name},"
+                       "projectId={synid}".format(challengeid=challengeid,
+                                                  name=challenge_name,
+                                                  teamid=teamid,
+                                                  synid=synid))
+    new_string = createchallenge._update_wikipage_string(wiki_string,
+                                                         challengeid, teamid,
+                                                         challenge_name,
+                                                         synid)
+    assert new_string == expected_string

@@ -149,8 +149,8 @@ def create_challenge_widget(syn, project_live, team_part_id):
     return challenge
 
 
-def update_wikipage_string(wikipage_string, challengeid, teamid,
-                           challenge_name, synid):
+def _update_wikipage_string(wikipage_string, challengeid, teamid,
+                            challenge_name, synid):
     """Updates wikipage strings in the challenge wiki template
     with the newly created challengeid, teamid, challenge name and project id
 
@@ -247,9 +247,9 @@ def createchallenge(syn, challenge_name, live_site=None):
                             project_live.id)
     for page in new_wikiids:
         wikipage = syn.getWiki(project_staging, page['id'])
-        wikipage.markdown = update_wikipage_string(wikipage.markdown,
-                                                   challenge['id'],
-                                                   team_part_id,
-                                                   challenge_name,
-                                                   project_live.id)
+        wikipage.markdown = _update_wikipage_string(wikipage.markdown,
+                                                    challenge.id,
+                                                    team_part_id,
+                                                    challenge_name,
+                                                    project_live.id)
         syn.store(wikipage)
