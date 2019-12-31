@@ -19,6 +19,7 @@ def test_create_project():
         assert new_proj == proj
         patch_store.assert_called_once()
 
+
 def test_create_evaluation_queue():
     """Tests creating evaluation queue"""
     name = str(uuid.uuid1())
@@ -35,3 +36,15 @@ def test_create_evaluation_queue():
                                                           parentid)
         assert myqueue == queue
         patch_store.assert_called_once()
+
+
+def test_create_live_page():
+    """Creates live page"""
+    teamid = str(uuid.uuid1())
+    project = str(uuid.uuid1())
+    markdown = createchallenge.LIVE_PAGE_MARKDOWN % (teamid, teamid)
+    wiki = synapseclient.Wiki(title='', owner=project,
+                              markdown=markdown)
+    with patch.object(SYN, "store") as patch_store:
+        createchallenge.create_live_page(SYN, project, teamid)
+        patch_store.assert_called_once_with(wiki)
