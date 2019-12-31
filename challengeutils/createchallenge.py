@@ -19,6 +19,7 @@ from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
 
 from . import utils
+from . import permissions
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ def create_team(syn, team_name, desc, can_public_join=False):
         # raises a ValueError if a team with this name already exists
         team = syn.store(team)
         logger.info('Created Team {} ({})'.format(team.name, team.id))
-    return team.id
+    return team
 
 
 def create_evaluation_queue(syn, name, description, parentid):
@@ -177,6 +178,20 @@ def _update_wikipage_string(wikipage_string, challengeid, teamid,
     return wikipage_string
 
 
+def create_teams(syn, challenge_name):
+    team_part = challenge_name + ' Participants'
+    team_admin = challenge_name + ' Admin'
+    team_prereg = challenge_name + ' Preregistrants'
+
+    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team',
+                               can_public_join=True)
+    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team',
+                                can_public_join=False)
+    team_prereg_id = create_team(syn, team_prereg,
+                                 'Challenge Pre-registration Team',
+                                 can_public_join=True)
+    team_map = {'team_part_id'}
+
 def createchallenge(syn, challenge_name, live_site=None):
     """Creates two project entity for challenge sites.
     1) live (public) and 2) staging (private until launch)
@@ -188,14 +203,6 @@ def createchallenge(syn, challenge_name, live_site=None):
         live_site: If there is already a live site, specify live site Synapse
                    id. (Default is None)
     """
-    if live_site is None:
-        project_live = create_project(syn, challenge_name)
-    else:
-        project_live = syn.get(live_site)
-
-    staging = challenge_name + ' - staging'
-    project_staging = create_project(syn, staging)
-
     # Create teams for challenge sites
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
@@ -209,13 +216,25 @@ def createchallenge(syn, challenge_name, live_site=None):
                                  'Challenge Pre-registration Team',
                                  can_public_join=True)
 
-    admin_perms = ['DOWNLOAD', 'DELETE', 'READ', 'CHANGE_PERMISSIONS',
-                   'CHANGE_SETTINGS', 'CREATE', 'MODERATE', 'UPDATE']
-    syn.setPermissions(project_staging, team_admin_id, admin_perms)
-    syn.setPermissions(project_live, team_admin_id, admin_perms)
-
+    # Create live Project
     if live_site is None:
+        project_live = create_project(syn, challenge_name)
+        permissions.set_entity_permissions(syn, project_live,
+                                           team_admin_id,
+                                           permission_level="admin")
         create_live_page(syn, project_live, team_prereg_id)
+    else:
+        project_live = syn.get(live_site)
+
+    challenge = create_challenge_widget(syn, project_live, team_part_id)
+    create_evaluation_queue(syn, '%s Final Write-Up' % challenge_name,
+                            'Final Write-Up Submission',
+                            project_live.id)
+
+    # Create staging Project
+    project_staging = create_project(syn, challenge_name + ' - staging')
+    permissions.set_entity_permissions(syn, project_staging, team_admin_id,
+                                       permission_level="admin")
 
     project_staging_wiki = None
     try:
@@ -239,12 +258,6 @@ def createchallenge(syn, challenge_name, live_site=None):
     logger.info('Copying wiki template to {}'.format(project_staging.name))
     new_wikiids = synapseutils.copyWiki(syn, DREAM_CHALLENGE_TEMPLATE_SYNID,
                                         project_staging.id)
-
-    challenge = create_challenge_widget(syn, project_live, team_part_id)
-
-    create_evaluation_queue(syn, '%s Final Write-Up' % challenge_name,
-                            'Final Write-Up Submission',
-                            project_live.id)
     for page in new_wikiids:
         wikipage = syn.getWiki(project_staging, page['id'])
         wikipage.markdown = _update_wikipage_string(wikipage.markdown,

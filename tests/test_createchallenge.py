@@ -97,17 +97,17 @@ def test_create_team():
     team_name = str(uuid.uuid1())
     desc = str(uuid.uuid1())
     can_public_join = True
-    team = synapseclient.Team(name=team_name,
-                              description=desc,
-                              canPublicJoin=can_public_join,
-                              id=1111)
+    expected_team = synapseclient.Team(name=team_name,
+                                       description=desc,
+                                       canPublicJoin=can_public_join,
+                                       id=1111)
     with patch.object(SYN, "getTeam",
                       side_effect=ValueError) as patch_get,\
         patch.object(SYN, "store",
-                     return_value=team) as patch_store:
-        teamid = createchallenge.create_team(SYN, team_name, desc,
-                                             can_public_join=can_public_join)
-        assert teamid == team['id']
+                     return_value=expected_team) as patch_store:
+        team = createchallenge.create_team(SYN, team_name, desc,
+                                           can_public_join=can_public_join)
+        assert team == expected_team
         patch_get.assert_called_once_with(team_name)
         patch_store.assert_called_once()
 
@@ -117,15 +117,16 @@ def test_existing_create_team():
     team_name = str(uuid.uuid1())
     desc = str(uuid.uuid1())
     can_public_join = True
-    team = synapseclient.Team(name=team_name,
-                              description=desc,
-                              canPublicJoin=can_public_join,
-                              id=1111)
-    with patch.object(SYN, "getTeam", return_value=team) as patch_get,\
+    expected_team = synapseclient.Team(name=team_name,
+                                       description=desc,
+                                       canPublicJoin=can_public_join,
+                                       id=1111)
+    with patch.object(SYN, "getTeam",
+                      return_value=expected_team) as patch_get,\
          patch("builtins.input", return_value="y"):
-        teamid = createchallenge.create_team(SYN, team_name, desc,
-                                             can_public_join=can_public_join)
-        assert teamid == team['id']
+        team = createchallenge.create_team(SYN, team_name, desc,
+                                           can_public_join=can_public_join)
+        assert team == expected_team
         patch_get.assert_called_once_with(team_name)
 
 
@@ -134,16 +135,17 @@ def test_nouse_existing_create_team():
     team_name = str(uuid.uuid1())
     desc = str(uuid.uuid1())
     can_public_join = True
-    team = synapseclient.Team(name=team_name,
-                              description=desc,
-                              canPublicJoin=can_public_join,
-                              id=1111)
+    expected_team = synapseclient.Team(name=team_name,
+                                       description=desc,
+                                       canPublicJoin=can_public_join,
+                                       id=1111)
     with pytest.raises(SystemExit),\
-         patch.object(SYN, "getTeam", return_value=team) as patch_get,\
+         patch.object(SYN, "getTeam",
+                      return_value=expected_team) as patch_get,\
          patch("builtins.input", return_value="n"):
-        teamid = createchallenge.create_team(SYN, team_name, desc,
+        team = createchallenge.create_team(SYN, team_name, desc,
                                              can_public_join=can_public_join)
-        assert teamid == team['id']
+        assert team == expected_team
         patch_get.assert_called_once_with(team_name)
 
 
