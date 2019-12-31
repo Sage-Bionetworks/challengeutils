@@ -82,9 +82,10 @@ def create_team(syn, team_name, desc, can_public_join=False):
         team = syn.getTeam(team_name)
         logger.info('The team {} already exists.'.format(team_name))
         logger.info(team)
+        # If you press enter, this will default to 'y'
         user_input = input('Do you want to use this team? (Y/n) ') or 'y'
         if user_input.lower() not in ('y', 'yes'):
-            logger.info('Please specify another team. Exiting.')
+            logger.info('Please specify a new challenge name. Exiting.')
             sys.exit(1)
     except ValueError:
         team = synapseclient.Team(name=team_name,
