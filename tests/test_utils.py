@@ -315,6 +315,7 @@ def test_get_challenge():
 
 
 def test_create_challenge():
+    """Tests create challenge object"""
     projectid = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
     etag = str(uuid.uuid1())

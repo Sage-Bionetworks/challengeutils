@@ -11,7 +11,6 @@ Example (run on bash)
 TODO Add participants
 TODO Add tests
 """
-import json
 import logging
 import sys
 
