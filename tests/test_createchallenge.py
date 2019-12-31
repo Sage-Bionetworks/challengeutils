@@ -1,11 +1,14 @@
 """Test create challenge"""
-import mock
-from mock import patch
 import uuid
 
+import mock
+from mock import patch
 import synapseclient
+from synapseclient.exceptions import SynapseHTTPError
 
 from challengeutils import createchallenge
+from challengeutils import utils
+from synapseservices.challenge import Challenge
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 
@@ -48,3 +51,40 @@ def test_create_live_page():
     with patch.object(SYN, "store") as patch_store:
         createchallenge.create_live_page(SYN, project, teamid)
         patch_store.assert_called_once_with(wiki)
+
+
+def test_create_challenge_widget():
+    """Tests creating challenge widget"""
+    teamid = str(uuid.uuid1())
+    project = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=project,
+                              etag=etag,
+                              participantTeamId=teamid)
+    with patch.object(utils, "create_challenge",
+                      return_value=challenge_obj) as patch_create:
+        chal = createchallenge.create_challenge_widget(SYN, project, teamid)
+        assert chal == challenge_obj
+        patch_create.assert_called_once_with(SYN, project, teamid)
+
+
+def test_existing_create_challenge_widget():
+    """Tests existing challenge widget"""
+    teamid = str(uuid.uuid1())
+    project = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=project,
+                              etag=etag,
+                              participantTeamId=teamid)
+    with patch.object(utils, "create_challenge",
+                      side_effect=SynapseHTTPError) as patch_create,\
+        patch.object(utils, "get_challenge",
+                     return_value=challenge_obj) as patch_get:
+        chal = createchallenge.create_challenge_widget(SYN, project, teamid)
+        assert chal == challenge_obj
+        patch_create.assert_called_once_with(SYN, project, teamid)
+        patch_get.assert_called_once_with(SYN, project)
