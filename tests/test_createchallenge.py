@@ -144,7 +144,7 @@ def test_nouse_existing_create_team():
                       return_value=expected_team) as patch_get,\
          patch("builtins.input", return_value="n"):
         team = createchallenge.create_team(SYN, team_name, desc,
-                                             can_public_join=can_public_join)
+                                           can_public_join=can_public_join)
         assert team == expected_team
         patch_get.assert_called_once_with(team_name)
 
