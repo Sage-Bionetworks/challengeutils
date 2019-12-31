@@ -192,11 +192,33 @@ def get_challenge(syn, entity):
         entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        A Challenge object as a dictionary.    
+        Challenge object
     """
-    
     synid = synapseclient.utils.id_of(entity)
     challenge = syn.restGET("/entity/%s/challenge" % synid)
+    challenge_obj = Challenge(**challenge)
+    return challenge_obj
+
+
+def create_challenge(syn, entity, team):
+    """Creates Challenge associated with a Project
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
+
+    Args:
+        syn: Synapse connection
+        entity: An Entity or Synapse ID of a Project.
+        team: A Team or Team ID.
+
+    Returns:
+        Challenge object
+    """
+    synid = synapseclient.utils.id_of(entity)
+    teamid = synapseclient.utils.id_of(team)
+    challenge_object = {'participantTeamId': teamid,
+                        'projectId': synid}
+    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
     challenge_obj = Challenge(**challenge)
     return challenge_obj
 

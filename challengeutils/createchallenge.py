@@ -16,6 +16,7 @@ import logging
 import sys
 
 import synapseclient
+from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
 
 from . import utils
@@ -139,14 +140,11 @@ def create_challenge_widget(syn, project_live, team_part_id):
         team_part_id: Synapse team id of participant team
     """
     try:
-        challenge_object = {'id': '1000',
-                            'participantTeamId': team_part_id,
-                            'projectId': project_live.id}
-        challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
-        logger.info("Created Challenge ({})".format(challenge['id']))
-    except synapseclient.exceptions.SynapseHTTPError:
+        challenge = utils.create_challenge(syn, project_live, team_part_id)
+        logger.info("Created Challenge ({})".format(challenge.id))
+    except SynapseHTTPError:
         challenge = utils.get_challenge(syn, project_live)
-        logger.info("Fetched existing Challenge ({})".format(challenge['id']))
+        logger.info("Fetched existing Challenge ({})".format(challenge.id))
     return challenge
 
 
@@ -197,18 +195,18 @@ def createchallenge(syn, challenge_name, live_site=None):
     staging = challenge_name + ' - staging'
     project_staging = create_project(syn, staging)
 
-    '''Create teams for challenge sites'''
+    # Create teams for challenge sites
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
 
-    team_part_id = create_team(
-        syn, team_part, 'Challenge Particpant Team', can_public_join=True)
-    team_admin_id = create_team(
-        syn, team_admin, 'Challenge Admin Team', can_public_join=False)
-    team_prereg_id = create_team(
-        syn, team_prereg, 'Challenge Pre-registration Team',
-        can_public_join=True)
+    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team',
+                               can_public_join=True)
+    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team',
+                                can_public_join=False)
+    team_prereg_id = create_team(syn, team_prereg,
+                                 'Challenge Pre-registration Team',
+                                 can_public_join=True)
 
     admin_perms = ['DOWNLOAD', 'DELETE', 'READ', 'CHANGE_PERMISSIONS',
                    'CHANGE_SETTINGS', 'CREATE', 'MODERATE', 'UPDATE']
@@ -221,10 +219,10 @@ def createchallenge(syn, challenge_name, live_site=None):
     project_staging_wiki = None
     try:
         project_staging_wiki = syn.getWiki(project_staging.id)
-    except Exception:
+    except SynapseHTTPError:
         pass
 
-    if project_staging_wiki:
+    if project_staging_wiki is not None:
         logger.info('The staging project has already a wiki.')
         logger.info(project_staging_wiki)
         user_input = input(
