@@ -178,19 +178,24 @@ def _update_wikipage_string(wikipage_string, challengeid, teamid,
     return wikipage_string
 
 
-def create_teams(syn, challenge_name):
+def _create_teams(syn, challenge_name):
+    """Create teams needed for the challenge"""
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
 
     team_part_id = create_team(syn, team_part, 'Challenge Particpant Team',
-                               can_public_join=True)
+                               can_public_join=True)['id']
     team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team',
-                                can_public_join=False)
+                                can_public_join=False)['id']
     team_prereg_id = create_team(syn, team_prereg,
                                  'Challenge Pre-registration Team',
-                                 can_public_join=True)
-    team_map = {'team_part_id'}
+                                 can_public_join=True)['id']
+    team_map = {'team_part_id': team_part_id,
+                'team_admin_id': team_admin_id,
+                'team_prereg_id': team_prereg_id}
+    return team_map
+
 
 def createchallenge(syn, challenge_name, live_site=None):
     """Creates two project entity for challenge sites.
@@ -204,36 +209,28 @@ def createchallenge(syn, challenge_name, live_site=None):
                    id. (Default is None)
     """
     # Create teams for challenge sites
-    team_part = challenge_name + ' Participants'
-    team_admin = challenge_name + ' Admin'
-    team_prereg = challenge_name + ' Preregistrants'
-
-    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team',
-                               can_public_join=True)
-    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team',
-                                can_public_join=False)
-    team_prereg_id = create_team(syn, team_prereg,
-                                 'Challenge Pre-registration Team',
-                                 can_public_join=True)
+    teams = _create_teams(syn, challenge_name)
 
     # Create live Project
     if live_site is None:
         project_live = create_project(syn, challenge_name)
         permissions.set_entity_permissions(syn, project_live,
-                                           team_admin_id,
+                                           teams['team_admin_id'],
                                            permission_level="admin")
-        create_live_page(syn, project_live, team_prereg_id)
+        create_live_page(syn, project_live, teams['team_prereg_id'])
     else:
         project_live = syn.get(live_site)
 
-    challenge = create_challenge_widget(syn, project_live, team_part_id)
-    create_evaluation_queue(syn, '%s Final Write-Up' % challenge_name,
-                            'Final Write-Up Submission',
+    challenge = create_challenge_widget(syn, project_live,
+                                        teams['team_part_id'])
+    create_evaluation_queue(syn, '%s Project Submission' % challenge_name,
+                            'Project Submission',
                             project_live.id)
 
     # Create staging Project
     project_staging = create_project(syn, challenge_name + ' - staging')
-    permissions.set_entity_permissions(syn, project_staging, team_admin_id,
+    permissions.set_entity_permissions(syn, project_staging,
+                                       teams['team_admin_id'],
                                        permission_level="admin")
 
     project_staging_wiki = None
@@ -262,7 +259,7 @@ def createchallenge(syn, challenge_name, live_site=None):
         wikipage = syn.getWiki(project_staging, page['id'])
         wikipage.markdown = _update_wikipage_string(wikipage.markdown,
                                                     challenge.id,
-                                                    team_part_id,
+                                                    teams['team_part_id'],
                                                     challenge_name,
                                                     project_live.id)
         syn.store(wikipage)
