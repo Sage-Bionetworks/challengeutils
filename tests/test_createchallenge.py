@@ -171,6 +171,7 @@ def test__update_wikipage_string():
 
 
 def test__create_teams():
+    """Tests creation of teams"""
     challenge_name = str(uuid.uuid1())
 
     team_part = challenge_name + ' Participants'
