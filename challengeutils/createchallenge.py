@@ -179,21 +179,32 @@ def _update_wikipage_string(wikipage_string, challengeid, teamid,
 
 
 def _create_teams(syn, challenge_name):
-    """Create teams needed for the challenge"""
+    """Create teams needed for a challenge, participant, admin and
+    preregistration team
+
+    Args:
+        syn: Synapse connection
+        challenge_name: Name of the challenge
+
+    Returns:
+        dict of challenge team ids
+    """
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
 
-    team_part_id = create_team(syn, team_part, 'Challenge Particpant Team',
-                               can_public_join=True)['id']
-    team_admin_id = create_team(syn, team_admin, 'Challenge Admin Team',
-                                can_public_join=False)['id']
-    team_prereg_id = create_team(syn, team_prereg,
-                                 'Challenge Pre-registration Team',
-                                 can_public_join=True)['id']
-    team_map = {'team_part_id': team_part_id,
-                'team_admin_id': team_admin_id,
-                'team_prereg_id': team_prereg_id}
+    team_part_ent = create_team(syn, team_part, 'Challenge Particpant Team',
+                                can_public_join=True)
+    team_admin_ent = create_team(syn, team_admin, 'Challenge Admin Team',
+                                 can_public_join=False)
+
+    team_prereg_ent = create_team(syn, team_prereg,
+                                  'Challenge Pre-registration Team',
+                                  can_public_join=True)
+
+    team_map = {'team_part_id': team_part_ent['id'],
+                'team_admin_id': team_admin_ent['id'],
+                'team_prereg_id': team_prereg_ent['id']}
     return team_map
 
 

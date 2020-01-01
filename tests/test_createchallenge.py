@@ -168,3 +168,26 @@ def test__update_wikipage_string():
                                                          challenge_name,
                                                          synid)
     assert new_string == expected_string
+
+
+def test__create_teams():
+    challenge_name = str(uuid.uuid1())
+
+    team_part = challenge_name + ' Participants'
+    team_admin = challenge_name + ' Admin'
+    team_prereg = challenge_name + ' Preregistrants'
+
+    calls = [mock.call(SYN, team_part, 'Challenge Particpant Team',
+                       can_public_join=True),
+             mock.call(SYN, team_admin, 'Challenge Admin Team',
+                       can_public_join=False),
+             mock.call(SYN, team_prereg,
+                       'Challenge Pre-registration Team',
+                       can_public_join=True)]
+    with patch.object(createchallenge, "create_team",
+                      return_value={'id': 'syn1234'}) as patch_create:
+        team_map = createchallenge._create_teams(SYN, challenge_name)
+        assert team_map == {'team_part_id': 'syn1234',
+                            'team_admin_id': 'syn1234',
+                            'team_prereg_id': 'syn1234'}
+        patch_create.assert_has_calls(calls)
