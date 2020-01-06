@@ -208,7 +208,34 @@ def _create_teams(syn, challenge_name):
     return team_map
 
 
-def createchallenge(syn, challenge_name, live_site=None):
+def check_existing_and_delete_wiki(syn, synid):
+    """Checks if wiki exists, and if so prompt to delete
+
+    Args:
+        syn: Synapse connection
+        synid: Synapse id of an Entity
+    """
+    wiki = None
+    try:
+        wiki = syn.getWiki(synid)
+    except SynapseHTTPError:
+        pass
+
+    if wiki is not None:
+        logger.info('The staging project has already a wiki.')
+        logger.info(wiki)
+        user_input = input(
+            'Do you agree to delete the wiki before continuing? (y/N) ') or 'n'
+        if user_input.lower() not in ('y', 'yes'):
+            logger.info('Exiting')
+            sys.exit(1)
+        else:
+            logger.info('Deleting wiki of the staging project ({})'.format(
+                wiki.id))
+            syn.delete(wiki)
+
+
+def main(syn, challenge_name, live_site=None):
     """Creates two project entity for challenge sites.
     1) live (public) and 2) staging (private until launch)
     Allow for users to set up the live site themselves
@@ -244,24 +271,8 @@ def createchallenge(syn, challenge_name, live_site=None):
                                        teams['team_admin_id'],
                                        permission_level="admin")
 
-    project_staging_wiki = None
-    try:
-        project_staging_wiki = syn.getWiki(project_staging.id)
-    except SynapseHTTPError:
-        pass
-
-    if project_staging_wiki is not None:
-        logger.info('The staging project has already a wiki.')
-        logger.info(project_staging_wiki)
-        user_input = input(
-            'Do you agree to delete the wiki before continuing? (y/N) ') or 'n'
-        if user_input.lower() not in ('y', 'yes'):
-            logger.info('Exiting')
-            sys.exit(1)
-        else:
-            logger.info('Deleting wiki of the staging project ({})'.format(
-                project_staging_wiki.id))
-            syn.delete(project_staging_wiki)
+    # Checks if staging wiki exists, if so delete
+    check_existing_and_delete_wiki(syn, project_staging.id)
 
     logger.info('Copying wiki template to {}'.format(project_staging.name))
     new_wikiids = synapseutils.copyWiki(syn, DREAM_CHALLENGE_TEMPLATE_SYNID,

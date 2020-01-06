@@ -192,3 +192,22 @@ def test__create_teams():
                             'team_admin_id': 'syn1234',
                             'team_prereg_id': 'syn1234'}
         patch_create.assert_has_calls(calls)
+
+
+# _create_teams
+# create_project
+# permissions.set_entity_permissions
+# create_live_page
+# create_challenge_widget
+# create_evaluation_queue
+# create_project
+# permissions.set_entity_permissions
+# check_existing_and_delete_wiki
+# copyWiki
+# getWiki
+
+# def test_main():
+#     challenge_name = str(uuid.uuid1())
+#     with patch.object(_create_teams)
+#     createchallenge.main(SYN, challenge_name, live_site=None)
+    
