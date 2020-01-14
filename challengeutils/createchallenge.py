@@ -222,8 +222,10 @@ def createchallenge(syn, challenge_name, live_site=None):
     syn.setPermissions(project_staging, team_admin_id, admin_perms)
     syn.setPermissions(project_live, team_admin_id, admin_perms)
 
-    org_perms = ['CREATE', 'READ', 'UPDATE', 'DELETE', 'DOWNLOAD', 'MODERATE']
-    syn.setPermissions(project_staging, team_org_id, org_perms)
+    org_staging_perms = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
+    org_live_perms = ['READ', 'DOWNLOAD']
+    syn.setPermissions(project_staging, team_org_id, org_staging_perms)
+    syn.setPermissions(project_live, team_org_id, org_live_perms)
 
     if live_site is None:
         create_live_page(syn, project_live, team_prereg_id)
