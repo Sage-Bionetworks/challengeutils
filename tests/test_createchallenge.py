@@ -225,15 +225,8 @@ def test_livesitenone_main():
                                     permission_level="download")
     org_permission_edit = mock.call(SYN, proj, team_map['team_org_id'],
                                     permission_level="edit")
-    create_chal_call = mock.call(SYN, proj, team_map['team_part_id'])
-    create_queue_call = mock.call(SYN,
-                                  '%s Project Submission' % challenge_name,
-                                  'Project Submission', proj.id)
-    synu_copywiki = mock.call(SYN,
-                              createchallenge.DREAM_CHALLENGE_TEMPLATE_SYNID,
-                              proj.id)
     with patch.object(createchallenge, "_create_teams",
-                      return_value=team_map),\
+                      return_value=team_map) as patch_create_team,\
          patch.object(createchallenge, "create_project",
                       return_value=proj) as patch_create_proj,\
          patch.object(permissions,
@@ -258,10 +251,16 @@ def test_livesitenone_main():
                                           org_permission_edit])
         assert patch_create_proj.call_count == 2
 
-        patch_create_chal.assert_has_calls([create_chal_call])
-        patch_create_queue.assert_has_calls([create_queue_call])
-        patch_exist.assert_has_calls([mock.call(SYN, proj.id)])
-        patch_synucopywiki.assert_has_calls([synu_copywiki])
+        patch_create_chal.assert_called_once_with(SYN, proj,
+                                                  team_map['team_part_id'])
+        patch_create_queue.assert_called_once_with(SYN,
+                                                   '%s Project Submission' % challenge_name,
+                                                   'Project Submission', proj.id)
+        patch_exist.assert_called_once_with(SYN, proj.id)
+        patch_synucopywiki.assert_called_once_with(SYN,
+                                                   createchallenge.DREAM_CHALLENGE_TEMPLATE_SYNID,
+                                                   proj.id)
+        patch_create_team.assert_called_once_with(SYN, challenge_name)
 
 
 def test_livesite_main():
