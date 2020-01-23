@@ -229,6 +229,9 @@ def test_livesitenone_main():
     create_queue_call = mock.call(SYN,
                                   '%s Project Submission' % challenge_name,
                                   'Project Submission', proj.id)
+    synu_copywiki = mock.call(SYN,
+                              createchallenge.DREAM_CHALLENGE_TEMPLATE_SYNID,
+                              proj.id)
     with patch.object(createchallenge, "_create_teams",
                       return_value=team_map),\
          patch.object(createchallenge, "create_project",
@@ -242,7 +245,7 @@ def test_livesitenone_main():
          patch.object(createchallenge,
                       "check_existing_and_delete_wiki") as patch_exist,\
          patch.object(synapseutils, "copyWiki",
-                      return_value=[{'id': 'foo'}]),\
+                      return_value=[{'id': 'foo'}]) as patch_synucopywiki,\
          patch.object(SYN, "getWiki", return_value=wiki),\
          patch.object(createchallenge, "_update_wikipage_string",
                       return_value=wiki),\
@@ -258,6 +261,7 @@ def test_livesitenone_main():
         patch_create_chal.assert_has_calls([create_chal_call])
         patch_create_queue.assert_has_calls([create_queue_call])
         patch_exist.assert_has_calls([mock.call(SYN, proj.id)])
+        patch_synucopywiki.assert_has_calls([synu_copywiki])
 
 
 def test_livesite_main():
