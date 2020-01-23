@@ -6,10 +6,11 @@ from mock import patch
 import pytest
 import synapseclient
 from synapseclient.exceptions import SynapseHTTPError
-
+import synapseutils
 
 from challengeutils import createchallenge
 from challengeutils import utils
+from challengeutils import permissions
 from synapseservices.challenge import Challenge
 
 SYN = mock.create_autospec(synapseclient.Synapse)
@@ -43,7 +44,7 @@ def test_create_evaluation_queue():
         patch_store.assert_called_once()
 
 
-def test_create_live_page():
+def test__create_live_wiki():
     """Creates live page"""
     teamid = str(uuid.uuid1())
     project = str(uuid.uuid1())
@@ -51,7 +52,7 @@ def test_create_live_page():
     wiki = synapseclient.Wiki(title='', owner=project,
                               markdown=markdown)
     with patch.object(SYN, "store") as patch_store:
-        createchallenge.create_live_page(SYN, project, teamid)
+        createchallenge._create_live_wiki(SYN, project, teamid)
         patch_store.assert_called_once_with(wiki)
 
 
@@ -199,20 +200,92 @@ def test__create_teams():
         patch_create.assert_has_calls(calls)
 
 
-# _create_teams
-# create_project
-# permissions.set_entity_permissions
-# create_live_page
-# create_challenge_widget
-# create_evaluation_queue
-# create_project
-# permissions.set_entity_permissions
-# check_existing_and_delete_wiki
-# copyWiki
-# getWiki
+def test_livesitenone_main():
+    """Tests main when live site is None"""
+    team_map = {'team_part_id': str(uuid.uuid1()),
+                'team_admin_id': str(uuid.uuid1()),
+                'team_prereg_id': str(uuid.uuid1()),
+                'team_org_id': str(uuid.uuid1())}
+    project = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    challenge_name = str(uuid.uuid1())
 
-# def test_main():
-#     challenge_name = str(uuid.uuid1())
-#     with patch.object(_create_teams)
-#     createchallenge.main(SYN, challenge_name, live_site=None)
-    
+    challenge_obj = Challenge(id=chalid,
+                              projectId=project,
+                              etag=etag,
+                              participantTeamId=team_map['team_part_id'])
+    proj = synapseclient.Project(challenge_name, id=project)
+    wiki = synapseclient.Wiki(title='', owner=proj,
+                              markdown='')
+    admin_permission_call = mock.call(SYN, proj, team_map['team_admin_id'],
+                                      permission_level="admin")
+    org_permission_call = mock.call(SYN, proj, team_map['team_org_id'],
+                                    permission_level="download")
+    org_permission_edit = mock.call(SYN, proj, team_map['team_org_id'],
+                                    permission_level="edit")
+    with patch.object(createchallenge, "_create_teams",
+                      return_value=team_map),\
+         patch.object(createchallenge, "create_project",
+                      return_value=proj) as patch_create_proj,\
+         patch.object(permissions,
+                      "set_entity_permissions") as patch_set_perms,\
+         patch.object(createchallenge, "create_challenge_widget",
+                      return_value=challenge_obj) as patch_create_chal,\
+         patch.object(createchallenge,
+                      "create_evaluation_queue") as patch_create_queue,\
+         patch.object(createchallenge, "check_existing_and_delete_wiki"),\
+         patch.object(synapseutils, "copyWiki", return_value=[{'id': 'foo'}]),\
+         patch.object(SYN, "getWiki", return_value=wiki),\
+         patch.object(createchallenge, "_update_wikipage_string",
+                      return_value=wiki),\
+         patch.object(SYN, "store"):
+        createchallenge.main(SYN, challenge_name, live_site=None)
+        assert patch_set_perms.call_count == 4
+        patch_set_perms.assert_has_calls([admin_permission_call,
+                                          org_permission_call,
+                                          admin_permission_call,
+                                          org_permission_edit])
+        assert patch_create_proj.call_count == 2
+
+        patch_create_chal.assert_has_calls([mock.call(SYN, proj,
+                                                      team_map['team_part_id'])])
+        patch_create_queue.assert_has_calls([mock.call(SYN,
+                                                       '%s Project Submission' % challenge_name,
+                                                       'Project Submission',
+                                                       proj.id)])
+
+def test_livesite_main():
+    """Tests main when live site is not None"""
+    team_map = {'team_part_id': 'syn1234',
+                'team_admin_id': 'syn1234',
+                'team_prereg_id': 'syn1234',
+                'team_org_id': 'syn1234'}
+    teamid = str(uuid.uuid1())
+    project = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=project,
+                              etag=etag,
+                              participantTeamId=teamid)
+    proj = synapseclient.Project(project, id="syn1234")
+    wiki = synapseclient.Wiki(title='', owner=proj,
+                              markdown='')
+    challenge_name = str(uuid.uuid1())
+    with patch.object(createchallenge, "_create_teams", return_value=team_map),\
+         patch.object(createchallenge, "create_project",
+                      return_value=proj) as patch_create_proj,\
+         patch.object(SYN, "get", return_value=proj),\
+         patch.object(permissions,
+                      "set_entity_permissions") as patch_set_perms,\
+         patch.object(createchallenge, "create_challenge_widget", return_value=challenge_obj),\
+         patch.object(createchallenge, "create_evaluation_queue"),\
+         patch.object(createchallenge, "check_existing_and_delete_wiki"),\
+         patch.object(synapseutils, "copyWiki", return_value=[{'id': 'foo'}]),\
+         patch.object(SYN, "getWiki", return_value=wiki),\
+         patch.object(createchallenge, "_update_wikipage_string", return_value=wiki),\
+         patch.object(SYN, "store"):
+        createchallenge.main(SYN, challenge_name, live_site="syn123")
+        assert patch_set_perms.call_count == 2
+        assert patch_create_proj.call_count == 1

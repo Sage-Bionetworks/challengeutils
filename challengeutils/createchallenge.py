@@ -1,9 +1,10 @@
 """Creates challenge space in Synapse
 
 Input:  Challenge Project name
-Output: The skeleton for two challenges site with initial wiki, three teams
-        (admin, participants, and  preregistrants), and a challenge widget
-        added on live site with a participant team associated with it.
+Output: The skeleton for two challenges site with initial wiki, four teams
+        (admin, participants, organizers, and preregistrants), and
+        a challenge widget added on live site with a participant
+        team associated with it.
 
 Example (run on bash)
 >>> challengeutils createchallenge "Plouf Challenge"
@@ -119,7 +120,7 @@ def create_evaluation_queue(syn, name, description, parentid):
     return queue
 
 
-def create_live_page(syn, project, teamid):
+def _create_live_wiki(syn, project, teamid):
     """Creates the wiki of the live challenge page
 
     Args:
@@ -179,7 +180,7 @@ def _update_wikipage_string(wikipage_string, challengeid, teamid,
 
 
 def _create_teams(syn, challenge_name):
-    """Create teams needed for a challenge, participant, admin and
+    """Create teams needed for a challenge: participant, admin, organizer, and
     preregistration team
 
     Args:
@@ -192,6 +193,8 @@ def _create_teams(syn, challenge_name):
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
+    # The organizer team is used to gate permissions
+    # The motivation is that not everyone needs admin access to the projects
     team_org = challenge_name + ' Organizers'
     team_part_ent = create_team(syn, team_part, 'Challenge Particpant Team',
                                 can_public_join=True)
@@ -260,7 +263,7 @@ def main(syn, challenge_name, live_site=None):
         permissions.set_entity_permissions(syn, project_live,
                                            teams['team_org_id'],
                                            permission_level="download")
-        create_live_page(syn, project_live, teams['team_prereg_id'])
+        _create_live_wiki(syn, project_live, teams['team_prereg_id'])
     else:
         project_live = syn.get(live_site)
 
