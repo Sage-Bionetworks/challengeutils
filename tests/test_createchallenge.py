@@ -244,7 +244,6 @@ def test_livesitenone_main():
                       return_value=wiki),\
          patch.object(SYN, "store"):
         createchallenge.main(SYN, challenge_name, live_site=None)
-        assert patch_set_perms.call_count == 4
         patch_set_perms.assert_has_calls([admin_permission_call,
                                           org_permission_call,
                                           admin_permission_call,
