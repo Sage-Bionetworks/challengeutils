@@ -177,10 +177,14 @@ def test__create_teams():
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
+    team_org = challenge_name + ' Organizers'
 
     calls = [mock.call(SYN, team_part, 'Challenge Particpant Team',
                        can_public_join=True),
              mock.call(SYN, team_admin, 'Challenge Admin Team',
+                       can_public_join=False),
+             mock.call(SYN, team_org,
+                       'Challenge Organizing Team',
                        can_public_join=False),
              mock.call(SYN, team_prereg,
                        'Challenge Pre-registration Team',
@@ -190,7 +194,8 @@ def test__create_teams():
         team_map = createchallenge._create_teams(SYN, challenge_name)
         assert team_map == {'team_part_id': 'syn1234',
                             'team_admin_id': 'syn1234',
-                            'team_prereg_id': 'syn1234'}
+                            'team_prereg_id': 'syn1234',
+                            'team_org_id': 'syn1234'}
         patch_create.assert_has_calls(calls)
 
 
