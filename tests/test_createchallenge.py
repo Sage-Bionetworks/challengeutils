@@ -226,7 +226,8 @@ def test_livesitenone_main():
     org_permission_edit = mock.call(SYN, proj, team_map['team_org_id'],
                                     permission_level="edit")
     create_chal_call = mock.call(SYN, proj, team_map['team_part_id'])
-    create_queue_call = mock.call(SYN, '%s Project Submission' % challenge_name,
+    create_queue_call = mock.call(SYN,
+                                  '%s Project Submission' % challenge_name,
                                   'Project Submission', proj.id)
     with patch.object(createchallenge, "_create_teams",
                       return_value=team_map),\
