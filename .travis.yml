@@ -1,8 +1,11 @@
 sudo: required
 language: python
+services:
+  - docker
 script:
   - python setup.py install
   - pytest -vs tests
+  - docker build .
 
 before_install:
   - pip install pandas synapseclient
