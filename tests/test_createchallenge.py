@@ -218,12 +218,16 @@ def test_livesitenone_main():
     proj = synapseclient.Project(challenge_name, id=project)
     wiki = synapseclient.Wiki(title='', owner=proj,
                               markdown='')
+    # Mock calls
     admin_permission_call = mock.call(SYN, proj, team_map['team_admin_id'],
                                       permission_level="admin")
     org_permission_call = mock.call(SYN, proj, team_map['team_org_id'],
                                     permission_level="download")
     org_permission_edit = mock.call(SYN, proj, team_map['team_org_id'],
                                     permission_level="edit")
+    create_chal_call = mock.call(SYN, proj, team_map['team_part_id'])
+    create_queue_call = mock.call(SYN, '%s Project Submission' % challenge_name,
+                                  'Project Submission', proj.id)
     with patch.object(createchallenge, "_create_teams",
                       return_value=team_map),\
          patch.object(createchallenge, "create_project",
@@ -234,8 +238,10 @@ def test_livesitenone_main():
                       return_value=challenge_obj) as patch_create_chal,\
          patch.object(createchallenge,
                       "create_evaluation_queue") as patch_create_queue,\
-         patch.object(createchallenge, "check_existing_and_delete_wiki"),\
-         patch.object(synapseutils, "copyWiki", return_value=[{'id': 'foo'}]),\
+         patch.object(createchallenge,
+                      "check_existing_and_delete_wiki") as patch_exist,\
+         patch.object(synapseutils, "copyWiki",
+                      return_value=[{'id': 'foo'}]),\
          patch.object(SYN, "getWiki", return_value=wiki),\
          patch.object(createchallenge, "_update_wikipage_string",
                       return_value=wiki),\
@@ -248,12 +254,10 @@ def test_livesitenone_main():
                                           org_permission_edit])
         assert patch_create_proj.call_count == 2
 
-        patch_create_chal.assert_has_calls([mock.call(SYN, proj,
-                                                      team_map['team_part_id'])])
-        patch_create_queue.assert_has_calls([mock.call(SYN,
-                                                       '%s Project Submission' % challenge_name,
-                                                       'Project Submission',
-                                                       proj.id)])
+        patch_create_chal.assert_has_calls([create_chal_call])
+        patch_create_queue.assert_has_calls([create_queue_call])
+        patch_exist.assert_has_calls([mock.call(SYN, proj.id)])
+
 
 def test_livesite_main():
     """Tests main when live site is not None"""
