@@ -93,3 +93,19 @@ def set_entity_permissions(syn, entity, principalid,
     # Get the entity to check for access / validity of entity
     entity = syn.get(entity, downloadFile=False)
     _set_permissions(syn, entity, principalid, permission_level)
+
+
+def get_user_entity_permissions(syn, entity):
+    """Gets the list of permission that the caller has on a given Entity.
+    https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/auth/UserEntityPermissions.html
+
+    Args:
+        syn: Synapse connection
+        entity: Synapse id or Entity
+
+    Returns:
+        UserEntityPermissions
+    """
+    synid = synapseclient.utils.id_of(entity)
+    permissions = syn.restGET("/entity/{}/permissions".format(synid))
+    return permissions

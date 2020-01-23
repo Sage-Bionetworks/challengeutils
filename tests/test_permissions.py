@@ -53,3 +53,12 @@ def test_wrong_permission_level():
         permissions._set_permissions(SYN, synapseclient.Entity(),
                                      principalid="3",
                                      permission_level="foo")
+
+
+@pytest.mark.parametrize("entity", ["syn123",
+                                    synapseclient.Entity(id="syn123")])
+def test_get_user_entity_permissions(entity):
+    """Tests getting user entity permissions"""
+    with patch.object(SYN, "restGET") as patch_rest_get:
+        permissions.get_user_entity_permissions(SYN, entity)
+        patch_rest_get.assert_called_once_with("/entity/syn123/permissions")

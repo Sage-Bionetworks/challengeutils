@@ -192,19 +192,21 @@ def _create_teams(syn, challenge_name):
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
     team_prereg = challenge_name + ' Preregistrants'
-
+    team_org = challenge_name + ' Organizers'
     team_part_ent = create_team(syn, team_part, 'Challenge Particpant Team',
                                 can_public_join=True)
     team_admin_ent = create_team(syn, team_admin, 'Challenge Admin Team',
                                  can_public_join=False)
-
+    team_org_ent = create_team(syn, team_org, 'Challenge Organizing Team',
+                               can_public_join=False)
     team_prereg_ent = create_team(syn, team_prereg,
                                   'Challenge Pre-registration Team',
                                   can_public_join=True)
 
     team_map = {'team_part_id': team_part_ent['id'],
                 'team_admin_id': team_admin_ent['id'],
-                'team_prereg_id': team_prereg_ent['id']}
+                'team_prereg_id': team_prereg_ent['id'],
+                'team_org_id': team_org_ent['id']}
     return team_map
 
 
@@ -255,6 +257,9 @@ def main(syn, challenge_name, live_site=None):
         permissions.set_entity_permissions(syn, project_live,
                                            teams['team_admin_id'],
                                            permission_level="admin")
+        permissions.set_entity_permissions(syn, project_live,
+                                           teams['team_org_id'],
+                                           permission_level="download")
         create_live_page(syn, project_live, teams['team_prereg_id'])
     else:
         project_live = syn.get(live_site)
@@ -270,7 +275,9 @@ def main(syn, challenge_name, live_site=None):
     permissions.set_entity_permissions(syn, project_staging,
                                        teams['team_admin_id'],
                                        permission_level="admin")
-
+    permissions.set_entity_permissions(syn, project_staging,
+                                       teams['team_org_id'],
+                                       permission_level="edit")
     # Checks if staging wiki exists, if so delete
     check_existing_and_delete_wiki(syn, project_staging.id)
 
