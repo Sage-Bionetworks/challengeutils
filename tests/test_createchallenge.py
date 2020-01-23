@@ -278,18 +278,22 @@ def test_livesite_main():
     wiki = synapseclient.Wiki(title='', owner=proj,
                               markdown='')
     challenge_name = str(uuid.uuid1())
-    with patch.object(createchallenge, "_create_teams", return_value=team_map),\
+    with patch.object(createchallenge, "_create_teams",
+                      return_value=team_map),\
          patch.object(createchallenge, "create_project",
                       return_value=proj) as patch_create_proj,\
          patch.object(SYN, "get", return_value=proj),\
          patch.object(permissions,
                       "set_entity_permissions") as patch_set_perms,\
-         patch.object(createchallenge, "create_challenge_widget", return_value=challenge_obj),\
+         patch.object(createchallenge, "create_challenge_widget",
+                      return_value=challenge_obj),\
          patch.object(createchallenge, "create_evaluation_queue"),\
          patch.object(createchallenge, "check_existing_and_delete_wiki"),\
-         patch.object(synapseutils, "copyWiki", return_value=[{'id': 'foo'}]),\
+         patch.object(synapseutils, "copyWiki",
+                      return_value=[{'id': 'foo'}]),\
          patch.object(SYN, "getWiki", return_value=wiki),\
-         patch.object(createchallenge, "_update_wikipage_string", return_value=wiki),\
+         patch.object(createchallenge, "_update_wikipage_string",
+                      return_value=wiki),\
          patch.object(SYN, "store"):
         createchallenge.main(SYN, challenge_name, live_site="syn123")
         assert patch_set_perms.call_count == 2
