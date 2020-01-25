@@ -8,7 +8,9 @@ services:
 script:
   - python setup.py install
   - pytest -vs tests
-  - docker build .
+  - docker login docker.synapse.org -u $synapse_user -p $synapse_pass
+  - docker build . -t docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
+  - docker push docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
 
 before_install:
   - pip install pandas synapseclient
