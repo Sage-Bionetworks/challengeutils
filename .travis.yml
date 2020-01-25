@@ -8,7 +8,7 @@ services:
 script:
   - python setup.py install
   - pytest -vs tests
-  - docker login -u ${synapse_user} --password ${synapse_pass} docker.synapse.org
+  - echo "$synapse_user" | docker login -u "$synapse_pass" --password-stdin docker.synapse.org
   - docker build . -t docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
   - docker push docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
 
