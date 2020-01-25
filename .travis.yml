@@ -1,5 +1,8 @@
 sudo: required
 language: python
+env:
+  - DOCKER_USERNAME=$DOCKER_USERNAME
+  - DOCKER_PASSWORD=$DOCKER_PASSWORD
 python:
   - "3.6"
   - "3.7"
