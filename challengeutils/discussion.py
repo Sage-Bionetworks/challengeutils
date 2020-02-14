@@ -5,6 +5,7 @@ import json
 import requests
 
 import synapseclient
+from synapseclient.utils import id_of
 
 from synapseservices.forum import Forum
 
@@ -203,14 +204,14 @@ class DiscussionApi:
                                  body=json.dumps(entities))
 
 
-def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
+def get_forum_threads(syn, ent, query_filter='EXCLUDE_DELETED',
                       limit=20, offset=0):
     """
     Gets threads from a forum
 
     Args:
         syn: synapse object
-        synid: Synapse Project id
+        ent: Synapse Project entity or id
         query_filter:  filter forum threads returned. Can be NO_FILTER,
                        DELETED_ONLY, EXCLUDE_DELETED.
                        Defaults to EXCLUDE_DELETED.
@@ -219,6 +220,7 @@ def get_forum_threads(syn, synid, query_filter='EXCLUDE_DELETED',
         list: Forum threads
     """
     api = DiscussionApi(syn)
+    synid = id_of(ent)
     forum_obj = api.get_project_forum(synid)
     response = api.get_forum_threads(forum_obj.id,
                                      query_filter=query_filter,
@@ -277,17 +279,18 @@ def get_thread_reply_text(syn, messagekey):
     return thread_reply_response.text
 
 
-def get_forum_participants(syn, synid):
+def get_forum_participants(syn, ent):
     '''
     Get all forum participants
 
     Args:
-        syn: Synapse id
+        ent: Synapse Project entity or id
         synid: Synapse Project id
 
     Return:
         list: user profiles active in forum
     '''
+    synid = id_of(ent)
     threads = get_forum_threads(syn, synid)
     users = set()
     for thread in threads:
@@ -297,13 +300,13 @@ def get_forum_participants(syn, synid):
     return userprofiles
 
 
-def create_thread(syn, synid, title, message):
+def create_thread(syn, ent, title, message):
     '''
     Create a thread
 
     Args:
         syn: synapse object
-        synid: Synapse Project id
+        ent: Synapse Project entity or id
         title: title of thread
         message: message in thread
 
@@ -311,6 +314,7 @@ def create_thread(syn, synid, title, message):
         dict: Thread bundle
     '''
     api = DiscussionApi(syn)
+    synid = id_of(ent)
     forum_obj = api.get_project_forum(synid)
     thread_obj = api.post_thread(forum_obj.id, title, message)
     return thread_obj
