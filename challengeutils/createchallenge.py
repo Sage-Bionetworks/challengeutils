@@ -204,12 +204,15 @@ def createchallenge(syn, challenge_name, live_site=None):
     '''Create teams for challenge sites'''
     team_part = challenge_name + ' Participants'
     team_admin = challenge_name + ' Admin'
+    team_org = challenge_name + ' Organizers'
     team_preReg = challenge_name + ' Preregistrants'
 
     team_part_id = create_team(
-        syn, team_part, 'Challenge Particpant Team', can_public_join=True)
+        syn, team_part, 'Challenge Participant Team', can_public_join=True)
     team_admin_id = create_team(
         syn, team_admin, 'Challenge Admin Team', can_public_join=False)
+    team_org_id = create_team(
+        syn, team_org, 'Challenge Organizers Team', can_public_join=False)
     team_prereg_id = create_team(
         syn, team_preReg, 'Challenge Pre-registration Team',
         can_public_join=True)
@@ -218,6 +221,11 @@ def createchallenge(syn, challenge_name, live_site=None):
                    'CHANGE_SETTINGS', 'CREATE', 'MODERATE', 'UPDATE']
     syn.setPermissions(project_staging, team_admin_id, admin_perms)
     syn.setPermissions(project_live, team_admin_id, admin_perms)
+
+    org_staging_perms = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
+    org_live_perms = ['READ', 'DOWNLOAD']
+    syn.setPermissions(project_staging, team_org_id, org_staging_perms)
+    syn.setPermissions(project_live, team_org_id, org_live_perms)
 
     if live_site is None:
         create_live_page(syn, project_live, team_prereg_id)
