@@ -208,7 +208,7 @@ def createchallenge(syn, challenge_name, live_site=None):
     team_preReg = challenge_name + ' Preregistrants'
 
     team_part_id = create_team(
-        syn, team_part, 'Challenge Particpant Team', can_public_join=True)
+        syn, team_part, 'Challenge Participant Team', can_public_join=True)
     team_admin_id = create_team(
         syn, team_admin, 'Challenge Admin Team', can_public_join=False)
     team_org_id = create_team(
