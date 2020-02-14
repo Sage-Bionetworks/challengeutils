@@ -318,3 +318,19 @@ def create_thread(syn, ent, title, message):
     forum_obj = api.get_project_forum(synid)
     thread_obj = api.post_thread(forum_obj.id, title, message)
     return thread_obj
+
+
+def create_thread_reply(syn, threadid, message):
+    """Creates a reply to a thread
+
+    Args:
+        syn: synapse object
+        threadid: Synapse Thread id
+        message: message in reply
+
+    Returns:
+        dict: Reply bundle
+    """
+    api = DiscussionApi(syn)
+    replyobj = api.post_reply(threadid, message)
+    return replyobj
