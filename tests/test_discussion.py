@@ -108,15 +108,11 @@ def test_get_thread_replies():
 
 def test__get_text():
     '''Test get text'''
-    uri = "myurihere"
     response = "response"
     text_url = {'messageUrl': 'foo?wowthisworks'}
-    with mock.patch.object(syn, "restGET",
-                           return_value=text_url) as patch_synrestget,\
-         mock.patch.object(requests, "get",
+    with mock.patch.object(requests, "get",
                            return_value=response) as patch_requestget:
-        text = discussion._get_text(syn, uri)
-        patch_synrestget.assert_called_once_with(uri)
+        text = discussion._get_text(text_url)
         patch_requestget.assert_called_once_with("foo")
         # Although actual return isn't a string, this test just makes sure that
         # that the result from request.get is returned
@@ -130,12 +126,12 @@ def test_get_thread_text():
                            "get_thread_message_url",
                            return_value='wwwww') as patch_get_url,\
         mock.patch.object(discussion,
-                           "_get_text",
-                           return_value=TextResponseMock) as patch_get_text:
+                          "_get_text",
+                          return_value=TextResponseMock) as patch_get_text:
         thread_text = discussion.get_thread_text(syn, messagekey)
         patch_get_url.assert_called_once_with(messagekey)
         assert thread_text == 'text'
-        patch_get_text.assert_called_once_with(syn, 'wwwww')
+        patch_get_text.assert_called_once_with('wwwww')
 
 
 def test_get_thread_reply_text():
@@ -146,12 +142,12 @@ def test_get_thread_reply_text():
                            "get_reply_message_url",
                            return_value='wwwww') as patch_get_url,\
         mock.patch.object(discussion,
-                           "_get_text",
-                           return_value=TextResponseMock) as patch_get_text:
+                          "_get_text",
+                          return_value=TextResponseMock) as patch_get_text:
         thread_text = discussion.get_thread_reply_text(syn, messagekey)
         patch_get_url.assert_called_once_with(messagekey)
         assert thread_text == 'text'
-        patch_get_text.assert_called_once_with(syn, 'wwwww')
+        patch_get_text.assert_called_once_with('wwwww')
 
 
 def test_get_forum_participants():
