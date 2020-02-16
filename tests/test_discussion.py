@@ -268,7 +268,7 @@ def test_copy_forum():
          mock.patch.object(discussion, "get_thread_replies",
                            return_value=[REPLY_OBJ]) as patch_thread_replies,\
          mock.patch.object(discussion, "copy_reply") as patch_copy_reply:
-        reply = discussion.copy_forum(syn, PROJECTID, new_projectid)
+        discussion.copy_forum(syn, PROJECTID, new_projectid)
         patch_get_threads.assert_called_once_with(syn, PROJECTID)
         patch_copy_thread.assert_called_once_with(syn, THREAD_OBJ,
                                                   new_projectid)
