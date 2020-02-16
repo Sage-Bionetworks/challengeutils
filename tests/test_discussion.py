@@ -4,12 +4,12 @@ Test challengeutils.discussion functions
 import json
 import mock
 import requests
+import uuid
 
 import synapseclient
 
 from challengeutils import discussion
 from challengeutils.discussion import DiscussionApi
-
 from synapseservices.discussion import Forum
 
 syn = mock.create_autospec(synapseclient.Synapse)
@@ -20,7 +20,7 @@ FORUM_DICT = {'etag': 'foo',
               'id': '444',
               'projectId': PROJECTID}
 FORUM_OBJ = Forum(**FORUM_DICT)
-THREAD_OBJ = {'messageKey': '333/3333/22222-5d2224e-222-222-2222sdfasdf',
+THREAD_OBJ = {'messageKey': str(uuid.uuid1()),
               'numberOfReplies': 0,
               'isPinned': False,
               'numberOfViews': 0,
@@ -30,20 +30,20 @@ THREAD_OBJ = {'messageKey': '333/3333/22222-5d2224e-222-222-2222sdfasdf',
               'createdOn': '2019-06-27T04:01:25.000Z',
               'modifiedOn': '2019-06-27T04:01:25.000Z',
               'isDeleted': False,
-              'createdBy': '222',
+              'createdBy': str(uuid.uuid1()),
               'etag': 'dfsdf-df-4a44dfsd-982c-2d81102cf5d6',
               'lastActivity': '2019-06-27T04:01:25.000Z',
               'id': '5583',
               'projectId': PROJECTID,
               'forumId': FORUM_OBJ.id}
 REPLY_OBJ = {'threadId': THREAD_OBJ['id'],
-             'messageKey': '222/2222/22222/2222-5b222f4-4a62-bde7-2222222',
+             'messageKey': str(uuid.uuid1()),
              'modifiedOn': '2019-06-27T04:07:56.000Z',
              'isDeleted': False,
-             'createdBy': '222',
+             'createdBy': '333',
              'etag': 'sdf-1e89-4c84-dsf-sdfsdf',
              'isEdited': False,
-             'id': '18763',
+             'id': str(uuid.uuid1()),
              'projectId': PROJECTID,
              'createdOn': '2019-06-27T04:07:56.000Z',
              'forumId': FORUM_OBJ.id}
@@ -209,3 +209,69 @@ def test_get_entity_threads():
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
         assert entity_threads == response
+
+
+def test_copy_thread():
+    """Tests copying of threads"""
+    profile = synapseclient.UserProfile(ownerId="test",
+                                        userName="foobar")
+    thread_text = str(uuid.uuid1())
+    on_behalf_of = "On behalf of @{user}\n\n".format(user=profile.userName)
+    new_thread_text = on_behalf_of + thread_text
+
+    with mock.patch.object(syn, "getUserProfile",
+                           return_value=profile) as patch_getuserprofile,\
+         mock.patch.object(discussion, "get_thread_text",
+                           return_value=thread_text) as patch_thread_text,\
+         mock.patch.object(discussion, "create_thread",
+                           return_value=THREAD_OBJ) as patch_create_thread:
+        thread = discussion.copy_thread(syn, THREAD_OBJ, PROJECTID)
+        patch_getuserprofile.assert_called_once_with(THREAD_OBJ['createdBy'])
+        patch_thread_text.assert_called_once_with(syn, THREAD_OBJ['messageKey'])
+        patch_create_thread.assert_called_once_with(syn, PROJECTID,
+                                                    THREAD_OBJ['title'],
+                                                    new_thread_text)
+        assert thread == THREAD_OBJ
+
+
+def test_copy_reply():
+    """Tests copying of replies"""
+    profile = synapseclient.UserProfile(ownerId="test",
+                                        userName="foobar")
+    reply_text = str(uuid.uuid1())
+    on_behalf_of = "On behalf of @{user}\n\n".format(user=profile.userName)
+    new_reply_text = on_behalf_of + reply_text
+
+    with mock.patch.object(syn, "getUserProfile",
+                           return_value=profile) as patch_getuserprofile,\
+         mock.patch.object(discussion, "get_thread_reply_text",
+                           return_value=reply_text) as patch_reply_text,\
+         mock.patch.object(discussion, "create_thread_reply",
+                           return_value=REPLY_OBJ) as patch_create_reply:
+        reply = discussion.copy_reply(syn, REPLY_OBJ, THREAD_OBJ)
+        patch_getuserprofile.assert_called_once_with(REPLY_OBJ['createdBy'])
+        patch_reply_text.assert_called_once_with(syn, REPLY_OBJ['messageKey'])
+        patch_create_reply.assert_called_once_with(syn, THREAD_OBJ['id'],
+                                                   new_reply_text)
+        assert reply == REPLY_OBJ
+
+
+def test_copy_forum():
+    """Tests copying of entire forum"""
+    new_thread = THREAD_OBJ.copy()
+    new_thread['id'] = str(uuid.uuid1())
+    new_projectid = str(uuid.uuid1())
+    with mock.patch.object(discussion, "get_forum_threads",
+                           return_value=[THREAD_OBJ]) as patch_get_threads,\
+         mock.patch.object(discussion, "copy_thread",
+                           return_value=new_thread) as patch_copy_thread,\
+         mock.patch.object(discussion, "get_thread_replies",
+                           return_value=[REPLY_OBJ]) as patch_thread_replies,\
+         mock.patch.object(discussion, "copy_reply") as patch_copy_reply:
+        reply = discussion.copy_forum(syn, PROJECTID, new_projectid)
+        patch_get_threads.assert_called_once_with(syn, PROJECTID)
+        patch_copy_thread.assert_called_once_with(syn, THREAD_OBJ,
+                                                  new_projectid)
+        patch_thread_replies.assert_called_once_with(syn, THREAD_OBJ['id'])
+        patch_copy_reply.assert_called_once_with(syn, REPLY_OBJ,
+                                                 new_thread['id'])
