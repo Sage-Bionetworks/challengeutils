@@ -7,7 +7,7 @@ import requests
 import synapseclient
 from synapseclient.utils import id_of
 
-from synapseservices.forum import Forum
+from synapseservices.discussion import Forum
 
 QUERY_LIMIT = 1000
 
