@@ -7,7 +7,7 @@ import requests
 import synapseclient
 from synapseclient.utils import id_of
 
-from synapseservices.forum import Forum
+from synapseservices.discussion import Forum
 
 QUERY_LIMIT = 1000
 
@@ -228,19 +228,39 @@ def get_forum_threads(syn, ent, query_filter='EXCLUDE_DELETED',
     return response
 
 
-def _get_text(syn, uri):
+def get_thread_replies(syn, thread, query_filter='EXCLUDE_DELETED',
+                       limit=20, offset=0):
+    """Gets replies of a thread
+
+    Args:
+        syn: synapse object
+        thread: Synapse thread or id
+        query_filter:  filter forum threads returned. Can be NO_FILTER,
+                       DELETED_ONLY, EXCLUDE_DELETED.
+                       Defaults to EXCLUDE_DELETED.
+
+    Yields:
+        list: Thread replies
+    """
+    api = DiscussionApi(syn)
+    threadid = id_of(thread)
+    response = api.get_thread_replies(threadid,
+                                      query_filter=query_filter,
+                                      limit=limit, offset=offset)
+    return response
+
+
+def _get_text(url):
     '''
     Get the text from a message url
 
     Args:
-        syn: Synapse object
-        uri: rest call URL
+        url: rest call URL
 
     Returns:
         response: Request response
     '''
-    text_url = syn.restGET(uri)
-    response = requests.get(text_url['messageUrl'].split("?")[0])
+    response = requests.get(url['messageUrl'].split("?")[0])
     return response
 
 
@@ -257,7 +277,7 @@ def get_thread_text(syn, messagekey):
     '''
     api = DiscussionApi(syn)
     url = api.get_thread_message_url(messagekey)
-    thread_response = _get_text(syn, url)
+    thread_response = _get_text(url)
     return thread_response.text
 
 
@@ -275,7 +295,7 @@ def get_thread_reply_text(syn, messagekey):
     '''
     api = DiscussionApi(syn)
     url = api.get_reply_message_url(messagekey)
-    thread_reply_response = _get_text(syn, url)
+    thread_reply_response = _get_text(url)
     return thread_reply_response.text
 
 
@@ -334,3 +354,61 @@ def create_thread_reply(syn, threadid, message):
     api = DiscussionApi(syn)
     replyobj = api.post_reply(threadid, message)
     return replyobj
+
+
+def copy_thread(syn, thread, project):
+    """Copies a discussion thread to a project
+
+    Args:
+        syn: synapse object
+        thread: Synapse Thread
+        project: Synapse Project or its id to copy thread to
+
+    Returns:
+        dict: Thread bundle
+    """
+    projectid = id_of(project)
+    title = thread['title']
+    author = thread['createdBy']
+    username = syn.getUserProfile(author)['userName']
+    on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
+    text = get_thread_text(syn, thread['messageKey'])
+    new_thread_text = on_behalf_of + text
+
+    return create_thread(syn, projectid, title, new_thread_text)
+
+
+def copy_reply(syn, reply, thread):
+    """Copies a discussion thread reply to a thread
+
+    Args:
+        syn: synapse object
+        reply: Synapse Reply
+        thread: Synapse thread or threadid to copy reply to
+
+    Returns:
+        dict: Reply bundle
+    """
+    threadid = id_of(thread)
+    author = reply['createdBy']
+    username = syn.getUserProfile(author)['userName']
+    on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
+    text = get_thread_reply_text(syn, reply['messageKey'])
+    new_reply_text = on_behalf_of + text
+    return create_thread_reply(syn, threadid, new_reply_text)
+
+
+def copy_forum(syn, project, new_project):
+    """Copies the discussion forum of a project to another project
+
+    Args:
+        syn: synapse object
+        project: Synapse Project
+        new_project: Synapse Project to copy forum to
+    """
+    threads = get_forum_threads(syn, project)
+    for thread in threads:
+        new_thread_obj = copy_thread(syn, thread, new_project)
+        thread_replies = get_thread_replies(syn, thread['id'])
+        for reply in thread_replies:
+            copy_reply(syn, reply, new_thread_obj['id'])
