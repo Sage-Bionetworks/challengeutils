@@ -139,7 +139,7 @@ def command_list_evaluations(syn, args):
 
 def command_download_submission(syn, args):
     submission_dict = utils.download_submission(syn, args.submissionid,
-                                                download_location=args.download_location)
+                                                download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -159,8 +159,8 @@ def command_annotate_submission_with_json(syn, args):
         args.annotation_values,
         to_public=args.to_public,
         force_change_annotation_acl=args.force_change_annotation_acl),
-        wait=3,
-        retries=10)
+                wait=3,
+                retries=10)
 
 
 def command_send_email(syn, args):
