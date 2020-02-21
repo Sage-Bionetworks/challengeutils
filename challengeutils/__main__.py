@@ -46,7 +46,14 @@ def command_createchallenge(syn, args):
 
 
 def command_query(syn, args):
-    """Command line convenience function to call evaluation queue query"""
+    """Command line convenience function to call evaluation queue query
+    Evaluation queues offer a separate query service from the rest of Synapse.
+    This query function will print the leaderboard in a csv format in standard
+    out.  Proceed [here](https://docs.synapse.org/rest/GET/evaluation/submission/query.html)
+    to learn more about this query service.
+
+    >>> challengeutils query "select objectId, status from evaluation_12345"
+    """
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
     if args.render:
