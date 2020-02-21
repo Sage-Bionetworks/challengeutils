@@ -1,8 +1,6 @@
 challengeutils package
 ======================
 
-Submodules
-----------
 
 challengeutils.challenge module
 -------------------------------
@@ -84,11 +82,3 @@ challengeutils.writeup\_attacher module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: challengeutils
-    :members:
-    :undoc-members:
-    :show-inheritance:
