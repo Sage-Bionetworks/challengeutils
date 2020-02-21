@@ -6,18 +6,21 @@
 Welcome to challengeutils' documentation!
 =======================================================
 
-Synapse challenge utility functions
 
-.. toctree::
-   :maxdepth: 4
-
-   challengeutils
-
-=========
-Reference
-=========
+===================
+Command Line Client
+===================
 
 .. toctree::
    :maxdepth: 4
 
    client
+
+===================================
+challengeutils Python Documentation
+===================================
+
+.. toctree::
+   :maxdepth: 4
+
+   challengeutils
