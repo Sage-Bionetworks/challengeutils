@@ -1,3 +1,12 @@
+*.csv
+*.txt
+*.pdf
+*.zip
+*.tsv
+*.xlsx
+.DS_Store
+.Rhistory
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -119,3 +128,6 @@ dmypy.json
 _build
 _static
 _templates
+
+# Ignore Rproj
+.Rproj.user

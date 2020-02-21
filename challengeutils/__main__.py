@@ -1,12 +1,20 @@
 import argparse
+import json
+import logging
+import os
 import pandas as pd
 import synapseclient
+from synapseclient.retry import _with_retry
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
 from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
+from . import helpers
+from .__version__ import __version__
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
@@ -15,12 +23,24 @@ def command_mirrorwiki(syn, args):
 
 
 def command_createchallenge(syn, args):
-    createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
+    createchallenge.main(syn, args.challengename, args.livesiteid)
 
 
 def command_query(syn, args):
+    """Command line convenience function to call evaluation queue query"""
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
+    if args.render:
+        # Check if submitterId column exists
+        if querydf.get('submitterId') is not None:
+            submitter_names = [utils._get_submitter_name(syn, submitterid)
+                               for submitterid in querydf['submitterId']]
+            querydf['submitterName'] = submitter_names
+        # Check if createdOn column exists
+        if querydf.get('createdOn') is not None:
+            createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
+                          for createdon in querydf['createdOn']]
+            querydf['createdOn'] = createdons
     if args.outputfile is not None:
         querydf.to_csv(args.outputfile, index=False)
     else:
@@ -59,21 +79,67 @@ def command_dl_cur_lead_sub(syn, args):
         verbose=args.verbose)
 
 
+def command_list_evaluations(syn, args):
+    utils.list_evaluations(syn, args.projectid)
+
+
+def command_download_submission(syn, args):
+    submission_dict = utils.download_submission(
+        syn, args.submissionid, download_location=args.download_location)
+    if args.output:
+        filepath = submission_dict['file_path']
+        if filepath is not None:
+            os.rename(filepath, 'submission-' + args.submissionid)
+            filepath = 'submission-' + args.submissionid
+        submission_dict['file_path'] = 'submission-' + args.submissionid
+        with open(args.output, "w") as sub_out:
+            json.dump(submission_dict, sub_out)
+        logger.info(args.output)
+    else:
+        logger.info(submission_dict)
+
+
+def command_annotate_submission_with_json(syn, args):
+    _with_retry(lambda: utils.annotate_submission_with_json(
+        syn, args.submissionid,
+        args.annotation_values,
+        to_public=args.to_public,
+        force_change_annotation_acl=args.force_change_annotation_acl),
+        wait=3,
+        retries=10)
+
+
+def command_send_email(syn, args):
+    """Command line interface to send Synapse email"""
+    # Must escape the backslash and replace all \n with
+    # html breaks
+    message = args.message.replace("\\n", "<br>")
+    syn.sendMessage(userIds=args.userids,
+                    messageSubject=args.subject,
+                    messageBody=message)
+
+
+def command_kill_docker_over_quota(syn, args):
+    '''
+    Command line helper to kill docker submissions
+    over the quota
+    '''
+    helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
+                                              quota=args.quota)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
         description='Challenge utility functions')
-    '''
-    parser.add_argument('-u', '--username', dest='synapseUser',
-                         help='Username used to connect to Synapse')
-    parser.add_argument('-p', '--password', dest='synapsePassword',
-                         help='Password used to connect to Synapse')
 
-    '''
     parser.add_argument(
         "-c", "--synapse_config",
         default=synapseclient.client.CONFIG_FILE,
         help="credentials file")
+
+    parser.add_argument('-v', '--version', action='version',
+                        version='challengeutils {}'.format(__version__))
 
     subparsers = parser.add_subparsers(
         title='commands',
@@ -127,6 +193,10 @@ def build_parser():
         help="File that you want your query results to be written to."
              "If not specified, it is written as stdout.",
         default=None)
+    parser_query.add_argument(
+        "--render",
+        action='store_true',
+        help="Renders submitterId and createdOn values in leaderboard")
     parser_query.add_argument(
         "--limit",
         type=int,
@@ -234,6 +304,104 @@ def build_parser():
 
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
+    parser_list_evals = subparsers.add_parser(
+        'listevaluations',
+        help='List all evaluation queues of a project')
+
+    parser_list_evals.add_argument(
+        "projectid",
+        type=str,
+        help='Synapse id of project')
+
+    parser_list_evals.set_defaults(func=command_list_evaluations)
+
+    parser_download_submission = subparsers.add_parser(
+        'downloadsubmission',
+        help='Download a Synapse submission')
+
+    parser_download_submission.add_argument(
+        "submissionid",
+        type=str,
+        help='Synapse id of submission')
+
+    parser_download_submission.add_argument(
+        "--download_location",
+        type=str,
+        help='Specify download location. Defaults to current working dir',
+        default=".")
+
+    parser_download_submission.add_argument(
+        "--output",
+        type=str,
+        help='Output json results into a file')
+
+    parser_download_submission.set_defaults(func=command_download_submission)
+
+    parser_annotate_sub = subparsers.add_parser(
+        'annotatesubmission',
+        help='Annotate a Synapse submission with a json file')
+
+    parser_annotate_sub.add_argument(
+        "submissionid",
+        help="Submission ID")
+    parser_annotate_sub.add_argument(
+        "annotation_values",
+        help="JSON file of annotations with key:value pair")
+    parser_annotate_sub.add_argument(
+        "-p", "--to_public",
+        help="Annotations are by default private except to queue "
+             "administrator(s), so change them to be public",
+        action='store_true')
+    parser_annotate_sub.add_argument(
+        "-f", "--force_change_annotation_acl",
+        help="Ability to update annotations if the key has "
+             "different ACLs, warning will occur if this parameter "
+             "isn't specified and the same key has different ACLs",
+        action='store_true')
+    parser_annotate_sub.set_defaults(
+        func=command_annotate_submission_with_json)
+
+    parser_send_email = subparsers.add_parser(
+        'sendemail',
+        help='Send a Synapse email')
+
+    parser_send_email.add_argument(
+        "--userids",
+        type=str,
+        help='List of user ids',
+        nargs="+",
+        required=True)
+
+    parser_send_email.add_argument(
+        "--subject",
+        type=str,
+        help='Email message subject',
+        required=True)
+
+    parser_send_email.add_argument(
+        "--message",
+        type=str,
+        help='Email message body',
+        required=True)
+
+    parser_send_email.set_defaults(func=command_send_email)
+
+
+    parser_kill_docker = subparsers.add_parser(
+        'killdockeroverquota',
+        help='Kill Docker submissions over the quota')
+
+    parser_kill_docker.add_argument(
+        "evaluationid",
+        type=str,
+        help='Synapse evaluation queue id')
+
+    parser_kill_docker.add_argument(
+        "quota",
+        type=int,
+        help="Time quota submission has to run in milliseconds")
+    parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+
     return parser
 
 
@@ -249,8 +417,8 @@ def synapse_login(synapse_config):
     try:
         syn = synapseclient.login(silent=True)
     except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config, silent=True)
-        syn.login()
+        syn = synapseclient.Synapse(configPath=synapse_config)
+        syn.login(silent=True)
     return(syn)
 
 
