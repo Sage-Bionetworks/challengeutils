@@ -1,10 +1,13 @@
+"""challengeutils command line client"""
 import argparse
 import json
 import logging
 import os
+
 import pandas as pd
 import synapseclient
 from synapseclient.retry import _with_retry
+
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
@@ -13,13 +16,23 @@ from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
 from .__version__ import __version__
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
-    mirrorwiki.mirrorwiki(
-        syn, args.entityid, args.destinationid, args.forceupdate)
+    """For all challenges, you should be editting the staging site and then
+    using the merge script to mirror staging to live site.  The script will
+    compare wiki titles between the staging and live site and update the live
+    site with respect to what has changed on the staging site.  Note, this is
+    different from copying the wikis. To copy the wikis, please look at
+    synapseutils.
+
+    >>> challengeutils mirrorwiki syn12345 syn23456
+    """
+    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
+                          args.forceupdate)
 
 
 def command_createchallenge(syn, args):
