@@ -117,7 +117,7 @@ def command_set_evaluation_acl(syn, args):
     """
     permissions.set_evaluation_permissions(syn, args.evaluationid,
                                            principalid=args.principalid,
-                                           permission_level=args.permission_level)
+                                           permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
