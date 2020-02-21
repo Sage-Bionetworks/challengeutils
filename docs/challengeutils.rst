@@ -2,80 +2,66 @@ challengeutils package
 ======================
 
 
-challengeutils.challenge module
--------------------------------
 
-.. automodule:: challengeutils.challenge
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-challengeutils.createchallenge module
--------------------------------------
+Create Challenge
+----------------
 
 .. automodule:: challengeutils.createchallenge
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.discussion module
---------------------------------
+Synapse Discussion Service
+--------------------------
 
 .. automodule:: challengeutils.discussion
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.download\_current\_lead\_submission module
----------------------------------------------------------
+Download current lead submission
+--------------------------------
 
 .. automodule:: challengeutils.download_current_lead_submission
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.evaluation\_queue module
----------------------------------------
 
-.. automodule:: challengeutils.evaluation_queue
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-challengeutils.helpers module
------------------------------
+Helpers
+-------
 
 .. automodule:: challengeutils.helpers
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.mirrorwiki module
---------------------------------
+Mirror wiki
+-----------
 
 .. automodule:: challengeutils.mirrorwiki
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.permissions module
----------------------------------
+Permissions
+-----------
 
 .. automodule:: challengeutils.permissions
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.utils module
----------------------------
+Utils
+-----
 
 .. automodule:: challengeutils.utils
     :members:
     :undoc-members:
     :show-inheritance:
 
-challengeutils.writeup\_attacher module
----------------------------------------
+Writeup attacher
+----------------
 
 .. automodule:: challengeutils.writeup_attacher
     :members:
