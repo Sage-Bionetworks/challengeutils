@@ -49,7 +49,7 @@ def command_query(syn, args):
     """Command line convenience function to call evaluation queue query
     Evaluation queues offer a separate query service from the rest of Synapse.
     This query function will print the leaderboard in a csv format in standard
-    out.  Proceed [here](https://docs.synapse.org/rest/GET/evaluation/submission/query.html)
+    out.  Proceed `here <https://docs.synapse.org/rest/GET/evaluation/submission/query.html>`_
     to learn more about this query service.
 
     >>> challengeutils query "select objectId, status from evaluation_12345"
@@ -75,8 +75,7 @@ def command_query(syn, args):
 
 def command_change_status(syn, args):
     """Each submission has a status, this is a convenience function to change
-    the status of a submission.  Valid statuses can be found here
-    https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html
+    the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_
 
     >>> challengeutils changestatus 1234545 INVALID
     """
