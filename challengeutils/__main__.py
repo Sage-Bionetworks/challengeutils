@@ -83,22 +83,41 @@ def command_change_status(syn, args):
 
 
 def command_writeup_attach(syn, args):
-    writeup_attacher.attach_writeup(
-        syn, args.writeupqueue, args.submissionqueue)
+    """Most challenges require participants to submit a writeup.  Using the
+    new archive-challenge-project-tool system of receiving writeups, this is
+    a convenience function to merge the writeup and archived write up Synapse
+    ids to the main challenge queue
+
+    >>> challengeutils attachwriteup writeupid submissionqueueid
+    """
+    writeup_attacher.attach_writeup(syn, args.writeupqueue,
+                                    args.submissionqueue)
 
 
 def command_set_entity_acl(syn, args):
-    permissions.set_entity_permissions(
-        syn, args.entityid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on entities for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setentityacl syn123545 user_or_team view
+    """
+    permissions.set_entity_permissions(syn, args.entityid,
+                                       principalid=args.principalid,
+                                       permission_level=args.permission_level)
 
 
 def command_set_evaluation_acl(syn, args):
-    permissions.set_evaluation_permissions(
-        syn, args.evaluationid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on queues for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setevaluationacl 12345 user_or_team score
+    """
+    permissions.set_evaluation_permissions(syn, args.evaluationid,
+                                           principalid=args.principalid,
+                                           permission_level=args.permission_level)
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -111,12 +130,16 @@ def command_dl_cur_lead_sub(syn, args):
 
 
 def command_list_evaluations(syn, args):
+    """Lists evaluation queues of a project
+
+    >>> challengeutils listevaluations projectid
+    """
     utils.list_evaluations(syn, args.projectid)
 
 
 def command_download_submission(syn, args):
-    submission_dict = utils.download_submission(
-        syn, args.submissionid, download_location=args.download_location)
+    submission_dict = utils.download_submission(syn, args.submissionid,
+                                                download_location=args.download_location)
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -151,10 +174,13 @@ def command_send_email(syn, args):
 
 
 def command_kill_docker_over_quota(syn, args):
-    '''
-    Command line helper to kill docker submissions
-    over the quota
-    '''
+    """
+    Sets an annotation on Synapse Docker submissions such that it will
+    be terminated by the orchestrator. Usually applies to submissions
+    that have been running for longer than the alloted time.
+
+    >>> challengeutils killdockeroverquota evaluationid quota
+    """
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 
