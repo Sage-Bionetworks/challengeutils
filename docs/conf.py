@@ -8,7 +8,6 @@
 
 import os
 import sys
-import challengeutils
 
 # -- Path setup --------------------------------------------------------------
 
@@ -26,7 +25,7 @@ author = 'Thomas Yu'
 # The short X.Y version
 version = challengeutils.__version__
 # The full version, including alpha/beta/rc tags
-release = challengeutils.__version__
+release = version
 
 # -- General configuration ---------------------------------------------------
 
