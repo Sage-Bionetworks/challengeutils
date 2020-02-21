@@ -1,10 +1,6 @@
-challengeutils package
-======================
-
-
 
 Create Challenge
-----------------
+================
 
 .. automodule:: challengeutils.createchallenge
     :members:
@@ -12,7 +8,7 @@ Create Challenge
     :show-inheritance:
 
 Synapse Discussion Service
---------------------------
+==========================
 
 .. automodule:: challengeutils.discussion
     :members:
@@ -20,7 +16,7 @@ Synapse Discussion Service
     :show-inheritance:
 
 Download current lead submission
---------------------------------
+================================
 
 .. automodule:: challengeutils.download_current_lead_submission
     :members:
@@ -29,7 +25,7 @@ Download current lead submission
 
 
 Helpers
--------
+=======
 
 .. automodule:: challengeutils.helpers
     :members:
@@ -37,7 +33,7 @@ Helpers
     :show-inheritance:
 
 Mirror wiki
------------
+===========
 
 .. automodule:: challengeutils.mirrorwiki
     :members:
@@ -45,7 +41,7 @@ Mirror wiki
     :show-inheritance:
 
 Permissions
------------
+===========
 
 .. automodule:: challengeutils.permissions
     :members:
@@ -53,7 +49,7 @@ Permissions
     :show-inheritance:
 
 Utils
------
+=====
 
 .. automodule:: challengeutils.utils
     :members:
@@ -61,7 +57,7 @@ Utils
     :show-inheritance:
 
 Writeup attacher
-----------------
+================
 
 .. automodule:: challengeutils.writeup_attacher
     :members:
