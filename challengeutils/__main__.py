@@ -74,6 +74,12 @@ def command_query(syn, args):
 
 
 def command_change_status(syn, args):
+    """Each submission has a status, this is a convenience function to change
+    the status of a submission.  Valid statuses can be found here
+    https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html
+
+    >>> challengeutils changestatus 1234545 INVALID
+    """
     print(utils.change_submission_status(syn, args.submissionid, args.status))
 
 
