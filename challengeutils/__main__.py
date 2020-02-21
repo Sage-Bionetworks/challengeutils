@@ -49,7 +49,7 @@ def command_query(syn, args):
     """Command line convenience function to call evaluation queue query
     Evaluation queues offer a separate query service from the rest of Synapse.
     This query function will print the leaderboard in a csv format in standard
-    out.  Proceed `here <https://docs.synapse.org/rest/GET/evaluation/submission/query.html>`_
+    out.  Proceed `here <https://docs.synapse.org/rest/GET/evaluation/submission/query.html>`_ # pylint: disable=line-too-long
     to learn more about this query service.
 
     >>> challengeutils query "select objectId, status from evaluation_12345"
@@ -75,7 +75,7 @@ def command_query(syn, args):
 
 def command_change_status(syn, args):
     """Each submission has a status, this is a convenience function to change
-    the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_
+    the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_ # pylint: disable=line-too-long
 
     >>> challengeutils changestatus 1234545 INVALID
     """
@@ -117,7 +117,7 @@ def command_set_evaluation_acl(syn, args):
     """
     permissions.set_evaluation_permissions(syn, args.evaluationid,
                                            principalid=args.principalid,
-                                           permission_level=args.permission_level)
+                                           permission_level=args.permission_level) # pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -139,7 +139,7 @@ def command_list_evaluations(syn, args):
 
 def command_download_submission(syn, args):
     submission_dict = utils.download_submission(syn, args.submissionid,
-                                                download_location=args.download_location)
+                                                download_location=args.download_location) # pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
