@@ -1,0 +1,1 @@
+.. automodule:: challengeutils.__main__

@@ -12,3 +12,12 @@ Synapse challenge utility functions
    :maxdepth: 4
 
    challengeutils
+
+=========
+Reference
+=========
+
+.. toctree::
+   :maxdepth: 1
+
+   client
