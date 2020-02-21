@@ -23,7 +23,7 @@ copyright = '2019, Thomas Yu'
 author = 'Thomas Yu'
 
 # The short X.Y version
-version = challengeutils.__version__
+version = ''
 # The full version, including alpha/beta/rc tags
 release = version
 
