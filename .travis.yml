@@ -9,8 +9,8 @@ script:
   - python setup.py install
   - pytest -vs tests
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin docker.synapse.org
-  - docker build . -t docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
-  - docker push docker.synapse.org/syn18058986/challengeutils
+  - if [ "$TRAVIS_BRANCH" = "develop" ] || [ "$TRAVIS_BRANCH" = "master" ] ; then docker build . -t docker.synapse.org/syn18058986/challengeutils:$TRAVIS_BRANCH
+  - if [ "$TRAVIS_BRANCH" = "develop" ] || [ "$TRAVIS_BRANCH" = "master" ] ; then docker push docker.synapse.org/syn18058986/challengeutils
 
 before_install:
   - pip install pandas synapseclient
