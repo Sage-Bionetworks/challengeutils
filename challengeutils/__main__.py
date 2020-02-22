@@ -38,7 +38,8 @@ def command_mirrorwiki(syn, args):
 def command_createchallenge(syn, args):
     """Creates a challenge space in Synapse.  This pulls from a standard
     DREAM template and creates the Projects and Teams that you will need
-    for a challenge.
+    for a challenge.  For more information on all the components this function
+    creates, please head to `challenge administration <https://docs.synapse.org/articles/challenge_administration.html>`_.
 
     >>> challengeutils createchallenge "Challenge Name Here"
     """
