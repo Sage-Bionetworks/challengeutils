@@ -624,7 +624,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         annotation_json = json.load(json_data)
     status = update_single_submission_status(status, annotation_json,
                                              to_public=to_public,
-                                             force_change_annotation_acl=force_change_annotation_acl)  # pylint: disable=line-too-long
+                                             force_change_annotation_acl=force_change_annotation_acl)  # noqa pylint: disable=line-too-long
     status = syn.store(status)
     return mock_response
 
