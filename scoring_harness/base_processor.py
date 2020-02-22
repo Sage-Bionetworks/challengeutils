@@ -150,7 +150,7 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
         annotations = submission_info['annotations']
         sub_status = update_single_submission_status(sub_status,
                                                      annotations,
-                                                     to_public=True)
+                                                     is_private=False)
         is_valid = submission_info['valid']
         sub_status.status = self._success_status if is_valid else "INVALID"
 
