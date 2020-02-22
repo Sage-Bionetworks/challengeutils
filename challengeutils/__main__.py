@@ -23,7 +23,7 @@ def command_mirrorwiki(syn, args):
 
 
 def command_createchallenge(syn, args):
-    createchallenge.createchallenge(syn, args.challengename, args.livesiteid)
+    createchallenge.main(syn, args.challengename, args.livesiteid)
 
 
 def command_query(syn, args):
