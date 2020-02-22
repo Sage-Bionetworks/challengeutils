@@ -30,18 +30,23 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
         is_valid = submission_info['valid']
         message = submission_info['message']
         # we don't get repeat messages
-        profile = self.syn.getUserProfile(submission.userId)
+        participantid = submission.get("teamId")
+        if participantid is not None:
+            name = self.syn.getTeam(participantid)['name']
+        else:
+            participantid = submission.userId
+            name = self.syn.getUserProfile(participantid)['userName']
         if is_valid:
             messages.scoring_succeeded(syn=self.syn,
-                                       userids=[submission.userId],
+                                       userids=[participantid],
                                        send_messages=self.send_messages,
                                        dry_run=self.dry_run,
                                        message=message,
-                                       username=profile.userName,
+                                       username=name,
                                        queue_name=self.evaluation.name,
                                        submission_name=submission.name,
                                        submission_id=submission.id,
-                                       challenge_synid=self.evaluation.contentSource)
+                                       challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
         else:
             messages.scoring_error(syn=self.syn,
                                    userids=self.admin_user_ids,
@@ -52,4 +57,4 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
                                    queue_name=self.evaluation.name,
                                    submission_name=submission.name,
                                    submission_id=submission.id,
-                                   challenge_synid=self.evaluation.contentSource)
+                                   challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long

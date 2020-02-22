@@ -33,21 +33,26 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
         error = submission_info['error']
         message = submission_info['message']
 
-        profile = self.syn.getUserProfile(submission.userId)
+        participantid = submission.get("teamId")
+        if participantid is not None:
+            name = self.syn.getTeam(participantid)['name']
+        else:
+            participantid = submission.userId
+            name = self.syn.getUserProfile(participantid)['userName']
         if is_valid:
             messages.validation_passed(syn=self.syn,
-                                       userids=[submission.userId],
-                                       acknowledge_receipt=self.acknowledge_receipt,
+                                       userids=[participantid],
+                                       acknowledge_receipt=self.acknowledge_receipt,  # noqa pylint: disable=line-too-long
                                        dry_run=self.dry_run,
-                                       username=profile.userName,
+                                       username=name,
                                        queue_name=self.evaluation.name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,
-                                       challenge_synid=self.evaluation.contentSource)
+                                       challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
         else:
             if isinstance(error, AssertionError):
-                send_to = [submission.userId]
-                username = profile.userName
+                send_to = [participantid]
+                username = name
             else:
                 send_to = self.admin_user_ids
                 username = "Challenge Administrator"
@@ -61,4 +66,4 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
                                        submission_id=submission.id,
                                        submission_name=submission.name,
                                        message=message,
-                                       challenge_synid=self.evaluation.contentSource)
+                                       challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
