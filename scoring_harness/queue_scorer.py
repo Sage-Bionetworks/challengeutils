@@ -1,6 +1,7 @@
 """This is the baseclass for what happens to a submission"""
 import logging
 from .base_processor import EvaluationQueueProcessor
+from .base_processor import _get_submission_submitter
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -29,20 +30,17 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
         # we don't get repeat messages
         is_valid = submission_info['valid']
         message = submission_info['message']
-        # we don't get repeat messages
-        participantid = submission.get("teamId")
-        if participantid is not None:
-            name = self.syn.getTeam(participantid)['name']
-        else:
-            participantid = submission.userId
-            name = self.syn.getUserProfile(participantid)['userName']
+
+        submitter_info = _get_submission_submitter(self.syn, submission)
+        submitterid = submitter_info['submitterid']
+        submitter_name = submitter_info['submitter_name']
         if is_valid:
             messages.scoring_succeeded(syn=self.syn,
-                                       userids=[participantid],
+                                       userids=[submitterid],
                                        send_messages=self.send_messages,
                                        dry_run=self.dry_run,
                                        message=message,
-                                       username=name,
+                                       username=submitter_name,
                                        queue_name=self.evaluation.name,
                                        submission_name=submission.name,
                                        submission_id=submission.id,

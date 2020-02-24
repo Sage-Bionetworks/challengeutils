@@ -1,6 +1,7 @@
 """This is the baseclass for what happens to a submission"""
 import logging
 from .base_processor import EvaluationQueueProcessor
+from .base_processor import _get_submission_submitter
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -33,35 +34,29 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
         error = submission_info['error']
         message = submission_info['message']
 
-        participantid = submission.get("teamId")
-        if participantid is not None:
-            name = self.syn.getTeam(participantid)['name']
-        else:
-            participantid = submission.userId
-            name = self.syn.getUserProfile(participantid)['userName']
+        submitter_info = _get_submission_submitter(self.syn, submission)
+        submitterid_list = [submitter_info['submitterid']]
+        submitter_name = submitter_info['submitter_name']
         if is_valid:
             messages.validation_passed(syn=self.syn,
-                                       userids=[participantid],
+                                       userids=submitterid_list,
                                        acknowledge_receipt=self.acknowledge_receipt,  # noqa pylint: disable=line-too-long
                                        dry_run=self.dry_run,
-                                       username=name,
+                                       username=submitter_name,
                                        queue_name=self.evaluation.name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,
                                        challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
         else:
-            if isinstance(error, AssertionError):
-                send_to = [participantid]
-                username = name
-            else:
-                send_to = self.admin_user_ids
-                username = "Challenge Administrator"
+            if not isinstance(error, AssertionError):
+                submitterid_list = self.admin_user_ids
+                submitter_name = "Challenge Administrator"
 
             messages.validation_failed(syn=self.syn,
-                                       userids=send_to,
+                                       userids=submitterid_list,
                                        send_messages=self.send_messages,
                                        dry_run=self.dry_run,
-                                       username=username,
+                                       username=submitter_name,
                                        queue_name=self.evaluation.name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,

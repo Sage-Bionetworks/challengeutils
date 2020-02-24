@@ -28,6 +28,18 @@ def get_admin(syn, admin):
     return admin
 
 
+def _get_submission_submitter(syn, submission):
+    """Get submitter id and name from a submission object"""
+    submitterid = submission.get("teamId")
+    if submitterid is not None:
+        submitter_name = syn.getTeam(submitterid)['name']
+    else:
+        submitterid = submission.userId
+        submitter_name = syn.getUserProfile(submitterid)['userName']
+    return {'submitterid': submitterid,
+            'submitter_name': submitter_name}
+
+
 class EvaluationQueueProcessor(metaclass=ABCMeta):
     """Processor for submissions that are submitted to evaluation queues
 
