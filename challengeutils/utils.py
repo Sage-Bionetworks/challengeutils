@@ -589,11 +589,19 @@ def download_submission(syn, submissionid, download_location=None):
     return result
 
 
+class mock_response:
+    """Mocked status code to return"""
+    status_code = 200
+
+
 def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   is_private=True,
                                   force=False):
     '''
-    Annotate submission with annotation values from a json file
+    ChallengeWorkflowTemplate tool: Annotates submission with annotation
+    values from a json file and uses exponential backoff to retry when
+    there are concurrent update issues (HTTP 412).  Must return a object
+    with status_code that has a range between 200-209
 
     Args:
         syn: Synapse object
@@ -602,6 +610,9 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         is_private: Set annotations acl to private (default is True)
         force: Force change the annotation from
                private to public and vice versa.
+
+    Returns:
+        mocked response object (200)
     '''
     status = syn.getSubmissionStatus(submissionid)
     with open(annotation_values) as json_data:
@@ -610,6 +621,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
                                              is_private=is_private,
                                              force=force)
     status = syn.store(status)
+    return mock_response
 
 
 def _get_submitter_name(syn, submitterid):

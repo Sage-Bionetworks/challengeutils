@@ -4,6 +4,7 @@ Test challengeutils.utils functions
 import json
 import os
 import re
+import tempfile
 import uuid
 
 import mock
@@ -241,8 +242,8 @@ def test_specifyloc_download_submission():
 
 def test_annotate_submission_with_json():
     add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = "temp.json"
-    with open(tempfile_path, "w") as annotation_file:
+    tempfile_path = tempfile.NamedTemporaryFile()
+    with open(tempfile_path.name, "w") as annotation_file:
         json.dump(add_annotations, annotation_file)
     status = {"foo": "bar"}
     with mock.patch.object(
@@ -262,7 +263,7 @@ def test_annotate_submission_with_json():
             is_private=True,
             force=False)
         patch_syn_store.assert_called_once_with(status)
-    os.unlink(tempfile_path)
+        assert response.status_code == 200
 
 
 def test_userid__get_submitter_name():
