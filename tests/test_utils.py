@@ -254,7 +254,7 @@ def test_annotate_submission_with_json():
             return_value=status) as patch_update, \
             mock.patch.object(syn, "store") as patch_syn_store:
         challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path,
+            syn, "1234", tempfile_path.name,
             is_private=True,
             force=False)
         patch_get_submission.assert_called_once_with("1234")
