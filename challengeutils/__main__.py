@@ -100,13 +100,14 @@ def command_download_submission(syn, args):
 
 
 def command_annotate_submission_with_json(syn, args):
-    _with_retry(lambda: utils.annotate_submission_with_json(
-        syn, args.submissionid,
-        args.annotation_values,
-        to_public=args.to_public,
-        force_change_annotation_acl=args.force_change_annotation_acl),
-        wait=3,
-        retries=10)
+    _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
+                                                            args.annotation_values,  # noqa pylint: disable=line-too-long
+                                                            to_public=args.to_public,  # noqa pylint: disable=line-too-long
+                                                            force_change_annotation_acl=args.force_change_annotation_acl),  # noqa pylint: disable=line-too-long
+                wait=3,
+                retries=10,
+                retry_status_codes=[412, 429, 500, 502, 503, 504],
+                verbose=True)
 
 
 def command_send_email(syn, args):
