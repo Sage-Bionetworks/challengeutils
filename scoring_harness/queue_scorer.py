@@ -13,14 +13,6 @@ class EvaluationQueueScorer(EvaluationQueueProcessor):
     _status = "VALIDATED"
     _success_status = "SCORED"
 
-    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, send_messages=False, **kwargs):
-        EvaluationQueueProcessor.__init__(self, syn, evaluation,
-                                          admin_user_ids=admin_user_ids,
-                                          dry_run=dry_run,
-                                          remove_cache=remove_cache, **kwargs)
-        self.send_messages = send_messages
-
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
 

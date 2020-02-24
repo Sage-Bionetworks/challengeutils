@@ -11,17 +11,11 @@ LOGGER.setLevel(logging.INFO)
 
 class EvaluationQueueValidator(EvaluationQueueProcessor):
     _success_status = "VALIDATED"
-
-    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, acknowledge_receipt=False,
-                 send_messages=False, **kwargs):
-        EvaluationQueueProcessor.__init__(self, syn, evaluation,
-                                          admin_user_ids=admin_user_ids,
-                                          dry_run=dry_run,
-                                          remove_cache=remove_cache,
-                                          **kwargs)
-        self.acknowledge_receipt = acknowledge_receipt
-        self.send_messages = send_messages
+    # This acknowledge receipt is here specifically for submission validation
+    # We may not want to return validation success emails
+    # Set this to true in the template class if you want success emails
+    # returned
+    acknowledge_receipt = False
 
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
@@ -51,7 +45,6 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
             if not isinstance(error, AssertionError):
                 submitterid_list = self.admin_user_ids
                 submitter_name = "Challenge Administrator"
-
             messages.validation_failed(syn=self.syn,
                                        userids=submitterid_list,
                                        send_messages=self.send_messages,

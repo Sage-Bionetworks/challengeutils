@@ -57,7 +57,8 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
     _success_status = None
 
     def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, **kwargs):
+                 remove_cache=False, send_messages=False,
+                 notifications=True, **kwargs):
         """Init EvaluationQueueProcessor
 
         Args:
@@ -68,12 +69,18 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
                             user running the processor.
             remove_cache: Removes submission file from cache.
                           Default is False.
+            send_messages: Send messages to submitters.
+                           Default is False
+            notifications: Send messages to admins
+                           Default is True
         """
         self.syn = syn
         self.evaluation = syn.getEvaluation(evaluation)
         self.admin_user_ids = get_admin(syn, admin_user_ids)
         self.dry_run = dry_run
         self.remove_cache = remove_cache
+        self.send_messages = send_messages
+        self.notifications = notifications
         self.kwargs = kwargs
 
     def __call__(self):
