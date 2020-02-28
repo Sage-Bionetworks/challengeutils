@@ -28,6 +28,18 @@ def get_admin(syn, admin):
     return admin
 
 
+def _get_submission_submitter(syn, submission):
+    """Get submitter id and name from a submission object"""
+    submitterid = submission.get("teamId")
+    if submitterid is not None:
+        submitter_name = syn.getTeam(submitterid)['name']
+    else:
+        submitterid = submission.userId
+        submitter_name = syn.getUserProfile(submitterid)['userName']
+    return {'submitterid': submitterid,
+            'submitter_name': submitter_name}
+
+
 class EvaluationQueueProcessor(metaclass=ABCMeta):
     """Processor for submissions that are submitted to evaluation queues
 
@@ -45,7 +57,8 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
     _success_status = None
 
     def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, **kwargs):
+                 remove_cache=False, send_messages=False,
+                 notifications=True, **kwargs):
         """Init EvaluationQueueProcessor
 
         Args:
@@ -56,12 +69,18 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
                             user running the processor.
             remove_cache: Removes submission file from cache.
                           Default is False.
+            send_messages: Send messages to submitters.
+                           Default is False
+            notifications: Send messages to admins
+                           Default is True
         """
         self.syn = syn
         self.evaluation = syn.getEvaluation(evaluation)
         self.admin_user_ids = get_admin(syn, admin_user_ids)
         self.dry_run = dry_run
         self.remove_cache = remove_cache
+        self.send_messages = send_messages
+        self.notifications = notifications
         self.kwargs = kwargs
 
     def __call__(self):

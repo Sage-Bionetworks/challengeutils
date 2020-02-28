@@ -7,9 +7,10 @@ import time
 import synapseclient
 import synapseutils
 from . import utils
-WORKFLOW_LAST_UPDATED_KEY = "org.sagebionetworks.SynapseWorkflowHook.WorkflowLastUpdated"
-WORKFLOW_START_KEY = "org.sagebionetworks.SynapseWorkflowHook.ExecutionStarted"
-TIME_REMAINING_KEY = "org.sagebionetworks.SynapseWorkflowHook.TimeRemaining"
+
+WORKFLOW_LAST_UPDATED_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"
+WORKFLOW_START_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted"
+TIME_REMAINING_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining"
 
 
 def rename_submission_files(syn, evaluationid, download_location="./",

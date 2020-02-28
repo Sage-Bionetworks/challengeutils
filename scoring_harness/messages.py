@@ -139,13 +139,12 @@ def validation_failed(syn, userids, send_messages, dry_run, **kwargs):
     Helper function to send validation failed email
     '''
     if send_messages:
-        return send_message(
-            syn=syn,
-            userids=userids,
-            subject_template=VALIDATION_FAILED_SUBJECT_TEMPLATE,
-            message_template=VALIDATION_FAILED_TEMPLATE,
-            dry_run=dry_run,
-            kwargs=kwargs)
+        return send_message(syn=syn,
+                            userids=userids,
+                            subject_template=VALIDATION_FAILED_SUBJECT_TEMPLATE,
+                            message_template=VALIDATION_FAILED_TEMPLATE,
+                            dry_run=dry_run,
+                            kwargs=kwargs)
 
 
 def scoring_error(syn, userids, send_messages, dry_run, **kwargs):

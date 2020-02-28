@@ -1,6 +1,7 @@
 """This is the baseclass for what happens to a submission"""
 import logging
 from .base_processor import EvaluationQueueProcessor
+from .base_processor import _get_submission_submitter
 from . import messages
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -10,17 +11,11 @@ LOGGER.setLevel(logging.INFO)
 
 class EvaluationQueueValidator(EvaluationQueueProcessor):
     _success_status = "VALIDATED"
-
-    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, acknowledge_receipt=False,
-                 send_messages=False, **kwargs):
-        EvaluationQueueProcessor.__init__(self, syn, evaluation,
-                                          admin_user_ids=admin_user_ids,
-                                          dry_run=dry_run,
-                                          remove_cache=remove_cache,
-                                          **kwargs)
-        self.acknowledge_receipt = acknowledge_receipt
-        self.send_messages = send_messages
+    # This acknowledge receipt is here specifically for submission validation
+    # We may not want to return validation success emails
+    # Set this to true in the template class if you want success emails
+    # returned
+    acknowledge_receipt = False
 
     def interaction_func(self, submission, **kwargs):
         raise NotImplementedError
@@ -33,32 +28,30 @@ class EvaluationQueueValidator(EvaluationQueueProcessor):
         error = submission_info['error']
         message = submission_info['message']
 
-        profile = self.syn.getUserProfile(submission.userId)
+        submitter_info = _get_submission_submitter(self.syn, submission)
+        submitterid_list = [submitter_info['submitterid']]
+        submitter_name = submitter_info['submitter_name']
         if is_valid:
             messages.validation_passed(syn=self.syn,
-                                       userids=[submission.userId],
-                                       acknowledge_receipt=self.acknowledge_receipt,
+                                       userids=submitterid_list,
+                                       acknowledge_receipt=self.acknowledge_receipt,  # noqa pylint: disable=line-too-long
                                        dry_run=self.dry_run,
-                                       username=profile.userName,
+                                       username=submitter_name,
                                        queue_name=self.evaluation.name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,
-                                       challenge_synid=self.evaluation.contentSource)
+                                       challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
         else:
-            if isinstance(error, AssertionError):
-                send_to = [submission.userId]
-                username = profile.userName
-            else:
-                send_to = self.admin_user_ids
-                username = "Challenge Administrator"
-
+            if not isinstance(error, AssertionError):
+                submitterid_list = self.admin_user_ids
+                submitter_name = "Challenge Administrator"
             messages.validation_failed(syn=self.syn,
-                                       userids=send_to,
+                                       userids=submitterid_list,
                                        send_messages=self.send_messages,
                                        dry_run=self.dry_run,
-                                       username=username,
+                                       username=submitter_name,
                                        queue_name=self.evaluation.name,
                                        submission_id=submission.id,
                                        submission_name=submission.name,
                                        message=message,
-                                       challenge_synid=self.evaluation.contentSource)
+                                       challenge_synid=self.evaluation.contentSource)  # noqa pylint: disable=line-too-long
