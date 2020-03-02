@@ -1,7 +1,9 @@
 """Challenge Services"""
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
 
+@dataclass_json
 @dataclass
 class Challenge:
     """Challenge - Settings for a Challenge Project
@@ -25,11 +27,11 @@ class Challenge:
 
     def get_uri(self):
         """Gets a challenge"""
-        return f'/challenge/{self.id}'
-
-    def get_from_project_uri(self):
-        """Gets a challenge from project"""
-        return f'/entity/{self.projectId}/challenge'
+        if self.id is not None:
+            return f'/challenge/{self.id}'
+        if self.projectId is not None:
+            return f'/entity/{self.projectId}/challenge'
+        raise ValueError("Must pass in challenge id or Synapse project id")
 
     def put_uri(self):
         """Updates a challenge"""

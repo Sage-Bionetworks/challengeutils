@@ -2,6 +2,7 @@
 Challenge utility functions
 """
 import datetime
+from dataclasses import asdict
 import json
 import logging
 import sys
@@ -216,9 +217,9 @@ def create_challenge(syn, entity, team):
     """
     synid = synapseclient.utils.id_of(entity)
     teamid = synapseclient.utils.id_of(team)
-    challenge_object = {'participantTeamId': teamid,
-                        'projectId': synid}
-    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
+    new_challenge = Challenge(participantTeamId=teamid, projectId=synid)
+    challenge = syn.restPOST(new_challenge.post_uri(),
+                             new_challenge.to_json())
     challenge_obj = Challenge(**challenge)
     return challenge_obj
 
