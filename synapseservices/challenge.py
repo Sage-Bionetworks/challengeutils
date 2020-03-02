@@ -40,3 +40,11 @@ class Challenge:
     def delete_uri(self):
         """Deletes a challenge"""
         return f'/challenge/{self.id}'
+
+    def get_participants_uri(self):
+        """Lists participants registered for a challenge"""
+        return f'/challenge/{self.id}/participant'
+
+    def get_teams_registered_uri(self):
+        """Lists teams registered for a challenge"""
+        return f'/challenge/{self.id}/challengeTeam'
