@@ -21,7 +21,8 @@ class Challenge:
     etag: str = None
     participantTeamId: str = None
 
-    def post_uri(self):
+    @staticmethod
+    def post_uri():
         """Creates a challenge"""
         return '/challenge'
 
