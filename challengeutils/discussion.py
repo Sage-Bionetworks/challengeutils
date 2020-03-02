@@ -5,7 +5,7 @@ import json
 import requests
 
 import synapseclient
-from synapseclient.utils import id_of
+from synapseclient.core.utils import id_of
 
 from synapseservices.discussion import Forum
 

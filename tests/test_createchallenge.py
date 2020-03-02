@@ -5,7 +5,7 @@ import mock
 from mock import patch
 import pytest
 import synapseclient
-from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
 from challengeutils import createchallenge

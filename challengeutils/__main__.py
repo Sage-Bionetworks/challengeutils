@@ -4,7 +4,7 @@ import logging
 import os
 import pandas as pd
 import synapseclient
-from synapseclient.retry import _with_retry
+from synapseclient.core.retry import _with_retry
 from . import createchallenge
 from . import mirrorwiki
 from . import utils

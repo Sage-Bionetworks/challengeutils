@@ -16,7 +16,7 @@ import logging
 import sys
 
 import synapseclient
-from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
 from . import utils
