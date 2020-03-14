@@ -72,7 +72,6 @@ class DockerRepository:
             raise ValueError(bearer_token_request.json().get('details'))
         return bearer_token_request.json()['token']
 
-
     def get(self, **kwargs):
         """Gets docker repository response
 
