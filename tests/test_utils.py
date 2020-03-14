@@ -2,13 +2,14 @@
 Test challengeutils.utils functions
 '''
 import json
-import mock
-from mock import patch
 import os
-import pytest
 import re
+import tempfile
 import uuid
 
+import mock
+from mock import patch
+import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
@@ -241,8 +242,8 @@ def test_specifyloc_download_submission():
 
 def test_annotate_submission_with_json():
     add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = "temp.json"
-    with open(tempfile_path, "w") as annotation_file:
+    tempfile_path = tempfile.NamedTemporaryFile()
+    with open(tempfile_path.name, "w") as annotation_file:
         json.dump(add_annotations, annotation_file)
     status = {"foo": "bar"}
     with mock.patch.object(
@@ -252,8 +253,8 @@ def test_annotate_submission_with_json():
             challengeutils.utils, "update_single_submission_status",
             return_value=status) as patch_update, \
             mock.patch.object(syn, "store") as patch_syn_store:
-        challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path,
+        response = challengeutils.utils.annotate_submission_with_json(
+            syn, "1234", tempfile_path.name,
             to_public=False,
             force_change_annotation_acl=False)
         patch_get_submission.assert_called_once_with("1234")
@@ -262,7 +263,7 @@ def test_annotate_submission_with_json():
             to_public=False,
             force_change_annotation_acl=False)
         patch_syn_store.assert_called_once_with(status)
-    os.unlink(tempfile_path)
+        assert response.status_code == 200
 
 
 def test_userid__get_submitter_name():
@@ -294,7 +295,6 @@ def test_teamid__get_submitter_name():
         patch_get_team.assert_called_once_with(submitterid)
 
 
-
 def test_get_challenge():
     projectid = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
@@ -312,4 +312,29 @@ def test_get_challenge():
                       return_value=rest_return) as patch_rest_get:
         chal = challengeutils.utils.get_challenge(syn, projectid)
         patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
+        assert chal == challenge_obj
+
+
+def test_create_challenge():
+    """Tests create challenge object"""
+    projectid = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    participant_teamid = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=projectid,
+                              etag=etag,
+                              participantTeamId=participant_teamid)
+    rest_return = {'id': chalid,
+                   'projectId': projectid,
+                   'etag': etag,
+                   'participantTeamId': participant_teamid}
+    input_dict = {'participantTeamId': participant_teamid,
+                  'projectId': projectid}
+    with patch.object(syn, "restPOST",
+                      return_value=rest_return) as patch_rest_post:
+        chal = challengeutils.utils.create_challenge(syn, projectid,
+                                                     participant_teamid)
+        patch_rest_post.assert_called_once_with('/challenge',
+                                                json.dumps(input_dict))
         assert chal == challenge_obj

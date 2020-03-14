@@ -192,11 +192,33 @@ def get_challenge(syn, entity):
         entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        A Challenge object as a dictionary.    
+        Challenge object
     """
-    
     synid = synapseclient.utils.id_of(entity)
     challenge = syn.restGET("/entity/%s/challenge" % synid)
+    challenge_obj = Challenge(**challenge)
+    return challenge_obj
+
+
+def create_challenge(syn, entity, team):
+    """Creates Challenge associated with a Project
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
+
+    Args:
+        syn: Synapse connection
+        entity: An Entity or Synapse ID of a Project.
+        team: A Team or Team ID.
+
+    Returns:
+        Challenge object
+    """
+    synid = synapseclient.utils.id_of(entity)
+    teamid = synapseclient.utils.id_of(team)
+    challenge_object = {'participantTeamId': teamid,
+                        'projectId': synid}
+    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
     challenge_obj = Challenge(**challenge)
     return challenge_obj
 
@@ -571,11 +593,19 @@ def download_submission(syn, submissionid, download_location=None):
     return result
 
 
+class mock_response:
+    """Mocked status code to return"""
+    status_code = 200
+
+
 def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   to_public=False,
                                   force_change_annotation_acl=False):
     '''
-    Annotate submission with annotation values from a json file
+    ChallengeWorkflowTemplate tool: Annotates submission with annotation
+    values from a json file and uses exponential backoff to retry when
+    there are concurrent update issues (HTTP 412).  Must return a object
+    with status_code that has a range between 200-209
 
     Args:
         syn: Synapse object
@@ -585,15 +615,18 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
                    (default is False)
         force_change_annotation_acl: Force change the annotation from
                                      private to public and vice versa.
+
+    Returns:
+        mocked response object (200)
     '''
     status = syn.getSubmissionStatus(submissionid)
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
-    status = update_single_submission_status(
-        status, annotation_json,
-        to_public=to_public,
-        force_change_annotation_acl=force_change_annotation_acl)
+    status = update_single_submission_status(status, annotation_json,
+                                             to_public=to_public,
+                                             force_change_annotation_acl=force_change_annotation_acl)  # noqa pylint: disable=line-too-long
     status = syn.store(status)
+    return mock_response
 
 
 def _get_submitter_name(syn, submitterid):
