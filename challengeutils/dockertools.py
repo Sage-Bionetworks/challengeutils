@@ -44,15 +44,12 @@ class DockerRepository:
         initial_request = requests.get(self.get_request_url())
         www_auth = initial_request.headers['Www-Authenticate']
         auth_headers = www_auth.replace('"', '').split(",")
-        for head in auth_headers:
-            value = head.split("=")[1]
-            if head.startswith("Bearer realm="):
-                bearer_realm = value
-            elif head.startswith('service='):
-                service = value
-            elif head.startswith('scope='):
-                scope = value
-        return f"{bearer_realm}?service={service}&scope={scope}"
+        # Creates a mapping of the authentication headers to its values
+        auth_mapping = {head.split("=")[0]: head.split("=")[1]
+                        for head in auth_headers}
+        return "{0}?service={1}&scope={2}".format(auth_mapping['Bearer realm'],
+                                                  auth_mapping['service'],
+                                                  auth_mapping['scope'])
 
     def _get_bearer_token(self, username: str = None, password: str = None):
         """Gets Docker bearer token
