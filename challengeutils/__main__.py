@@ -1,6 +1,5 @@
+"""challengeutils command line client"""
 import argparse
-from contextlib import redirect_stdout
-import io
 import json
 import logging
 import os
@@ -16,7 +15,7 @@ from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
-from . import validate_docker
+from . import dockertools
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -133,12 +132,10 @@ def command_kill_docker_over_quota(syn, args):
 
 def command_validate_docker(syn, args):
     """Validates Docker image"""
-    # This will put all print statements into f
-    string = io.StringIO()
-    with redirect_stdout(string):
-        valid = validate_docker.validate_docker_submission(syn,
-                                                           args.submissionid)
-    invalid_reasons = string.getvalue()
+    try:
+        valid = dockertools.validate_docker_submission(syn, args.submissionid)
+    except ValueError as err:
+        invalid_reasons = str(err)
 
     status = "VALIDATED" if valid else "INVALID"
     result = {'docker_image_errors': invalid_reasons,
@@ -165,39 +162,39 @@ def build_parser():
         description='The following commands are available:',
         help='For additional help: "challengeutils <COMMAND> -h"')
 
-    parser_createChallenge = subparsers.add_parser(
+    parser_createchallenge = subparsers.add_parser(
         'createchallenge',
         help='Creates a challenge from a template')
-    parser_createChallenge.add_argument(
+    parser_createchallenge.add_argument(
         "challengename",
         help="Challenge name")
-    parser_createChallenge.add_argument(
+    parser_createchallenge.add_argument(
         "--livesiteid",
         help=("Option to specify the live site synapse Id"
               " there is already a live site"))
-    parser_createChallenge.set_defaults(func=command_createchallenge)
+    parser_createchallenge.set_defaults(func=command_createchallenge)
 
-    parser_mirrorWiki = subparsers.add_parser(
+    parser_mirrorwiki = subparsers.add_parser(
         'mirrorwiki',
         help=("This command mirrors wiki pages. It relies on the wiki titles "
               "between two Synapse Projects to be the same and will merge the "
               "updates from entity's wikis to destination's wikis. "
               "Do not confuse this function with copy wiki."))
 
-    parser_mirrorWiki.add_argument(
+    parser_mirrorwiki.add_argument(
         "entityid",
         type=str,
         help="Synapse Id of the project's wiki changes you have staged")
-    parser_mirrorWiki.add_argument(
+    parser_mirrorwiki.add_argument(
         "destinationid",
         type=str,
         help=('Synapse Id of project whose wiki you want to update'
               ' with the entityid'))
-    parser_mirrorWiki.add_argument(
+    parser_mirrorwiki.add_argument(
         "--forceupdate",
         action='store_true',
         help='Update the wikipages even if they are the same')
-    parser_mirrorWiki.set_defaults(func=command_mirrorwiki)
+    parser_mirrorwiki.set_defaults(func=command_mirrorwiki)
 
     parser_query = subparsers.add_parser(
         'query',
@@ -430,17 +427,7 @@ def build_parser():
     parser_validate_docker.add_argument("-r", "--results", required=True,
                                         help="validation results")
     parser_validate_docker.set_defaults(func=command_validate_docker)
-
-
     return parser
-
-
-def perform_main(syn, args):
-    if 'func' in args:
-        try:
-            args.func(syn, args)
-        except Exception:
-            raise
 
 
 def synapse_login(synapse_config):
@@ -455,7 +442,7 @@ def synapse_login(synapse_config):
 def main():
     args = build_parser().parse_args()
     syn = synapse_login(args.synapse_config)
-    perform_main(syn, args)
+    args.func(syn, args)
 
 
 if __name__ == "__main__":
