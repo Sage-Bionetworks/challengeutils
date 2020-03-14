@@ -1,81 +1,151 @@
 """Validate Docker Repository"""
 import base64
+import urllib.parse
+
 import requests
 
 
-def _get_bearer_token_url(docker_request_url):
-    """Gets bearer token URL
+ENDPOINT_MAPPING = {"dockerhub": "ttps://registry.hub.docker.com",
+                    "synapse": "https://docker.synapse.org"}
 
-    Args:
-        docker_request_url: Full Docker request URL
 
-    Returns:
-        Docker bearer token URL
+class DockerRepository:
+    """Forms request url and gets the docker respository
+    with requests packages
     """
-    initial_request = requests.get(docker_request_url)
-    www_auth = initial_request.headers['Www-Authenticate']
-    auth_headers = www_auth.replace('"', '').split(",")
-    for head in auth_headers:
-        if head.startswith("Bearer realm="):
-            bearer_realm = head.split('Bearer realm=')[1]
-        elif head.startswith('service='):
-            service = head.split('service=')[1]
-        elif head.startswith('scope='):
-            scope = head.split('scope=')[1]
-    return "{0}?service={1}&scope={2}".format(bearer_realm, service, scope)
+    def __init__(self, docker_repo: str, docker_digest: str,
+                 index_endpoint: str):
+        """
+        Args:
+            docker_repo: Docker repository without tags or sha
+            docker_digest: Docker repository sha digest
+            index_endpoint: Docker registry endpoint.
+                            Dockerhub - https://registry.hub.docker.com
+                            Synapse - https://docker.synapse.org
+
+        """
+        self.docker_repo = docker_repo
+        self.docker_digest = docker_digest
+        self.index_endpoint = index_endpoint
+
+    def __str__(self):
+        """str representation of docker repository"""
+        return f"{self.docker_repo}@{self.docker_digest}"
+
+    def get_request_url(self):
+        """Gets request URL"""
+        url = "/".join(['v2', self.docker_repo, 'manifests',
+                        self.docker_digest])
+        docker_request_url = urllib.parse.urljoin(self.index_endpoint, url)
+        return docker_request_url
+
+    def _get_bearer_token_url(self):
+        """Gets bearer token URL"""
+        initial_request = requests.get(self.get_request_url())
+        www_auth = initial_request.headers['Www-Authenticate']
+        auth_headers = www_auth.replace('"', '').split(",")
+        for head in auth_headers:
+            value = head.split("=")[1]
+            if head.startswith("Bearer realm="):
+                bearer_realm = value
+            elif head.startswith('service='):
+                service = value
+            elif head.startswith('scope='):
+                scope = value
+        return f"{bearer_realm}?service={service}&scope={scope}"
+
+    def _get_bearer_token(self, username: str = None, password: str = None):
+        """Gets Docker bearer token
+
+        Args:
+            user: Synapse username
+            password: Synapse password
+
+        Returns:
+            Bearer token
+
+        """
+        bearer_token_url = self._get_bearer_token_url()
+        auth_string = f'{username}:{password}'
+        auth = base64.b64encode(auth_string.encode()).decode()
+        headers = {'Authorization': f'Basic {auth}'}
+        bearer_token_request = requests.get(bearer_token_url,
+                                            headers=headers)
+        if bearer_token_request.status_code != 200:
+            raise ValueError(bearer_token_request.json().get('details'))
+        return bearer_token_request.json()['token']
 
 
-def _get_bearer_token(docker_request_url, user, password):
-    """Gets Docker bearer token
+    def get(self, **kwargs):
+        """Gets docker repository response
+
+        Args:
+            **kwargs: username: Docker registry username
+                      password: Docker registry password
+
+        Returns:
+            Docker response
+        """
+        token = self._get_bearer_token(**kwargs)
+        resp = requests.get(self.get_request_url(),
+                            headers={'Authorization': 'Bearer %s' % token})
+        return resp
+
+
+def check_docker_exists(docker_resp: 'Response'):
+    """Check if Docker image + sha exists
 
     Args:
-        docker_request_url: Full Docker request URL
-        user: Synapse username
-        password: Synapse password
+        docker_resp: Docker response
 
-    Returns:
-        Bearer token
+    Raises:
+        ValueError: If docker image + sha doesn't exist
+
     """
-    bearer_token_url = _get_bearer_token_url(docker_request_url)
-    auth_string = user + ":" + password
-    auth = base64.b64encode(auth_string.encode()).decode()
-    headers = {'Authorization': 'Basic %s' % auth}
-    bearer_token_request = requests.get(bearer_token_url,
-                                        headers=headers)
-    return bearer_token_request.json()['token']
+    if docker_resp.status_code != 200:
+        raise ValueError("Docker image + sha digest must exist. ")
 
 
-def _validate(docker_repo, docker_digest, index_endpoint,
-              user, password):
-    """Validates existence of docker repository + sha digest
-    and max size
+def check_docker_size(docker_resp: 'Response', size: int = 1000):
+    """Checks Docker container is less than specified size
 
     Args:
-        docker_repo: Docker repository
-        docker_digest: Docker sha digest
-        index_endpoint: Synapse docker registry / docker hub
-        user: Docker registry username
+        docker_resp: Docker response
+        size: Size in GB
+
+    Raises:
+        ValueError: Docker container is over specified size
+
+    """
+    docker_size = sum([layer['size']
+                       for layer in docker_resp.json()['layers']])
+    if docker_size/1000000000.0 >= size:
+        raise ValueError("Docker container must be less than a terabyte")
+
+
+def validate_docker(docker_repo: str, docker_digest: str, index_endpoint: str,
+                    username: str = None, password: str = None):
+    """Validates a Docker Respository
+
+    Args:
+        docker_repo: Docker repository without tags or sha
+        docker_digest: Docker repository sha digest
+        index_endpoint: Docker registry endpoint.
+                        Dockerhub - https://registry.hub.docker.com
+                        Synapse - https://docker.synapse.org
+        username: Docker registry username
         password: Docker registry password
 
     Returns:
         True if valid, False if not
     """
-    docker_request_url = '{0}/v2/{1}/manifests/{2}'.format(index_endpoint,
-                                                           docker_repo,
-                                                           docker_digest)
-    token = _get_bearer_token(docker_request_url, user, password)
-    resp = requests.get(docker_request_url,
-                        headers={'Authorization': 'Bearer %s' % token})
-
-    if resp.status_code != 200:
-        print("Docker image + sha digest must exist.  You submitted "
-              f"{docker_repo}@{docker_digest}")
-        return False
-    # Must check docker image size
-    docker_size = sum([layer['size'] for layer in resp.json()['layers']])
-    if docker_size/1000000000.0 >= 1000:
-        print("Docker container must be less than a teribyte")
-        return False
+    docker_cls = DockerRepository(docker_repo=docker_repo,
+                                  docker_digest=docker_digest,
+                                  index_endpoint=index_endpoint)
+    docker_resp = docker_cls.get(username=username,
+                                 password=password)
+    check_docker_exists(docker_resp)
+    check_docker_size(docker_resp)
     return True
 
 
@@ -91,17 +161,23 @@ def validate_docker_submission(syn, submissionid):
     Returns:
         True if valid, False if not
     """
+    # Uses synapse config path
     config = syn.getConfigFile(syn.configPath)
     authen = dict(config.items("authentication"))
     if authen.get("username") is None and authen.get("password") is None:
-        raise Exception('Config file must have username and password')
+        raise ValueError('Config file must have username and password')
 
     docker_sub = syn.getSubmission(submissionid)
-    docker_repository = docker_sub.dockerRepositoryName
+    docker_repository = docker_sub.get("dockerRepositoryName")
+
+    if docker_repository is None:
+        raise ValueError('Submission is not a Docker submission')
     docker_repo = docker_repository.replace("docker.synapse.org/", "")
     docker_digest = docker_sub.dockerDigest
-    index_endpoint = "https://docker.synapse.org"
 
-    valid = _validate(docker_repo, docker_digest, index_endpoint,
-                      authen['username'], authen['password'])
+    valid = validate_docker(docker_repo=docker_repo,
+                            docker_digest=docker_digest,
+                            index_endpoint=ENDPOINT_MAPPING['synapse'],
+                            username=authen['username'],
+                            password=authen['password'])
     return valid
