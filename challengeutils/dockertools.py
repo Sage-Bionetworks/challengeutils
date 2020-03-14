@@ -5,7 +5,7 @@ import urllib.parse
 import requests
 
 
-ENDPOINT_MAPPING = {"dockerhub": "ttps://registry.hub.docker.com",
+ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
                     "synapse": "https://docker.synapse.org"}
 
 
