@@ -133,6 +133,7 @@ def command_kill_docker_over_quota(syn, args):
 
 def command_validate_docker(syn, args):
     """Validates Docker image"""
+    invalid_reasons = ''
     try:
         valid = dockertools.validate_docker_submission(syn, args.submissionid)
     except ValueError as err:
