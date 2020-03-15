@@ -2,7 +2,6 @@
 Challenge utility functions
 """
 import datetime
-from dataclasses import asdict
 import json
 import logging
 import sys
