@@ -2,7 +2,6 @@
 Test challengeutils.utils functions
 '''
 import json
-import os
 import re
 import tempfile
 import uuid
