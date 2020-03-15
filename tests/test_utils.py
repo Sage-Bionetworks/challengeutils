@@ -328,12 +328,12 @@ def test_create_challenge():
                    'projectId': projectid,
                    'etag': etag,
                    'participantTeamId': participant_teamid}
-    input_dict = {'participantTeamId': participant_teamid,
-                  'projectId': projectid}
+    input_obj = Challenge(projectId=projectid,
+                          participantTeamId=participant_teamid)
     with patch.object(syn, "restPOST",
                       return_value=rest_return) as patch_rest_post:
         chal = challengeutils.utils.create_challenge(syn, projectid,
                                                      participant_teamid)
         patch_rest_post.assert_called_once_with('/challenge',
-                                                json.dumps(input_dict))
+                                                input_obj.to_json())
         assert chal == challenge_obj
