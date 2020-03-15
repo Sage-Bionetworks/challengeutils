@@ -10,8 +10,13 @@ import urllib
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
-from synapseclient.core.exceptions import SynapseHTTPError
-from synapseclient.core.utils import id_of
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
+    from synapseclient.utils import id_of
 
 from synapseservices.challenge import Challenge
 

@@ -1,7 +1,11 @@
 """Convenience functions to set permissions on Synapse entities,
 without having to know the granular access control list"""
 import synapseclient
-from synapseclient.core.utils import id_of
+try:
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.utils import id_of
 
 VIEW = ["READ"]
 SUBMIT = ['READ', 'SUBMIT']
