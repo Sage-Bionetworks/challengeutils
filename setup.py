@@ -20,5 +20,6 @@ setup(name='challengeutils',
       python_requires='>=3.5',
       scripts=['bin/runqueue.py'],
       entry_points={'console_scripts': ['challengeutils = challengeutils.__main__:main']},
-      install_requires=['pandas>=0.24.1', 'synapseclient>=1.9.4',
+      install_requires=['pandas>=1.0.0', 'synapseclient>=1.9.4',
                         'dataclasses==0.7', 'dataclasses_json'])
+
