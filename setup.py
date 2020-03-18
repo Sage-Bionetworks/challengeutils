@@ -22,4 +22,3 @@ setup(name='challengeutils',
       entry_points={'console_scripts': ['challengeutils = challengeutils.__main__:main']},
       install_requires=['pandas>=1.0.0', 'synapseclient>=1.9.4',
                         'dataclasses==0.7', 'dataclasses_json'])
-
