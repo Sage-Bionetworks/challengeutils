@@ -3,6 +3,7 @@ Manage Synapse connection
 
 When writing tests use this function
 
+SYN = mock.create_autospec(synapseclient.Synapse)
 @pytest.fixture(autouse=True)
 def syn_connection(monkeypatch):
     '''Set _synapse_client to be SYN for all tests.'''
