@@ -13,7 +13,7 @@ challengeutils -v
 
 ## Usage
 
-Below is documentation for some of the key features in the `challengeutils` command line client.  Please head to the [doc site](https://challengeutils.readthedocs.io/en/latest/) for more information.
+Below is documentation for some of the key features in the `challengeutils` command line client.  There is also auto built readthedocs [documentation](https://challengeutils.readthedocs.io/en/latest/) which can be configured [here](https://readthedocs.org/projects/challengeutils/)
 
 ```
 challengeutils -h
