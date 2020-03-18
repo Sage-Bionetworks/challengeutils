@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy github page
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Build and Deploy
+      - name: Build and deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
