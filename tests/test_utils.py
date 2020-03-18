@@ -4,6 +4,7 @@ Test challengeutils.utils functions
 import json
 import os
 import re
+import tempfile
 import uuid
 
 import mock
@@ -28,7 +29,7 @@ def test_raiseerror__switch_annotation_permission():
     error_message = (
         "You are trying to change the ACL of these annotation key(s): "
         "test. Either change the annotation key or specify "
-        "force_change_annotation_acl=True")
+        "force=True")
     # Must use re.escape() because match accepts regex
     with pytest.raises(ValueError, match=re.escape(error_message)):
         challengeutils.utils._switch_annotation_permission(
@@ -43,7 +44,7 @@ def test_filter__switch_annotation_permission():
     existing_annotations = {'test': 1}
     existing = challengeutils.utils._switch_annotation_permission(
         add_annotations, existing_annotations,
-        force_change_annotation_acl=True)
+        force=True)
     assert existing == {}
 
 
@@ -55,7 +56,7 @@ def test_nooverlap__switch_annotation_permission():
     existing_annotations = {'test3': 1}
     existing = challengeutils.utils._switch_annotation_permission(
         add_annotations, existing_annotations,
-        force_change_annotation_acl=True)
+        force=True)
     assert existing == existing_annotations
 
 
@@ -114,7 +115,7 @@ def test_topublic_update_single_submission_status():
     status = {'annotations': {}}
     add_annotations = {"test": 2.4}
     new_status = challengeutils.utils.update_single_submission_status(
-        status, add_annotations, to_public=True)
+        status, add_annotations, is_private=False)
     expected_annot = to_submission_status_annotations(
         add_annotations, is_private=False)
     expected_status = {'annotations': expected_annot}
@@ -241,8 +242,8 @@ def test_specifyloc_download_submission():
 
 def test_annotate_submission_with_json():
     add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = "temp.json"
-    with open(tempfile_path, "w") as annotation_file:
+    tempfile_path = tempfile.NamedTemporaryFile()
+    with open(tempfile_path.name, "w") as annotation_file:
         json.dump(add_annotations, annotation_file)
     status = {"foo": "bar"}
     with mock.patch.object(
@@ -252,17 +253,17 @@ def test_annotate_submission_with_json():
             challengeutils.utils, "update_single_submission_status",
             return_value=status) as patch_update, \
             mock.patch.object(syn, "store") as patch_syn_store:
-        challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path,
-            to_public=False,
-            force_change_annotation_acl=False)
+        response = challengeutils.utils.annotate_submission_with_json(
+            syn, "1234", tempfile_path.name,
+            is_private=True,
+            force=False)
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
             status, add_annotations,
-            to_public=False,
-            force_change_annotation_acl=False)
+            is_private=True,
+            force=False)
         patch_syn_store.assert_called_once_with(status)
-    os.unlink(tempfile_path)
+        assert response.status_code == 200
 
 
 def test_userid__get_submitter_name():

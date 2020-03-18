@@ -12,6 +12,8 @@ from scoring_harness.queue_scorer import EvaluationQueueScorer
 
 class Validate(EvaluationQueueValidator):
     """Example Validate interaction"""
+    # Set this to true for submitters to get a validation success email
+    acknowledge_receipt = True
     def interaction_func(self, submission, goldstandard_path):
         assert submission.filePath is not None, \
             "Submission must be a Synapse File and not Project/Folder"
