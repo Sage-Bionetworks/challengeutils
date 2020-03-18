@@ -15,13 +15,15 @@ from . import writeup_attacher
 from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
+from .synapse import Synapse
+
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def command_mirrorwiki(syn, args):
+def command_mirrorwiki(args):
     """For all challenges, you should be editting the staging site and then
     using the merge script to mirror staging to live site.  The script will
     compare wiki titles between the staging and live site and update the live
@@ -31,11 +33,12 @@ def command_mirrorwiki(syn, args):
 
     >>> challengeutils mirrorwiki syn12345 syn23456
     """
+    syn = Synapse().client()
     mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
                           args.forceupdate)
 
 
-def command_createchallenge(syn, args):
+def command_createchallenge(args):
     """Creates a challenge space in Synapse.  This pulls from a standard
     DREAM template and creates the Projects and Teams that you will need
     for a challenge.  For more information on all the components this function
@@ -43,10 +46,11 @@ def command_createchallenge(syn, args):
 
     >>> challengeutils createchallenge "Challenge Name Here"
     """
+    syn = Synapse().client()
     createchallenge.main(syn, args.challengename, args.livesiteid)
 
 
-def command_query(syn, args):
+def command_query(args):
     """Command line convenience function to call evaluation queue query
     Evaluation queues offer a separate query service from the rest of Synapse.
     This query function will print the leaderboard in a csv format in standard
@@ -55,6 +59,7 @@ def command_query(syn, args):
 
     >>> challengeutils query "select objectId, status from evaluation_12345"
     """
+    syn = Synapse().client()
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
     if args.render:
@@ -74,16 +79,17 @@ def command_query(syn, args):
         print(querydf.to_csv(index=False))
 
 
-def command_change_status(syn, args):
+def command_change_status(args):
     """Each submission has a status, this is a convenience function to change
     the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_
 
     >>> challengeutils changestatus 1234545 INVALID
     """
+    syn = Synapse().client()
     print(utils.change_submission_status(syn, args.submissionid, args.status))
 
 
-def command_writeup_attach(syn, args):
+def command_writeup_attach(args):
     """Most challenges require participants to submit a writeup.  Using the
     new archive-challenge-project-tool system of receiving writeups, this is
     a convenience function to merge the writeup and archived write up Synapse
@@ -91,11 +97,12 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
+    syn = Synapse().client()
     writeup_attacher.attach_writeup(syn, args.writeupqueue,
                                     args.submissionqueue)
 
 
-def command_set_entity_acl(syn, args):
+def command_set_entity_acl(args):
     """
     Sets permissions on entities for users or teams.  By default the user is
     public if there is no user or team specified and the default permission
@@ -103,12 +110,13 @@ def command_set_entity_acl(syn, args):
 
     >>> challengeutils setentityacl syn123545 user_or_team view
     """
+    syn = Synapse().client()
     permissions.set_entity_permissions(syn, args.entityid,
                                        principalid=args.principalid,
                                        permission_level=args.permission_level)
 
 
-def command_set_evaluation_acl(syn, args):
+def command_set_evaluation_acl(args):
     """
     Sets permissions on queues for users or teams.  By default the user is
     public if there is no user or team specified and the default permission
@@ -116,12 +124,14 @@ def command_set_evaluation_acl(syn, args):
 
     >>> challengeutils setevaluationacl 12345 user_or_team score
     """
+    syn = Synapse().client()
     permissions.set_evaluation_permissions(syn, args.evaluationid,
                                            principalid=args.principalid,
                                            permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
 
 
-def command_dl_cur_lead_sub(syn, args):
+def command_dl_cur_lead_sub(args):
+    syn = Synapse().client()
     dl_cur.download_current_lead_sub(
         syn,
         args.submissionid,
@@ -130,15 +140,17 @@ def command_dl_cur_lead_sub(syn, args):
         verbose=args.verbose)
 
 
-def command_list_evaluations(syn, args):
+def command_list_evaluations(args):
     """Lists evaluation queues of a project
 
     >>> challengeutils listevaluations projectid
     """
+    syn = Synapse().client()
     utils.list_evaluations(syn, args.projectid)
 
 
-def command_download_submission(syn, args):
+def command_download_submission(args):
+    syn = Synapse().client()
     submission_dict = utils.download_submission(syn, args.submissionid,
                                                 download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
@@ -154,7 +166,8 @@ def command_download_submission(syn, args):
         logger.info(submission_dict)
 
 
-def command_annotate_submission_with_json(syn, args):
+def command_annotate_submission_with_json(args):
+    syn = Synapse().client()
     _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
                                                             args.annotation_values,  # noqa pylint: disable=line-too-long
                                                             to_public=args.to_public,  # noqa pylint: disable=line-too-long
@@ -165,17 +178,18 @@ def command_annotate_submission_with_json(syn, args):
                 verbose=True)
 
 
-def command_send_email(syn, args):
+def command_send_email(args):
     """Command line interface to send Synapse email"""
     # Must escape the backslash and replace all \n with
     # html breaks
+    syn = Synapse().client()
     message = args.message.replace("\\n", "<br>")
     syn.sendMessage(userIds=args.userids,
                     messageSubject=args.subject,
                     messageBody=message)
 
 
-def command_kill_docker_over_quota(syn, args):
+def command_kill_docker_over_quota(args):
     """
     Sets an annotation on Synapse Docker submissions such that it will
     be terminated by the orchestrator. Usually applies to submissions
@@ -183,6 +197,7 @@ def command_kill_docker_over_quota(syn, args):
 
     >>> challengeutils killdockeroverquota evaluationid quota
     """
+    syn = Synapse().client()
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 
@@ -199,6 +214,10 @@ def build_parser():
 
     parser.add_argument('-v', '--version', action='version',
                         version='challengeutils {}'.format(__version__))
+
+    parser.add_argument("--synapse_staging",
+                        help="Use synapse staging endpoint",
+                        action='store_true')
 
     subparsers = parser.add_subparsers(
         title='commands',
@@ -464,27 +483,15 @@ def build_parser():
     return parser
 
 
-def perform_main(syn, args):
-    if 'func' in args:
-        try:
-            args.func(syn, args)
-        except Exception:
-            raise
-
-
-def synapse_login(synapse_config):
-    try:
-        syn = synapseclient.login(silent=True)
-    except Exception:
-        syn = synapseclient.Synapse(configPath=synapse_config)
-        syn.login(silent=True)
-    return(syn)
-
-
 def main():
     args = build_parser().parse_args()
-    syn = synapse_login(args.synapse_config)
-    perform_main(syn, args)
+    if args.synapse_staging:
+        endpoint = synapseclient.client.STAGING_ENDPOINTS
+    else:
+        endpoint = synapseclient.client.PRODUCTION_ENDPOINTS
+    # explode endpoint dict
+    Synapse().client(**endpoint, configPath=args.synapse_config)
+    args.func(args)
 
 
 if __name__ == "__main__":
