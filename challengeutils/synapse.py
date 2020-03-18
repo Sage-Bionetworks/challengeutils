@@ -1,5 +1,13 @@
 """
 Manage Synapse connection
+
+When writing tests use this function
+
+@pytest.fixture(autouse=True)
+def syn_connection(monkeypatch):
+    '''Set _synapse_client to be SYN for all tests.'''
+    monkeypatch.setattr(Synapse, "_synapse_client", SYN)
+
 """
 import logging
 
