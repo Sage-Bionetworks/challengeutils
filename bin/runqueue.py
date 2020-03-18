@@ -11,7 +11,6 @@ from synapseclient.exceptions import SynapseNoCredentialsError
 
 from scoring_harness import lock
 
-
 logging.basicConfig(format='%(asctime)s %(message)s')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
@@ -36,11 +35,18 @@ def import_config_py(config_path):
 # ==================================================
 #  Handlers for command
 # ==================================================
-def command(syn, evaluation_queue_maps):
+def command(syn, evaluation_queue_maps, admin_user_ids=None, dry_run=False,
+            remove_cache=False, send_messages=False, notifications=True):
     for queueid in evaluation_queue_maps:
         for config in evaluation_queue_maps[queueid]:
             invoke_func = config['func']
-            invoke = invoke_func(syn, queueid, **config['kwargs'])
+            invoke = invoke_func(syn, queueid,
+                                 admin_user_ids=admin_user_ids,
+                                 dry_run=dry_run,
+                                 remove_cache=remove_cache,
+                                 send_messages=send_messages,
+                                 notifications=notifications,
+                                 **config['kwargs'])
             invoke()
 
 
@@ -102,7 +108,10 @@ def main(args):
         return 75
 
     try:
-        command(syn, eval_queues)
+        command(syn, eval_queues, admin_user_ids=args.admin_user_ids,
+                dry_run=args.dry_run, remove_cache=args.remove_cache,
+                send_messages=args.send_messages,
+                notifications=args.notifications)
     except Exception as e:
         LOGGER.error(e)
 
@@ -126,10 +135,6 @@ if __name__ == '__main__':
 
     parser.add_argument("--send-messages",
                         help="Send validation and scoring messages to participants",
-                        action="store_true")
-
-    parser.add_argument("--acknowledge-receipt",
-                        help="Send confirmation message on passing validation to participants",
                         action="store_true")
 
     parser.add_argument("--dry-run",

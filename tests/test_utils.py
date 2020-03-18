@@ -8,6 +8,9 @@ import mock
 from mock import patch
 import pytest
 
+import mock
+from mock import patch
+import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
@@ -28,7 +31,7 @@ def test_raiseerror__switch_annotation_permission():
     error_message = (
         "You are trying to change the ACL of these annotation key(s): "
         "test. Either change the annotation key or specify "
-        "force_change_annotation_acl=True")
+        "force=True")
     # Must use re.escape() because match accepts regex
     with pytest.raises(ValueError, match=re.escape(error_message)):
         challengeutils.utils._switch_annotation_permission(
@@ -43,7 +46,7 @@ def test_filter__switch_annotation_permission():
     existing_annotations = {'test': 1}
     existing = challengeutils.utils._switch_annotation_permission(
         add_annotations, existing_annotations,
-        force_change_annotation_acl=True)
+        force=True)
     assert existing == {}
 
 
@@ -55,7 +58,7 @@ def test_nooverlap__switch_annotation_permission():
     existing_annotations = {'test3': 1}
     existing = challengeutils.utils._switch_annotation_permission(
         add_annotations, existing_annotations,
-        force_change_annotation_acl=True)
+        force=True)
     assert existing == existing_annotations
 
 
@@ -114,7 +117,7 @@ def test_topublic_update_single_submission_status():
     status = {'annotations': {}}
     add_annotations = {"test": 2.4}
     new_status = challengeutils.utils.update_single_submission_status(
-        status, add_annotations, to_public=True)
+        status, add_annotations, is_private=False)
     expected_annot = to_submission_status_annotations(
         add_annotations, is_private=False)
     expected_status = {'annotations': expected_annot}
@@ -253,13 +256,13 @@ def test_annotate_submission():
          mock.patch.object(syn, "store") as patch_syn_store:
         challengeutils.utils.annotate_submission(
             syn, "1234", to_add_annotations,
-            to_public=False,
+            is_private=True,
             force=False)
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
             status, added_annotations,
-            to_public=False,
-            force_change_annotation_acl=False)
+            is_private=True,
+            force=False)
         patch_syn_store.assert_called_once_with(status)
 
 
@@ -271,14 +274,15 @@ def test_annotate_submission_with_json():
         json.dump(add_annotations, annotation_file)
     with mock.patch.object(challengeutils.utils,
                            "annotate_submission") as patch_annotate:
-        challengeutils.utils.annotate_submission_with_json(
+        response = challengeutils.utils.annotate_submission_with_json(
             syn, "1234", tmp.name,
-            to_public=False,
+            is_private=True,
             force=False)
         patch_annotate.assert_called_once_with(
             syn, "1234", add_annotations,
-            to_public=False,
+            is_private=True,
             force=False)
+        assert response.status_code == 200
 
 
 def test_project_copy_project():
@@ -300,6 +304,7 @@ def test_project_copy_project():
         patch_syn_store.assert_called_once_with(project, createOrUpdate=False)
         patch_syn_copy.assert_called_once_with(syn, old_project.id,
                                                archived_project.id)
+
 
 @pytest.mark.parametrize("invalid_input",
                          [synapseclient.Folder("old", parentId="123"),
@@ -345,7 +350,6 @@ def test_teamid__get_submitter_name():
         patch_get_team.assert_called_once_with(submitterid)
 
 
-
 def test_get_challenge():
     projectid = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
@@ -363,4 +367,29 @@ def test_get_challenge():
                       return_value=rest_return) as patch_rest_get:
         chal = challengeutils.utils.get_challenge(syn, projectid)
         patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
+        assert chal == challenge_obj
+
+
+def test_create_challenge():
+    """Tests create challenge object"""
+    projectid = str(uuid.uuid1())
+    chalid = str(uuid.uuid1())
+    etag = str(uuid.uuid1())
+    participant_teamid = str(uuid.uuid1())
+    challenge_obj = Challenge(id=chalid,
+                              projectId=projectid,
+                              etag=etag,
+                              participantTeamId=participant_teamid)
+    rest_return = {'id': chalid,
+                   'projectId': projectid,
+                   'etag': etag,
+                   'participantTeamId': participant_teamid}
+    input_dict = {'participantTeamId': participant_teamid,
+                  'projectId': projectid}
+    with patch.object(syn, "restPOST",
+                      return_value=rest_return) as patch_rest_post:
+        chal = challengeutils.utils.create_challenge(syn, projectid,
+                                                     participant_teamid)
+        patch_rest_post.assert_called_once_with('/challenge',
+                                                json.dumps(input_dict))
         assert chal == challenge_obj

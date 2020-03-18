@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def _switch_annotation_permission(add_annotations,
                                   existing_annotations,
-                                  force_change_annotation_acl=False):
+                                  force=False):
     '''
     Switch annotation permissions
     If you add a private annotation that appears in the public annotation,
@@ -31,8 +31,7 @@ def _switch_annotation_permission(add_annotations,
         add_annotations: Annotations to add
         existing_annotations: Existing annotations (of the opposite annotation
                               permissions)
-        force_change_annotation_acl: Force the annotation permission to change.
-                                     Default is False.
+        force: Force the annotation permission to change. Default is False.
 
     Returns:
         Existing annotations
@@ -40,7 +39,7 @@ def _switch_annotation_permission(add_annotations,
     check_key = [key in add_annotations for key in existing_annotations]
     if sum(check_key) == 0:
         pass
-    elif sum(check_key) > 0 and force_change_annotation_acl:
+    elif sum(check_key) > 0 and force:
         # Filter out the annotations that have changed ACL
         existing_annotations = {key: existing_annotations[key]
                                 for key in existing_annotations
@@ -51,8 +50,7 @@ def _switch_annotation_permission(add_annotations,
         raise ValueError(
             "You are trying to change the ACL of these annotation key(s): {}."
             " Either change the annotation key or specify "
-            "force_change_annotation_acl=True".format(
-                ", ".join(change_keys)))
+            "force=True".format(", ".join(change_keys)))
     return existing_annotations
 
 
@@ -75,8 +73,8 @@ def _submission_annotations_to_dict(annotations, is_private=True):
     return annotation_dict
 
 
-def update_single_submission_status(status, add_annotations, to_public=False,
-                                    force_change_annotation_acl=False):
+def update_single_submission_status(status, add_annotations, is_private=True,
+                                    force=False):
     """
     This will update a single submission's status
 
@@ -86,13 +84,11 @@ def update_single_submission_status(status, add_annotations, to_public=False,
                          submission status annotations format.
                          If dict, all submissions will be added as
                          private submissions
-        to_public: change these annotations from private to public
-                   (default is False)
-        force_change_annotation_acl: Force change the annotation from
-                                     private to public and vice versa.
+        is_private: Annotations are set to private (default is True)
+        force: Force update the annotation from
+               private to public and vice versa.
     Returns:
         Updated submission status
-
     """
     existing_annots = status.get("annotations", dict())
     private_annotations = _submission_annotations_to_dict(existing_annots,
@@ -102,8 +98,8 @@ def update_single_submission_status(status, add_annotations, to_public=False,
                                                          is_private=False)
 
     if not is_submission_status_annotations(add_annotations):
-        private_added_annotations = dict() if to_public else add_annotations
-        public_added_annotations = add_annotations if to_public else dict()
+        private_added_annotations = add_annotations if is_private else dict()
+        public_added_annotations = dict() if is_private else add_annotations
     else:
         private_added_annotations = _submission_annotations_to_dict(
             add_annotations, is_private=True)
@@ -115,11 +111,11 @@ def update_single_submission_status(status, add_annotations, to_public=False,
     # it switches
     private_annotations = _switch_annotation_permission(public_added_annotations,
                                                         private_annotations,
-                                                        force_change_annotation_acl)
+                                                        force)
 
     public_annotations = _switch_annotation_permission(private_added_annotations,
                                                        public_annotations,
-                                                       force_change_annotation_acl)
+                                                       force)
 
     private_annotations.update(private_added_annotations)
     public_annotations.update(public_added_annotations)
@@ -193,11 +189,33 @@ def get_challenge(syn, entity):
         entity: An Entity or Synapse ID of a Project.
 
     Returns:
-        A Challenge object as a dictionary.    
+        Challenge object
     """
-    
     synid = synapseclient.utils.id_of(entity)
     challenge = syn.restGET("/entity/%s/challenge" % synid)
+    challenge_obj = Challenge(**challenge)
+    return challenge_obj
+
+
+def create_challenge(syn, entity, team):
+    """Creates Challenge associated with a Project
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
+
+    Args:
+        syn: Synapse connection
+        entity: An Entity or Synapse ID of a Project.
+        team: A Team or Team ID.
+
+    Returns:
+        Challenge object
+    """
+    synid = synapseclient.utils.id_of(entity)
+    teamid = synapseclient.utils.id_of(team)
+    challenge_object = {'participantTeamId': teamid,
+                        'projectId': synid}
+    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
     challenge_obj = Challenge(**challenge)
     return challenge_obj
 
@@ -572,27 +590,38 @@ def download_submission(syn, submissionid, download_location=None):
     return result
 
 
+class mock_response:
+    """Mocked status code to return"""
+    status_code = 200
+
+
 def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   **kwargs):
     """
-    Annotate submission with annotation values from a json file
+    ChallengeWorkflowTemplate tool: Annotates submission with annotation
+    values from a json file and uses exponential backoff to retry when
+    there are concurrent update issues (HTTP 412).  Must return a object
+    with status_code that has a range between 200-209
 
     Args:
         syn: Synapse object
         submissionid: Submission id
         annotation_values: Annotation json file
-        to_public: change these annotations from private to public
-                   (default is False)
-        force: Force change the annotation from private to public and
-               vice versa.
+        **kwargs: is_private: Set annotations acl to private (default is True)
+                  force: Force change the annotation from
+                         private to public and vice versa.
+
+    Returns:
+        mocked response object (200)
     """
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
     annotate_submission(syn, submissionid, annotation_json, **kwargs)
+    return mock_response
 
 
 def annotate_submission(syn, submissionid, annotation_dict,
-                        to_public=False, force=False):
+                        is_private=True, force=False):
     """
     Annotate submission with annotation values from a dict
 
@@ -600,20 +629,19 @@ def annotate_submission(syn, submissionid, annotation_dict,
         syn: Synapse object
         submissionid: Submission id
         annotation_dict: Annotation dict
-        to_public: change these annotations from private to public
-                   (default is False)
-        force: Force change the annotation from private to public and
-               vice versa.
+        is_private: Set annotations acl to private (default is True)
+        force: Force change the annotation from
+               private to public and vice versa.
     """
     status = syn.getSubmissionStatus(submissionid)
     # Don't add any annotations that are None
     annotation_dict = {key: annotation_dict[key] for key in annotation_dict
                        if annotation_dict[key] is not None}
-    status = update_single_submission_status(
-        status, annotation_dict,
-        to_public=to_public,
-        force_change_annotation_acl=force)
+    status = update_single_submission_status(status, annotation_dict,
+                                             is_private=is_private,
+                                             force=force)
     status = syn.store(status)
+    return status
 
 
 def copy_project(syn, project, new_project_name):
