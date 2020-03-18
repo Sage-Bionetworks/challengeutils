@@ -3,6 +3,7 @@ Manage Synapse connection
 
 When writing tests use this function
 
+TODO Remove below once feature implemented in other modules
 SYN = mock.create_autospec(synapseclient.Synapse)
 @pytest.fixture(autouse=True)
 def syn_connection(monkeypatch):
