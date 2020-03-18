@@ -6,8 +6,8 @@ The `challengeutils` package provides an interface for managing Sage Bionetworks
 Automation | Status
 -----------|-------
 [![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg)](https://hub.docker.com/r/sagebionetworks/challengeutils/) | ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)
-pypi | [![Get the synapseclient from PyPI](https://img.shields.io/pypi/v/challengeutils.svg)](https://pypi.python.org/pypi/challengeutils)
-readthedocs | [![Documentation Status](https://readthedocs.org/projects/challengeutils/badge/?version=latest&token=cbcacf79c6c88b78155e788029ad7d09fea70537b3f73ba1783faf3b778a2d3a)](https://challengeutils.readthedocs.io/en/latest/?badge=latest)
+[![Get challengeutils from PyPI](https://img.shields.io/pypi/v/challengeutils.svg)](https://pypi.python.org/pypi/challengeutils) | ![Get challengeutils from PyPI](https://img.shields.io/pypi/status/challengeutils)
+readthedocs | [![Documentation Status](https://readthedocs.org/projects/challengeutils/badge/?version=latest)](https://challengeutils.readthedocs.io/en/latest/)
 
 
 ## Install
