@@ -6,7 +6,11 @@ Output: The skeleton for two challenges site with initial wiki, four teams
         a challenge widget added on live site with a participant
         team associated with it.
 
+For more information on challenges administration:
+https://docs.synapse.org/articles/challenge_administration.html
+
 Example (run on bash)
+
 >>> challengeutils createchallenge "Plouf Challenge"
 
 TODO Add participants

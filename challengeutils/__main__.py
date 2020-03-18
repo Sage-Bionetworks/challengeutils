@@ -1,14 +1,18 @@
+"""challengeutils command line client"""
 import argparse
 import json
 import logging
 import os
+
 import pandas as pd
 import synapseclient
+
 try:
     from synapseclient.core.retry import _with_retry
 except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.retry import _with_retry
+
 from . import createchallenge
 from . import mirrorwiki
 from . import utils
@@ -17,21 +21,45 @@ from . import permissions
 from . import download_current_lead_submission as dl_cur
 from . import helpers
 from .__version__ import __version__
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
-    mirrorwiki.mirrorwiki(
-        syn, args.entityid, args.destinationid, args.forceupdate)
+    """For all challenges, you should be editting the staging site and then
+    using the merge script to mirror staging to live site.  The script will
+    compare wiki titles between the staging and live site and update the live
+    site with respect to what has changed on the staging site.  Note, this is
+    different from copying the wikis. To copy the wikis, please look at
+    synapseutils.
+
+    >>> challengeutils mirrorwiki syn12345 syn23456
+    """
+    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
+                          args.forceupdate)
 
 
 def command_createchallenge(syn, args):
+    """Creates a challenge space in Synapse.  This pulls from a standard
+    DREAM template and creates the Projects and Teams that you will need
+    for a challenge.  For more information on all the components this function
+    creates, please head to `challenge administration <https://docs.synapse.org/articles/challenge_administration.html>`_.
+
+    >>> challengeutils createchallenge "Challenge Name Here"
+    """
     createchallenge.main(syn, args.challengename, args.livesiteid)
 
 
 def command_query(syn, args):
-    """Command line convenience function to call evaluation queue query"""
+    """Command line convenience function to call evaluation queue query
+    Evaluation queues offer a separate query service from the rest of Synapse.
+    This query function will print the leaderboard in a csv format in standard
+    out.  Proceed `here <https://docs.synapse.org/rest/GET/evaluation/submission/query.html>`_
+    to learn more about this query service.
+
+    >>> challengeutils query "select objectId, status from evaluation_12345"
+    """
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
     if args.render:
@@ -52,26 +80,50 @@ def command_query(syn, args):
 
 
 def command_change_status(syn, args):
+    """Each submission has a status, this is a convenience function to change
+    the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_
+
+    >>> challengeutils changestatus 1234545 INVALID
+    """
     print(utils.change_submission_status(syn, args.submissionid, args.status))
 
 
 def command_writeup_attach(syn, args):
-    writeup_attacher.attach_writeup(
-        syn, args.writeupqueue, args.submissionqueue)
+    """Most challenges require participants to submit a writeup.  Using the
+    new archive-challenge-project-tool system of receiving writeups, this is
+    a convenience function to merge the writeup and archived write up Synapse
+    ids to the main challenge queue
+
+    >>> challengeutils attachwriteup writeupid submissionqueueid
+    """
+    writeup_attacher.attach_writeup(syn, args.writeupqueue,
+                                    args.submissionqueue)
 
 
 def command_set_entity_acl(syn, args):
-    permissions.set_entity_permissions(
-        syn, args.entityid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on entities for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setentityacl syn123545 user_or_team view
+    """
+    permissions.set_entity_permissions(syn, args.entityid,
+                                       principalid=args.principalid,
+                                       permission_level=args.permission_level)
 
 
 def command_set_evaluation_acl(syn, args):
-    permissions.set_evaluation_permissions(
-        syn, args.evaluationid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on queues for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setevaluationacl 12345 user_or_team score
+    """
+    permissions.set_evaluation_permissions(syn, args.evaluationid,
+                                           principalid=args.principalid,
+                                           permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -84,12 +136,16 @@ def command_dl_cur_lead_sub(syn, args):
 
 
 def command_list_evaluations(syn, args):
+    """Lists evaluation queues of a project
+
+    >>> challengeutils listevaluations projectid
+    """
     utils.list_evaluations(syn, args.projectid)
 
 
 def command_download_submission(syn, args):
-    submission_dict = utils.download_submission(
-        syn, args.submissionid, download_location=args.download_location)
+    submission_dict = utils.download_submission(syn, args.submissionid,
+                                                download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -125,10 +181,13 @@ def command_send_email(syn, args):
 
 
 def command_kill_docker_over_quota(syn, args):
-    '''
-    Command line helper to kill docker submissions
-    over the quota
-    '''
+    """
+    Sets an annotation on Synapse Docker submissions such that it will
+    be terminated by the orchestrator. Usually applies to submissions
+    that have been running for longer than the alloted time.
+
+    >>> challengeutils killdockeroverquota evaluationid quota
+    """
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 

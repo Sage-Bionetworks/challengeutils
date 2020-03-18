@@ -111,7 +111,7 @@ def test_invalid_store_submission_status(processor):
         processor.store_submission_status(SUBMISSION_STATUS, info)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
-                                             to_public=True)
+                                             is_private=False)
         status.status = "INVALID"
         patch_store.assert_called_once_with(status)
 
@@ -126,7 +126,7 @@ def test_valid_store_submission_status(processor):
         processor.store_submission_status(SUBMISSION_STATUS, SUB_INFO)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
-                                             to_public=True)
+                                             is_private=False)
         status.status = processor._success_status
         patch_store.assert_called_once_with(status)
 
@@ -142,7 +142,7 @@ def test_dryrun_store_submission_status(processor):
         processor.store_submission_status(SUBMISSION_STATUS, SUB_INFO)
         patch_update.assert_called_once_with(SUBMISSION_STATUS,
                                              SUB_INFO['annotations'],
-                                             to_public=True)
+                                             is_private=False)
         status.status = processor._success_status
         patch_store.assert_not_called()
 
