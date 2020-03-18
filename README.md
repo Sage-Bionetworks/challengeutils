@@ -7,12 +7,13 @@ The `challengeutils` package provides an interface for managing Sage Bionetworks
 ## Install
 
 ```
-pip install git+https://github.com/Sage-Bionetworks/challengeutils.git
+pip install challengeutils
+challengeutils -v
 ```
 
 ## Usage
 
-Below is documentation for the command line client.
+Below is documentation for some of the key features in the `challengeutils` command line client.  Please head to the [doc site](https://challengeutils.readthedocs.io/en/latest/) for more information.
 
 ```
 challengeutils -h
@@ -48,28 +49,6 @@ This is a convenience function to change the status of a submission
 
 ```
 challengeutils changestatus 1234545 INVALID
-```
-
-**Attaching write ups to main submission queue**
-
-Most challenges require participants to submit a writeup.  Using the new archive-challenge-project-tool system of receiving writeups, this is a convenience function to merge the writeup and archived write up Synapse ids to the main challenge queue
-
-```
-challengeutils attachwriteup writeupid submissionqueueid
-```
-
-**Adding ACLs to Synapse Entities and Evaluation queues**
-
-These two functions will give users or teams permissions to entities and evaluation queues.  By default the user is public if there is no user or team specified and the default permission is view.  For entities, the permission choices are "view", "download", "edit", "edit_and_delete", "admin".  
-
-```
-challengeutils setentityacl syn123545 user_or_team view
-```
-
-For evaluation queues, the permission choices are "view", "submit", "score", "admin". 
-
-```
-challengeutils setevaluationacl 12345 user_or_team score
 ```
 
 ## Contributing
