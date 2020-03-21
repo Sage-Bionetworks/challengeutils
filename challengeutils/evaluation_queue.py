@@ -27,9 +27,9 @@ class SubmissionQuota:
         """
         Args:
             round_start: Start of round (local time) in YEAR-MM-DDTHH:MM:SS
-                         format (ie. 2020-02-21T23:53:27)
+                         format (ie. 2020-02-21T17:00:00)
             round_end: End of round (local time) in YEAR-MM-DDTHH:MM:SS format
-                       (ie. 2020-02-21T23:53:27)
+                       (ie. 2020-02-21T19:00:00)
             number_of_rounds: Number of rounds
             round_duration: Round duration in milliseconds
             submission_limit: Number of submissions allowed per team
@@ -54,7 +54,7 @@ class SubmissionQuota:
         self.submissionLimit = submission_limit
 
 
-def set_evaluation_quota(syn, evalid: str, **kwargs):
+def set_evaluation_quota(syn, evalid: int, **kwargs):
     """Sets evaluation submission limit quota
 
     Args:
@@ -64,6 +64,14 @@ def set_evaluation_quota(syn, evalid: str, **kwargs):
 
     Returns:
         A synapseclient.Evaluation
+
+    Examples:
+        >>> set_evaluation_quota(syn, 12345,
+                                 round_start="2020-02-21T17:00:00",
+                                 round_end="2020-02-23T17:00:00",
+                                 number_of_rounds=1,
+                                 submission_limit=3)
+
     """
     quota = SubmissionQuota(**kwargs)
     evaluation = syn.getEvaluation(evalid)
