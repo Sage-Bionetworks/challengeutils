@@ -155,10 +155,13 @@ def command_download_submission(syn, args):
 
 
 def command_annotate_submission_with_json(syn, args):
+    # By default is_private is True, so the cli is to_public as False
+    # Which would be that is_private is True.
+    is_private = not args.to_public
     _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
                                                             args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                            to_public=args.to_public,  # noqa pylint: disable=line-too-long
-                                                            force_change_annotation_acl=args.force_change_annotation_acl),  # noqa pylint: disable=line-too-long
+                                                            is_private=is_private,  # noqa pylint: disable=line-too-long
+                                                            force=args.force),  # noqa pylint: disable=line-too-long
                 wait=3,
                 retries=10,
                 retry_status_codes=[412, 429, 500, 502, 503, 504],
@@ -412,7 +415,7 @@ def build_parser():
              "administrator(s), so change them to be public",
         action='store_true')
     parser_annotate_sub.add_argument(
-        "-f", "--force_change_annotation_acl",
+        "-f", "--force",
         help="Ability to update annotations if the key has "
              "different ACLs, warning will occur if this parameter "
              "isn't specified and the same key has different ACLs",
