@@ -1,8 +1,6 @@
 """Evaluation Queue helper functions"""
 import time
 
-import synapseclient
-
 
 def _convert_date_to_epoch(date_string):
     """Converts local dates in YEAR-MM-DDTHH:MM:SS format
