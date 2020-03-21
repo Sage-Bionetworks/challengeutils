@@ -1,5 +1,4 @@
 """Evaluation Queue helper functions"""
-import datetime
 import time
 
 import synapseclient
