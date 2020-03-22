@@ -96,12 +96,11 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
                          queue1
     """
     def __init__(self, syn, queue1, queue2, joinby="submitterId",
-                 status_key="status", annotation_keys: list = None):
+                 annotation_keys: list = None):
         self.syn = syn
         self.queue1 = queue1
         self.queue2 = queue2
         self.joinby = joinby
-        self.status_key = status_key
         self.annotation_keys = [] if annotation_keys is None else annotation_keys
 
     def join(self):
@@ -117,6 +116,8 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
     def annotate(self, joineddf, keys):
         """Annotates queue1 with specified annotation keys"""
         joineddf.apply(lambda row:
+                       # It is always objectId_x because this is the
+                       # submission id of the first queue
                        utils.annotate_submission(self.syn,
                                                  row['objectId_x'],
                                                  row[keys].to_dict(),
