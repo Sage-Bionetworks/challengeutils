@@ -91,7 +91,7 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         queue1: Evaluation queue 1
         queue2: Evaluation queue 2
         keys: List of annotation keys from queue2 to annotate queue1
-        **kwargs: joinby, how
+        **kwargs: joinby, how. See JoinFilterAnnotateQueues.join()
 
     """
     def __init__(self, syn, queue1, queue2, keys: list = None,
