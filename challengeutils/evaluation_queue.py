@@ -91,7 +91,6 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         queue1: Evaluation queue 1
         queue2: Evaluation queue 2
         joinby: Join two queues by a column. Defaults to submitterId
-        status_key: status, STATUS, prediction_file_status
         annotation_keys: List of annotation keys from queue2 to annotate
                          queue1
     """
