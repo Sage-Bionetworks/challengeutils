@@ -70,7 +70,7 @@ def test_calls_joinfilterannotate():
         testcls()
         patch_join.assert_called_once()
         patch_filter.assert_called_once_with(JOIN)
-        patch_annotate.assert_called_once_with(RAND, keys=[])
+        patch_annotate.assert_called_once_with(RAND)
 
 
 def test_filter_joinfilterannotate():
@@ -88,7 +88,7 @@ def test_filter_joinfilterannotate():
         testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
         testcls()
         patch_join.assert_called_once()
-        patch_annotate.assert_called_once_with(RAND, keys=[])
+        patch_annotate.assert_called_once_with(RAND)
 
 
 def test_annotate_joinfilterannotate():
@@ -101,10 +101,11 @@ def test_annotate_joinfilterannotate():
                   'bar': rand1,
                   'baz': rand2}]
     testdf = pd.DataFrame(test_dict)
-    testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
+    testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2,
+                            keys=keys)
     with patch.object(challengeutils.utils,
                       "annotate_submission") as patch_annotate:
-        testcls.annotate(testdf, keys=keys)
+        testcls.annotate(testdf)
         patch_annotate.assert_called_once_with(SYN, objectid,
                                                testdf.iloc[0][keys].to_dict(),
                                                keys)

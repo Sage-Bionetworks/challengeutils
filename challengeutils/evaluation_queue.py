@@ -91,16 +91,26 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         queue1: Evaluation queue 1
         queue2: Evaluation queue 2
         joinby: Join two queues by a column. Defaults to submitterId
-        annotation_keys: List of annotation keys from queue2 to annotate
-                         queue1
+        how: How to join the two queues. {'left', 'right', 'outer', 'inner'}
+             Default 'left'.
+            * left: use calling frame's index (or column if on is specified)
+            * right: use `other`'s index.
+            * outer: form union of calling frame's index (or column if on is
+            specified) with `other`'s index, and sort it.
+            lexicographically.
+            * inner: form intersection of calling frame's index (or column if
+            on is specified) with `other`'s index, preserving the order
+            of the calling's one.
+        keys: List of annotation keys from queue2 to annotate queue1
     """
     def __init__(self, syn, queue1, queue2, joinby="submitterId",
-                 annotation_keys: list = None):
+                 how="inner", keys: list = None):
         self.syn = syn
         self.queue1 = queue1
         self.queue2 = queue2
         self.joinby = joinby
-        self.annotation_keys = [] if annotation_keys is None else annotation_keys
+        self.how = how
+        self.keys = [] if keys is None else keys
 
     def join(self):
         """Join leaderboards"""
@@ -112,20 +122,19 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
     def filter(self, joineddf):
         """Filters joined queues"""
 
-    def annotate(self, joineddf, keys):
+    def annotate(self, joineddf):
         """Annotates queue1 with specified annotation keys"""
         joineddf.apply(lambda row:
                        # It is always objectId_x because this is the
                        # submission id of the first queue
                        utils.annotate_submission(self.syn,
                                                  row['objectId_x'],
-                                                 row[keys].to_dict(),
-                                                 keys),
+                                                 row[self.keys].to_dict(),
+                                                 self.keys),
                        axis=1)
 
     def __call__(self):
         """Joins, filters and annotates queue1"""
         joined_leaderboarddf = self.join()
         filtered_leaderboarddf = self.filter(joined_leaderboarddf)
-        self.annotate(filtered_leaderboarddf,
-                      keys=self.annotation_keys)
+        self.annotate(filtered_leaderboarddf)
