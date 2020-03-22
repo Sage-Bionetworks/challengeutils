@@ -9,7 +9,6 @@ from synapseclient.annotations import to_submission_status_annotations
 
 import challengeutils.utils
 import challengeutils.project_submission
-from challengeutils.project_submission import join_evaluations
 
 
 
