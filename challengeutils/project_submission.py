@@ -5,15 +5,15 @@ currently an elegant way in Synapse to create snapshots of projects.
 """
 from .evaluation_queue import JoinFilterAnnotateQueues
 
-
 class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
     """Join writeup queue with main challenge queue"""
+
     def filter(self, joineddf):
         """Filters joined queues"""
         # Filter joined leaderboard
-        validated = joineddf[f'{self.status_key}_y'] == "VALIDATED"
+        validated = joineddf['STATUS_y'] == "VALIDATED"
         joineddf = joineddf[validated]
-        scored = joineddf[f'{self.status_key}_x'] == "SCORED"
+        scored = joineddf['STATUS_x'] == "SCORED"
         joineddf = joineddf[scored]
         # Sort by submission id, because submission ids the bigger
         # the submission id, the more recent the submission
