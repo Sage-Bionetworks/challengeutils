@@ -3,9 +3,19 @@ import time
 
 
 def _convert_date_to_epoch(date_string):
-    """Converts local dates in YEAR-MM-DDTHH:MM:SS format
+    """Converts local time dates in YEAR-MM-DDTHH:MM:SS format
     (ie. 2020-02-21T23:53:27) to UTC epochtime in milliseconds and
-    timestring"""
+    timestring
+
+    Args:
+        date_string: Local time date in YEAR-MM-DDTHH:MM:SS format
+                     (ie. 2020-02-21T23:53:27)
+
+    Returns:
+        dict: {"time_string": UTC time in YEAR-MM-DDTHH:MM:SS format
+               "epochtime_ms": UTC epoch time}
+
+    """
     local_time_struct = time.strptime(date_string, "%Y-%m-%dT%H:%M:%S")
     epochtime = time.mktime(local_time_struct)
     utc_time_struct = time.gmtime(epochtime)
