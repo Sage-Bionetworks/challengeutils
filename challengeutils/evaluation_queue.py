@@ -82,19 +82,27 @@ def join_evaluations(syn, evaluation1, evaluation2, joinby, how="inner"):
 
 
 class JoinFilterAnnotateQueues(metaclass=ABCMeta):
-    """
-    Join queue 1 values with queue 2
-    Filter joined queues to keep specific values
-    Annotate queue 1 with respective queue 2 annotation values
+    """Joins queue 1 values with queue 2, then filters joined queues to
+    keep specific values.  Annotates queue 1 with respective queue 2
+    annotation values
+
+    Args:
+        syn: Synapse object
+        queue1: Evaluation queue 1
+        queue2: Evaluation queue 2
+        joinby: Join two queues by a column. Defaults to submitterId
+        status_key: status, STATUS, prediction_file_status
+        annotation_keys: List of annotation keys from queue2 to annotate
+                         queue1
     """
     def __init__(self, syn, queue1, queue2, joinby="submitterId",
-                 status_key="status", annotation_keys=[]):
+                 status_key="status", annotation_keys: list = None):
         self.syn = syn
         self.queue1 = queue1
         self.queue2 = queue2
         self.joinby = joinby
         self.status_key = status_key
-        self.annotation_keys = annotation_keys
+        self.annotation_keys = [] if annotation_keys is None else annotation_keys
 
     def join(self):
         """Join leaderboards"""

@@ -1,3 +1,5 @@
+import uuid
+
 import mock
 from mock import patch
 import pandas as pd
@@ -5,8 +7,13 @@ import synapseclient
 
 import challengeutils.utils
 from challengeutils.evaluation_queue import join_evaluations
+from challengeutils.evaluation_queue import JoinFilterAnnotateQueues
 
 SYN = mock.create_autospec(synapseclient.Synapse)
+QUEUE1 = '2'
+QUEUE2 = '3'
+RAND = str(uuid.uuid1())
+JOIN = str(uuid.uuid1())
 
 
 def test_join_queues():
@@ -38,3 +45,28 @@ def test_join_queues():
         calls = [mock.call(SYN, firstquery), mock.call(SYN, secondquery)]
         patch_query.assert_has_calls(calls)
         assert joineddf.equals(expecteddf[joineddf.columns])
+
+class JoinTestClass(JoinFilterAnnotateQueues):
+    def filter(self, joineddf):
+        return RAND
+
+
+def test_calls_joinfilterannotate():
+    """Test correct calls are made with class"""
+    test_dict = [{'foo': '123',
+                  'bar': '2222',
+                  'baz': '3333'},
+                 {'foo': '234',
+                  'bar': '5555',
+                  'baz': '4444'}]
+    test_dict = pd.DataFrame(test_dict)
+    with patch.object(JoinTestClass, "join",
+                      return_value=JOIN) as patch_join,\
+         patch.object(JoinTestClass, "filter",
+                      return_value=RAND) as patch_filter,\
+         patch.object(JoinTestClass, "annotate") as patch_annotate:
+        testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
+        testcls()
+        patch_join.assert_called_once()
+        patch_filter.assert_called_once_with(JOIN)
+        patch_annotate.assert_called_once_with(RAND, keys=[])
