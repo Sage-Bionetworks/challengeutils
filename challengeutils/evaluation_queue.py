@@ -107,16 +107,17 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
 
         Args:
             joinby: Join two queues by a column. Defaults to `submitterId`
-            how: How to join the two queues. {'left', 'right', 'outer', 'inner'}
-                Default 'inner'.
-                * left: use calling frame's index (or column if on is specified)
+            how: How to join the two queues. {'left', 'right', 'outer',
+                 'inner'} Default 'inner'.
+                * left: use calling frame's index (or column if on is
+                        specified)
                 * right: use `other`'s index.
-                * outer: form union of calling frame's index (or column if on is
-                specified) with `other`'s index, and sort it.
-                lexicographically.
-                * inner: form intersection of calling frame's index (or column if
-                on is specified) with `other`'s index, preserving the order
-                of the calling's one.
+                * outer: form union of calling frame's index (or column if on
+                         is specified) with `other`'s index, and sort it.
+                         lexicographically.
+                * inner: form intersection of calling frame's index (or column
+                         if on is specified) with `other`'s index, preserving
+                         the order of the calling's one.
 
         Returns:
             Joined pandas.DataFrame()
