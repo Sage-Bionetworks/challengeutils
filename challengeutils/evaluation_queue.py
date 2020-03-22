@@ -90,32 +90,40 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         syn: Synapse object
         queue1: Evaluation queue 1
         queue2: Evaluation queue 2
-        joinby: Join two queues by a column. Defaults to submitterId
-        how: How to join the two queues. {'left', 'right', 'outer', 'inner'}
-             Default 'left'.
-            * left: use calling frame's index (or column if on is specified)
-            * right: use `other`'s index.
-            * outer: form union of calling frame's index (or column if on is
-            specified) with `other`'s index, and sort it.
-            lexicographically.
-            * inner: form intersection of calling frame's index (or column if
-            on is specified) with `other`'s index, preserving the order
-            of the calling's one.
         keys: List of annotation keys from queue2 to annotate queue1
+        **kwargs: joinby, how
+
     """
-    def __init__(self, syn, queue1, queue2, joinby="submitterId",
-                 how="inner", keys: list = None):
+    def __init__(self, syn, queue1, queue2, keys: list = None,
+                 **kwargs):
         self.syn = syn
         self.queue1 = queue1
         self.queue2 = queue2
-        self.joinby = joinby
-        self.how = how
         self.keys = [] if keys is None else keys
+        self.kwargs = kwargs
 
-    def join(self):
-        """Join leaderboards"""
+    def join(self, joinby="submitterId", how="inner"):
+        """Join leaderboards
+
+        Args:
+            joinby: Join two queues by a column. Defaults to `submitterId`
+            how: How to join the two queues. {'left', 'right', 'outer', 'inner'}
+                Default 'inner'.
+                * left: use calling frame's index (or column if on is specified)
+                * right: use `other`'s index.
+                * outer: form union of calling frame's index (or column if on is
+                specified) with `other`'s index, and sort it.
+                lexicographically.
+                * inner: form intersection of calling frame's index (or column if
+                on is specified) with `other`'s index, preserving the order
+                of the calling's one.
+
+        Returns:
+            Joined pandas.DataFrame()
+
+        """
         joineddf = join_evaluations(self.syn, self.queue1, self.queue2,
-                                    self.joinby, how="inner")
+                                    joinby, how=how)
         return joineddf
 
     @abstractmethod
@@ -135,6 +143,6 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
 
     def __call__(self):
         """Joins, filters and annotates queue1"""
-        joined_leaderboarddf = self.join()
+        joined_leaderboarddf = self.join(**self.kwargs)
         filtered_leaderboarddf = self.filter(joined_leaderboarddf)
         self.annotate(filtered_leaderboarddf)
