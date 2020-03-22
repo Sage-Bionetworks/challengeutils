@@ -6,7 +6,6 @@ import pandas as pd
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 
-
 import challengeutils.utils
 import challengeutils.project_submission
 

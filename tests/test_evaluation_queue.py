@@ -46,13 +46,14 @@ def test_join_queues():
         patch_query.assert_has_calls(calls)
         assert joineddf.equals(expecteddf[joineddf.columns])
 
+
 class JoinTestClass(JoinFilterAnnotateQueues):
     def filter(self, joineddf):
         return RAND
 
 
 def test_calls_joinfilterannotate():
-    """Test correct calls are made with class"""
+    """Test correct calls are made with each function"""
     test_dict = [{'foo': '123',
                   'bar': '2222',
                   'baz': '3333'},
@@ -70,3 +71,36 @@ def test_calls_joinfilterannotate():
         patch_join.assert_called_once()
         patch_filter.assert_called_once_with(JOIN)
         patch_annotate.assert_called_once_with(RAND, keys=[])
+
+
+def test_filter_joinfilterannotate():
+    """Test filter returns the correct call"""
+    test_dict = [{'foo': '123',
+                  'bar': '2222',
+                  'baz': '3333'},
+                 {'foo': '234',
+                  'bar': '5555',
+                  'baz': '4444'}]
+    test_dict = pd.DataFrame(test_dict)
+    with patch.object(JoinTestClass, "join",
+                      return_value=JOIN) as patch_join,\
+         patch.object(JoinTestClass, "annotate") as patch_annotate:
+        testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
+        testcls()
+        patch_join.assert_called_once()
+        patch_annotate.assert_called_once_with(RAND, keys=[])
+
+
+def test_annotate_joinfilterannotate():
+    """Test filter returns the correct call"""
+    test_dict = [{'objectId_x': '123',
+                  'bar': '2222',
+                  'baz': '3333'}]
+    testdf = pd.DataFrame(test_dict)
+    testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
+    with patch.object(challengeutils.utils,
+                      "annotate_submission") as patch_annotate:
+        testcls.annotate(testdf, keys=['bar', 'baz'])
+        patch_annotate.assert_called_once_with(SYN, '123',
+                                               {'bar': '2222', 'baz': '3333'},
+                                               ['bar', 'baz'])
