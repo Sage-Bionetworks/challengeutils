@@ -2,10 +2,14 @@
 import random
 import uuid
 
+import mock
 from mock import patch
 import pytest
+import synapseclient
 
 from challengeutils import evaluation_queue
+
+SYN = mock.create_autospec(synapseclient.Synapse)
 
 
 def test_keys__convert_date_to_epoch():
@@ -61,3 +65,21 @@ def test_calculateduration_submissionquota():
         assert quota.firstRoundStart == first_time
         assert quota.roundDurationMillis == second - first
 
+
+def test_run_set_evaluation_quota():
+    """Tests that a quota is set"""
+    set_quota = evaluation_queue.SubmissionQuota(submission_limit=5)
+    test_eval = synapseclient.Evaluation(name="foo", contentSource="syn1234")
+    final_eval = synapseclient.Evaluation(name="foo", contentSource="syn1234",
+                                          quota={"submissionLimit": 5,
+                                                 "numberOfRounds": None,
+                                                 "roundDurationMillis": None,
+                                                 "firstRoundStart": None})
+    with patch.object(SYN, "getEvaluation",
+                      return_value=test_eval) as patch_geteval,\
+         patch.object(SYN, "store", return_value=final_eval) as patch_store:
+        queue = evaluation_queue.set_evaluation_quota(SYN, 12345,
+                                                      submission_limit=5)
+        assert queue == final_eval
+        patch_store.assert_called_once_with(final_eval)
+        patch_geteval.assert_called_once_with(12345)
