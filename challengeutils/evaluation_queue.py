@@ -42,9 +42,9 @@ class SubmissionQuota:
             submission_limit: Number of submissions allowed per team
 
         """
-        if round_end and round_duration:
+        if round_end is not None and round_duration is not None:
             raise ValueError("Can only specify round_end or round_duration")
-        if round_end and not round_start:
+        if round_end is not None and not round_start is not None:
             raise ValueError("If specify round_end, but specify round_start")
         if round_start:
             round_start_info = _convert_date_to_epoch(round_start)

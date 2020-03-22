@@ -1,17 +1,63 @@
 """Tests evaluation queue helpers"""
-import time
+import random
+import uuid
 
 from mock import patch
+import pytest
 
 from challengeutils import evaluation_queue
 
 
 def test_keys__convert_date_to_epoch():
-    """Test that the right keys are returned"""
+    """Test that the right keys are returned and right types are returned"""
     date_string = "2020-02-21T15:00:00"
     epoch_info = evaluation_queue._convert_date_to_epoch(date_string)
     assert "time_string" in epoch_info and "epochtime_ms" in epoch_info
     assert epoch_info['time_string'].endswith(".000Z")
     assert isinstance(epoch_info['epochtime_ms'], int)
 
-    
+
+def test_raiseerrors_submissionquota():
+    """Tests that errors are raised when wrong parameters are passed in"""
+    with pytest.raises(ValueError,
+                       match="Can only specify round_end or round_duration"):
+        evaluation_queue.SubmissionQuota(round_end="foo", round_duration="")
+
+    with pytest.raises(ValueError,
+                       match="If specify round_end, but specify round_start"):
+        evaluation_queue.SubmissionQuota(round_end="foo")
+
+
+def test_setvalues_submissionquota():
+    """Tests self variables are set correctly"""
+    rounds = random.randint(0, 4000000)
+    sub = random.randint(0, 4000000)
+    dur = random.randint(0, 4000000)
+    quota = evaluation_queue.SubmissionQuota(round_start="2020-02-21T15:00:00",
+                                             number_of_rounds=rounds,
+                                             submission_limit=sub,
+                                             round_duration=dur)
+
+    assert quota.numberOfRounds == rounds
+    assert quota.submissionLimit == sub
+    assert quota.roundDurationMillis == dur
+    assert quota.firstRoundStart
+
+
+def test_calculateduration_submissionquota():
+    """Tests that calculation of round duration works"""
+    first = random.randint(0, 200000)
+    second = random.randint(300000, 4000000)
+    first_time = str(uuid.uuid1())
+
+    with patch.object(evaluation_queue,
+                      "_convert_date_to_epoch",
+                      side_effect=[{"time_string": first_time,
+                                    "epochtime_ms": first},
+                                   {"time_string": "doo",
+                                    "epochtime_ms": second}]):
+        quota = evaluation_queue.SubmissionQuota(round_start="2020-02-21T15:00:00",
+                                                 round_end="2020-02-21T17:00:00")
+        assert quota.firstRoundStart == first_time
+        assert quota.roundDurationMillis == second - first
+
