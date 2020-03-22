@@ -93,14 +93,18 @@ def test_filter_joinfilterannotate():
 
 def test_annotate_joinfilterannotate():
     """Test filter returns the correct call"""
-    test_dict = [{'objectId_x': '123',
-                  'bar': '2222',
-                  'baz': '3333'}]
+    objectid = str(uuid.uuid1())
+    keys = ['bar', 'baz']
+    rand1 = str(uuid.uuid1())
+    rand2 = str(uuid.uuid1())
+    test_dict = [{'objectId_x': objectid,
+                  'bar': rand1,
+                  'baz': rand2}]
     testdf = pd.DataFrame(test_dict)
     testcls = JoinTestClass(SYN, queue1=QUEUE1, queue2=QUEUE2)
     with patch.object(challengeutils.utils,
                       "annotate_submission") as patch_annotate:
-        testcls.annotate(testdf, keys=['bar', 'baz'])
-        patch_annotate.assert_called_once_with(SYN, '123',
-                                               {'bar': '2222', 'baz': '3333'},
-                                               ['bar', 'baz'])
+        testcls.annotate(testdf, keys=keys)
+        patch_annotate.assert_called_once_with(SYN, objectid,
+                                               testdf.iloc[0][keys].to_dict(),
+                                               keys)
