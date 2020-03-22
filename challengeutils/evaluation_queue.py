@@ -44,8 +44,9 @@ class SubmissionQuota:
         """
         if round_end is not None and round_duration is not None:
             raise ValueError("Can only specify round_end or round_duration")
-        if round_end is not None and round_start is not None:
-            raise ValueError("If specify round_end, but specify round_start")
+        if round_end is not None and round_start is None:
+            raise ValueError("If round_end is specified, "
+                             "round_start also be specified")
         if round_start:
             round_start_info = _convert_date_to_epoch(round_start)
             round_start_utc = round_start_info['epochtime_ms']

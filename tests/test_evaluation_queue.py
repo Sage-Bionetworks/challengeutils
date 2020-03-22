@@ -28,7 +28,8 @@ def test_raiseerrors_submissionquota():
         evaluation_queue.SubmissionQuota(round_end="foo", round_duration="")
 
     with pytest.raises(ValueError,
-                       match="If specify round_end, but specify round_start"):
+                       match="If round_end is specified, "
+                             "round_start also be specified"):
         evaluation_queue.SubmissionQuota(round_end="foo")
 
 
