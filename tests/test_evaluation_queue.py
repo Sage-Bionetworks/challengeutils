@@ -45,7 +45,7 @@ def test_calculateduration_submissionquota():
                                     "epochtime_ms": first},
                                    {"time_string": "doo",
                                     "epochtime_ms": second}]):
-        quota = evaluation_queue._create_quota(round_start="2020-02-21T15:00:00",
+        quota = evaluation_queue._create_quota(round_start="2020-02-21T15:00:00",  # noqa pylint: disable=line-too-long
                                                round_end="2020-02-21T17:00:00")
         assert quota.firstRoundStart == first_time
         assert quota.roundDurationMillis == second - first
