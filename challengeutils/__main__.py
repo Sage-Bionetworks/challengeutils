@@ -121,6 +121,7 @@ def command_set_evaluation_acl(syn, args):
                                            principalid=args.principalid,
                                            permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
 
+
 def command_set_evaluation_quota(syn, args):
     """Sets the evaluation quota on existing evaluation queues.
     This WILL erase any old quota you had previously set.
