@@ -12,7 +12,7 @@ from challengeutils.evaluation_queue import JoinFilterAnnotateQueues
 SYN = mock.create_autospec(synapseclient.Synapse)
 QUEUE1 = '2'
 QUEUE2 = '3'
-RAND = str(uuid.uuid1())
+RAND = pd.DataFrame({'objectId_x': ['123', '234']})
 JOIN = str(uuid.uuid1())
 
 
@@ -54,10 +54,10 @@ class JoinTestClass(JoinFilterAnnotateQueues):
 
 def test_calls_joinfilterannotate():
     """Test correct calls are made with each function"""
-    test_dict = [{'foo': '123',
+    test_dict = [{'objectId_x': '123',
                   'bar': '2222',
                   'baz': '3333'},
-                 {'foo': '234',
+                 {'objectId_x': '234',
                   'bar': '5555',
                   'baz': '4444'}]
     test_dict = pd.DataFrame(test_dict)
@@ -78,10 +78,10 @@ def test_calls_joinfilterannotate():
 
 def test_filter_joinfilterannotate():
     """Test filter returns the correct call"""
-    test_dict = [{'foo': '123',
+    test_dict = [{'objectId_x': '123',
                   'bar': '2222',
                   'baz': '3333'},
-                 {'foo': '234',
+                 {'objectId_x': '234',
                   'bar': '5555',
                   'baz': '4444'}]
     test_dict = pd.DataFrame(test_dict)
