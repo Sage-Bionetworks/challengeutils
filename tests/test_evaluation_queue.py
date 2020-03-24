@@ -25,28 +25,12 @@ def test_raiseerrors_submissionquota():
     """Tests that errors are raised when wrong parameters are passed in"""
     with pytest.raises(ValueError,
                        match="Can only specify round_end or round_duration"):
-        evaluation_queue.SubmissionQuota(round_end="foo", round_duration="")
+        evaluation_queue._create_quota(round_end="foo", round_duration="")
 
     with pytest.raises(ValueError,
                        match="If round_end is specified, "
-                             "round_start also be specified"):
-        evaluation_queue.SubmissionQuota(round_end="foo")
-
-
-def test_setvalues_submissionquota():
-    """Tests self variables are set correctly"""
-    rounds = random.randint(0, 4000000)
-    sub = random.randint(0, 4000000)
-    dur = random.randint(0, 4000000)
-    quota = evaluation_queue.SubmissionQuota(round_start="2020-02-21T15:00:00",
-                                             number_of_rounds=rounds,
-                                             submission_limit=sub,
-                                             round_duration=dur)
-
-    assert quota.numberOfRounds == rounds
-    assert quota.submissionLimit == sub
-    assert quota.roundDurationMillis == dur
-    assert quota.firstRoundStart
+                             "round_start must also be specified"):
+        evaluation_queue._create_quota(round_end="foo")
 
 
 def test_calculateduration_submissionquota():
@@ -61,8 +45,8 @@ def test_calculateduration_submissionquota():
                                     "epochtime_ms": first},
                                    {"time_string": "doo",
                                     "epochtime_ms": second}]):
-        quota = evaluation_queue.SubmissionQuota(round_start="2020-02-21T15:00:00",
-                                                 round_end="2020-02-21T17:00:00")
+        quota = evaluation_queue._create_quota(round_start="2020-02-21T15:00:00",
+                                               round_end="2020-02-21T17:00:00")
         assert quota.firstRoundStart == first_time
         assert quota.roundDurationMillis == second - first
 

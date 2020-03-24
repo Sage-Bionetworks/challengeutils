@@ -28,11 +28,71 @@ class SubmissionQuota:
     """A SubmissionQuota object
     https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionQuota.html
     """
-    def __init__(self, round_start: str = None, round_end: str = None,
-                 number_of_rounds: int = None, round_duration: str = None,
-                 submission_limit: int = None):
-        """
-        Args:
+    def __init__(self, firstRoundStart: str = None,
+                 roundDurationMillis: int = None, numberOfRounds: int = None,
+                 submissionLimit: int = None):
+        self.firstRoundStart = firstRoundStart
+        self.roundDurationMillis = roundDurationMillis
+        self.numberOfRounds = numberOfRounds
+        self.submissionLimit = submissionLimit
+
+
+def _create_quota(round_start: str = None, round_end: str = None,
+                  number_of_rounds: int = None, round_duration: int = None,
+                  submission_limit: int = None) -> SubmissionQuota:
+    """Creates the SubmissionQuota object
+
+    Args:
+        round_start: Start of round (local time) in YEAR-MM-DDTHH:MM:SS
+                     format (ie. 2020-02-21T17:00:00)
+        round_end: End of round (local time) in YEAR-MM-DDTHH:MM:SS format
+                   (ie. 2020-02-21T19:00:00)
+        number_of_rounds: Number of rounds
+        round_duration: Round duration in milliseconds
+        submission_limit: Number of submissions allowed per team
+
+    Returns:
+        SubmissionQuota object
+
+    """
+    if round_end is not None and round_duration is not None:
+        raise ValueError("Can only specify round_end or round_duration")
+    if round_end is not None and round_start is None:
+        raise ValueError("If round_end is specified, "
+                         "round_start must also be specified")
+
+    if round_start:
+        round_start_info = _convert_date_to_epoch(round_start)
+        round_start_utc = round_start_info['epochtime_ms']
+        # Must set the time in UTC time, but must pass in local time
+        # into function
+        round_start = round_start_info['time_string']
+
+    if round_end:
+        round_end_info = _convert_date_to_epoch(round_end)
+        round_duration = round_end_info['epochtime_ms'] - round_start_utc
+
+    if round_duration is not None and round_duration < 0:
+        raise ValueError("Specified round_duration must be >= 0, or"
+                         "round_end must be > round_start")
+
+    quota = SubmissionQuota(firstRoundStart=round_start,
+                            numberOfRounds=number_of_rounds,
+                            roundDurationMillis=round_duration,
+                            submissionLimit=submission_limit)
+    return quota
+
+
+def set_evaluation_quota(syn: 'Synapse', evalid: int, **kwargs):
+    """Sets evaluation submission limit quota. Note - round_start must be
+    specified with either round_end or round_duration and number_of_rounds
+    must be defined for the time limits to work.  submission_limit will
+    work without number_of_rounds.
+
+    Args:
+        syn: Synapse object
+        evalid: Evaluation id
+        **kwargs:
             round_start: Start of round (local time) in YEAR-MM-DDTHH:MM:SS
                          format (ie. 2020-02-21T17:00:00)
             round_end: End of round (local time) in YEAR-MM-DDTHH:MM:SS format
@@ -40,35 +100,6 @@ class SubmissionQuota:
             number_of_rounds: Number of rounds
             round_duration: Round duration in milliseconds
             submission_limit: Number of submissions allowed per team
-
-        """
-        if round_end is not None and round_duration is not None:
-            raise ValueError("Can only specify round_end or round_duration")
-        if round_end is not None and round_start is None:
-            raise ValueError("If round_end is specified, "
-                             "round_start also be specified")
-        if round_start:
-            round_start_info = _convert_date_to_epoch(round_start)
-            round_start_utc = round_start_info['epochtime_ms']
-            # Must set the time in UTC time, but must pass in local time
-            # into function
-            round_start = round_start_info['time_string']
-        self.firstRoundStart = round_start
-        if round_end:
-            round_end_info = _convert_date_to_epoch(round_end)
-            round_duration = round_end_info['epochtime_ms'] - round_start_utc
-        self.roundDurationMillis = round_duration
-        self.numberOfRounds = number_of_rounds
-        self.submissionLimit = submission_limit
-
-
-def set_evaluation_quota(syn, evalid: int, **kwargs):
-    """Sets evaluation submission limit quota
-
-    Args:
-        syn: Synapse object
-        evalid: Evaluation id
-        **kwargs: same arguments as SubmissionQuota
 
     Returns:
         A synapseclient.Evaluation
@@ -81,7 +112,7 @@ def set_evaluation_quota(syn, evalid: int, **kwargs):
                                  submission_limit=3)
 
     """
-    quota = SubmissionQuota(**kwargs)
+    quota = _create_quota(**kwargs)
     evaluation = syn.getEvaluation(evalid)
     evaluation.quota = vars(quota)
     evaluation = syn.store(evaluation)

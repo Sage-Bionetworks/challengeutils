@@ -9,12 +9,13 @@ import synapseclient
 from synapseclient.retry import _with_retry
 
 from . import createchallenge
+from . import download_current_lead_submission as dl_cur
+from . import evaluation_queue
+from . import helpers
 from . import mirrorwiki
+from . import permissions
 from . import utils
 from . import writeup_attacher
-from . import permissions
-from . import download_current_lead_submission as dl_cur
-from . import helpers
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -119,6 +120,22 @@ def command_set_evaluation_acl(syn, args):
     permissions.set_evaluation_permissions(syn, args.evaluationid,
                                            principalid=args.principalid,
                                            permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
+
+def command_set_evaluation_quota(syn, args):
+    """Sets the evaluation quota on existing evaluation queues.
+
+    >>> challengeutils setevalquota 12345 \
+                                    --round-start '2020-02-21T17:00:00' \
+                                    --round-end '2020-02-23T17:00:00' \
+                                    --num-rounds 2 \
+                                    --sub-limit 3
+    """
+    evaluation_queue.set_evaluation_quota(syn, args.evaluation_id,
+                                          round_start=args.round_start,
+                                          round_end=args.round_end,
+                                          number_of_rounds=args.num_rounds,
+                                          submission_limit=args.sub_limit,
+                                          round_duration=args.round_duration)
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -445,7 +462,6 @@ def build_parser():
 
     parser_send_email.set_defaults(func=command_send_email)
 
-
     parser_kill_docker = subparsers.add_parser(
         'killdockeroverquota',
         help='Kill Docker submissions over the quota')
@@ -460,6 +476,48 @@ def build_parser():
         type=int,
         help="Time quota submission has to run in milliseconds")
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+
+    parser_set_quota = subparsers.add_parser(
+        'set-evaluation-quota',
+        help='Sets the quota on an existing evaluation queue')
+
+    parser_set_quota.add_argument(
+        "evaluationid",
+        type=str,
+        help='Synapse evaluation queue id')
+    parser_set_quota.add_argument(
+        "--round-start",
+        type=str,
+        help='Start of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group = parser_set_quota.add_mutually_exclusive_group(required=False)
+
+    group.add_argument(
+        "--round-end",
+        type=str,
+        help='End of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group.add_argument(
+        "--round-duration",
+        type=int,
+        help='Round duration in milliseconds')
+
+
+
+    parser_set_quota.add_argument(
+        "--num-rounds",
+        type=int,
+        help='Number of rounds (must set for time related quota to work)')
+
+    parser_set_quota.add_argument(
+        "--sub-limit",
+        type=int,
+        help='Number of submissions allowed per team')
+
+
+    parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     return parser
 
