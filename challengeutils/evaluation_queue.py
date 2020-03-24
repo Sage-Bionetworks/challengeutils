@@ -73,7 +73,7 @@ def _create_quota(round_start: str = None, round_end: str = None,
         round_duration = round_end_info['epochtime_ms'] - round_start_utc
 
     if round_duration is not None and round_duration < 0:
-        raise ValueError("Specified round_duration must be >= 0, or"
+        raise ValueError("Specified round_duration must be >= 0, or "
                          "round_end must be > round_start")
 
     quota = SubmissionQuota(firstRoundStart=round_start,

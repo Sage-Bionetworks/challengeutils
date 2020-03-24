@@ -51,6 +51,30 @@ def test_calculateduration_submissionquota():
         assert quota.roundDurationMillis == second - first
 
 
+def test_negativeduration_submissionquota():
+    """Tests that a negative duration will raise an error"""
+    first = random.randint(300000, 4000000)
+    second = random.randint(0, 200000)
+    first_time = str(uuid.uuid1())
+
+    with patch.object(evaluation_queue,
+                      "_convert_date_to_epoch",
+                      side_effect=[{"time_string": first_time,
+                                    "epochtime_ms": first},
+                                   {"time_string": "doo",
+                                    "epochtime_ms": second}]),\
+         pytest.raises(ValueError,
+                       match="Specified round_duration must be >= 0, or "
+                             "round_end must be > round_start"):
+        evaluation_queue._create_quota(round_start="2020-02-21T15:00:00",
+                                       round_end="2020-02-21T17:00:00")
+
+    with pytest.raises(ValueError,
+                       match="Specified round_duration must be >= 0, or "
+                             "round_end must be > round_start"):
+        evaluation_queue._create_quota(round_duration=-2)
+
+
 def test_run_set_evaluation_quota():
     """Tests that a quota is set"""
     sub = random.randint(0, 4000000)
