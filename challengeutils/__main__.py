@@ -131,12 +131,12 @@ def command_set_evaluation_quota(syn, args):
                                     --sub-limit 3
 
     """
-    evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
+    print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
                                           round_start=args.round_start,
                                           round_end=args.round_end,
                                           number_of_rounds=args.num_rounds,
                                           submission_limit=args.sub_limit,
-                                          round_duration=args.round_duration)
+                                          round_duration=args.round_duration))
 
 
 def command_dl_cur_lead_sub(syn, args):
