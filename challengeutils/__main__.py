@@ -509,8 +509,6 @@ def build_parser():
         type=int,
         help='Round duration in milliseconds')
 
-
-
     parser_set_quota.add_argument(
         "--num-rounds",
         type=int,
@@ -520,7 +518,6 @@ def build_parser():
         "--sub-limit",
         type=int,
         help='Number of submissions allowed per team')
-
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
