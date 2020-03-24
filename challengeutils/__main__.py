@@ -485,7 +485,9 @@ def build_parser():
 
     parser_set_quota = subparsers.add_parser(
         'setevaluationquota',
-        help='Sets the quota on an existing evaluation queue')
+        help='Sets the quota on an existing evaluation queue. '
+             'This WILL erase any old quota you had previously set if no '
+             'optional parameters are given')
 
     parser_set_quota.add_argument(
         "evaluationid",
