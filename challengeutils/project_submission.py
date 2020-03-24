@@ -1,8 +1,8 @@
 """
-This module is responsible for attaching participant writeup submissions with
-the main challenge queues.  It also archives(copies) projects since there isn't
-currently an elegant way in Synapse to create snapshots of projects.
+This module extends from JoinWriteupChallengeQueues and attaches
+participant project submissions with the main challenge queues.
 """
+
 from .evaluation_queue import JoinFilterAnnotateQueues
 
 class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
