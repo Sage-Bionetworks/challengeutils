@@ -136,11 +136,11 @@ def command_set_evaluation_quota(syn, args):
 
     """
     print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
-                                          round_start=args.round_start,
-                                          round_end=args.round_end,
-                                          number_of_rounds=args.num_rounds,
-                                          submission_limit=args.sub_limit,
-                                          round_duration=args.round_duration))
+                                                round_start=args.round_start,
+                                                round_end=args.round_end,
+                                                number_of_rounds=args.num_rounds,  # noqa pylint: disable=line-too-long
+                                                submission_limit=args.sub_limit,  # noqa pylint: disable=line-too-long
+                                                round_duration=args.round_duration))  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
