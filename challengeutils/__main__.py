@@ -84,18 +84,21 @@ def command_change_status(syn, args):
 
 
 def command_writeup_attach(syn, args):
-    """Most challenges require participants to submit a writeup.  Using the
-    new archive-challenge-project-tool system of receiving writeups, this is
-    a convenience function to merge the writeup and archived write up Synapse
-    ids to the main challenge queue
+    """Most challenges require participants to submit a project to a different
+    evaluation queue. This function will join the two queues and merge the
+    project and its archive to the main challenge queue.  If you are using the
+    `SynapseWorkflowOrchestrator` to run challenges, you will most likely use
+    `--statuskey prediction_file_status`, but another value would be `STATUS`
+    or `status`
 
-    >>> challengeutils attachwriteup writeupid submissionqueueid
+    >>> challengeutils attachwriteup writeupid submissionqueueid \
+                                     --statuskey prediction_file_status
     """
     join_queues = project_submission.JoinWriteupChallengeQueues(
         syn, args.submissionqueue,
         args.writeupqueue,
-        status_key=args.statuskey,
-        annotation_keys=['writeUp', 'archivedWriteUp'])
+        keys=['writeUp', 'archivedWriteUp'])
+    join_queues._status_key = args.statuskey
     join_queues()
 
 

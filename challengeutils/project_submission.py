@@ -7,13 +7,14 @@ from .evaluation_queue import JoinFilterAnnotateQueues
 
 class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
     """Join writeup queue with main challenge queue"""
+    _status_key = "status"
 
     def filter(self, joineddf):
         """Filters joined queues"""
         # Filter joined leaderboard
-        validated = joineddf['STATUS_y'] == "VALIDATED"
+        validated = joineddf[f'{self._status_key}_y'] == "VALIDATED"
         joineddf = joineddf[validated]
-        scored = joineddf['STATUS_x'] == "SCORED"
+        scored = joineddf[f'{self._status_key}_x'] == "SCORED"
         joineddf = joineddf[scored]
         # Sort by submission id, because submission ids the bigger
         # the submission id, the more recent the submission
