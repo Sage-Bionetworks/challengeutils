@@ -146,4 +146,5 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         """Joins, filters and annotates queue1"""
         joined_leaderboarddf = self.join(**self.kwargs)
         filtered_leaderboarddf = self.filter(joined_leaderboarddf)
+        print(f'Annotating {", ".join(filtered_leaderboarddf["objectId_x"])}')
         self.annotate(filtered_leaderboarddf)
