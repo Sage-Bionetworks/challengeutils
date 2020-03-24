@@ -125,12 +125,13 @@ def command_set_evaluation_quota(syn, args):
     """Sets the evaluation quota on existing evaluation queues.
 
     >>> challengeutils setevalquota 12345 \
-                                    --round-start '2020-02-21T17:00:00' \
-                                    --round-end '2020-02-23T17:00:00' \
+                                    --round-start 2020-02-21T17:00:00 \
+                                    --round-end 2020-02-23T17:00:00 \
                                     --num-rounds 2 \
                                     --sub-limit 3
+
     """
-    evaluation_queue.set_evaluation_quota(syn, args.evaluation_id,
+    evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
                                           round_start=args.round_start,
                                           round_end=args.round_end,
                                           number_of_rounds=args.num_rounds,
