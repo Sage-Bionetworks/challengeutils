@@ -128,11 +128,11 @@ def command_set_evaluation_quota(syn, args):
     round_duration and number_of_rounds must be defined for the
     time limits to work.  submission_limit will work without number_of_rounds.
 
-    >>> challengeutils setevalquota 12345 \
-                                    --round-start 2020-02-21T17:00:00 \
-                                    --round-end 2020-02-23T17:00:00 \
-                                    --num-rounds 2 \
-                                    --sub-limit 3
+    >>> challengeutils set-evaluation-quota 12345 \
+                                            --round-start 2020-02-21T17:00:00 \
+                                            --round-end 2020-02-23T17:00:00 \
+                                            --num-rounds 2 \
+                                            --sub-limit 3
 
     """
     print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
