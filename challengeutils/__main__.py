@@ -129,11 +129,11 @@ def command_set_evaluation_quota(syn, args):
     round_duration and number_of_rounds must be defined for the
     time limits to work.  submission_limit will work without number_of_rounds.
 
-    >>> challengeutils set-evaluation-quota 12345 \
-                                            --round-start 2020-02-21T17:00:00 \
-                                            --round-end 2020-02-23T17:00:00 \
-                                            --num-rounds 2 \
-                                            --sub-limit 3
+    >>> challengeutils setevaluationquota 12345 \
+                                          --round_start 2020-02-21T17:00:00 \
+                                          --round_end 2020-02-23T17:00:00 \
+                                          --num_rounds 2 \
+                                          --sub_limit 3
 
     """
     print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
@@ -484,7 +484,7 @@ def build_parser():
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
 
     parser_set_quota = subparsers.add_parser(
-        'set-evaluation-quota',
+        'setevaluationquota',
         help='Sets the quota on an existing evaluation queue')
 
     parser_set_quota.add_argument(
@@ -492,7 +492,7 @@ def build_parser():
         type=str,
         help='Synapse evaluation queue id')
     parser_set_quota.add_argument(
-        "--round-start",
+        "--round_start",
         type=str,
         help='Start of round (local military time) in YEAR-MM-DDTHH:MM:SS '
              'format (ie. 2020-02-21T17:00:00)')
@@ -500,23 +500,23 @@ def build_parser():
     group = parser_set_quota.add_mutually_exclusive_group(required=False)
 
     group.add_argument(
-        "--round-end",
+        "--round_end",
         type=str,
         help='End of round (local military time) in YEAR-MM-DDTHH:MM:SS '
              'format (ie. 2020-02-21T17:00:00)')
 
     group.add_argument(
-        "--round-duration",
+        "--round_duration",
         type=int,
         help='Round duration in milliseconds')
 
     parser_set_quota.add_argument(
-        "--num-rounds",
+        "--num_rounds",
         type=int,
         help='Number of rounds (must set for time related quota to work)')
 
     parser_set_quota.add_argument(
-        "--sub-limit",
+        "--sub_limit",
         type=int,
         help='Number of submissions allowed per team')
 
