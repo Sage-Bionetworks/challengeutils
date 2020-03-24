@@ -9,12 +9,13 @@ import synapseclient
 from synapseclient.retry import _with_retry
 
 from . import createchallenge
+from . import download_current_lead_submission as dl_cur
+from . import evaluation_queue
+from . import helpers
 from . import mirrorwiki
+from . import permissions
 from . import utils
 from . import writeup_attacher
-from . import permissions
-from . import download_current_lead_submission as dl_cur
-from . import helpers
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -119,6 +120,28 @@ def command_set_evaluation_acl(syn, args):
     permissions.set_evaluation_permissions(syn, args.evaluationid,
                                            principalid=args.principalid,
                                            permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
+
+
+def command_set_evaluation_quota(syn, args):
+    """Sets the evaluation quota on existing evaluation queues.
+    This WILL erase any old quota you had previously set.
+    Note - round_start must be specified with either round_end or
+    round_duration and number_of_rounds must be defined for the
+    time limits to work.  submission_limit will work without number_of_rounds.
+
+    >>> challengeutils setevaluationquota 12345 \
+                                          --round_start 2020-02-21T17:00:00 \
+                                          --round_end 2020-02-23T17:00:00 \
+                                          --num_rounds 2 \
+                                          --sub_limit 3
+
+    """
+    print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
+                                                round_start=args.round_start,
+                                                round_end=args.round_end,
+                                                number_of_rounds=args.num_rounds,  # noqa pylint: disable=line-too-long
+                                                submission_limit=args.sub_limit,  # noqa pylint: disable=line-too-long
+                                                round_duration=args.round_duration))  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -445,7 +468,6 @@ def build_parser():
 
     parser_send_email.set_defaults(func=command_send_email)
 
-
     parser_kill_docker = subparsers.add_parser(
         'killdockeroverquota',
         help='Kill Docker submissions over the quota')
@@ -460,6 +482,47 @@ def build_parser():
         type=int,
         help="Time quota submission has to run in milliseconds")
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+
+    parser_set_quota = subparsers.add_parser(
+        'setevaluationquota',
+        help='Sets the quota on an existing evaluation queue. '
+             'This WILL erase any old quota you had previously set if no '
+             'optional parameters are given')
+
+    parser_set_quota.add_argument(
+        "evaluationid",
+        type=str,
+        help='Synapse evaluation queue id')
+    parser_set_quota.add_argument(
+        "--round_start",
+        type=str,
+        help='Start of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group = parser_set_quota.add_mutually_exclusive_group(required=False)
+
+    group.add_argument(
+        "--round_end",
+        type=str,
+        help='End of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group.add_argument(
+        "--round_duration",
+        type=int,
+        help='Round duration in milliseconds')
+
+    parser_set_quota.add_argument(
+        "--num_rounds",
+        type=int,
+        help='Number of rounds (must set for time related quota to work)')
+
+    parser_set_quota.add_argument(
+        "--sub_limit",
+        type=int,
+        help='Number of submissions allowed per team')
+
+    parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     return parser
 
