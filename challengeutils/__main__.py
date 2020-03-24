@@ -123,6 +123,10 @@ def command_set_evaluation_acl(syn, args):
 
 def command_set_evaluation_quota(syn, args):
     """Sets the evaluation quota on existing evaluation queues.
+    This WILL erase any old quota you had previously set.
+    Note - round_start must be specified with either round_end or
+    round_duration and number_of_rounds must be defined for the
+    time limits to work.  submission_limit will work without number_of_rounds.
 
     >>> challengeutils setevalquota 12345 \
                                     --round-start 2020-02-21T17:00:00 \
