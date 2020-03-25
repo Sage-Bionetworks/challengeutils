@@ -155,6 +155,11 @@ def command_download_submission(syn, args):
 
 
 def command_annotate_submission_with_json(syn, args):
+    """Annotate a Synapse submission with a json file.  This function
+    is used by a ChallengeWorkflowTemplates tool.
+
+    >>> challengeutils annotatesubmission 12345 annotations.json --to_public
+    """
     # By default is_private is True, so the cli is to_public as False
     # Which would be that is_private is True.
     is_private = not args.to_public
