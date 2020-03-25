@@ -123,4 +123,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore sphinx
+_build
+_static
+_templates
+
+# Ignore Rproj
 .Rproj.user

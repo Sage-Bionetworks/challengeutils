@@ -1,33 +1,61 @@
+"""challengeutils command line client"""
 import argparse
 import json
 import logging
 import os
+
 import pandas as pd
 import synapseclient
 from synapseclient.retry import _with_retry
+
 from . import createchallenge
+from . import download_current_lead_submission as dl_cur
+from . import evaluation_queue
+from . import helpers
 from . import mirrorwiki
+from . import permissions
 from . import utils
 from . import writeup_attacher
-from . import permissions
-from . import download_current_lead_submission as dl_cur
-from . import helpers
 from .__version__ import __version__
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
-    mirrorwiki.mirrorwiki(
-        syn, args.entityid, args.destinationid, args.forceupdate)
+    """For all challenges, you should be editting the staging site and then
+    using the merge script to mirror staging to live site.  The script will
+    compare wiki titles between the staging and live site and update the live
+    site with respect to what has changed on the staging site.  Note, this is
+    different from copying the wikis. To copy the wikis, please look at
+    synapseutils.
+
+    >>> challengeutils mirrorwiki syn12345 syn23456
+    """
+    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
+                          args.forceupdate)
 
 
 def command_createchallenge(syn, args):
+    """Creates a challenge space in Synapse.  This pulls from a standard
+    DREAM template and creates the Projects and Teams that you will need
+    for a challenge.  For more information on all the components this function
+    creates, please head to `challenge administration <https://docs.synapse.org/articles/challenge_administration.html>`_.
+
+    >>> challengeutils createchallenge "Challenge Name Here"
+    """
     createchallenge.main(syn, args.challengename, args.livesiteid)
 
 
 def command_query(syn, args):
-    """Command line convenience function to call evaluation queue query"""
+    """Command line convenience function to call evaluation queue query
+    Evaluation queues offer a separate query service from the rest of Synapse.
+    This query function will print the leaderboard in a csv format in standard
+    out.  Proceed `here <https://docs.synapse.org/rest/GET/evaluation/submission/query.html>`_
+    to learn more about this query service.
+
+    >>> challengeutils query "select objectId, status from evaluation_12345"
+    """
     querydf = pd.DataFrame(list(utils.evaluation_queue_query(
         syn, args.uri, args.limit, args.offset)))
     if args.render:
@@ -48,26 +76,72 @@ def command_query(syn, args):
 
 
 def command_change_status(syn, args):
+    """Each submission has a status, this is a convenience function to change
+    the status of a submission.  Here is a list of `valid statuses <https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html>`_
+
+    >>> challengeutils changestatus 1234545 INVALID
+    """
     print(utils.change_submission_status(syn, args.submissionid, args.status))
 
 
 def command_writeup_attach(syn, args):
-    writeup_attacher.attach_writeup(
-        syn, args.writeupqueue, args.submissionqueue)
+    """Most challenges require participants to submit a writeup.  Using the
+    new archive-challenge-project-tool system of receiving writeups, this is
+    a convenience function to merge the writeup and archived write up Synapse
+    ids to the main challenge queue
+
+    >>> challengeutils attachwriteup writeupid submissionqueueid
+    """
+    writeup_attacher.attach_writeup(syn, args.writeupqueue,
+                                    args.submissionqueue)
 
 
 def command_set_entity_acl(syn, args):
-    permissions.set_entity_permissions(
-        syn, args.entityid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on entities for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setentityacl syn123545 user_or_team view
+    """
+    permissions.set_entity_permissions(syn, args.entityid,
+                                       principalid=args.principalid,
+                                       permission_level=args.permission_level)
 
 
 def command_set_evaluation_acl(syn, args):
-    permissions.set_evaluation_permissions(
-        syn, args.evaluationid,
-        principalid=args.principalid,
-        permission_level=args.permission_level)
+    """
+    Sets permissions on queues for users or teams.  By default the user is
+    public if there is no user or team specified and the default permission
+    is view.
+
+    >>> challengeutils setevaluationacl 12345 user_or_team score
+    """
+    permissions.set_evaluation_permissions(syn, args.evaluationid,
+                                           principalid=args.principalid,
+                                           permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
+
+
+def command_set_evaluation_quota(syn, args):
+    """Sets the evaluation quota on existing evaluation queues.
+    This WILL erase any old quota you had previously set.
+    Note - round_start must be specified with either round_end or
+    round_duration and number_of_rounds must be defined for the
+    time limits to work.  submission_limit will work without number_of_rounds.
+
+    >>> challengeutils setevaluationquota 12345 \
+                                          --round_start 2020-02-21T17:00:00 \
+                                          --round_end 2020-02-23T17:00:00 \
+                                          --num_rounds 2 \
+                                          --sub_limit 3
+
+    """
+    print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
+                                                round_start=args.round_start,
+                                                round_end=args.round_end,
+                                                number_of_rounds=args.num_rounds,  # noqa pylint: disable=line-too-long
+                                                submission_limit=args.sub_limit,  # noqa pylint: disable=line-too-long
+                                                round_duration=args.round_duration))  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
@@ -80,12 +154,16 @@ def command_dl_cur_lead_sub(syn, args):
 
 
 def command_list_evaluations(syn, args):
+    """Lists evaluation queues of a project
+
+    >>> challengeutils listevaluations projectid
+    """
     utils.list_evaluations(syn, args.projectid)
 
 
 def command_download_submission(syn, args):
-    submission_dict = utils.download_submission(
-        syn, args.submissionid, download_location=args.download_location)
+    submission_dict = utils.download_submission(syn, args.submissionid,
+                                                download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -100,10 +178,18 @@ def command_download_submission(syn, args):
 
 
 def command_annotate_submission_with_json(syn, args):
+    """Annotate a Synapse submission with a json file.  This function
+    is used by a ChallengeWorkflowTemplates tool.
+
+    >>> challengeutils annotatesubmission 12345 annotations.json --to_public
+    """
+    # By default is_private is True, so the cli is to_public as False
+    # Which would be that is_private is True.
+    is_private = not args.to_public
     _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
                                                             args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                            to_public=args.to_public,  # noqa pylint: disable=line-too-long
-                                                            force_change_annotation_acl=args.force_change_annotation_acl),  # noqa pylint: disable=line-too-long
+                                                            is_private=is_private,  # noqa pylint: disable=line-too-long
+                                                            force=args.force),  # noqa pylint: disable=line-too-long
                 wait=3,
                 retries=10,
                 retry_status_codes=[412, 429, 500, 502, 503, 504],
@@ -121,10 +207,13 @@ def command_send_email(syn, args):
 
 
 def command_kill_docker_over_quota(syn, args):
-    '''
-    Command line helper to kill docker submissions
-    over the quota
-    '''
+    """
+    Sets an annotation on Synapse Docker submissions such that it will
+    be terminated by the orchestrator. Usually applies to submissions
+    that have been running for longer than the alloted time.
+
+    >>> challengeutils killdockeroverquota evaluationid quota
+    """
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 
@@ -354,7 +443,7 @@ def build_parser():
              "administrator(s), so change them to be public",
         action='store_true')
     parser_annotate_sub.add_argument(
-        "-f", "--force_change_annotation_acl",
+        "-f", "--force",
         help="Ability to update annotations if the key has "
              "different ACLs, warning will occur if this parameter "
              "isn't specified and the same key has different ACLs",
@@ -387,7 +476,6 @@ def build_parser():
 
     parser_send_email.set_defaults(func=command_send_email)
 
-
     parser_kill_docker = subparsers.add_parser(
         'killdockeroverquota',
         help='Kill Docker submissions over the quota')
@@ -402,6 +490,47 @@ def build_parser():
         type=int,
         help="Time quota submission has to run in milliseconds")
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+
+    parser_set_quota = subparsers.add_parser(
+        'setevaluationquota',
+        help='Sets the quota on an existing evaluation queue. '
+             'This WILL erase any old quota you had previously set if no '
+             'optional parameters are given')
+
+    parser_set_quota.add_argument(
+        "evaluationid",
+        type=str,
+        help='Synapse evaluation queue id')
+    parser_set_quota.add_argument(
+        "--round_start",
+        type=str,
+        help='Start of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group = parser_set_quota.add_mutually_exclusive_group(required=False)
+
+    group.add_argument(
+        "--round_end",
+        type=str,
+        help='End of round (local military time) in YEAR-MM-DDTHH:MM:SS '
+             'format (ie. 2020-02-21T17:00:00)')
+
+    group.add_argument(
+        "--round_duration",
+        type=int,
+        help='Round duration in milliseconds')
+
+    parser_set_quota.add_argument(
+        "--num_rounds",
+        type=int,
+        help='Number of rounds (must set for time related quota to work)')
+
+    parser_set_quota.add_argument(
+        "--sub_limit",
+        type=int,
+        help='Number of submissions allowed per team')
+
+    parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     return parser
 
