@@ -15,7 +15,7 @@ from . import helpers
 from . import mirrorwiki
 from . import permissions
 from . import utils
-from . import writeup_attacher
+from . import writeups
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -92,8 +92,26 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    writeup_attacher.attach_writeup(syn, args.writeupqueue,
-                                    args.submissionqueue)
+    writeups.attach_writeup(syn, args.writeupqueue,
+                            args.submissionqueue)
+
+
+def command_validate_project(syn, args):
+    """
+    Validate a Project submission, e.g. writeup.
+
+    >>> challengeutils validateproject 9876543 --challenge syn123 \
+                                               [--public] [--admin bob]
+    """
+    results = writeups.validate_project(
+        syn, args.submission, args.challenge, args.public, args.admin)
+
+    if args.output:
+        with open(args.output, "w") as out:
+            json.dump(results, out)
+        logger.info(args.output)
+    else:
+        logger.info(results.get('errors_found'))
 
 
 def command_set_entity_acl(syn, args):
@@ -163,7 +181,7 @@ def command_list_evaluations(syn, args):
 
 def command_download_submission(syn, args):
     submission_dict = utils.download_submission(syn, args.submissionid,
-                                                download_location=args.download_location) # noqa pylint: disable=line-too-long
+                                                download_location=args.download_location)  # noqa pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -531,6 +549,33 @@ def build_parser():
         help='Number of submissions allowed per team')
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
+
+    parser_validate_project = subparsers.add_parser(
+        'validateproject',
+        help="Validate a Project submission"
+    )
+    parser_validate_project.add_argument(
+        "submissionid",
+        type=int,
+        help="Submission ID",
+        required=True
+    )
+    parser_validate_project.add_argument(
+        "challengewiki",
+        type=str,
+        help="Synapse ID of Challenge wiki",
+        required=True
+    )
+    parser_validate_project.add_argument(
+        "-p", "--public",
+        help="Check that the Project is shared with the public",
+        action="store_true"
+    )
+    parser_validate_project.add_argument(
+        "-a", "--admin",
+        help="Check that the Project is shared with this admin username",
+    )
+    parser_validate_project.set_defaults(func=command_validate_project)
 
     return parser
 
