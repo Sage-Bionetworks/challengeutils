@@ -100,11 +100,12 @@ def command_validate_project(syn, args):
     """
     Validate a Project submission, e.g. writeup.
 
-    >>> challengeutils validateproject 9876543 --challenge syn123 \
-                                               [--public] [--admin bob]
+    >>> challengeutils validateproject 9876543 syn123 \
+                                       [--public]
+                                       [--admin bob]
     """
     results = writeups.validate_project(
-        syn, args.submission, args.challenge, args.public, args.admin)
+        syn, args.submission, args.challengewiki, args.public, args.admin)
 
     if args.output:
         with open(args.output, "w") as out:
@@ -575,6 +576,10 @@ def build_parser():
         "-a", "--admin",
         help="Check that the Project is shared with this admin username",
     )
+    parser_validate_project.add_argument(
+        "--output",
+        type=str,
+        help='Output json results into a file')
     parser_validate_project.set_defaults(func=command_validate_project)
 
     return parser
