@@ -1,9 +1,11 @@
 import re
+import time
 
 import pandas as pd
-from synapseclient import AUTHENTICATED_USERS, entity
+from synapseclient import AUTHENTICATED_USERS, entity, Project
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
+import synapseutils
 from . import utils
 from . import permissions
 
@@ -83,16 +85,16 @@ def validate_project(syn, submission, challenge, public=True, admin=None):
     try:
         if public:
             auth_perms = syn.getPermissions(writeup_id, AUTHENTICATED_USERS)
-            if auth_perms != permissions.DOWNLOAD:
+            if "READ" not in auth_perms or "DOWNLOAD" not in auth_perms:
                 errors.append("'Can download' permissions should be " +
                               "enabled for other Synapse users.")
             public_perms = syn.getPermissions(writeup_id)
-            if public_perms != permissions.VIEW:
+            if "READ" not in public_perms:
                 errors.append("'Can view' permissions should be enabled " +
                               "for the public.")
         if admin is not None:
             admin_perms = syn.getPermissions(writeup_id, admin)
-            if admin_perms != permissions.DOWNLOAD:
+            if "READ" not in admin_perms or "DOWNLOAD" not in admin_perms:
                 errors.append("'Can download' permissions should be " +
                               f"enabled for the admin user: {admin}")
     except SynapseHTTPError as e:
@@ -101,3 +103,21 @@ def validate_project(syn, submission, challenge, public=True, admin=None):
                 "Submission is private; please update its sharing setting.")
 
     return {'errors_found': errors}
+
+
+def archive_project(syn, submission, admin):
+    """
+    Make a copy (archive) of the Project submission.
+
+    Args:
+        submission - submission ID
+        admin - user who will own the archived project
+    """
+    writeup = syn.getSubmission(submission)
+    name = writeup.name.replace("&", "+").replace("'", "")
+    curr_time = int(round(time.time() * 1000))
+    new_project = Project(f"Archived {name} {curr_time} {writeup.id} " +
+                          f"{writeup.entityId}")
+    archive = syn.store(new_project)
+    permissions.set_entity_permissions(syn, archive, admin, "admin")
+    synapseutils.copy(syn, writeup.entityId, archive.id)

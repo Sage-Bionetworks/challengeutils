@@ -105,14 +105,23 @@ def command_validate_project(syn, args):
                                        [--admin bob]
     """
     results = writeups.validate_project(
-        syn, args.submission, args.challengewiki, args.public, args.admin)
+        syn, args.submissionid, args.challengewiki, args.public, args.admin)
 
     if args.output:
         with open(args.output, "w") as out:
             json.dump(results, out)
         logger.info(args.output)
     else:
-        logger.info(results.get('errors_found'))
+        logger.info(results)
+
+
+def command_archive_project(syn, args):
+    """
+    Archive a Project submission by creating a copy of it.
+
+    >>> challengeutils archiveproject 9876543
+    """
+    writeups.archive_project(syn, args.submissionid, args.admin)
 
 
 def command_set_entity_acl(syn, args):
@@ -559,13 +568,11 @@ def build_parser():
         "submissionid",
         type=int,
         help="Submission ID",
-        required=True
     )
     parser_validate_project.add_argument(
         "challengewiki",
         type=str,
         help="Synapse ID of Challenge wiki",
-        required=True
     )
     parser_validate_project.add_argument(
         "-p", "--public",
@@ -581,6 +588,21 @@ def build_parser():
         type=str,
         help='Output json results into a file')
     parser_validate_project.set_defaults(func=command_validate_project)
+
+    parser_archive_project = subparsers.add_parser(
+        'archiveproject',
+        help="Archive a Project (by copying)"
+    )
+    parser_archive_project.add_argument(
+        "submissionid",
+        type=int,
+        help="Submission ID"
+    )
+    parser_archive_project.add_argument(
+        "admin",
+        help="Admin username/ID"
+    )
+    parser_archive_project.set_defaults(func=command_archive_project)
 
     return parser
 
