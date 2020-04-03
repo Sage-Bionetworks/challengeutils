@@ -1,7 +1,11 @@
 import logging
 import re
 import synapseutils
-from synapseclient.exceptions import SynapseHTTPError
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

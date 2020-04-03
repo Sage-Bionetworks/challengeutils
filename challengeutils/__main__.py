@@ -6,7 +6,12 @@ import os
 
 import pandas as pd
 import synapseclient
-from synapseclient.retry import _with_retry
+
+try:
+    from synapseclient.core.retry import _with_retry
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.retry import _with_retry
 
 from . import createchallenge
 from . import download_current_lead_submission as dl_cur
