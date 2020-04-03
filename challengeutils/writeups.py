@@ -70,37 +70,29 @@ def validate_project(syn, submission, challenge, public=True, admin=None):
         admin - (optional) Project should be shared with this username/ID
     """
     writeup = syn.getSubmission(submission)
-    writeup_id = writeup.entityId
     errors = []
 
-    if not isinstance(writeup.entity, entity.Project):
-        ent_type = re.search(
-            r"entity\.(.*?)'", str(type(writeup.entity))).group(1)
-        errors.append(
-            f"Submission should be a Synapse project, not a {ent_type}.")
+    type_error = _validate_ent_type(writeup)
+    if type_error:
+        errors.append(type_error)
 
-    if writeup.entityId == challenge:
-        errors.append("Submission should not be the Challenge site.")
+    contents_error = _validate_project_contents(writeup, challenge)
+    if contents_error:
+        errors.append(contents_error)
 
     try:
         if public:
-            auth_perms = syn.getPermissions(writeup_id, AUTHENTICATED_USERS)
-            if "READ" not in auth_perms or "DOWNLOAD" not in auth_perms:
-                errors.append("'Can download' permissions should be " +
-                              "enabled for other Synapse users.")
-            public_perms = syn.getPermissions(writeup_id)
-            if "READ" not in public_perms:
-                errors.append("'Can view' permissions should be enabled " +
-                              "for the public.")
+            errors.extend(_validate_public_permissions(syn, writeup))
+
         if admin is not None:
-            admin_perms = syn.getPermissions(writeup_id, admin)
-            if "READ" not in admin_perms or "DOWNLOAD" not in admin_perms:
-                errors.append("'Can download' permissions should be " +
-                              f"enabled for the admin user: {admin}")
+            admin_error = _validate_admin_permissions(syn, writeup, admin)
+            if admin_error:
+                errors.append(admin_error)
+
     except SynapseHTTPError as e:
         if e.response.status_code == 403:
             errors.append(
-                "Submission is private; please update its sharing setting.")
+                "Submission is private; please update its sharing settings.")
 
     return {'errors_found': errors}
 
@@ -121,3 +113,45 @@ def archive_project(syn, submission, admin):
     archive = syn.store(new_project)
     permissions.set_entity_permissions(syn, archive, admin, "admin")
     synapseutils.copy(syn, writeup.entityId, archive.id)
+
+
+def _validate_ent_type(ent):
+    """Helper function: check entity type."""
+
+    if not isinstance(ent.entity, entity.Project):
+        ent_type = re.search(
+            r"entity\.(.*?)'", str(type(ent.entity))).group(1)
+        return f"Submission should be a Synapse project, not a {ent_type}."
+    return ""
+
+
+def _validate_project_contents(proj, challenge):
+    """Helper function: check that submission is not the Challenge site."""
+
+    return "Submission should not be the Challenge site." \
+        if proj.entityId == challenge else ""
+
+
+def _validate_public_permissions(syn, proj):
+    """Helper function: ensure project is shared with the public."""
+
+    errors = []
+    auth_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
+    if "READ" not in auth_perms or "DOWNLOAD" not in auth_perms:
+        errors.append("'Can download' permissions should be enabled for " +
+                      "other Synapse users.")
+    public_perms = syn.getPermissions(proj.entityId)
+    if "READ" not in public_perms:
+        errors.append("'Can view' permissions should be enabled for the " +
+                      "public.")
+    return errors
+
+
+def _validate_admin_permissions(syn, proj, admin):
+    """Helper function: ensure project is shared with the given admin."""
+
+    admin_perms = syn.getPermissions(proj.entityId, admin)
+    if "READ" not in admin_perms or "DOWNLOAD" not in admin_perms:
+        return "'Can download' permissions should be enabled for " + \
+            f"the admin user: {admin}"
+    return ""
