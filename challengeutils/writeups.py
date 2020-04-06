@@ -118,11 +118,15 @@ def archive_project(syn, submission, admin):
 def _validate_ent_type(ent):
     """Helper function: check entity type."""
 
-    if not isinstance(ent.entity, entity.Project):
-        ent_type = re.search(
-            r"entity\.(.*?)'", str(type(ent.entity))).group(1)
-        return f"Submission should be a Synapse project, not a {ent_type}."
-    return ""
+    try:
+        if not isinstance(ent.entity, entity.Project):
+            ent_type = re.search(
+                r"entity\.(.*?)'", str(type(ent.entity))).group(1)
+            return f"Submission should be a Synapse project, not a {ent_type}."
+    except AttributeError:
+        return "Unknown entity type; please submit a Synapse project."
+    else:
+        return ""
 
 
 def _validate_project_contents(proj, challenge):
