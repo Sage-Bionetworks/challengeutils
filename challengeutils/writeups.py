@@ -94,7 +94,8 @@ def validate_project(syn, submission, challenge, public=True, admin=None):
             errors.append(
                 "Submission is private; please update its sharing settings.")
 
-    return {'errors_found': errors}
+    status = "INVALID" if errors else "VALIDATED"
+    return {'errors_found': errors, "writeup_status": status}
 
 
 def archive_project(syn, submission, admin):
