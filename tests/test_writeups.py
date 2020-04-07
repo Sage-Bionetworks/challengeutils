@@ -12,6 +12,23 @@ PROJ = mock.create_autospec(synapseclient.evaluation.Submission,
                             entity=Mock(spec=synapseclient.Project))
 
 
+# test that command works as expected
+def test_command_success():
+    with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
+            patch.object(SYN, "getPermissions") as patch_perms:
+        results = writeups.validate_project(SYN, patch_sub, "syn000")
+        assert results.get('writeup_status') == "VALIDATED"
+        assert not patch_perms.called
+
+
+def test_command_fail():
+    with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
+            patch.object(SYN, "getPermissions") as patch_perms:
+        results = writeups.validate_project(SYN, patch_sub, "syn123")
+        assert results.get('writeup_status') == "INVALID"
+        assert not patch_perms.called
+
+
 # test that only Project entity type is accepted
 def test_submission_type_project():
     assert writeups._validate_ent_type(PROJ) == ""
@@ -36,7 +53,7 @@ def test_submmission_type_unknown():
 # test that Challenge project is not accepted
 def test_validate_nonchallenge_submission():
     assert writeups._validate_project_contents(
-        PROJ, "syn321") == ""
+        PROJ, "syn000") == ""
 
 
 def test_validate_challenge_submission():
