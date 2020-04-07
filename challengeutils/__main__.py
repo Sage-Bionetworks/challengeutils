@@ -101,8 +101,9 @@ def command_validate_project(syn, args):
     Validate a Project submission, e.g. writeup.
 
     >>> challengeutils validateproject 9876543 syn123 \
-                                       [--public]
-                                       [--admin bob]
+                                       [--public] \
+                                       [--admin bob] \
+                                       [--output foo.txt]
     """
     results = writeups.validate_project(
         syn, args.submissionid, args.challengewiki, args.public, args.admin)

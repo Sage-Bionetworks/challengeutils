@@ -59,14 +59,14 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
         lambda row: append_writeup_to_main_submission(row, syn), axis=1)
 
 
-def validate_project(syn, submission, challenge, public=True, admin=None):
+def validate_project(syn, submission, challenge, public=False, admin=None):
     """
     Validate a Project submission; errors found are returned in a dict.
 
     Args:
         submission - submission ID
         challenge - Synapse ID of Challenge wiki
-        public - Project should be public (default: True)
+        public - Project should be public (default: False)
         admin - (optional) Project should be shared with this username/ID
     """
     writeup = syn.getSubmission(submission)
