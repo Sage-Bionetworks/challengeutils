@@ -92,6 +92,30 @@ class TestDockerRepository:
             patch_get.assert_called_once_with(self.request_url,
                                               headers=self.auth_headers)
 
+    def test_validate_docker(self):
+        """Tests validate docker class"""
+        response = Mock()
+        with patch.object(dockertools, 'DockerRepository',
+                          return_value=self.docker_cls) as patch_cls,\
+             patch.object(self.docker_cls, "get",
+                          return_value=response)  as patch_resp,\
+             patch.object(dockertools,
+                         "check_docker_exists") as patch_exists,\
+             patch.object(dockertools, "check_docker_size") as patch_size:
+            valid = dockertools.validate_docker(docker_repo="testme",
+                                                docker_digest="willthiswork",
+                                                index_endpoint=ENDPOINT_MAPPING["synapse"],
+                                                username=self.username,
+                                                password=self.password)
+            assert valid
+            patch_cls.assert_called_once_with(docker_repo="testme",
+                                              docker_digest="willthiswork",
+                                              index_endpoint=ENDPOINT_MAPPING["synapse"])
+            patch_resp.assert_called_once_with(username=self.username,
+                                               password=self.password)
+            patch_exists.assert_called_once_with(response)
+            patch_size.assert_called_once_with(response)
+
 
 def test_check_docker_exists_noerror():
     """Checks that the docker image exists"""
