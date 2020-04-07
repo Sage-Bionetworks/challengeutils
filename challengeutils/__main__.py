@@ -20,14 +20,7 @@ from . import helpers
 from . import mirrorwiki
 from . import permissions
 from . import utils
-<<<<<<< HEAD
 from . import project_submission
-from . import permissions
-from . import download_current_lead_submission as dl_cur
-from . import helpers
-=======
-from . import writeup_attacher
->>>>>>> develop
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
