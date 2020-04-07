@@ -68,6 +68,11 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
         challenge - Synapse ID of Challenge wiki
         public - Project should be public (default: False)
         admin - (optional) Project should be shared with this username/ID
+    
+    Returns:
+        dict: errors_found: Error messages if any
+                writeup_status: True/False
+
     """
     writeup = syn.getSubmission(submission)
     errors = []
