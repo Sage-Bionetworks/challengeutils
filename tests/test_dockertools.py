@@ -1,6 +1,6 @@
-'''
-Test challengeutils.discussion functions
-'''
+"""Tests challengeutils.dockertool functions"""
+# pylint: disable=line-too-long
+
 import uuid
 
 from mock import Mock, patch
@@ -11,6 +11,8 @@ import synapseclient
 from challengeutils import dockertools
 from challengeutils.dockertools import (DockerRepository,
                                         ENDPOINT_MAPPING)
+
+SYN = synapseclient.Synapse()
 
 
 class TestDockerRepository:
@@ -32,6 +34,7 @@ class TestDockerRepository:
         assert str(self.docker_cls) == "testme@willthiswork"
 
     def test_get_request_url(self):
+        """Tests get request url"""
         url = self.docker_cls.get_request_url()
         assert url == self.request_url
 
@@ -100,7 +103,7 @@ class TestDockerRepository:
              patch.object(self.docker_cls, "get",
                           return_value=response)  as patch_resp,\
              patch.object(dockertools,
-                         "check_docker_exists") as patch_exists,\
+                          "check_docker_exists") as patch_exists,\
              patch.object(dockertools, "check_docker_size") as patch_size:
             valid = dockertools.validate_docker(docker_repo="testme",
                                                 docker_digest="willthiswork",
@@ -149,3 +152,70 @@ def test_check_docker_size_toobig():
          pytest.raises(ValueError,
                        match="Docker image must be less than a terabyte."):
         dockertools.check_docker_size(response)
+
+
+def test_validate_docker_submission_valid():
+    """Tests that True is returned when validate docker
+    submission is valid"""
+    config = Mock()
+    docker_repo = 'docker.synapse.org/syn1234/docker_repo'
+    docker_digest = 'sha123566'
+    username = str(uuid.uuid1())
+    password = str(uuid.uuid1())
+    docker_sub = synapseclient.Submission(evaluationId=1,
+                                          entityId=1,
+                                          versionNumber=2,
+                                          dockerRepositoryName=docker_repo,
+                                          dockerDigest=docker_digest)
+    with patch.object(SYN, "getConfigFile", return_value=config),\
+         patch.object(config, "items",
+                      return_value={'username': username,
+                                    'password': password}),\
+         patch.object(SYN, "getSubmission",
+                      return_value=docker_sub) as patch_get_sub,\
+         patch.object(dockertools, "validate_docker",
+                      return_value=True) as patch_validate:
+        valid = dockertools.validate_docker_submission(SYN, "123455")
+        patch_validate.assert_called_once_with(docker_repo="syn1234/docker_repo",
+                                               docker_digest=docker_digest,
+                                               index_endpoint=ENDPOINT_MAPPING['synapse'],
+                                               username=username,
+                                               password=password)
+        patch_get_sub.assert_called_once_with("123455")
+        assert valid
+
+
+def test_validate_docker_submission_nousername():
+    """Tests ValueError is thrown when no username or password is passed"""
+    config = Mock()
+    password = str(uuid.uuid1())
+    with patch.object(SYN, "getConfigFile", return_value=config),\
+         patch.object(config, "items",
+                      return_value={'username': None,
+                                    'password': password}),\
+         pytest.raises(ValueError,
+                       match='Synapse config file must have username and password'):
+        dockertools.validate_docker_submission(SYN, "123455")
+
+
+def test_validate_docker_submission_notdocker():
+    """Tests ValueError is thrown when submission is not docker submission"""
+    config = Mock()
+    docker_repo = 'docker.synapse.org/syn1234/docker_repo'
+    docker_digest = None
+    username = str(uuid.uuid1())
+    password = str(uuid.uuid1())
+    docker_sub = synapseclient.Submission(evaluationId=1,
+                                          entityId=1,
+                                          versionNumber=2,
+                                          dockerRepositoryName=docker_repo,
+                                          dockerDigest=docker_digest)
+    with patch.object(SYN, "getConfigFile", return_value=config),\
+         patch.object(config, "items",
+                      return_value={'username': username,
+                                    'password': password}),\
+         patch.object(SYN, "getSubmission",
+                      return_value=docker_sub),\
+         pytest.raises(ValueError,
+                       match='Submission is not a Docker submission'):
+        dockertools.validate_docker_submission(SYN, "123455")

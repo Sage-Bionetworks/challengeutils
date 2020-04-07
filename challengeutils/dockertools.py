@@ -160,16 +160,15 @@ def validate_docker_submission(syn, submissionid):
     # Uses synapse config path
     config = syn.getConfigFile(syn.configPath)
     authen = dict(config.items("authentication"))
-    if authen.get("username") is None and authen.get("password") is None:
-        raise ValueError('Config file must have username and password')
+    if authen.get("username") is None or authen.get("password") is None:
+        raise ValueError('Synapse config file must have username and password')
 
     docker_sub = syn.getSubmission(submissionid)
     docker_repository = docker_sub.get("dockerRepositoryName")
-
-    if docker_repository is None:
+    docker_digest = docker_sub.get("dockerDigest")
+    if docker_repository is None or docker_digest is None:
         raise ValueError('Submission is not a Docker submission')
     docker_repo = docker_repository.replace("docker.synapse.org/", "")
-    docker_digest = docker_sub.dockerDigest
 
     valid = validate_docker(docker_repo=docker_repo,
                             docker_digest=docker_digest,
