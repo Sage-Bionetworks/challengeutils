@@ -12,10 +12,11 @@ class JoinWriteupChallengeQueues(JoinFilterAnnotateQueues):
     def filter(self, joineddf):
         """Filters joined queues"""
         # Filter joined leaderboard
-        validated = joineddf[f'{self._status_key}_y'] == "VALIDATED"
-        joineddf = joineddf[validated]
-        scored = joineddf[f'{self._status_key}_x'] == "SCORED"
-        joineddf = joineddf[scored]
+        validated_idx = joineddf[f'{self._status_key}_y'] == "VALIDATED"
+        joineddf = joineddf[validated_idx]
+        scored_idx = joineddf[f'{self._status_key}_x'] == "SCORED"
+        joineddf = joineddf[scored_idx]
+
         # Sort by submission id, because submission ids the bigger
         # the submission id, the more recent the submission
         joineddf = joineddf.sort_values("objectId_y", ascending=False)
