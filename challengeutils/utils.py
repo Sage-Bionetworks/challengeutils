@@ -10,7 +10,13 @@ import urllib
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
-from synapseclient.exceptions import SynapseHTTPError
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
+    from synapseclient.utils import id_of
 import synapseutils
 
 from synapseservices.challenge import Challenge
@@ -191,7 +197,7 @@ def get_challenge(syn, entity):
     Returns:
         Challenge object
     """
-    synid = synapseclient.utils.id_of(entity)
+    synid = id_of(entity)
     challenge = syn.restGET("/entity/%s/challenge" % synid)
     challenge_obj = Challenge(**challenge)
     return challenge_obj
@@ -211,8 +217,8 @@ def create_challenge(syn, entity, team):
     Returns:
         Challenge object
     """
-    synid = synapseclient.utils.id_of(entity)
-    teamid = synapseclient.utils.id_of(team)
+    synid = id_of(entity)
+    teamid = id_of(team)
     challenge_object = {'participantTeamId': teamid,
                         'projectId': synid}
     challenge = syn.restPOST('/challenge', json.dumps(challenge_object))

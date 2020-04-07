@@ -13,7 +13,11 @@ from mock import patch
 import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
-from synapseclient.exceptions import SynapseHTTPError
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+except ModuleNotFoundError:
+    # support synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
 
 import challengeutils.utils
