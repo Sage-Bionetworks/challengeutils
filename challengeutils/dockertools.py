@@ -95,11 +95,11 @@ def check_docker_exists(docker_resp: 'Response'):
         docker_resp: Docker response
 
     Raises:
-        ValueError: If docker image + sha doesn't exist
+        ValueError: If docker image and sha doesn't exist
 
     """
     if docker_resp.status_code != 200:
-        raise ValueError("Docker image + sha digest must exist. ")
+        raise ValueError("Docker image and sha digest must exist.")
 
 
 def check_docker_size(docker_resp: 'Response', size: int = 1000):
@@ -116,7 +116,7 @@ def check_docker_size(docker_resp: 'Response', size: int = 1000):
     docker_size = sum([layer['size']
                        for layer in docker_resp.json()['layers']])
     if docker_size/1000000000.0 >= size:
-        raise ValueError("Docker container must be less than a terabyte")
+        raise ValueError("Docker image must be less than a terabyte.")
 
 
 def validate_docker(docker_repo: str, docker_digest: str, index_endpoint: str,
