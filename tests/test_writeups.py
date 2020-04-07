@@ -14,6 +14,8 @@ PROJ = mock.create_autospec(synapseclient.evaluation.Submission,
 
 # test that command works as expected
 def test_command_success():
+    """Valid submission; status should be VALIDATED."""
+
     with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
             patch.object(SYN, "getPermissions") as patch_perms:
         results = writeups.validate_project(SYN, patch_sub, "syn000")
@@ -22,6 +24,8 @@ def test_command_success():
 
 
 def test_command_fail():
+    """Invalid submission; status should be INVALID."""
+
     with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
             patch.object(SYN, "getPermissions") as patch_perms:
         results = writeups.validate_project(SYN, patch_sub, "syn123")
@@ -31,10 +35,14 @@ def test_command_fail():
 
 # test that only Project entity type is accepted
 def test_submission_type_project():
+    """Submission is a Project; no errors expected."""
+
     assert writeups._validate_ent_type(PROJ) == ""
 
 
 def test_submission_type_nonproject():
+    """Submission is a File; error expected."""
+
     file = mock.create_autospec(synapseclient.evaluation.Submission,
                                 entityId="syn123",
                                 entity=synapseclient.File(path="...", parent="..."))
@@ -43,6 +51,8 @@ def test_submission_type_nonproject():
 
 
 def test_submmission_type_unknown():
+    """Submission is not a Synapse entity; error expected."""
+
     unknown = mock.create_autospec(synapseclient.evaluation.Submission,
                                    entityId="syn123",
                                    entity=Mock())
@@ -51,32 +61,47 @@ def test_submmission_type_unknown():
 
 
 # test that Challenge project is not accepted
-def test_validate_nonchallenge_submission():
-    assert writeups._validate_project_contents(
-        PROJ, "syn000") == ""
+def test_nonchallenge_submission():
+    """Submission is not the Challenge site; no errors expected."""
+
+    assert writeups._validate_project_contents(PROJ, "syn000") == ""
 
 
-def test_validate_challenge_submission():
+def test_challenge_submission():
+    """Submission is the Challenge site; error expected."""
+
     assert writeups._validate_project_contents(
         PROJ, "syn123") == "Submission should not be the Challenge site."
 
 
 # test private project with admin requirement
-def test_validate_permissions_admin():
+def test_admin_permissions_req():
+    """
+    Project should be shared with an admin; one call to check for
+    permissions expected.
+    """
+
     with patch.object(SYN, "getPermissions") as patch_perms:
         writeups._validate_admin_permissions(SYN, PROJ, admin="me")
         patch_perms.assert_called_once()
 
 
 # test private project with public requirement
-def test_validate_permissions_public():
+def test_public_permissions_req():
+    """
+    Project should be shared with the public (incl. other Synapse
+    users); two calls to check for permissions expected.
+    """
+
     with patch.object(SYN, "getPermissions") as patch_perms:
         writeups._validate_public_permissions(SYN, PROJ)
         assert patch_perms.call_count == 2
 
 
 # test semi-private project with public requirement
-def test_validate_permissions_both():
+def test_both_permissions_req():
+    """Project should be shared with all; three calls expected."""
+
     with patch.object(SYN, "getPermissions") as patch_perms:
         writeups._validate_public_permissions(SYN, PROJ)
         writeups._validate_admin_permissions(SYN, PROJ, admin="me")
