@@ -2,10 +2,17 @@ import re
 import time
 
 import pandas as pd
-from synapseclient import AUTHENTICATED_USERS, entity, Project
-from synapseclient.annotations import to_submission_status_annotations
-from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient import AUTHENTICATED_USERS, entity, Project
+
+# To account different versions of synapseclient.
+try:
+    from synapseclient.annotations import to_submission_status_annotations
+    from synapseclient.exceptions import SynapseHTTPError
+except ModuleNotFoundError:
+    from synapseclient.core.annotations import to_submission_status_annotations
+    from synapseclient.core.exceptions import SynapseHTTPError
+
 from . import utils
 from . import permissions
 
@@ -61,18 +68,17 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
 
 def validate_project(syn, submission, challenge, public=False, admin=None):
     """
-    Validate a Project submission; errors found are returned in a dict.
+    Validate a Project submission.
 
     Args:
         submission - submission ID
         challenge - Synapse ID of Challenge wiki
         public - Project should be public (default: False)
         admin - (optional) Project should be shared with this username/ID
-    
-    Returns:
-        dict: errors_found: Error messages if any
-                writeup_status: True/False
 
+    Returns:
+        errors_found (dict) - error messages (empty dict if none found)
+        writeup_status (str) - "VALIDATED"/"INVALID"
     """
     writeup = syn.getSubmission(submission)
     errors = []
@@ -81,23 +87,12 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
     if type_error:
         errors.append(type_error)
 
-    contents_error = _validate_project_contents(writeup, challenge)
+    contents_error = _validate_project_id(writeup, challenge)
     if contents_error:
         errors.append(contents_error)
 
-    try:
-        if public:
-            errors.extend(_validate_public_permissions(syn, writeup))
-
-        if admin is not None:
-            admin_error = _validate_admin_permissions(syn, writeup, admin)
-            if admin_error:
-                errors.append(admin_error)
-
-    except SynapseHTTPError as e:
-        if e.response.status_code == 403:
-            errors.append(
-                "Submission is private; please update its sharing settings.")
+    permissions_error = _check_project_permissions(syn, writeup, public, admin)
+    errors.extend(permissions_error)
 
     status = "INVALID" if errors else "VALIDATED"
     return {'errors_found': errors, "writeup_status": status}
@@ -121,13 +116,14 @@ def archive_project(syn, submission, admin):
     synapseutils.copy(syn, writeup.entityId, archive.id)
 
 
-def _validate_ent_type(ent):
-    """Helper function: check entity type."""
+# TODO: move to utils module
+def _validate_ent_type(submission):
+    """Check entity type of submission."""
 
     try:
-        if not isinstance(ent.entity, entity.Project):
+        if not isinstance(submission.entity, entity.Project):
             ent_type = re.search(
-                r"entity\.(.*?)'", str(type(ent.entity))).group(1)
+                r"entity\.(.*?)'", str(type(submission.entity))).group(1)
             return f"Submission should be a Synapse project, not a {ent_type}."
     except AttributeError:
         return "Unknown entity type; please submit a Synapse project."
@@ -135,33 +131,56 @@ def _validate_ent_type(ent):
         return ""
 
 
-def _validate_project_contents(proj, challenge):
-    """Helper function: check that submission is not the Challenge site."""
+def _validate_project_id(proj, challenge):
+    """Check that submission is not the Challenge site."""
 
     return "Submission should not be the Challenge site." \
         if proj.entityId == challenge else ""
 
 
 def _validate_public_permissions(syn, proj):
-    """Helper function: ensure project is shared with the public."""
+    """Ensure project is shared with the public."""
 
-    errors = []
     auth_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
-    if "READ" not in auth_perms or "DOWNLOAD" not in auth_perms:
-        errors.append("'Can download' permissions should be enabled for " +
-                      "other Synapse users.")
     public_perms = syn.getPermissions(proj.entityId)
-    if "READ" not in public_perms:
-        errors.append("'Can view' permissions should be enabled for the " +
-                      "public.")
-    return errors
+    if ("READ" not in auth_perms or "DOWNLOAD" not in auth_perms) and \
+            "READ" not in public_perms:
+        return ("Your project is not publicly available. Visit "
+                "https://docs.synapse.org/articles/sharing_settings.html for "
+                "more details.")
+    return ""
 
 
 def _validate_admin_permissions(syn, proj, admin):
-    """Helper function: ensure project is shared with the given admin."""
+    """Ensure project is shared with the given admin."""
 
     admin_perms = syn.getPermissions(proj.entityId, admin)
     if "READ" not in admin_perms or "DOWNLOAD" not in admin_perms:
-        return "'Can download' permissions should be enabled for " + \
-            f"the admin user: {admin}"
+        return (f"Your private project should be shared with {admin}. Visit "
+                "https://docs.synapse.org/articles/sharing_settings.html for "
+                "more details.")
     return ""
+
+
+def _check_project_permissions(syn, submission, public, admin):
+    """Check the submission sharing settings."""
+
+    errors = []
+    try:
+        if public:
+            public_error = _validate_public_permissions(syn, submission)
+            if public_error:
+                errors.append(public_error)
+
+        if admin is not None:
+            admin_error = _validate_admin_permissions(syn, submission, admin)
+            if admin_error:
+                errors.append(admin_error)
+
+    except SynapseHTTPError as e:
+        if e.response.status_code == 403:
+            errors.append(
+                "Submission is private; please update its sharing settings.")
+        else:
+            raise e
+    return errors

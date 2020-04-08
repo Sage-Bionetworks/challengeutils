@@ -14,8 +14,8 @@ from . import evaluation_queue
 from . import helpers
 from . import mirrorwiki
 from . import permissions
+from . import project_submission as submission
 from . import utils
-from . import writeups
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -92,8 +92,8 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    writeups.attach_writeup(syn, args.writeupqueue,
-                            args.submissionqueue)
+    submission.attach_writeup(syn, args.writeupqueue,
+                              args.submissionqueue)
 
 
 def command_validate_project(syn, args):
@@ -105,7 +105,7 @@ def command_validate_project(syn, args):
                                        [--admin bob] \
                                        [--output foo.txt]
     """
-    results = writeups.validate_project(
+    results = submission.validate_project(
         syn, args.submissionid, args.challengewiki, args.public, args.admin)
 
     if args.output:
