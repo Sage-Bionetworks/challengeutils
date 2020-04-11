@@ -156,7 +156,15 @@ def _remove_cached_submission(submission_file):
 
 
 class SubmissionInfo:
-    """Submission information to return after evaluation"""
+    """Submission information to return after evaluation
+
+    Attributes:
+        valid: A boolean value, True if your submission is 'valid'
+        error: A Python Exception (e.g ValueError)
+        annotations: A dictionary containing whatever values you want to
+                     annotate your submission with
+
+    """
     def __init__(self, valid: bool, error: Exception = None,
                  annotations: dict = None):
         self.valid = valid
@@ -199,18 +207,19 @@ class QueueEvaluator(metaclass=ABCMeta):
         self.kwargs = kwargs
 
     def evaluate(self):
-        """Evalute submissions of a queue"""
-        LOGGER.info("-" * 20)
-        LOGGER.info(f"Evaluating {self.evaluation.name} "
-                    f"({self.evaluation.id})")
+        """Evalute all submissions of a specific status of a queue"""
+        evaluation_str = (f"Evaluating Queue: {self.evaluation.name} "
+                          f"({self.evaluation.id})")
+        LOGGER.info("-" * len(evaluation_str))
+        LOGGER.info(evaluation_str)
         submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
                                                            status=self._status)
+        # Use x number of threads to execute submissions in parallel
         with ThreadPoolExecutor(self.concurrent_submissions) as executor:
             for submission, sub_status in submission_bundles:
                 executor.submit(self.evaluate_and_update, submission,
                                 sub_status)
-
-        LOGGER.info("-" * 20)
+        LOGGER.info("-" * len(evaluation_str))
 
     @abstractmethod
     def _evaluation_function(self, submission, **kwargs) -> SubmissionInfo:
@@ -227,7 +236,7 @@ class QueueEvaluator(metaclass=ABCMeta):
         return SubmissionInfo
 
     def evaluate_and_update(self, submission, sub_status):
-        """Evaluate submission
+        """Evaluate submissions and stores submission annotations
 
         Args:
             submission: synapseclent.Submission object
@@ -240,7 +249,7 @@ class QueueEvaluator(metaclass=ABCMeta):
             except SynapseHTTPError:
                 # TODO: check code 412
                 return
-        LOGGER.info(f"Interacting with submission: {submission.id}")
+        LOGGER.info(f"Evaluation submission: {submission.id}")
 
         submission_info = self._evaluate_submission(submission)
 
@@ -278,7 +287,7 @@ class QueueEvaluator(metaclass=ABCMeta):
         return submission_info
 
     def _store_submission_annotations(self, sub_status, submission_info):
-        """Store submission status
+        """Store submission annotations
 
         Args:
             sub_status: Synapse Submission Status
@@ -299,7 +308,7 @@ class QueueEvaluator(metaclass=ABCMeta):
             LOGGER.debug(sub_status)
 
 
-def import_config_py(config_path):
+def _import_config_py(config_path):
     '''
     Uses importlib to import users configuration
 
@@ -326,7 +335,7 @@ def evaluate_queue(syn, python_config, json_config, synapse_config=None,
     for queue_name in config:
         queue_config = config[queue_name]
         try:
-            module = import_config_py(python_config)
+            module = _import_config_py(python_config)
             evaluator_cls = getattr(module, queue_config['evaluator'])
         except Exception:
             raise ValueError("Error importing your python config script")
