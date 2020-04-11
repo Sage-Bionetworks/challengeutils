@@ -1,0 +1,6 @@
+{
+    "example_queue": {
+        "evaluation_queue_id": 9614277,
+        "evaluator": "ExampleEvaluator"
+    }
+}
