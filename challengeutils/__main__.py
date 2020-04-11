@@ -219,11 +219,14 @@ def command_kill_docker_over_quota(syn, args):
 
 
 def command_evaluate_queue(syn, args):
-    """
-    This is a function that will evaluation submissions from a evaluation
-    queue given a python configuration script which is linked closely with
-    a json configuration script. (For examples, see
+    """Synapse does not provide the ability to auto evaluate the submissions
+    received in an evaluation queue. This is a function that will evaluate the
+    submissions from a evaluation queue given a python configuration script
+    which is linked with a json configuration script. (For examples, see
     'templates/evaluate_submission.py' and 'templates/evaluation_config.json')
+
+    See "Challenge/Benchmarking (Technical Edition)" - (not ready yet) for more
+    information
 
     >>> challengeutils evaluatequeue python_config json_config \
                                      --concurrent_submissions 4
