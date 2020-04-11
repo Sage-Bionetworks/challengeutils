@@ -1,5 +1,27 @@
 """Evaluation Queue helper functions"""
+from abc import ABCMeta, abstractmethod
+from concurrent.futures import ThreadPoolExecutor
+import importlib
+import json
+import logging
+import os
 import time
+
+import synapseclient
+try:
+    from synapseclient.exceptions import (SynapseHTTPError,
+                                          SynapseAuthenticationError,
+                                          SynapseNoCredentialsError)
+except ModuleNotFoundError:
+    from synapseclient.core.exceptions import (SynapseHTTPError,
+                                               SynapseAuthenticationError,
+                                               SynapseNoCredentialsError)
+
+from .utils import update_single_submission_status
+
+logging.basicConfig(format='%(asctime)s %(message)s')
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
 
 
 def _convert_date_to_epoch(date_string):
@@ -117,3 +139,199 @@ def set_evaluation_quota(syn: 'Synapse', evalid: int, **kwargs):
     evaluation.quota = vars(quota)
     evaluation = syn.store(evaluation)
     return evaluation
+
+
+def _remove_cached_submission(submission_file):
+    """
+    Remove submission file if cache clearing is requested
+
+    Args:
+        submission_file: Input submission
+
+    """
+    try:
+        os.unlink(submission_file)
+    except TypeError:
+        pass
+
+
+class SubmissionInfo:
+    """Submission information to return after evaluation"""
+    def __init__(self, valid: bool, error: Exception = None,
+                 annotations: dict = None):
+        self.valid = valid
+        self.error = error
+        self.annotations = {} if annotations is None else annotations
+
+
+class QueueEvaluator(metaclass=ABCMeta):
+    """Evaluate all submissions of specific status in an evaluation queue
+
+    Attributes:
+        _status: retrieve all submissions of this status to evaluate
+        _success_status: Set success status
+    """
+    # Status of submissions to evaluaate
+    _status = "RECEIVED"
+    # Successful submissions will be placed in this status
+    _success_status = "ACCEPTED"
+
+    def __init__(self, syn, evaluation, dry_run=False,
+                 remove_cache=False, concurrent_submissions=1,
+                 **kwargs):
+        """Init EvaluationQueueProcessor
+
+        Args:
+            syn: Synapse object
+            evaluation: synapseclient.Evaluation object
+            dry_run: Do not update Synapse. Default is False.
+            remove_cache: Removes submission file from cache.
+                          Default is False.
+            concurrent_submissions: Number of concurrent submissions
+                                    to run.
+            **kwargs: kwargs
+        """
+        self.syn = syn
+        self.dry_run = dry_run
+        self.evaluation = syn.getEvaluation(evaluation)
+        self.remove_cache = remove_cache
+        self.concurrent_submissions = concurrent_submissions
+        self.kwargs = kwargs
+
+    def evaluate(self):
+        """Evalute submissions of a queue"""
+        LOGGER.info("-" * 20)
+        LOGGER.info(f"Evaluating {self.evaluation.name} "
+                    f"({self.evaluation.id})")
+        submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
+                                                           status=self._status)
+        with ThreadPoolExecutor(self.concurrent_submissions) as executor:
+            for submission, sub_status in submission_bundles:
+                executor.submit(self.evaluate_and_update, submission,
+                                sub_status)
+
+        LOGGER.info("-" * 20)
+
+    @abstractmethod
+    def _evaluation_function(self, submission, **kwargs) -> SubmissionInfo:
+        """User determined evaluation function
+
+        Args:
+            submission: synapseclient.Submission object
+
+        Returns:
+            challengeutils.evaluation_queue.SubmissionInfo object
+
+        """
+        SubmissionInfo(valid=True, annotations={"key1": "annotations"})
+        return SubmissionInfo
+
+    def evaluate_and_update(self, submission, sub_status):
+        """Evaluate submission
+
+        Args:
+            submission: synapseclent.Submission object
+
+        """
+        if not self.dry_run:
+            try:
+                sub_status.status = "EVALUATION_IN_PROGRESS"
+                sub_status = self.syn.store(sub_status)
+            except SynapseHTTPError:
+                # TODO: check code 412
+                return
+        LOGGER.info(f"Interacting with submission: {submission.id}")
+
+        submission_info = self._evaluate_submission(submission)
+
+        self._store_submission_annotations(sub_status, submission_info)
+
+        # Remove submission file if cache clearing is requested.
+        if self.remove_cache:
+            _remove_cached_submission(submission.filePath)
+
+    def _evaluate_submission(self, submission):
+        """
+        Evaluate submission function
+
+        Args:
+            submission: synapse Submission object
+
+        Returns:
+            challengeutils.evaluation_queue.SubmissionInfo object
+
+        """
+        # refetch the submission so that we get the file path
+        # to be later replaced by a "downloadFiles" flag on
+        # getSubmissionBundles
+        submission = self.syn.getSubmission(submission)
+        try:
+            submission_info = self._evaluation_function(submission,
+                                                        **self.kwargs)
+        except Exception as ex1:
+            LOGGER.error("Exception during validation: "
+                         f"{type(ex1)} {ex1} {str(ex1)}")
+            # TODO: allow for annotations to be added even if error
+            # annotations = {}
+            submission_info = SubmissionInfo(valid=False, error=ex1)
+            # validation_message = str(ex1)
+        return submission_info
+
+    def _store_submission_annotations(self, sub_status, submission_info):
+        """Store submission status
+
+        Args:
+            sub_status: Synapse Submission Status
+            submission_info: challengeutils.evaluation_queue.SubmissionInfo
+                             object
+
+        """
+        annotations = submission_info.annotations
+        sub_status = update_single_submission_status(sub_status,
+                                                     annotations,
+                                                     is_private=False)
+        is_valid = submission_info.valid
+        sub_status.status = self._success_status if is_valid else "INVALID"
+
+        if not self.dry_run:
+            sub_status = self.syn.store(sub_status)
+        else:
+            LOGGER.debug(sub_status)
+
+
+def import_config_py(config_path):
+    '''
+    Uses importlib to import users configuration
+
+    Args:
+        config_path: Path to configuration python script
+
+    Returns:
+        module
+    '''
+    spec = importlib.util.spec_from_file_location("config", config_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def evaluate_queue(syn, python_config, json_config, synapse_config=None,
+                   dry_run=False, concurrent_submissions=1,
+                   remove_cache=False):
+    """Main method that executes the evaluation of queues"""
+
+    with open(json_config, 'r') as json_f:
+        config = json.load(json_f)
+
+    for queue_name in config:
+        queue_config = config[queue_name]
+        try:
+            module = import_config_py(python_config)
+            evaluator_cls = getattr(module, queue_config['evaluator'])
+        except Exception:
+            raise ValueError("Error importing your python config script")
+
+        evaluator_cls(syn, queue_config['evaluation_queue_id'],
+                      remove_cache=remove_cache,
+                      concurrent_submissions=concurrent_submissions,
+                      dry_run=dry_run).evaluate()

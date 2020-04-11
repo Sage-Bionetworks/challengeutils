@@ -218,6 +218,23 @@ def command_kill_docker_over_quota(syn, args):
                                               quota=args.quota)
 
 
+def command_evaluate_queue(syn, args):
+    """
+    Sets an annotation on Synapse Docker submissions such that it will
+    be terminated by the orchestrator. Usually applies to submissions
+    that have been running for longer than the alloted time.
+
+    >>> challengeutils killdockeroverquota evaluationid quota
+    """
+    evaluation_queue.evaluate_queue(syn=syn,
+                                    python_config=args.python_config,
+                                    json_config=args.json_config,
+                                    synapse_config=args.synapse_config,
+                                    remove_cache=args.remove_cache,
+                                    concurrent_submissions=args.concurrent_submissions,
+                                    dry_run=args.dry_run)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -531,6 +548,38 @@ def build_parser():
         help='Number of submissions allowed per team')
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
+
+    parser_evaluate = subparsers.add_parser(
+        'evaluatequeue',
+        help='Evaluates submissions based on user specified python code '
+             'and json configuration')
+
+    parser_evaluate.add_argument(
+        "python_config",
+        help="Path to evaluate.py")
+
+    parser_evaluate.add_argument(
+        "json_config",
+        help="Path to config.json that links evaluation queue and "
+             "class in evaluate.py")
+
+    parser_evaluate.add_argument(
+        "--dry_run",
+        help="Perform the requested command without updating anything "
+             "in Synapse",
+        action="store_true")
+
+    parser_evaluate.add_argument(
+        "--remove_cache",
+        help="Removes downloaded submisisons from cache",
+        action="store_true")
+
+    parser_evaluate.add_argument(
+        "--concurrent_submissions",
+        help="Number of parallel submissions to evaluate at a time",
+        default=1)
+
+    parser_evaluate.set_defaults(func=command_evaluate_queue)
 
     return parser
 
