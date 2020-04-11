@@ -220,16 +220,17 @@ def command_kill_docker_over_quota(syn, args):
 
 def command_evaluate_queue(syn, args):
     """
-    Sets an annotation on Synapse Docker submissions such that it will
-    be terminated by the orchestrator. Usually applies to submissions
-    that have been running for longer than the alloted time.
+    This is a function that will evaluation submissions from a evaluation
+    queue given a python configuration script which is linked closely with
+    a json configuration script. (For examples, see
+    'templates/evaluate_submission.py' and 'templates/evaluation_config.json')
 
-    >>> challengeutils killdockeroverquota evaluationid quota
+    >>> challengeutils evaluatequeue python_config json_config \
+                                     --concurrent_submissions 4
     """
     evaluation_queue.evaluate_queue(syn=syn,
                                     python_config=args.python_config,
                                     json_config=args.json_config,
-                                    synapse_config=args.synapse_config,
                                     remove_cache=args.remove_cache,
                                     concurrent_submissions=args.concurrent_submissions,
                                     dry_run=args.dry_run)
@@ -584,14 +585,8 @@ def build_parser():
     return parser
 
 
-def perform_main(syn, args):
-    if 'func' in args:
-        try:
-            args.func(syn, args)
-        except Exception:
-            raise
-
-
+# TODO: add staging endpoint
+# TODO: add debug
 def synapse_login(synapse_config):
     try:
         syn = synapseclient.login(silent=True)
@@ -604,7 +599,7 @@ def synapse_login(synapse_config):
 def main():
     args = build_parser().parse_args()
     syn = synapse_login(args.synapse_config)
-    perform_main(syn, args)
+    args.func(syn, args)
 
 
 if __name__ == "__main__":
