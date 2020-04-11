@@ -324,10 +324,25 @@ def _import_config_py(config_path):
     return module
 
 
-def evaluate_queue(syn, python_config, json_config, synapse_config=None,
-                   dry_run=False, concurrent_submissions=1,
-                   remove_cache=False):
-    """Main method that executes the evaluation of queues"""
+def evaluate_queue(syn, python_config, json_config,
+                   **kwargs):
+    """Main method that executes the evaluation of queues
+
+    Args:
+        syn: synapseclient connection
+        python_config: This script will contain the python function you want
+                       to apply on your submissions.
+                       See 'templates/evaluate_submission.py' for an example.
+        json_config: The json configuration links your python class with the
+                     evaluation queue.
+                     See 'templates/evaluation_config.json' for an example.
+        **kwargs: arguments from QueueEvaluator
+            dry_run: Do not update Synapse. Default is False.
+            remove_cache: Removes submission file from cache.
+                          Default is False.
+            concurrent_submissions: Number of concurrent submissions
+                                    to run.
+    """
 
     with open(json_config, 'r') as json_f:
         config = json.load(json_f)
@@ -341,6 +356,4 @@ def evaluate_queue(syn, python_config, json_config, synapse_config=None,
             raise ValueError("Error importing your python config script")
 
         evaluator_cls(syn, queue_config['evaluation_queue_id'],
-                      remove_cache=remove_cache,
-                      concurrent_submissions=concurrent_submissions,
-                      dry_run=dry_run).evaluate()
+                      **kwargs).evaluate()
