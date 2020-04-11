@@ -13,6 +13,17 @@ valid: A boolean value, True if your submission is 'valid'
 error: A Python Exception (e.g ValueError)
 annotations: A dictionary containing whatever values you want to annotate
              your submission with
+
+The json_config must be in this format:
+```
+{
+    "example_queue": {
+        "evaluation_queue_id": synapse_queue_id,
+        "evaluator": "yourclassname"
+    }
+}
+```
+So in this example you would replace "yourclassname" with "ExampleEvaluator"
 """
 from challengeutils.evaluation_queue import QueueEvaluator, SubmissionInfo
 
