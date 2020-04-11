@@ -1,6 +1,11 @@
 """Convenience functions to set permissions on Synapse entities,
 without having to know the granular access control list"""
 import synapseclient
+try:
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.utils import id_of
 
 VIEW = ["READ"]
 SUBMIT = ['READ', 'SUBMIT']
@@ -106,6 +111,6 @@ def get_user_entity_permissions(syn, entity):
     Returns:
         UserEntityPermissions
     """
-    synid = synapseclient.utils.id_of(entity)
+    synid = id_of(entity)
     permissions = syn.restGET("/entity/{}/permissions".format(synid))
     return permissions
