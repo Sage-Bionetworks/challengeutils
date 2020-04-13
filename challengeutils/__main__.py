@@ -586,6 +586,7 @@ def build_parser():
     parser_evaluate.add_argument(
         "--concurrent_submissions",
         help="Number of parallel submissions to evaluate at a time",
+        type=int,
         default=1)
 
     parser_evaluate.set_defaults(func=command_evaluate_queue)
