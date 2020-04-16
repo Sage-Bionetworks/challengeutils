@@ -335,5 +335,5 @@ def test_create_challenge():
         chal = challengeutils.utils.create_challenge(syn, projectid,
                                                      participant_teamid)
         patch_rest_post.assert_called_once_with('/challenge',
-                                                input_obj.to_json())
+                                                str(input_obj))
         assert chal == challenge_obj

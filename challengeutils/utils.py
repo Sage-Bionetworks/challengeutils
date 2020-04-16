@@ -190,8 +190,9 @@ def get_challenge(syn: Synapse, project: Project) -> Challenge:
 
     Returns:
         Challenge object
+
     """
-    synid = synapseclient.utils.id_of(entity)
+    synid = synapseclient.utils.id_of(project)
     challenge_api = ChallengeApi(syn=syn, projectId=synid)
     challenge_obj = challenge_api.get_challenge()
     return challenge_obj
@@ -323,9 +324,8 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
     return None
 
 
-def register_team(syn, entity, team):
-    '''
-    Registers team to challenge
+def register_team(syn, project, team):
+    """Register team to challenge
 
     Args:
         syn: Synapse object
@@ -333,15 +333,14 @@ def register_team(syn, entity, team):
         team: Team name or team Id
 
     Returns:
-        Team id
-    '''
+        Synapse Team id
 
-    challengeid = get_challenge(syn, entity)['id']
+    """
+    challengeid = get_challenge(syn, project).id
     teamid = syn.getTeam(team)['id']
     challenge_object = {'challengeId': challengeid, 'teamId': teamid}
-    registered_team = syn.restPOST(
-        '/challenge/%s/challengeTeam' % challengeid,
-        json.dumps(challenge_object))
+    registered_team = syn.restPOST(f'/challenge/{challengeid}/challengeTeam',
+                                   json.dumps(challenge_object))
     return registered_team['teamId']
 
 
