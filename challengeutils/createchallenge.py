@@ -20,7 +20,11 @@ import logging
 import sys
 
 import synapseclient
-from synapseclient.exceptions import SynapseHTTPError
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
 
 from . import utils
