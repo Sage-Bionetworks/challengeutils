@@ -11,7 +11,13 @@ import synapseclient
 from synapseclient import Project, Synapse, Team
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
-from synapseclient.exceptions import SynapseHTTPError
+try:
+    from synapseclient.core.exceptions import SynapseHTTPError
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.exceptions import SynapseHTTPError
+    from synapseclient.utils import id_of
 
 from synapseservices.challenge import Challenge, ChallengeApi
 
@@ -192,7 +198,7 @@ def get_challenge(syn: Synapse, project: Project) -> Challenge:
         Challenge object
 
     """
-    synid = synapseclient.utils.id_of(project)
+    synid = id_of(project)
     challenge_api = ChallengeApi(syn=syn, projectId=synid)
     challenge_obj = challenge_api.get_challenge()
     return challenge_obj
@@ -210,8 +216,8 @@ def create_challenge(syn: Synapse, project: Project,
     Returns:
         Challenge object
     """
-    synid = synapseclient.utils.id_of(project)
-    teamid = synapseclient.utils.id_of(team)
+    synid = id_of(project)
+    teamid = id_of(team)
     challenge_api = ChallengeApi(syn=syn, participantTeamId=teamid,
                                  projectId=synid)
     challenge_obj = challenge_api.create_challenge()
