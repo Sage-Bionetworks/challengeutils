@@ -8,11 +8,12 @@ import sys
 import urllib
 
 import synapseclient
+from synapseclient import Project, Synapse, Team
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
 from synapseclient.exceptions import SynapseHTTPError
 
-from synapseservices.challenge import Challenge
+from synapseservices.challenge import Challenge, ChallengeApi
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -178,44 +179,41 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challenge(syn, entity):
+def get_challenge(syn: Synapse, project: Project) -> Challenge:
     """Get the Challenge associated with a Project.
 
     See the definition of a Challenge object here:
     https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
 
     Args:
-        entity: An Entity or Synapse ID of a Project.
+        project: A synapseclient.Project or its id
 
     Returns:
         Challenge object
     """
     synid = synapseclient.utils.id_of(entity)
-    challenge = syn.restGET("/entity/%s/challenge" % synid)
-    challenge_obj = Challenge(**challenge)
+    challenge_api = ChallengeApi(syn=syn, projectId=synid)
+    challenge_obj = challenge_api.get_challenge()
     return challenge_obj
 
 
-def create_challenge(syn, entity, team):
+def create_challenge(syn: Synapse, project: Project,
+                     team: Team) -> Challenge:
     """Creates Challenge associated with a Project
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
 
     Args:
         syn: Synapse connection
-        entity: An Entity or Synapse ID of a Project.
-        team: A Team or Team ID.
+        project: A synapseclient.Project or its id
+        team: A synapseclient.Team or its id
 
     Returns:
         Challenge object
     """
-    synid = synapseclient.utils.id_of(entity)
+    synid = synapseclient.utils.id_of(project)
     teamid = synapseclient.utils.id_of(team)
-    new_challenge = Challenge(participantTeamId=teamid, projectId=synid)
-    challenge = syn.restPOST(new_challenge.post_uri(),
-                             new_challenge.to_json())
-    challenge_obj = Challenge(**challenge)
+    challenge_api = ChallengeApi(syn=syn, participantTeamId=teamid,
+                                 projectId=synid)
+    challenge_obj = challenge_api.create_challenge()
     return challenge_obj
 
 
