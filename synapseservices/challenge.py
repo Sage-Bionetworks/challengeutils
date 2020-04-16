@@ -108,10 +108,19 @@ class Challenge(Service):
 class ChallengeApi:
     """Challenge services
     https://docs.synapse.org/rest/index.html#org.sagebionetworks.repo.web.controller.ChallengeController
-
+    Args:
+        id: The ID of this Challenge object
+        etag: Synapse employs an Optimistic Concurrency Control (OCC)
+              scheme to handle concurrent updates.
+        projectId: The ID of the Project the challenge is used with.
+        participantTeamId: The ID of the Team which users join to participate
+                           in the Challenge
     """
     def __init__(self, syn: Synapse = None, id: str = None,
                  projectId: str = None, participantTeamId: str = None):
+        """
+
+        """
         if syn is None:
             raise ValueError("Must pass in Synapse connection")
         self.syn = syn
@@ -132,7 +141,7 @@ class ChallengeApi:
         elif self._challenge.projectId is not None:
             url = f"/entity/{self._challenge.projectId}/challenge"
         else:
-            raise ValueError("Must pass in challenge id or Synapse project id")
+            raise ValueError("Must pass in `id` or `projectId`")
 
         return Challenge(**self.syn.restGET(url))
 
