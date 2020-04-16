@@ -148,7 +148,7 @@ class ChallengeApi:
     def update_challenge(self):
         """Updates a challenge"""
         if self._challenge.id is None:
-            raise ValueError("Must pass in challenge id")
+            raise ValueError("Must pass in `id`")
         challenge = self.syn.restPUT(f'/challenge/{self._challenge.id}',
                                      str(self._challenge))
         return Challenge(**challenge)
@@ -156,18 +156,18 @@ class ChallengeApi:
     def delete_challenge(self):
         """Deletes a challenge"""
         if self._challenge.id is None:
-            raise ValueError("Must pass in challenge id")
+            raise ValueError("Must pass in `id`")
         return self.syn.restDELETE(f'/challenge/{self._challenge.id}')
 
     def get_registered_participants(self):
         """Lists participants registered for a challenge"""
         if self._challenge.id is None:
-            raise ValueError("Must pass in challenge id")
+            raise ValueError("Must pass in `id`")
         return self.syn.restGET(f'/challenge/{self._challenge.id}/participant')
 
     def get_registered_teams(self):
         """Lists teams registered for a challenge"""
         if self._challenge.id is None:
-            raise ValueError("Must pass in challenge id")
+            raise ValueError("Must pass in `id`")
         url = f'/challenge/{self._challenge.id}/challengeTeam'
         return self.syn.restGET(url)

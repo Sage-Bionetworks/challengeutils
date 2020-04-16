@@ -92,3 +92,45 @@ class TestChallengeApi:
             assert challenge_obj == self.expected
             patch_restput.assert_called_once_with(f'/challenge/{self.challengeid}',
                                                   str(challenge))
+
+    def test_update_challenge__raise_error(self):
+        with pytest.raises(ValueError,
+                           match="Must pass in `id`"):
+            self.noid_api.update_challenge()
+
+    def test_delete_challenge(self):
+        challenge = self.challenge_api._challenge
+        with patch.object(self.syn, "restDELETE") as patch_restdelete:
+            self.challenge_api.delete_challenge()
+            patch_restdelete.assert_called_once_with(
+                f'/challenge/{self.challengeid}'
+            )
+
+    def test_delete_challenge__raise_error(self):
+        with pytest.raises(ValueError,
+                           match="Must pass in `id`"):
+            self.noid_api.delete_challenge()
+
+    def test_get_registered_participants(self):
+        with patch.object(self.syn, "restGET")  as patch_restget:
+            self.challenge_api.get_registered_participants()
+            patch_restget.assert_called_once_with(
+                f'/challenge/{self.challengeid}/participant'
+            )
+
+    def test_get_registered_participants__raise_error(self):
+        with pytest.raises(ValueError,
+                           match="Must pass in `id`"):
+            self.noid_api.get_registered_participants()
+
+    def test_get_registered_teams(self):
+        with patch.object(self.syn, "restGET") as patch_restget:
+            self.challenge_api.get_registered_teams()
+            patch_restget.assert_called_once_with(
+                f'/challenge/{self.challengeid}/challengeTeam'
+            )
+
+    def test_get_registered_teams__raise_error(self):
+        with pytest.raises(ValueError,
+                           match="Must pass in `id`"):
+            self.noid_api.get_registered_teams()
