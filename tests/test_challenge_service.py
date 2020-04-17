@@ -38,16 +38,17 @@ class TestChallengeApi:
 
     def test_create_challenge(self):
         """Tests that a challenge object can be instantiated"""
+        new_challenge = Challenge(projectId=self.projectid,
+                                  participantTeamId=self.teamid)
         with patch.object(self.syn, "restPOST",
                           return_value=self.challenge_dict) as patch_restpost:
             challenge_obj = self.challenge_api.create_challenge(
-                challengeid=self.challengeid,
                 teamid=self.teamid,
                 projectid=self.projectid
             )
             assert challenge_obj == self.expected
             patch_restpost.assert_called_once_with('/challenge',
-                                                   str(self.input))
+                                                   str(new_challenge))
 
     def test_get_challenge__with_id(self):
         """Tests getting challenge with challenge id"""

@@ -219,9 +219,10 @@ def create_challenge(syn: Synapse, project: Project,
     """
     synid = id_of(project)
     teamid = id_of(team)
-    challenge_api = ChallengeApi(syn=syn, participantTeamId=teamid,
-                                 projectId=synid)
-    challenge_obj = challenge_api.create_challenge()
+
+    challenge_api = ChallengeApi(syn=syn)
+    challenge_obj = challenge_api.create_challenge(projectid=synid,
+                                                   teamid=teamid)
     return challenge_obj
 
 

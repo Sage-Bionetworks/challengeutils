@@ -17,12 +17,10 @@ class ChallengeApi:
     def __init__(self, syn: Synapse):
         self.syn = syn
 
-    def create_challenge(self, challengeid: str, teamid: str,
-                         projectid: str) -> Challenge:
+    def create_challenge(self, teamid: str, projectid: str) -> Challenge:
         """Creates a challenge
 
         Args:
-            challengeid: A Synapse Challenge id
             teamid: A Synapse Team id
             projectid: A Synapse Project id
 
@@ -30,8 +28,7 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        new_challenge = Challenge(id=challengeid,
-                                  participantTeamId=teamid,
+        new_challenge = Challenge(participantTeamId=teamid,
                                   projectId=projectid)
         challenge = self.syn.restPOST('/challenge',
                                       str(new_challenge))
