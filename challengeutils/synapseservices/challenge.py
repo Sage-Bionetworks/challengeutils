@@ -1,7 +1,4 @@
 """Challenge Services"""
-import synapseclient
-from synapseclient import Synapse
-
 from .base_service import Service
 
 
