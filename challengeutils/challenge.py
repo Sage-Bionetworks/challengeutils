@@ -1,5 +1,13 @@
 """Synapse Challenge Services"""
-from synapseclient import Synapse
+import json
+from typing import Union
+
+from synapseclient import Project, Synapse, Team
+try:
+    from synapseclient.core.utils import id_of
+except ModuleNotFoundError:
+    # For synapseclient < v2.0
+    from synapseclient.utils import id_of
 
 from .synapseservices.challenge import Challenge
 
@@ -108,3 +116,58 @@ class ChallengeApi:
         """
         url = f'/challenge/{challengeid}/challengeTeam'
         return self.syn._GET_paginated(url)
+
+    def register_team(self, challengeid: str, teamid: str):
+        """Register team
+
+        Args:
+            challengeid: A Synapse challenge id
+            teamid: A Synapse Team id
+
+        Returns:
+            A Synapse team
+
+        """
+        team_dict = {'challengeId': challengeid, 'teamId': teamid}
+        return self.syn.restPOST(f'/challenge/{challengeid}/challengeTeam',
+                                 json.dumps(team_dict))
+
+
+def get_challenge(syn: Synapse, project: Union[Project, str]) -> Challenge:
+    """Get the Challenge associated with a Project.
+
+    See the definition of a Challenge object here:
+    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
+
+    Args:
+        project: A synapseclient.Project or its id
+
+    Returns:
+        Challenge object
+
+    """
+    synid = id_of(project)
+    challenge_api = ChallengeApi(syn=syn)
+    challenge_obj = challenge_api.get_challenge(projectid=synid)
+    return challenge_obj
+
+
+def create_challenge(syn: Synapse, project: Union[Project, str],
+                     team: Union[Team, str]) -> Challenge:
+    """Creates Challenge associated with a Project
+
+    Args:
+        syn: Synapse connection
+        project: A synapseclient.Project or its id
+        team: A synapseclient.Team or its id
+
+    Returns:
+        Challenge object
+    """
+    synid = id_of(project)
+    teamid = id_of(team)
+
+    challenge_api = ChallengeApi(syn=syn)
+    challenge_obj = challenge_api.create_challenge(projectid=synid,
+                                                   teamid=teamid)
+    return challenge_obj

@@ -8,19 +8,13 @@ import sys
 import urllib
 
 import synapseclient
-from synapseclient import Project, Synapse, Team
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
 try:
     from synapseclient.core.exceptions import SynapseHTTPError
-    from synapseclient.core.utils import id_of
 except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.exceptions import SynapseHTTPError
-    from synapseclient.utils import id_of
-
-from challengeutils.synapseservices.challenge import Challenge
-from challengeutils.challenge import ChallengeApi
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -186,46 +180,6 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challenge(syn: Synapse, project: Project) -> Challenge:
-    """Get the Challenge associated with a Project.
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
-
-    Args:
-        project: A synapseclient.Project or its id
-
-    Returns:
-        Challenge object
-
-    """
-    synid = id_of(project)
-    challenge_api = ChallengeApi(syn=syn, projectId=synid)
-    challenge_obj = challenge_api.get_challenge()
-    return challenge_obj
-
-
-def create_challenge(syn: Synapse, project: Project,
-                     team: Team) -> Challenge:
-    """Creates Challenge associated with a Project
-
-    Args:
-        syn: Synapse connection
-        project: A synapseclient.Project or its id
-        team: A synapseclient.Team or its id
-
-    Returns:
-        Challenge object
-    """
-    synid = id_of(project)
-    teamid = id_of(team)
-
-    challenge_api = ChallengeApi(syn=syn)
-    challenge_obj = challenge_api.create_challenge(projectid=synid,
-                                                   teamid=teamid)
-    return challenge_obj
-
-
 def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
     '''
     Helper function to locate the existing annotation
@@ -330,26 +284,6 @@ def invite_member_to_team(syn, team, user=None, email=None, message=None):
         return invite
 
     return None
-
-
-def register_team(syn, project, team):
-    """Register team to challenge
-
-    Args:
-        syn: Synapse object
-        entity: An Entity or Synapse ID to lookup
-        team: Team name or team Id
-
-    Returns:
-        Synapse Team id
-
-    """
-    challengeid = get_challenge(syn, project).id
-    teamid = syn.getTeam(team)['id']
-    challenge_object = {'challengeId': challengeid, 'teamId': teamid}
-    registered_team = syn.restPOST(f'/challenge/{challengeid}/challengeTeam',
-                                   json.dumps(challenge_object))
-    return registered_team['teamId']
 
 
 def change_submission_status(syn, submissionid, status='RECEIVED'):

@@ -1,4 +1,5 @@
 """Tests challenge services"""
+import json
 import pytest
 import mock
 from mock import patch
@@ -115,4 +116,17 @@ class TestChallengeApi:
             )
             patch_restget.assert_called_once_with(
                 f'/challenge/{self.challengeid}/challengeTeam'
+            )
+
+    def test_register_team(self):
+        """Tests registering a team"""
+        with patch.object(self.syn, "restPOST") as patch_restpost:
+            self.challenge_api.register_team(
+                challengeid=self.challengeid,
+                teamid=self.teamid
+            )
+            patch_restpost.assert_called_once_with(
+                f'/challenge/{self.challengeid}/challengeTeam',
+                json.dumps({"challengeId": self.challengeid,
+                            "teamId": self.teamid})
             )
