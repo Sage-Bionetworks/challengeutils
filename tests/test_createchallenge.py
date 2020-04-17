@@ -15,7 +15,7 @@ import synapseutils
 from challengeutils import createchallenge
 from challengeutils import utils
 from challengeutils import permissions
-from synapseservices.challenge import Challenge
+from challengeutils.synapseservices.challenge import Challenge
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 

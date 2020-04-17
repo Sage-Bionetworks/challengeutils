@@ -19,7 +19,8 @@ except ModuleNotFoundError:
     from synapseclient.exceptions import SynapseHTTPError
     from synapseclient.utils import id_of
 
-from synapseservices.challenge import Challenge, ChallengeApi
+from challengeutils.synapseservices.challenge import Challenge
+from challengeutils.challenge import ChallengeApi
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

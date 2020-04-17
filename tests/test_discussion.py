@@ -10,7 +10,7 @@ import synapseclient
 
 from challengeutils import discussion
 from challengeutils.discussion import DiscussionApi
-from synapseservices.discussion import Forum
+from challengeutils.synapseservices.discussion import Forum
 
 syn = mock.create_autospec(synapseclient.Synapse)
 api = DiscussionApi(syn)

@@ -5,7 +5,8 @@ from mock import patch
 
 import synapseclient
 
-from synapseservices.challenge import Challenge, ChallengeApi
+from challengeutils.synapseservices.challenge import Challenge
+from challengeutils.challenge import ChallengeApi
 
 
 def test_challenge():

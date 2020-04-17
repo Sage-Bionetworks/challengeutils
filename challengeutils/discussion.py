@@ -11,7 +11,7 @@ except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.utils import id_of
 
-from synapseservices.discussion import Forum
+from .synapseservices.discussion import Forum
 
 QUERY_LIMIT = 1000
 

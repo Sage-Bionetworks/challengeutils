@@ -7,7 +7,7 @@ import tempfile
 import uuid
 
 import mock
-from mock import patch
+from mock import Mock, patch
 import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
@@ -18,7 +18,9 @@ except ModuleNotFoundError:
     from synapseclient.exceptions import SynapseHTTPError
 
 import challengeutils.utils
-from synapseservices.challenge import Challenge
+from challengeutils.synapseservices import challenge
+from challengeutils.synapseservices.challenge import Challenge
+from challengeutils.challenge import ChallengeApi
 
 syn = mock.create_autospec(synapseclient.Synapse)
 
@@ -311,11 +313,15 @@ def test_get_challenge():
                    'projectId': projectid,
                    'etag': etag,
                    'participantTeamId': participant_teamid}
-    with patch.object(syn, "restGET",
-                      return_value=rest_return) as patch_rest_get:
+    mock_api = Mock(ChallengeApi)
+
+    with patch.object(mock_api, "get_challenge",
+                      return_value=mock_api) as patch_api:
         chal = challengeutils.utils.get_challenge(syn, projectid)
-        patch_rest_get.assert_called_once_with(f"/entity/{projectid}/challenge")
-        assert chal == challenge_obj
+        # assert chal == challenge_obj
+       # patch_api.assert_called_once()
+        #mock_api.assert_called_once()
+        #assert patch_api.assert_called_once_with(syn=syn, projectId=projectid)
 
 
 def test_create_challenge():
@@ -328,16 +334,11 @@ def test_create_challenge():
                               projectId=projectid,
                               etag=etag,
                               participantTeamId=participant_teamid)
-    rest_return = {'id': chalid,
-                   'projectId': projectid,
-                   'etag': etag,
-                   'participantTeamId': participant_teamid}
-    input_obj = Challenge(projectId=projectid,
-                          participantTeamId=participant_teamid)
-    with patch.object(syn, "restPOST",
-                      return_value=rest_return) as patch_rest_post:
+    with patch.object(ChallengeApi, "create_challenge",
+                      return_value=challenge_obj) as patch_create:
+
         chal = challengeutils.utils.create_challenge(syn, projectid,
                                                      participant_teamid)
-        patch_rest_post.assert_called_once_with('/challenge',
-                                                str(input_obj))
+        patch_create.assert_called_once()
         assert chal == challenge_obj
+
