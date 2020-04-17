@@ -1,11 +1,12 @@
 """Tests challenge services"""
 import json
-import pytest
 import mock
 from mock import patch
+import uuid
 
 import synapseclient
 
+from challengeutils import challenge
 from challengeutils.synapseservices.challenge import Challenge
 from challengeutils.challenge import ChallengeApi
 
@@ -21,8 +22,9 @@ def test_challenge():
 
 
 class TestChallengeApi:
-
+    """Tests ChallengeApi class"""
     def setup(self):
+        """Setup"""
         self.syn = mock.create_autospec(synapseclient.Synapse)
         self.challengeid = "challenge1"
         self.teamid = "team1"
@@ -130,3 +132,37 @@ class TestChallengeApi:
                 json.dumps({"challengeId": self.challengeid,
                             "teamId": self.teamid})
             )
+
+
+class TestChallenge:
+    """Tests functions in challenge.py"""
+    def setup(self):
+        """Setup"""
+        self.syn = mock.create_autospec(synapseclient.Synapse)
+        self.challengeid = str(uuid.uuid1())
+        self.teamid = str(uuid.uuid1())
+        self.projectid = str(uuid.uuid1())
+        self.project = synapseclient.Project(name="foo", id=self.projectid)
+        self.team = synapseclient.Team(name="foo", id=self.teamid)
+        self.input = Challenge(id=self.challengeid,
+                               projectId=self.projectid,
+                               participantTeamId=self.teamid)
+
+    def test_get_challenge(self):
+        """Tests getting challenge"""
+        with patch.object(ChallengeApi, "get_challenge",
+                          return_value=self.input) as patch_get:
+            chal = challenge.get_challenge(self.syn, self.project)
+            patch_get.assert_called_once_with(projectid=self.projectid)
+            assert chal == self.input
+
+    def test_create_challenge(self):
+        """Tests create challenge object"""
+        with patch.object(ChallengeApi, "create_challenge",
+                          return_value=self.input) as patch_create:
+
+            chal = challenge.create_challenge(self.syn, self.project,
+                                              self.team)
+            patch_create.assert_called_once_with(projectid=self.projectid,
+                                                 teamid=self.teamid)
+            assert chal == self.input
