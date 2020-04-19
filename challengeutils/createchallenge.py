@@ -40,10 +40,12 @@ DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
 LIVE_PAGE_MARKDOWN = (
     '## Banner\n\n'
-    '{row}\n {column width=3}\n'
-    '${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
-    '{column}\n {column width=9} \n'
-    '###! There are ${teammembercount?teamId=%s} preregistered participants. Join them now!\n '
+    '{row}\n {column width=2}\n '
+    '{column}\n {column width=4}\n'
+    '#### ${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
+    '{column}\n {column width=5}\n'
+    '###! There are ${teammembercount?teamId=%s} preregistered participants. <br>**Join them now!**\n '
+    '{column}\n {column width=1}\n '
     '{column}\n{row}\n'
     '\n---\n\n'
     '## Overview\n\n<font size=4>**Goal:**</font>\n\n<font size=4>**Motivation:**</font>\n'
