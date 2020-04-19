@@ -26,8 +26,8 @@ jobs:
       # ===============================
       - name: Commit documentation changes
         run: |
-          git config --local thomas.yu@sagebase.org "action@github.com"
-          git config --local thomasyu888 "GitHub Action"
+          git config --local user.email "thomas.yu@sagebase.org"
+          git config --local user.name "thomasyu888"
           git clone https://github.com/Sage-Bionetworks/challengeutils.git --branch gh-pages --single-branch gh-pages
           cp -r docs/_build/html/* gh-pages/
           cd gh-pages
