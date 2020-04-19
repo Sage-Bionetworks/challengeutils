@@ -6,10 +6,26 @@ import synapseclient
 from synapseclient import Synapse
 
 
-def download_wiki(syn: Synapse, projectid: str,
+def download_wiki(syn: Synapse, project: str,
                   markdown_location: str = "./",
-                  config_path: str = "wiki_config.json"):
-    """Download wiki"""
+                  config_path: str = "wiki_config.json") -> dict:
+    """Downloads each wikipage's content into a markdown file and
+    stores a configuration file
+
+    Args:
+        syn: Synapse connection
+        project: synapseclient.Project or its id
+        markdown_location: Location to download markdown files into
+                           Defaults to location of where code is being
+                           executed.
+        config_path: Wiki configuration path that can be used to update
+                     the wikis
+
+    Returns:
+        Dict of wiki configuration
+
+    """
+    projectid = synapseclient.utils.id_of(project)
     wiki_headers = syn.getWikiHeaders(projectid)
     for wiki_header in wiki_headers:
         wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
@@ -18,7 +34,7 @@ def download_wiki(syn: Synapse, projectid: str,
                         if letter.isalnum())
         # Home page title is always blank
         if title == '':
-            title = 'home'  
+            title = 'home'
         markdown_path = os.path.join(markdown_location,
                                      f"{title}.md")
         with open(markdown_path, 'w') as md_file:
@@ -26,9 +42,23 @@ def download_wiki(syn: Synapse, projectid: str,
         wiki_header['markdown_path'] = markdown_path
     with open(config_path, 'w') as config:
         json.dump(wiki_headers, config, indent=4)
+    return wiki_headers
 
 
 def validate_config(wiki_config: str):
+    """Validates wiki configuration
+
+    Args:
+        wiki_config: Wiki configuration path
+
+    Raises:
+        ValueError:
+            `markdown_path` is specified but cannot be located
+            There are more than one `title` that is ''
+            `id` is not specified and `markdown_path`/`parentId`/`title`
+            is missing or `parentId` not one of the `id`s.
+
+    """
     ids = [wiki_header['id'] for wiki_header in wiki_config
            if wiki_header.get('id') is not None]
     home_page_count = 0
@@ -45,20 +75,35 @@ def validate_config(wiki_config: str):
         if title == '':
             home_page_count += 1
         if home_page_count > 1:
-            raise ValueError("Cannot have more than one page without a title "
-                             "(Only the root wikipage can have no title)")
-        if ( wikiid is None and
-             (markdown_path is None or parentid not in ids
-              or title is None)):
-            raise ValueError("If wikiid is not specified, then markdown_path "
-                             "and parentId, and title must be specified. "
-                             "parentId must be one of the ids in the config.")
-                            
+            raise ValueError("Cannot have more than one page without a "
+                             "`title`")
+        if (wikiid is None and
+            (markdown_path is None or parentid not in ids
+             or title is None)):
+            raise ValueError("If `id` is not specified, then `markdown_path` "
+                             "and `parentId`, and `title` must be specified. "
+                             "`parentId` must be one of the "
+                             "`id`s in the config.")
+
 
 def sync_wiki(syn: Synapse, projectid: str,
               markdown_location: str = "./",
-              config_path: str = "wiki_config.json"):
-    """Sync Wiki"""
+              config_path: str = "wiki_config.json") -> dict:
+    """Syncs Wiki from configuration
+
+    Args:
+        syn: Synapse connection
+        project: synapseclient.Project or its id
+        markdown_location: Location to download markdown files into
+                           Defaults to location of where code is being
+                           executed.
+        config_path: Wiki configuration path that can be used to update
+                     the wikis
+
+    Returns:
+        Dict of wiki configuration
+
+    """
     with open(config_path, "r") as config:
         wiki_config = json.load(config)
 
@@ -84,3 +129,5 @@ def sync_wiki(syn: Synapse, projectid: str,
 
         wiki.markdown = markdown
         syn.store(wiki)
+
+    return wiki_config
