@@ -1,20 +1,26 @@
-.. No Errors Test Project documentation master file, created by
-   sphinx-quickstart on Fri Aug 30 17:07:56 2019.
+.. challengeutils documentation master file, created by
+   sphinx-quickstart on Sun Nov 10 18:08:14 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to No Errors Test Project's documentation!
-==================================================
+Welcome to challengeutils' documentation!
+=======================================================
+
+
+===================
+Command Line Client
+===================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Hello World!
+   :maxdepth: 4
 
+   client
 
+===================================
+challengeutils Python Documentation
+===================================
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 4
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   challengeutils
