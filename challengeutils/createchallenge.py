@@ -258,6 +258,15 @@ def main(syn, challenge_name, live_site=None):
         challenge_name: Name of the challenge
         live_site: If there is already a live site, specify live site Synapse
                    id. (Default is None)
+
+    Returns:
+        dict: {"live_projectid": projectid,
+               "staging_projectid": projectid,
+               "admin_teamid": teams['team_admin_id'],
+               "organizer_teamid": teams['team_org_id'],
+               "participant_teamid": teams['team_part_id'],
+               "preregistrantrant_teamid": teams['team_prereg_id']}
+
     """
     # Create teams for challenge sites
     teams = _create_teams(syn, challenge_name)
@@ -303,3 +312,9 @@ def main(syn, challenge_name, live_site=None):
                                                     challenge_name,
                                                     project_live.id)
         syn.store(wikipage)
+    return {"live_projectid": project_live.id,
+            "staging_projectid": project_staging.id,
+            "admin_teamid": teams['team_admin_id'],
+            "organizer_teamid": teams['team_org_id'],
+            "participant_teamid": teams['team_part_id'],
+            "preregistrantrant_teamid": teams['team_prereg_id']}

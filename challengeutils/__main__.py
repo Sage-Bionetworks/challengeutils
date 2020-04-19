@@ -8,7 +8,7 @@ import pandas as pd
 import synapseclient
 
 try:
-    from synapseclient.core.retry import _with_retry
+    from synapseclient.core.retry import with_retry as _with_retry
 except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.retry import _with_retry
@@ -49,8 +49,25 @@ def command_createchallenge(syn, args):
 
     >>> challengeutils createchallenge "Challenge Name Here"
     """
-    createchallenge.main(syn, args.challengename, args.livesiteid)
-
+    challenge_components = createchallenge.main(syn, args.challengename,
+                                                args.livesiteid)
+    # component: project or team
+    # componentid: project id or teamid
+    urls = {}
+    for component, componentid in challenge_components.items():
+        if component.endswith("projectid"):
+            urls[component] = f"https://www.synapse.org/#!Synapse:{componentid}"
+        elif component.endswith("teamid"):
+            urls[component] = f"https://www.synapse.org/#!Team:{componentid}"
+    urls['name'] = args.challengename
+    text = ("{name} (Production site): {live_projectid}",
+            "{name} (Staging site): {staging_projectid}",
+            "{name} (Admin team): {admin_teamid}",
+            "{name} (Participant team): {organizer_teamid}",
+            "{name} (Organizer team): {participant_teamid}",
+            "{name} (Pre-registrant team): {preregistrantrant_teamid}")
+    print("\n"+ "\n".join(text).format(**urls))
+    return challenge_components
 
 def command_query(syn, args):
     """Command line convenience function to call evaluation queue query

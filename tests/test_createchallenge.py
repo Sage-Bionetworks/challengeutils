@@ -268,10 +268,10 @@ def test_livesitenone_main():
 
 def test_livesite_main():
     """Tests main when live site is not None"""
-    team_map = {'team_part_id': 'syn1234',
-                'team_admin_id': 'syn1234',
-                'team_prereg_id': 'syn1234',
-                'team_org_id': 'syn1234'}
+    team_map = {'team_part_id': '1234',
+                'team_admin_id': '2345',
+                'team_prereg_id': '3456',
+                'team_org_id': '4567'}
     teamid = str(uuid.uuid1())
     project = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
@@ -301,6 +301,13 @@ def test_livesite_main():
          patch.object(createchallenge, "_update_wikipage_string",
                       return_value=wiki),\
          patch.object(SYN, "store"):
-        createchallenge.main(SYN, challenge_name, live_site="syn123")
+        components = createchallenge.main(SYN, challenge_name,
+                                          live_site="syn123")
         assert patch_set_perms.call_count == 2
         assert patch_create_proj.call_count == 1
+        assert components == {"live_projectid": proj.id,
+                              "staging_projectid": proj.id,
+                              "admin_teamid": '2345',
+                              "organizer_teamid": '4567',
+                              "participant_teamid": '1234',
+                              "preregistrantrant_teamid": '3456'}
