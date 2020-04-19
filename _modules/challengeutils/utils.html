@@ -1,0 +1,760 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.utils &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Challenge utility functions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">is_submission_status_annotations</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="c1"># For synapseclient &lt; v2.0</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
+
+<span class="kn">from</span> <span class="nn">synapseservices.challenge</span> <span class="kn">import</span> <span class="n">Challenge</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_switch_annotation_permission</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">,</span>
+                                  <span class="n">existing_annotations</span><span class="p">,</span>
+                                  <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Switch annotation permissions</span>
+<span class="sd">    If you add a private annotation that appears in the public annotation,</span>
+<span class="sd">    it should throw an error, or switch permissions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        add_annotations: Annotations to add</span>
+<span class="sd">        existing_annotations: Existing annotations (of the opposite annotation</span>
+<span class="sd">                              permissions)</span>
+<span class="sd">        force: Force the annotation permission to change. Default is False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Existing annotations</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">check_key</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="ow">in</span> <span class="n">add_annotations</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">check_key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="nb">sum</span><span class="p">(</span><span class="n">check_key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">force</span><span class="p">:</span>
+        <span class="c1"># Filter out the annotations that have changed ACL</span>
+        <span class="n">existing_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">existing_annotations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span>
+                                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">add_annotations</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">change_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span>
+                       <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">add_annotations</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;You are trying to change the ACL of these annotation key(s): </span><span class="si">{}</span><span class="s2">.&quot;</span>
+            <span class="s2">&quot; Either change the annotation key or specify &quot;</span>
+            <span class="s2">&quot;force=True&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">change_keys</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">existing_annotations</span>
+
+
+<span class="k">def</span> <span class="nf">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Convert private / public submission status objects to dictionary</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        annotations: Synapse submission status object</span>
+<span class="sd">        is_private: Private or public annotations</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dictionary with annotation key value pairs</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">annotation_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]:</span> <span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="n">annotations</span>
+                       <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]</span>
+                       <span class="k">if</span> <span class="n">annotation_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;scopeId&#39;</span><span class="p">,</span> <span class="s1">&#39;objectId&#39;</span><span class="p">]</span> <span class="ow">and</span>
+                       <span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">is_private</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">annotation_dict</span>
+
+
+<div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This will update a single submission&#39;s status</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        status: syn.getSubmissionStatus()</span>
+<span class="sd">        add_annotations: Annotations that you want to add in dict or</span>
+<span class="sd">                         submission status annotations format.</span>
+<span class="sd">                         If dict, all submissions will be added as</span>
+<span class="sd">                         private submissions</span>
+<span class="sd">        is_private: Annotations are set to private (default is True)</span>
+<span class="sd">        force: Force update the annotation from</span>
+<span class="sd">               private to public and vice versa.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Updated submission status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">existing_annots</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">existing_annots</span><span class="p">,</span>
+                                                          <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">existing_annots</span><span class="p">,</span>
+                                                         <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_status_annotations</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">):</span>
+        <span class="n">private_added_annotations</span> <span class="o">=</span> <span class="n">add_annotations</span> <span class="k">if</span> <span class="n">is_private</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">public_added_annotations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">is_private</span> <span class="k">else</span> <span class="n">add_annotations</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">private_added_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
+            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">public_added_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
+            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># If you add a private annotation that appears in the public annotation,</span>
+    <span class="c1"># it switches</span>
+    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span><span class="n">public_added_annotations</span><span class="p">,</span>
+                                                        <span class="n">private_annotations</span><span class="p">,</span>
+                                                        <span class="n">force</span><span class="p">)</span>
+
+    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span><span class="n">private_added_annotations</span><span class="p">,</span>
+                                                       <span class="n">public_annotations</span><span class="p">,</span>
+                                                       <span class="n">force</span><span class="p">)</span>
+
+    <span class="n">private_annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">private_added_annotations</span><span class="p">)</span>
+    <span class="n">public_annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">public_added_annotations</span><span class="p">)</span>
+
+    <span class="n">priv</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">private_annotations</span><span class="p">,</span>
+                                            <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">public_annotations</span><span class="p">,</span>
+                                           <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Combined private and public annotations into</span>
+    <span class="c1"># one Submission.Status.annotation</span>
+    <span class="n">combined_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stringAnnos&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                            <span class="s1">&#39;longAnnos&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                            <span class="s1">&#39;doubleAnnos&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;stringAnnos&#39;</span><span class="p">,</span> <span class="s1">&#39;longAnnos&#39;</span><span class="p">,</span> <span class="s1">&#39;doubleAnnos&#39;</span><span class="p">]:</span>
+        <span class="n">private_annotation</span> <span class="o">=</span> <span class="n">priv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
+        <span class="n">public_annotation</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
+        <span class="n">private_annotation_exists</span> <span class="o">=</span> <span class="n">private_annotation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">public_annotation_exists</span> <span class="o">=</span> <span class="n">public_annotation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">private_annotation_exists</span><span class="p">:</span>
+            <span class="n">combined_annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">private_annotation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">public_annotation_exists</span><span class="p">:</span>
+            <span class="n">combined_annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">public_annotation</span><span class="p">)</span>
+        <span class="c1"># Remove annotation key if doesn&#39;t exist</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">private_annotation_exists</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">public_annotation_exists</span><span class="p">:</span>
+            <span class="n">combined_annotations</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_annotations</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="evaluation_queue_query"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.evaluation_queue_query">[docs]</a><span class="k">def</span> <span class="nf">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is to query the evaluation queue service.</span>
+<span class="sd">    The limit parameter is set at 20 by default.</span>
+<span class="sd">    Using a larger limit results in fewer calls</span>
+<span class="sd">    to the service, but if responses are large enough to be a</span>
+<span class="sd">    burden on the service they may be truncated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn:     A Synapse object</span>
+<span class="sd">        uri:     A URI for evaluation queues (select * from evaluation_12345)</span>
+<span class="sd">        limit:   How many records should be returned per request</span>
+<span class="sd">        offset:  At what record offset from the first should iteration start</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        dict: A generator over some paginated results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">prev_num_results</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+    <span class="k">while</span> <span class="n">prev_num_results</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">rest_uri</span> <span class="o">=</span> <span class="s2">&quot;/evaluation/submission/query?query=&quot;</span> <span class="o">+</span> \
+            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> limit </span><span class="si">{}</span><span class="s2"> offset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">rest_uri</span><span class="p">)</span>
+        <span class="c1"># results = page[&#39;results&#39;] if &#39;results&#39; in page else page[&#39;children&#39;]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[{</span><span class="n">page</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">][</span><span class="n">index</span><span class="p">]:</span><span class="n">value</span>
+                    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">])}</span>
+                   <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">page</span><span class="p">[</span><span class="s1">&#39;rows&#39;</span><span class="p">]]</span>
+        <span class="n">prev_num_results</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">yield</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_challenge"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.get_challenge">[docs]</a><span class="k">def</span> <span class="nf">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the Challenge associated with a Project.</span>
+
+<span class="sd">    See the definition of a Challenge object here:</span>
+<span class="sd">    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        entity: An Entity or Synapse ID of a Project.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Challenge object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="n">challenge</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="s2">&quot;/entity/</span><span class="si">%s</span><span class="s2">/challenge&quot;</span> <span class="o">%</span> <span class="n">synid</span><span class="p">)</span>
+    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">Challenge</span><span class="p">(</span><span class="o">**</span><span class="n">challenge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">challenge_obj</span></div>
+
+
+<div class="viewcode-block" id="create_challenge"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.create_challenge">[docs]</a><span class="k">def</span> <span class="nf">create_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates Challenge associated with a Project</span>
+
+<span class="sd">    See the definition of a Challenge object here:</span>
+<span class="sd">    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        entity: An Entity or Synapse ID of a Project.</span>
+<span class="sd">        team: A Team or Team ID.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Challenge object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="n">teamid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
+    <span class="n">challenge_object</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;participantTeamId&#39;</span><span class="p">:</span> <span class="n">teamid</span><span class="p">,</span>
+                        <span class="s1">&#39;projectId&#39;</span><span class="p">:</span> <span class="n">synid</span><span class="p">}</span>
+    <span class="n">challenge</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s1">&#39;/challenge&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">challenge_object</span><span class="p">))</span>
+    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">Challenge</span><span class="p">(</span><span class="o">**</span><span class="n">challenge</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">challenge_obj</span></div>
+
+
+<span class="k">def</span> <span class="nf">_change_annotation_acl</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">annotation_type</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function to locate the existing annotation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        annotations: submission status annotations</span>
+<span class="sd">        key: key of the annotation</span>
+<span class="sd">        annotation_type: stringAnnos, doubleAnnos or longAnnos</span>
+<span class="sd">        is_private: whether the annotation is private or not, default to True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Updated annotation key ACL</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span>
+                            <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+            <span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_private</span>
+    <span class="k">return</span> <span class="n">annotations</span>
+
+
+<div class="viewcode-block" id="change_submission_annotation_acl"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_submission_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to change the acl of a list of known annotation keys</span>
+<span class="sd">    on one submission</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        status: syn.getSubmissionStatus()</span>
+<span class="sd">        annotations: list of annotation keys to make public</span>
+<span class="sd">        is_private: whether the annotation is private or not, default to True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Submission status with new submission annotation ACLs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">annotations</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+        <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;stringAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+        <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;doubleAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+        <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;longAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">submission_annotations</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
+                                          <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to change the acl of a list of known annotation keys on</span>
+<span class="sd">    all submissions of a evaluation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: synapse object</span>
+<span class="sd">        evaluationid: evaluation id</span>
+<span class="sd">        annotations: list of annotation keys to make public</span>
+<span class="sd">        status: ALL, VALIDATED, INVALID</span>
+<span class="sd">        is_private: whether the annotation is private or not, default to True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span> <span class="k">else</span> <span class="n">status</span>
+    <span class="n">bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
+        <span class="n">new_status</span> <span class="o">=</span> <span class="n">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
+                                                      <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">)</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="invite_member_to_team"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.invite_member_to_team">[docs]</a><span class="k">def</span> <span class="nf">invite_member_to_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Invite members to a team</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        team: Synapse Team id or name</span>
+<span class="sd">        user: Synapse username or profile id</span>
+<span class="sd">        email: Email of user, do not specify both email and user,</span>
+<span class="sd">               but must specify one</span>
+<span class="sd">        message: Message for people getting invited to the team</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">teamid</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">team</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+    <span class="n">is_member</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">invite</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;teamId&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">teamid</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="n">email</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">userid</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">user</span><span class="p">)[</span><span class="s1">&#39;ownerId&#39;</span><span class="p">]</span>
+        <span class="n">request</span> <span class="o">=</span> \
+            <span class="s2">&quot;/team/</span><span class="si">{teamId}</span><span class="s2">/member/</span><span class="si">{individualId}</span><span class="s2">/membershipStatus&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">teamId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">teamid</span><span class="p">),</span>
+                <span class="n">individualId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">userid</span><span class="p">))</span>
+        <span class="n">membership_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">is_member</span> <span class="o">=</span> <span class="n">membership_status</span><span class="p">[</span><span class="s1">&#39;isMember&#39;</span><span class="p">]</span>
+        <span class="n">invite</span><span class="p">[</span><span class="s1">&#39;inviteeId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">userid</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">invite</span><span class="p">[</span><span class="s1">&#39;inviteeEmail&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email</span>
+
+    <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">invite</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">message</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_member</span><span class="p">:</span>
+        <span class="n">invite</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s2">&quot;/membershipInvitation&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">invite</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">invite</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="register_team"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.register_team">[docs]</a><span class="k">def</span> <span class="nf">register_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Registers team to challenge</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        entity: An Entity or Synapse ID to lookup</span>
+<span class="sd">        team: Team name or team Id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Team id</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">challengeid</span> <span class="o">=</span> <span class="n">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+    <span class="n">teamid</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">team</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+    <span class="n">challenge_object</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;challengeId&#39;</span><span class="p">:</span> <span class="n">challengeid</span><span class="p">,</span> <span class="s1">&#39;teamId&#39;</span><span class="p">:</span> <span class="n">teamid</span><span class="p">}</span>
+    <span class="n">registered_team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span>
+        <span class="s1">&#39;/challenge/</span><span class="si">%s</span><span class="s1">/challengeTeam&#39;</span> <span class="o">%</span> <span class="n">challengeid</span><span class="p">,</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">challenge_object</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">registered_team</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="change_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;RECEIVED&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to change a submission status</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Id of a submission</span>
+<span class="sd">        status: Submission status to change a submission to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Updated submission status</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
+    <span class="n">sub_status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">sub_status</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sub_status</span></div>
+
+
+<div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
+                                 <span class="n">change_to_status</span><span class="o">=</span><span class="s1">&#39;VALIDATED&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to change submission status of all submissions in a queue</span>
+<span class="sd">    The defaults is to change submissions from SCORED -&gt; VALIDATED</span>
+<span class="sd">    This function can be useful for &#39;rescoring&#39; submissions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        evaluationid: Id of an Evaluation queue</span>
+<span class="sd">        submission_status: Submissions with this status that you want to</span>
+<span class="sd">                           change. Default is SCORED.</span>
+<span class="sd">        change_to_status: Submission status to change a submission to.</span>
+<span class="sd">                          Default is VALIDATED.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">submission_bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span>
+                                                 <span class="n">status</span><span class="o">=</span><span class="n">submission_status</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">submission_bundle</span><span class="p">:</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">change_to_status</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NewUserProfile"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.NewUserProfile">[docs]</a><span class="k">class</span> <span class="nc">NewUserProfile</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">UserProfile</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create new user profile that makes Userprofiles hashable</span>
+<span class="sd">    SYNPY-879</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;ownerId&#39;</span><span class="p">])</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function to return a set of usernames</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        team: Synapse team id, name or object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of synapse user profiles in team</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeamMembers</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
+    <span class="n">members_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">NewUserProfile</span><span class="p">(</span><span class="o">**</span><span class="n">member</span><span class="p">[</span><span class="s1">&#39;member&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">members_set</span>
+
+
+<div class="viewcode-block" id="team_members_diff"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_diff">[docs]</a><span class="k">def</span> <span class="nf">team_members_diff</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the diff between teama and teamb</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        a: Synapse Team id or name</span>
+<span class="sd">        b: Synapse Team id or name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of synapse user profiles in teama but not in teamb</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">members_not_in_teamb</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">members_not_in_teamb</span></div>
+
+
+<div class="viewcode-block" id="team_members_intersection"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_intersection">[docs]</a><span class="k">def</span> <span class="nf">team_members_intersection</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the intersection between teama and teamb</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        a: Synapse Team id or name</span>
+<span class="sd">        b: Synapse Team id or name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of synapse user profiles that belong in both teams</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">intersect_members</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">intersect_members</span></div>
+
+
+<div class="viewcode-block" id="team_members_union"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_union">[docs]</a><span class="k">def</span> <span class="nf">team_members_union</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the union between teama and teamb</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        a: Synapse Team id or name</span>
+<span class="sd">        b: Synapse Team id or name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of a combination of synapse user profiles from both teams</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">union_members</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">union_members</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_date_range</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function to check if the date is within range</span>
+<span class="sd">    Note: the date and time is in UTC</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        date_str: date string</span>
+<span class="sd">        start_datetime: start date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                        example: 2019-01-01 1:00</span>
+<span class="sd">        end_datetime: end date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                      example: 2019-01-01 23:59</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        boolean</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">start_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">date_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span>
+                                              <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_datetime</span><span class="p">,</span>
+                                                   <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">date_obj</span> <span class="o">&gt;=</span> <span class="n">start_obj</span>
+        <span class="k">if</span> <span class="n">end_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_datetime</span><span class="p">,</span>
+                                                 <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">date_obj</span> <span class="o">&lt;=</span> <span class="n">end_obj</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
+                      <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function to get contributors from a given evaluation id.</span>
+<span class="sd">    Note: the date and time is in UTC</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        evaluationid: evaluation id</span>
+<span class="sd">        submission_status: Submission status</span>
+<span class="sd">        start_datetime: start date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                        example: 2019-01-01 23:00</span>
+<span class="sd">        end_datetime: end date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                      example: 2019-01-01 23:59</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of contributors&#39; user ids</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">bundles</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+    <span class="n">contributors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">bundles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_check_date_range</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">createdOn</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
+            <span class="n">principalids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">contributor</span><span class="p">[</span><span class="s1">&#39;principalId&#39;</span><span class="p">]</span>
+                               <span class="k">for</span> <span class="n">contributor</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">contributors</span><span class="p">)</span>
+            <span class="n">contributors</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">principalids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">contributors</span>
+
+
+<div class="viewcode-block" id="get_contributors"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.get_contributors">[docs]</a><span class="k">def</span> <span class="nf">get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationids</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
+                     <span class="n">start_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to get contributors from a list of evaluation ids</span>
+<span class="sd">    Note: the date and time is in UTC</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        evaluationids: a list of evaluation ids</span>
+<span class="sd">        status: Submission status. Default = SCORED</span>
+<span class="sd">        start_datetime: start date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                        example: 2019-01-01 1:00</span>
+<span class="sd">        end_datetime: end date time in YYYY-MM-DD H:M format,</span>
+<span class="sd">                      example: 2019-01-01 23:59</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of contributors&#39; user ids</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">all_contributors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">evaluationid</span> <span class="ow">in</span> <span class="n">evaluationids</span><span class="p">:</span>
+        <span class="n">contributors</span> <span class="o">=</span> <span class="n">_get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
+                                         <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">)</span>
+        <span class="n">all_contributors</span> <span class="o">=</span> <span class="n">all_contributors</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">contributors</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_contributors</span></div>
+
+
+<div class="viewcode-block" id="list_evaluations"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    List evaluation queues of a Synapse project</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        project: Synapse id/entity of project</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">evaluations</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getEvaluationByContentSource</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">evaluations</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Evaluation- </span><span class="si">{name}</span><span class="s2">(</span><span class="si">{evalid}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                  <span class="n">evalid</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">id</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="download_submission"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.download_submission">[docs]</a><span class="k">def</span> <span class="nf">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Download submission and return json</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        download_location: Location to download submission</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: submission json results</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">downloadLocation</span><span class="o">=</span><span class="n">download_location</span><span class="p">)</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;docker_repository&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerRepositoryName&quot;</span><span class="p">),</span>
+              <span class="s1">&#39;docker_digest&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerDigest&quot;</span><span class="p">),</span>
+              <span class="s1">&#39;entity_id&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;entity_version&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;versionNumber&#39;</span><span class="p">),</span>
+              <span class="s1">&#39;entity_type&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;concreteType&#39;</span><span class="p">),</span>
+              <span class="s1">&#39;evaluation_id&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;evaluationId&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;file_path&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;filePath&#39;</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="mock_response"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.mock_response">[docs]</a><span class="k">class</span> <span class="nc">mock_response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Mocked status code to return&quot;&quot;&quot;</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="annotate_submission_with_json"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.annotate_submission_with_json">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_values</span><span class="p">,</span>
+                                  <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    ChallengeWorkflowTemplate tool: Annotates submission with annotation</span>
+<span class="sd">    values from a json file and uses exponential backoff to retry when</span>
+<span class="sd">    there are concurrent update issues (HTTP 412).  Must return a object</span>
+<span class="sd">    with status_code that has a range between 200-209</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        annotation_values: Annotation json file</span>
+<span class="sd">        is_private: Set annotations acl to private (default is True)</span>
+<span class="sd">        force: Force change the annotation from</span>
+<span class="sd">               private to public and vice versa.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mocked response object (200)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">annotation_values</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
+        <span class="n">annotation_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotation_json</span><span class="p">,</span>
+                                             <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>
+                                             <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mock_response</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_submitter_name</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the Synapse team name or the username given a submitterid</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submitterid: submitter id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        username or teamname</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">submitterid</span><span class="p">)</span>
+        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span><span class="p">:</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">submitterid</span><span class="p">)</span>
+        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">team</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">submitter_name</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

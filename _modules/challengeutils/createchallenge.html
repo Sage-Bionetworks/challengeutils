@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.createchallenge &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.createchallenge</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Creates challenge space in Synapse</span>
+
+<span class="sd">Input:  Challenge Project name</span>
+<span class="sd">Output: The skeleton for two challenges site with initial wiki, four teams</span>
+<span class="sd">        (admin, participants, organizers, and preregistrants), and</span>
+<span class="sd">        a challenge widget added on live site with a participant</span>
+<span class="sd">        team associated with it.</span>
+
+<span class="sd">For more information on challenges administration:</span>
+<span class="sd">https://docs.synapse.org/articles/challenge_administration.html</span>
+
+<span class="sd">Example (run on bash)</span>
+
+<span class="sd">&gt;&gt;&gt; challengeutils createchallenge &quot;Plouf Challenge&quot;</span>
+
+<span class="sd">TODO Add participants</span>
+<span class="sd">TODO Add tests</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="c1"># For synapseclient &lt; v2.0</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+<span class="kn">import</span> <span class="nn">synapseutils</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permissions</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># A pre-defined wiki project is used as initial template for challenge sites.</span>
+<span class="c1"># To copy over the template synapseutils.copyWiki() function is used with</span>
+<span class="c1"># template id as source and new challenge project entity synId as destination.</span>
+<span class="c1"># DREAM_CHALLENGE_TEMPLATE_SYNID = &quot;syn2769515&quot;  # Template 1.0</span>
+<span class="n">DREAM_CHALLENGE_TEMPLATE_SYNID</span> <span class="o">=</span> <span class="s2">&quot;syn18058986&quot;</span>  <span class="c1"># Template 2.0</span>
+
+<span class="n">LIVE_PAGE_MARKDOWN</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;## Banner</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="si">{row}</span><span class="se">\n</span><span class="s1"> {column width=3}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;${jointeam?teamId=</span><span class="si">%s</span><span class="s1">&amp;isChallenge=false&amp;isMemberMessage=You have successfully preregistered for the challenge&amp;text=Click here to preregister&amp;isSimpleRequestButton=true&amp;requestOpenText=Your registration is in progress&amp;successMessage=Your registration is in progress}</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="s1"> {column width=9} </span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;###! There are ${teammembercount?teamId=</span><span class="si">%s</span><span class="s1">} preregistered participants. Join them now!</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="si">{row}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">---</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;## Overview</span><span class="se">\n\n</span><span class="s1">&lt;font size=4&gt;**Goal:**&lt;/font&gt;</span><span class="se">\n\n</span><span class="s1">&lt;font size=4&gt;**Motivation:**&lt;/font&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">---</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;## Timeline</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">---</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;## Challenge Organizers</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">---</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;## Funders/Sponsors/Data Contributors/Journal Partners:</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_project"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.create_project">[docs]</a><span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates Synapse Project</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synpase object</span>
+<span class="sd">        project_name: Name of project</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Project Entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+    <span class="c1"># returns the handle to the project if the user has sufficient priviledge</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created/Fetched Project </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                         <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">project</span></div>
+
+
+<div class="viewcode-block" id="create_team"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.create_team">[docs]</a><span class="k">def</span> <span class="nf">create_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team_name</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">can_public_join</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates Synapse Team</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synpase object</span>
+<span class="sd">        team_name: Name of team</span>
+<span class="sd">        desc: Description of team</span>
+<span class="sd">        can_public_join: true for teams which members can join without</span>
+<span class="sd">                         an invitation or approval. Default to False</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Synapse Team id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># raises a ValueError if a team does not exist</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">team_name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The team </span><span class="si">{}</span><span class="s1"> already exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">team_name</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
+        <span class="c1"># If you press enter, this will default to &#39;y&#39;</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Do you want to use this team? (Y/n) &#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;y&#39;</span>
+        <span class="k">if</span> <span class="n">user_input</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Please specify a new challenge name. Exiting.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Team</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">team_name</span><span class="p">,</span>
+                                  <span class="n">description</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+                                  <span class="n">canPublicJoin</span><span class="o">=</span><span class="n">can_public_join</span><span class="p">)</span>
+        <span class="c1"># raises a ValueError if a team with this name already exists</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created Team </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">team</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">team</span></div>
+
+
+<div class="viewcode-block" id="create_evaluation_queue"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.create_evaluation_queue">[docs]</a><span class="k">def</span> <span class="nf">create_evaluation_queue</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">parentid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates Evaluation Queues</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synpase object</span>
+<span class="sd">        name: Name of evaluation queue</span>
+<span class="sd">        description: Description of queue</span>
+<span class="sd">        parentid: Synapse project id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Evalation Queue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queue_ent</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Evaluation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                         <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                                         <span class="n">contentSource</span><span class="o">=</span><span class="n">parentid</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">queue_ent</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created Queue </span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">queue</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">queue</span></div>
+
+
+<span class="k">def</span> <span class="nf">_create_live_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">teamid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates the wiki of the live challenge page</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synpase object</span>
+<span class="sd">        project: Synapse project</span>
+<span class="sd">        teamid: Synapse team id of participant team</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">markdown</span> <span class="o">=</span> <span class="n">LIVE_PAGE_MARKDOWN</span> <span class="o">%</span> <span class="p">(</span><span class="n">teamid</span><span class="p">,</span> <span class="n">teamid</span><span class="p">)</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">Wiki</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
+                                 <span class="n">markdown</span><span class="o">=</span><span class="n">markdown</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="create_challenge_widget"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.create_challenge_widget">[docs]</a><span class="k">def</span> <span class="nf">create_challenge_widget</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span> <span class="n">team_part_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates challenge widget - activates a Synapse project</span>
+<span class="sd">    If challenge object exists, it retrieves existing object</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synpase object</span>
+<span class="sd">        project_live: Synapse id of live challenge project</span>
+<span class="sd">        team_part_id: Synapse team id of participant team</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">challenge</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span> <span class="n">team_part_id</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created Challenge (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">challenge</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span><span class="p">:</span>
+        <span class="n">challenge</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetched existing Challenge (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">challenge</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">challenge</span></div>
+
+
+<span class="k">def</span> <span class="nf">_update_wikipage_string</span><span class="p">(</span><span class="n">wikipage_string</span><span class="p">,</span> <span class="n">challengeid</span><span class="p">,</span> <span class="n">teamid</span><span class="p">,</span>
+                            <span class="n">challenge_name</span><span class="p">,</span> <span class="n">synid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Updates wikipage strings in the challenge wiki template</span>
+<span class="sd">    with the newly created challengeid, teamid, challenge name and project id</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wikipage_string: Original wikipage string</span>
+<span class="sd">        challengeid: New challenge id</span>
+<span class="sd">        teamid: Synapse Team id</span>
+<span class="sd">        challenge_name: challenge name</span>
+<span class="sd">        synid: Synapse id of project</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fixed wiki page string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;challengeId=0&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;challengeId=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">challengeid</span><span class="p">)</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{teamId}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">teamid</span><span class="p">)</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;teamId=0&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;teamId=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">teamid</span><span class="p">)</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#!Map:0&#39;</span><span class="p">,</span> <span class="s1">&#39;#!Map:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">teamid</span><span class="p">)</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{challengeName}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                              <span class="n">challenge_name</span><span class="p">)</span>
+    <span class="n">wikipage_string</span> <span class="o">=</span> <span class="n">wikipage_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;projectId=syn0&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;projectId=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">synid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wikipage_string</span>
+
+
+<span class="k">def</span> <span class="nf">_create_teams</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create teams needed for a challenge: participant, admin, organizer, and</span>
+<span class="sd">    preregistration team</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        challenge_name: Name of the challenge</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict of challenge team ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">team_part</span> <span class="o">=</span> <span class="n">challenge_name</span> <span class="o">+</span> <span class="s1">&#39; Participants&#39;</span>
+    <span class="n">team_admin</span> <span class="o">=</span> <span class="n">challenge_name</span> <span class="o">+</span> <span class="s1">&#39; Admin&#39;</span>
+    <span class="n">team_prereg</span> <span class="o">=</span> <span class="n">challenge_name</span> <span class="o">+</span> <span class="s1">&#39; Preregistrants&#39;</span>
+    <span class="c1"># The organizer team is used to gate permissions</span>
+    <span class="c1"># The motivation is that not everyone needs admin access to the projects</span>
+    <span class="n">team_org</span> <span class="o">=</span> <span class="n">challenge_name</span> <span class="o">+</span> <span class="s1">&#39; Organizers&#39;</span>
+    <span class="n">team_part_ent</span> <span class="o">=</span> <span class="n">create_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team_part</span><span class="p">,</span> <span class="s1">&#39;Challenge Particpant Team&#39;</span><span class="p">,</span>
+                                <span class="n">can_public_join</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">team_admin_ent</span> <span class="o">=</span> <span class="n">create_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team_admin</span><span class="p">,</span> <span class="s1">&#39;Challenge Admin Team&#39;</span><span class="p">,</span>
+                                 <span class="n">can_public_join</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">team_org_ent</span> <span class="o">=</span> <span class="n">create_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team_org</span><span class="p">,</span> <span class="s1">&#39;Challenge Organizing Team&#39;</span><span class="p">,</span>
+                               <span class="n">can_public_join</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">team_prereg_ent</span> <span class="o">=</span> <span class="n">create_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team_prereg</span><span class="p">,</span>
+                                  <span class="s1">&#39;Challenge Pre-registration Team&#39;</span><span class="p">,</span>
+                                  <span class="n">can_public_join</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">team_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">:</span> <span class="n">team_part_ent</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;team_admin_id&#39;</span><span class="p">:</span> <span class="n">team_admin_ent</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;team_prereg_id&#39;</span><span class="p">:</span> <span class="n">team_prereg_ent</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;team_org_id&#39;</span><span class="p">:</span> <span class="n">team_org_ent</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">team_map</span>
+
+
+<div class="viewcode-block" id="check_existing_and_delete_wiki"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.check_existing_and_delete_wiki">[docs]</a><span class="k">def</span> <span class="nf">check_existing_and_delete_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">synid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks if wiki exists, and if so prompt to delete</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        synid: Synapse id of an Entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wiki</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">synid</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">wiki</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The staging project has already a wiki.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">wiki</span><span class="p">)</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="s1">&#39;Do you agree to delete the wiki before continuing? (y/N) &#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;n&#39;</span>
+        <span class="k">if</span> <span class="n">user_input</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Exiting&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Deleting wiki of the staging project (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">wiki</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">wiki</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.createchallenge.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span><span class="p">,</span> <span class="n">live_site</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates two project entity for challenge sites.</span>
+<span class="sd">    1) live (public) and 2) staging (private until launch)</span>
+<span class="sd">    Allow for users to set up the live site themselves</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        challenge_name: Name of the challenge</span>
+<span class="sd">        live_site: If there is already a live site, specify live site Synapse</span>
+<span class="sd">                   id. (Default is None)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create teams for challenge sites</span>
+    <span class="n">teams</span> <span class="o">=</span> <span class="n">_create_teams</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span><span class="p">)</span>
+
+    <span class="c1"># Create live Project</span>
+    <span class="k">if</span> <span class="n">live_site</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">project_live</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span><span class="p">)</span>
+        <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span>
+                                           <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_admin_id&#39;</span><span class="p">],</span>
+                                           <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+        <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span>
+                                           <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_org_id&#39;</span><span class="p">],</span>
+                                           <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">)</span>
+        <span class="n">_create_live_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span> <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_prereg_id&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">project_live</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">live_site</span><span class="p">)</span>
+
+    <span class="n">challenge</span> <span class="o">=</span> <span class="n">create_challenge_widget</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span>
+                                        <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">])</span>
+    <span class="n">create_evaluation_queue</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Project Submission&#39;</span> <span class="o">%</span> <span class="n">challenge_name</span><span class="p">,</span>
+                            <span class="s1">&#39;Project Submission&#39;</span><span class="p">,</span>
+                            <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="c1"># Create staging Project</span>
+    <span class="n">project_staging</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span> <span class="o">+</span> <span class="s1">&#39; - staging&#39;</span><span class="p">)</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_staging</span><span class="p">,</span>
+                                       <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_admin_id&#39;</span><span class="p">],</span>
+                                       <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_staging</span><span class="p">,</span>
+                                       <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_org_id&#39;</span><span class="p">],</span>
+                                       <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;edit&quot;</span><span class="p">)</span>
+    <span class="c1"># Checks if staging wiki exists, if so delete</span>
+    <span class="n">check_existing_and_delete_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_staging</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Copying wiki template to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_staging</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+    <span class="n">new_wikiids</span> <span class="o">=</span> <span class="n">synapseutils</span><span class="o">.</span><span class="n">copyWiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">DREAM_CHALLENGE_TEMPLATE_SYNID</span><span class="p">,</span>
+                                        <span class="n">project_staging</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">new_wikiids</span><span class="p">:</span>
+        <span class="n">wikipage</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">project_staging</span><span class="p">,</span> <span class="n">page</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="n">wikipage</span><span class="o">.</span><span class="n">markdown</span> <span class="o">=</span> <span class="n">_update_wikipage_string</span><span class="p">(</span><span class="n">wikipage</span><span class="o">.</span><span class="n">markdown</span><span class="p">,</span>
+                                                    <span class="n">challenge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                    <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">],</span>
+                                                    <span class="n">challenge_name</span><span class="p">,</span>
+                                                    <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">wikipage</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

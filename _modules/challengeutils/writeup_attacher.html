@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.writeup_attacher &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.writeup_attacher</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="append_writeup_to_main_submission"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.writeup_attacher.append_writeup_to_main_submission">[docs]</a><span class="k">def</span> <span class="nf">append_writeup_to_main_submission</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">syn</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function that appends the write up synapse id and archived</span>
+<span class="sd">    write up synapse id on the main submission</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        row: Dictionary row[&#39;team&#39;], row[&#39;objectId&#39;], row[&#39;archived&#39;],</span>
+<span class="sd">             row[&#39;entityId&#39;]</span>
+<span class="sd">        syn: synapse object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;archived&#39;</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NO WRITEUP: &quot;</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;objectId&#39;</span><span class="p">])</span>
+        <span class="n">add_writeup_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;writeUp&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;entityId&#39;</span><span class="p">],</span> <span class="s1">&#39;archivedWriteUp&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;archived&#39;</span><span class="p">]}</span>
+
+        <span class="n">add_writeup</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span>
+            <span class="n">add_writeup_dict</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">new_status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">update_single_submission_status</span><span class="p">(</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">add_writeup</span><span class="p">)</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="attach_writeup"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.writeup_attacher.attach_writeup">[docs]</a><span class="k">def</span> <span class="nf">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">writeup_queueid</span><span class="p">,</span> <span class="n">submission_queueid</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Attach the write up to the submission queue</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        writeup_queueid:   Write up evaluation queue id</span>
+<span class="sd">        submission_queueid: Submission queue id</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">writeups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="s2">&quot;select team, entityId, archived from evaluation_</span><span class="si">{}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;where status == &#39;VALIDATED&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">writeup_queueid</span><span class="p">)))</span>
+    <span class="n">submissions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="s2">&quot;select objectId, team from evaluation_</span><span class="si">{}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;where status == &#39;SCORED&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submission_queueid</span><span class="p">)))</span>
+    <span class="n">writeupsdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">writeups</span><span class="p">)</span>
+    <span class="n">submissionsdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">submissions</span><span class="p">)</span>
+    <span class="n">submissions_with_writeupsdf</span> <span class="o">=</span> \
+        <span class="n">submissionsdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">writeupsdf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;team&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+    <span class="n">submissions_with_writeupsdf</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">append_writeup_to_main_submission</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">syn</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

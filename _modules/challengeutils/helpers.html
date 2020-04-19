@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.helpers &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Challenge helper functions</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="kn">import</span> <span class="nn">synapseutils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">WORKFLOW_LAST_UPDATED_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated&quot;</span>
+<span class="n">WORKFLOW_START_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted&quot;</span>
+<span class="n">TIME_REMAINING_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining&quot;</span>
+
+
+<div class="viewcode-block" id="rename_submission_files"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.rename_submission_files">[docs]</a><span class="k">def</span> <span class="nf">rename_submission_files</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span>
+                            <span class="n">status</span><span class="o">=</span><span class="s2">&quot;SCORED&quot;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function renames the submission files of an evaluation queue.</span>
+<span class="sd">    For many challenges we require participants to submit files that are</span>
+<span class="sd">    named one thing such as prediction.csv. This function renames them to</span>
+
+<span class="sd">        submitter_date_filename</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: synapse object</span>
+<span class="sd">        evaluationid:  Id of Evaluation queue</span>
+<span class="sd">        download_location:  location to download files to (Default is ./)</span>
+<span class="sd">        status: The submissions to download (Default is SCORED)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">submission_bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">submission_bundle</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;teamId&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">submitter</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;teamId&quot;</span><span class="p">))[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">submitter</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">userId</span><span class="p">)[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">createdOn</span>
+        <span class="n">submission_ent</span> <span class="o">=</span> \
+            <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">downloadLocation</span><span class="o">=</span><span class="n">download_location</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">submission_ent</span><span class="o">.</span><span class="n">filePath</span><span class="p">)</span>
+        <span class="n">newname</span> <span class="o">=</span> <span class="n">submitter</span><span class="o">+</span><span class="s2">&quot;___&quot;</span><span class="o">+</span><span class="n">date</span><span class="o">+</span><span class="s2">&quot;___&quot;</span><span class="o">+</span><span class="n">filename</span>
+        <span class="n">newname</span> <span class="o">=</span> <span class="n">newname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">newname</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">newname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_team_wikis"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.create_team_wikis">[docs]</a><span class="k">def</span> <span class="nf">create_team_wikis</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">synid</span><span class="p">,</span> <span class="n">templateid</span><span class="p">,</span> <span class="n">tracker_table_synid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that creates wiki pages from a template by looking at teams that</span>
+<span class="sd">    are registered for a challenge.  The teams that have a wiki made for them</span>
+<span class="sd">    Are stored into a trackerTable that has columns wikiSynId, and teamId</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        synId: Synapse id of challenge project</span>
+<span class="sd">        templateId:  Synapse id of the template</span>
+<span class="sd">        trackerTableSynId: Synapse id of Table that tracks if wiki pages</span>
+<span class="sd">                           have been made per team</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">challenge_ent</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">synid</span><span class="p">)</span>
+    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_challenge</span><span class="p">(</span><span class="n">challenge_ent</span><span class="p">)</span>
+    <span class="n">registered_teams</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span>
+        <span class="s2">&quot;/challenge/</span><span class="si">{}</span><span class="s2">/challengeTeam&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">challenge_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">registered_teams</span><span class="p">:</span>
+        <span class="n">submitted_teams</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">tableQuery</span><span class="p">(</span>
+            <span class="s2">&quot;SELECT * FROM </span><span class="si">{}</span><span class="s2"> where teamId = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">tracker_table_synid</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">submitted_teams</span><span class="o">.</span><span class="n">asDataFrame</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">])</span>
+            <span class="c1"># The project name is the challenge project name and team name</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">challenge_ent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">)))</span>
+            <span class="c1"># Give admin access to the team</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">setPermissions</span><span class="p">(</span>
+                <span class="n">project</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">],</span>
+                <span class="n">accessType</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_SETTINGS&#39;</span><span class="p">,</span> <span class="s1">&#39;MODERATE&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">])</span>
+            <span class="n">wiki_copy</span> <span class="o">=</span> <span class="n">synapseutils</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">templateid</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="c1"># syn.sendMessage(i[])</span>
+            <span class="c1"># Store copied synId to tracking table</span>
+            <span class="n">tracking_table</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span>
+                <span class="n">tracker_table_synid</span><span class="p">,</span> <span class="p">[[</span><span class="n">wiki_copy</span><span class="p">[</span><span class="n">templateid</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">]]])</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">tracking_table</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kill_docker_submission_over_quota"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.kill_docker_submission_over_quota">[docs]</a><span class="k">def</span> <span class="nf">kill_docker_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation_id</span><span class="p">,</span> <span class="n">quota</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Kills any docker container that exceeds the run time quota</span>
+<span class="sd">    Rerunning submissions will require setting TimeRemaining annotation</span>
+<span class="sd">    to a positive integer</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn (obj): Synapse object</span>
+<span class="sd">        evaluation_id (int): Synapse evaluation queue id</span>
+<span class="sd">        quota (int): Quota in milliseconds. Default is sys.maxsize.</span>
+<span class="sd">                     One hour is 3600000.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quota</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quota must be an integer&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">quota</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quota must be larger than 0&quot;</span><span class="p">)</span>
+
+    <span class="n">evaluation_query</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;select * from evaluation_</span><span class="si">{</span><span class="n">evaluation_id</span><span class="si">}</span><span class="s2"> where &quot;</span>
+                        <span class="s2">&quot;status == &#39;EVALUATION_IN_PROGRESS&#39;&quot;</span><span class="p">)</span>
+    <span class="n">query_results</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation_query</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">query_results</span><span class="p">:</span>
+        <span class="c1"># If last updated and start doesn&#39;t exist, set to 0</span>
+        <span class="n">last_updated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">WORKFLOW_LAST_UPDATED_KEY</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">WORKFLOW_START_KEY</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">model_run_time</span> <span class="o">=</span> <span class="n">last_updated</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="k">if</span> <span class="n">model_run_time</span> <span class="o">&gt;</span> <span class="n">quota</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;objectId&#39;</span><span class="p">])</span>
+            <span class="n">add_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">TIME_REMAINING_KEY</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span>
+                                                           <span class="n">add_annotations</span><span class="p">)</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
+
+    <span class="c1"># Rerunning submissions will require setting this</span>
+    <span class="c1"># annotation to a positive integer</span>
+
+
+<div class="viewcode-block" id="archive_writeup"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.archive_writeup">[docs]</a><span class="k">def</span> <span class="nf">archive_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s2">&quot;VALIDATED&quot;</span><span class="p">,</span> <span class="n">reArchive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Archive the submissions for the given evaluation queue and</span>
+<span class="sd">    store them in the destination synapse folder.</span>
+
+<span class="sd">    :param evaluation: a synapse evaluation queue or its ID</span>
+<span class="sd">    :param query: a query that will return the desired submissions.</span>
+<span class="sd">                  At least the ID must be returned. Defaults to:</span>
+<span class="sd">                  &#39;select * from evaluation_[EVAL_ID] where status==&quot;SCORED&quot;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">evaluation</span><span class="p">)</span> <span class="o">!=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Evaluation</span><span class="p">:</span>
+        <span class="n">evaluation</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getEvaluation</span><span class="p">(</span><span class="n">evaluation</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Archiving&quot;</span><span class="p">,</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluation</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">stat</span><span class="p">):</span>
+        <span class="c1"># retrieve file into cache and copy it to destination</span>
+        <span class="n">checkIfArchived</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;archived&quot;</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;stringAnnos&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">checkIfArchived</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">reArchive</span><span class="p">:</span>
+            <span class="n">projectEntity</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Project</span><span class="p">(</span>
+                <span class="s1">&#39;Archived </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">sub</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)),</span>
+                    <span class="n">sub</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">sub</span><span class="o">.</span><span class="n">entityId</span><span class="p">))</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">projectEntity</span><span class="p">)</span>
+            <span class="n">adminPriv</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;MODERATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_SETTINGS&#39;</span><span class="p">]</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">setPermissions</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="s2">&quot;3324230&quot;</span><span class="p">,</span> <span class="n">adminPriv</span><span class="p">)</span>
+            <span class="n">synapseutils</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">sub</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">archived</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;archived&quot;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">archived</span><span class="p">)</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -31,29 +31,1168 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="create-challenge">
-<h1>Create Challenge<a class="headerlink" href="#create-challenge" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-challengeutils.createchallenge">
+<span id="create-challenge"></span><h1>Create Challenge<a class="headerlink" href="#module-challengeutils.createchallenge" title="Permalink to this headline">¶</a></h1>
+<p>Creates challenge space in Synapse</p>
+<p>Input:  Challenge Project name
+Output: The skeleton for two challenges site with initial wiki, four teams</p>
+<blockquote>
+<div><p>(admin, participants, organizers, and preregistrants), and
+a challenge widget added on live site with a participant
+team associated with it.</p>
+</div></blockquote>
+<p>For more information on challenges administration:
+<a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">https://docs.synapse.org/articles/challenge_administration.html</a></p>
+<p>Example (run on bash)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Plouf Challenge&quot;</span>
+</pre></div>
 </div>
-<div class="section" id="synapse-discussion-service">
-<h1>Synapse Discussion Service<a class="headerlink" href="#synapse-discussion-service" title="Permalink to this headline">¶</a></h1>
+<p>TODO Add participants
+TODO Add tests</p>
+<dl class="function">
+<dt id="challengeutils.createchallenge.check_existing_and_delete_wiki">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">check_existing_and_delete_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#check_existing_and_delete_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.check_existing_and_delete_wiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if wiki exists, and if so prompt to delete</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>synid</strong> – Synapse id of an Entity</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_challenge_widget">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_challenge_widget</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_live</em>, <em class="sig-param">team_part_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#create_challenge_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_challenge_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates challenge widget - activates a Synapse project
+If challenge object exists, it retrieves existing object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>project_live</strong> – Synapse id of live challenge project</p></li>
+<li><p><strong>team_part_id</strong> – Synapse team id of participant team</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_evaluation_queue">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_evaluation_queue</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">name</em>, <em class="sig-param">description</em>, <em class="sig-param">parentid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#create_evaluation_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_evaluation_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Evaluation Queues</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>name</strong> – Name of evaluation queue</p></li>
+<li><p><strong>description</strong> – Description of queue</p></li>
+<li><p><strong>parentid</strong> – Synapse project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evalation Queue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_project">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#create_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Synapse Project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>project_name</strong> – Name of project</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Project Entity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_team">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">team_name</em>, <em class="sig-param">desc</em>, <em class="sig-param">can_public_join=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#create_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Synapse Team</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>team_name</strong> – Name of team</p></li>
+<li><p><strong>desc</strong> – Description of team</p></li>
+<li><p><strong>can_public_join</strong> – true for teams which members can join without
+an invitation or approval. Default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Synapse Team id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.main">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">challenge_name</em>, <em class="sig-param">live_site=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/createchallenge.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates two project entity for challenge sites.
+1) live (public) and 2) staging (private until launch)
+Allow for users to set up the live site themselves</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>challenge_name</strong> – Name of the challenge</p></li>
+<li><p><strong>live_site</strong> – If there is already a live site, specify live site Synapse
+id. (Default is None)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="download-current-lead-submission">
-<h1>Download current lead submission<a class="headerlink" href="#download-current-lead-submission" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.discussion">
+<span id="synapse-discussion-service"></span><h1>Synapse Discussion Service<a class="headerlink" href="#module-challengeutils.discussion" title="Permalink to this headline">¶</a></h1>
+<p>Interact with Synapse discussion API endpoints.</p>
+<dl class="class">
+<dt id="challengeutils.discussion.DiscussionApi">
+<em class="property">class </em><code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">DiscussionApi</code><span class="sig-paren">(</span><em class="sig-param">syn=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Discussion API calls</p>
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.delete_thread">
+<code class="sig-name descname">delete_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.delete_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.delete_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html">https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_forum">
+<code class="sig-name descname">get_forum</code><span class="sig-paren">(</span><em class="sig-param">forumid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Forum’s metadata for a given forum ID.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId.html">https://rest-docs.synapse.org/rest/GET/forum/forumId.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_forum_moderators">
+<code class="sig-name descname">get_forum_moderators</code><span class="sig-paren">(</span><em class="sig-param">forumid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_forum_moderators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_moderators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get moderators given a forum ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_forum_threadcount">
+<code class="sig-name descname">get_forum_threadcount</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threadcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threadcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of threads given forum ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_forum_threads">
+<code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get N number of threads for a given forum ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forumid</strong> – Forum ID</p></li>
+<li><p><strong>query_filter</strong> – filter forum threads returned. Can be NO_FILTER,
+DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>list</em> – Forum threads</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_project_forum">
+<code class="sig-name descname">get_project_forum</code><span class="sig-paren">(</span><em class="sig-param">projectid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_project_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_project_forum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Forum’s metadata for a given project ID.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html">https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_reply">
+<code class="sig-name descname">get_reply</code><span class="sig-paren">(</span><em class="sig-param">replyid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a reply</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_reply_message_url">
+<code class="sig-name descname">get_reply_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_reply_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply_message_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>message URL of a thread. The message URL is the URL
+to download the file which contains the thread message.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html">https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_thread">
+<code class="sig-name descname">get_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a thread and its statistic given its ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId.html">https://rest-docs.synapse.org/rest/GET/thread/threadId.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_thread_message_url">
+<code class="sig-name descname">get_thread_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_thread_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_message_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>message URL of a thread. The message URL is the URL
+to download the file which contains the thread message.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html">https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_thread_replies">
+<code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get N number of replies for a given thread ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html">https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threadid</strong> – Forum thread id</p></li>
+<li><p><strong>query_filter</strong> – filter forum thread replies returned.
+Can be NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>list</em> – Forum threads replies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_thread_replycount">
+<code class="sig-name descname">get_thread_replycount</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replycount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replycount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of replies given thread ID
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html">https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities">
+<code class="sig-name descname">get_threadcount_referencing_entities</code><span class="sig-paren">(</span><em class="sig-param">entityid_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_threadcount_referencing_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of entity and count pairs, with count is the number of
+threads that belongs to projects user can view and references
+the given entity.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/POST/entity/threadcounts.html">https://rest-docs.synapse.org/rest/POST/entity/threadcounts.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.get_threads_referencing_entity">
+<code class="sig-name descname">get_threads_referencing_entity</code><span class="sig-paren">(</span><em class="sig-param">entityid</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.get_threads_referencing_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threads_referencing_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get N number of threads that belongs to projects user can
+view and references the given entity
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/entity/id/threads.html">https://rest-docs.synapse.org/rest/GET/entity/id/threads.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>entityid</strong> – Synapse Entity id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p>DiscussionThreadBundles</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.pin_thread">
+<code class="sig-name descname">pin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.pin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.pin_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin a thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.post_reply">
+<code class="sig-name descname">post_reply</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.post_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new thread in a forum
+<a class="reference external" href="https://rest-docs.synapse.org/rest/POST/reply.html">https://rest-docs.synapse.org/rest/POST/reply.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threadid</strong> – Thread ID</p></li>
+<li><p><strong>message</strong> – Content of reply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DiscussionReplyBundle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.post_thread">
+<code class="sig-name descname">post_thread</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">title</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.post_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new thread in a forum
+<a class="reference external" href="https://rest-docs.synapse.org/rest/POST/thread.html">https://rest-docs.synapse.org/rest/POST/thread.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forumid</strong> – Forum ID</p></li>
+<li><p><strong>title</strong> – Title of thread</p></li>
+<li><p><strong>message</strong> – Content of thread</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DiscussionThreadBundle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.restore_thread">
+<code class="sig-name descname">restore_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.restore_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.restore_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore a deleted thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.unpin_thread">
+<code class="sig-name descname">unpin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.unpin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.unpin_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpin a thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.update_thread_message">
+<code class="sig-name descname">update_thread_message</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.update_thread_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update message of a thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="challengeutils.discussion.DiscussionApi.update_thread_title">
+<code class="sig-name descname">update_thread_title</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#DiscussionApi.update_thread_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update title of a thread
+<a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html</a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.copy_forum">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_forum</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project</em>, <em class="sig-param">new_project</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#copy_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_forum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the discussion forum of a project to another project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>project</strong> – Synapse Project</p></li>
+<li><p><strong>new_project</strong> – Synapse Project to copy forum to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.copy_reply">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_reply</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">reply</em>, <em class="sig-param">thread</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#copy_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies a discussion thread reply to a thread</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>reply</strong> – Synapse Reply</p></li>
+<li><p><strong>thread</strong> – Synapse thread or threadid to copy reply to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Reply bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.copy_thread">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_thread</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">thread</em>, <em class="sig-param">project</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#copy_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies a discussion thread to a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>thread</strong> – Synapse Thread</p></li>
+<li><p><strong>project</strong> – Synapse Project or its id to copy thread to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Thread bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.create_thread">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">create_thread</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">ent</em>, <em class="sig-param">title</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#create_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.create_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a thread</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>ent</strong> – Synapse Project entity or id</p></li>
+<li><p><strong>title</strong> – title of thread</p></li>
+<li><p><strong>message</strong> – message in thread</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Thread bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.create_thread_reply">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">create_thread_reply</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">threadid</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#create_thread_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.create_thread_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a reply to a thread</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>threadid</strong> – Synapse Thread id</p></li>
+<li><p><strong>message</strong> – message in reply</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Reply bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.get_forum_participants">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_participants</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">ent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#get_forum_participants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_participants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all forum participants</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ent</strong> – Synapse Project entity or id</p></li>
+<li><p><strong>synid</strong> – Synapse Project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>user profiles active in forum</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.get_forum_threads">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">ent</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets threads from a forum</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>ent</strong> – Synapse Project entity or id</p></li>
+<li><p><strong>query_filter</strong> – filter forum threads returned. Can be NO_FILTER,
+DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>list</em> – Forum threads</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.get_thread_replies">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">thread</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_replies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets replies of a thread</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>thread</strong> – Synapse thread or id</p></li>
+<li><p><strong>query_filter</strong> – filter forum threads returned. Can be NO_FILTER,
+DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>list</em> – Thread replies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.get_thread_reply_text">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_reply_text</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#get_thread_reply_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_reply_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get thread reply text by the messageKey that is returned by
+getting thread replies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>messagekey</strong> – Four part key from DiscussionReplyBundle.messageKey</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Thread text</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.discussion.get_thread_text">
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_text</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/discussion.html#get_thread_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get thread text by the messageKey that is returned by getting thread</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>messagekey</strong> – Three part key from DiscussionThreadBundle.messageKey</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Thread text</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="helpers">
-<h1>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.download_current_lead_submission">
+<span id="download-current-lead-submission"></span><h1>Download current lead submission<a class="headerlink" href="#module-challengeutils.download_current_lead_submission" title="Permalink to this headline">¶</a></h1>
+<p>Download the current leading submission for boot ladder boot method</p>
+<dl class="function">
+<dt id="challengeutils.download_current_lead_submission.download_current_lead_sub">
+<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">download_current_lead_sub</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">status</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/download_current_lead_submission.html#download_current_lead_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.download_current_lead_sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads current leading submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>submissionid</strong> – Submission id</p></li>
+<li><p><strong>status</strong> – Submission status</p></li>
+<li><p><strong>cutoff_annotation</strong> – Boolean cutoff annotation key</p></li>
+<li><p><strong>verbose</strong> – Boolean value to print</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to current leading submission or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.download_current_lead_submission.get_submitterid_from_submission_id">
+<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">get_submitterid_from_submission_id</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">queue</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/download_current_lead_submission.html#get_submitterid_from_submission_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.get_submitterid_from_submission_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets submitterid from submission id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>submissionid</strong> – Submission id</p></li>
+<li><p><strong>queue</strong> – Evaluation queue id</p></li>
+<li><p><strong>verbose</strong> – Boolean value to print</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Submitter id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.download_current_lead_submission.get_submitters_lead_submission">
+<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">get_submitters_lead_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submitterid</em>, <em class="sig-param">queue</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/download_current_lead_submission.html#get_submitters_lead_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.get_submitters_lead_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets submitter’s lead submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>submitterid</strong> – Submitter id</p></li>
+<li><p><strong>queue</strong> – Evaluation queue id</p></li>
+<li><p><strong>cutoff_annotation</strong> – Boolean cutoff annotation key</p></li>
+<li><p><strong>verbose</strong> – Boolean value to print</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>previous_submission.csv or None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="mirror-wiki">
-<h1>Mirror wiki<a class="headerlink" href="#mirror-wiki" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.helpers">
+<span id="helpers"></span><h1>Helpers<a class="headerlink" href="#module-challengeutils.helpers" title="Permalink to this headline">¶</a></h1>
+<p>Challenge helper functions</p>
+<dl class="function">
+<dt id="challengeutils.helpers.archive_writeup">
+<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">archive_writeup</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluation</em>, <em class="sig-param">stat='VALIDATED'</em>, <em class="sig-param">reArchive=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/helpers.html#archive_writeup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.archive_writeup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Archive the submissions for the given evaluation queue and
+store them in the destination synapse folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evaluation</strong> – a synapse evaluation queue or its ID</p></li>
+<li><p><strong>query</strong> – a query that will return the desired submissions.
+At least the ID must be returned. Defaults to:
+‘select * from evaluation_[EVAL_ID] where status==”SCORED”’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.helpers.create_team_wikis">
+<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">create_team_wikis</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em>, <em class="sig-param">templateid</em>, <em class="sig-param">tracker_table_synid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/helpers.html#create_team_wikis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.create_team_wikis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that creates wiki pages from a template by looking at teams that
+are registered for a challenge.  The teams that have a wiki made for them
+Are stored into a trackerTable that has columns wikiSynId, and teamId</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>synId</strong> – Synapse id of challenge project</p></li>
+<li><p><strong>templateId</strong> – Synapse id of the template</p></li>
+<li><p><strong>trackerTableSynId</strong> – Synapse id of Table that tracks if wiki pages
+have been made per team</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.helpers.kill_docker_submission_over_quota">
+<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">kill_docker_submission_over_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluation_id</em>, <em class="sig-param">quota=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/helpers.html#kill_docker_submission_over_quota"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.kill_docker_submission_over_quota" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kills any docker container that exceeds the run time quota
+Rerunning submissions will require setting TimeRemaining annotation
+to a positive integer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> (<em>obj</em>) – Synapse object</p></li>
+<li><p><strong>evaluation_id</strong> (<em>int</em>) – Synapse evaluation queue id</p></li>
+<li><p><strong>quota</strong> (<em>int</em>) – Quota in milliseconds. Default is sys.maxsize.
+One hour is 3600000.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.helpers.rename_submission_files">
+<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">rename_submission_files</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">download_location='./'</em>, <em class="sig-param">status='SCORED'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/helpers.html#rename_submission_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.rename_submission_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function renames the submission files of an evaluation queue.
+For many challenges we require participants to submit files that are
+named one thing such as prediction.csv. This function renames them to</p>
+<blockquote>
+<div><p>submitter_date_filename</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>evaluationid</strong> – Id of Evaluation queue</p></li>
+<li><p><strong>download_location</strong> – location to download files to (Default is ./)</p></li>
+<li><p><strong>status</strong> – The submissions to download (Default is SCORED)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="permissions">
-<h1>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.mirrorwiki">
+<span id="mirror-wiki"></span><h1>Mirror wiki<a class="headerlink" href="#module-challengeutils.mirrorwiki" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="challengeutils.mirrorwiki.mirrorwiki">
+<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">destination</em>, <em class="sig-param">force_merge=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/mirrorwiki.html#mirrorwiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirrorwiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>This script is responsible for mirroring wiki pages
+It relies on the wiki titles between two Synapse Projects to be
+The same and will merge the updates from entity’s wikis to
+destination’s wikis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> – Synapse File, Project, Folder Entity or Id with
+Wiki you want to copy</p></li>
+<li><p><strong>destination</strong> – Synapse File, Project, Folder Entity or Id
+with Wiki that matches entity</p></li>
+<li><p><strong>force_merge</strong> – this will update a page even if its the same</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="utils">
-<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.permissions">
+<span id="permissions"></span><h1>Permissions<a class="headerlink" href="#module-challengeutils.permissions" title="Permalink to this headline">¶</a></h1>
+<p>Convenience functions to set permissions on Synapse entities,
+without having to know the granular access control list</p>
+<dl class="function">
+<dt id="challengeutils.permissions.get_user_entity_permissions">
+<code class="sig-prename descclassname">challengeutils.permissions.</code><code class="sig-name descname">get_user_entity_permissions</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/permissions.html#get_user_entity_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.permissions.get_user_entity_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the list of permission that the caller has on a given Entity.
+<a class="reference external" href="https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/auth/UserEntityPermissions.html">https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/auth/UserEntityPermissions.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>entity</strong> – Synapse id or Entity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UserEntityPermissions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.permissions.set_entity_permissions">
+<code class="sig-prename descclassname">challengeutils.permissions.</code><code class="sig-name descname">set_entity_permissions</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">principalid</em>, <em class="sig-param">permission_level='download'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/permissions.html#set_entity_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.permissions.set_entity_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to set ACL on an entity for a user or team based on
+permission levels (view, download…)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>entity</strong> – An Entity or Synapse ID to lookup</p></li>
+<li><p><strong>principalid</strong> – Identifier of a user or group. To give anybody on the web
+access, specify None.</p></li>
+<li><p><strong>permission_level</strong> – Can be “view”, “download”, “edit”, “edit_and_delete”,
+“admin” or ‘remove’. If ‘remove’ is specified, the
+permissions for the principalid is deleted.
+Default is ‘download’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.permissions.set_evaluation_permissions">
+<code class="sig-prename descclassname">challengeutils.permissions.</code><code class="sig-name descname">set_evaluation_permissions</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluation</em>, <em class="sig-param">principalid</em>, <em class="sig-param">permission_level='view'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/permissions.html#set_evaluation_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.permissions.set_evaluation_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to set ACL on an entity for a user or team based on
+permission levels (view, download…)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>evaluation</strong> – An Evaluation or Evaluation id</p></li>
+<li><p><strong>principalid</strong> – Identifier of a user or group. To give anybody on the web
+access, specify None.</p></li>
+<li><p><strong>permission_level</strong> – Can be “view”, “submit”, “score”, “admin”, or
+‘remove’. If ‘remove’ is specified, the
+permissions for the principalid is deleted.
+Default is ‘view’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="writeup-attacher">
-<h1>Writeup attacher<a class="headerlink" href="#writeup-attacher" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.utils">
+<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-challengeutils.utils" title="Permalink to this headline">¶</a></h1>
+<p>Challenge utility functions</p>
+<dl class="class">
+<dt id="challengeutils.utils.NewUserProfile">
+<em class="property">class </em><code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">NewUserProfile</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#NewUserProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.NewUserProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">synapseclient.team.UserProfile</span></code></p>
+<p>Create new user profile that makes Userprofiles hashable
+SYNPY-879</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.annotate_submission_with_json">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_values</em>, <em class="sig-param">is_private=True</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#annotate_submission_with_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.annotate_submission_with_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>ChallengeWorkflowTemplate tool: Annotates submission with annotation
+values from a json file and uses exponential backoff to retry when
+there are concurrent update issues (HTTP 412).  Must return a object
+with status_code that has a range between 200-209</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>submissionid</strong> – Submission id</p></li>
+<li><p><strong>annotation_values</strong> – Annotation json file</p></li>
+<li><p><strong>is_private</strong> – Set annotations acl to private (default is True)</p></li>
+<li><p><strong>force</strong> – Force change the annotation from
+private to public and vice versa.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mocked response object (200)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_all_submission_status">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">change_all_submission_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">submission_status='SCORED'</em>, <em class="sig-param">change_to_status='VALIDATED'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#change_all_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.change_all_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change submission status of all submissions in a queue
+The defaults is to change submissions from SCORED -&gt; VALIDATED
+This function can be useful for ‘rescoring’ submissions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>evaluationid</strong> – Id of an Evaluation queue</p></li>
+<li><p><strong>submission_status</strong> – Submissions with this status that you want to
+change. Default is SCORED.</p></li>
+<li><p><strong>change_to_status</strong> – Submission status to change a submission to.
+Default is VALIDATED.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_submission_annotation_acl">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">change_submission_annotation_acl</code><span class="sig-paren">(</span><em class="sig-param">status</em>, <em class="sig-param">annotations</em>, <em class="sig-param">is_private=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#change_submission_annotation_acl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.change_submission_annotation_acl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change the acl of a list of known annotation keys
+on one submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status</strong> – syn.getSubmissionStatus()</p></li>
+<li><p><strong>annotations</strong> – list of annotation keys to make public</p></li>
+<li><p><strong>is_private</strong> – whether the annotation is private or not, default to True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Submission status with new submission annotation ACLs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.change_submission_status">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">change_submission_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">status='RECEIVED'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#change_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.change_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change a submission status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>submissionid</strong> – Id of a submission</p></li>
+<li><p><strong>status</strong> – Submission status to change a submission to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Updated submission status</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.create_challenge">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">create_challenge</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">team</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#create_challenge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.create_challenge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Challenge associated with a Project</p>
+<p>See the definition of a Challenge object here:
+<a class="reference external" href="https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html">https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>entity</strong> – An Entity or Synapse ID of a Project.</p></li>
+<li><p><strong>team</strong> – A Team or Team ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Challenge object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.download_submission">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">download_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">download_location=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#download_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.download_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download submission and return json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>submissionid</strong> – Submission id</p></li>
+<li><p><strong>download_location</strong> – Location to download submission</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>submission json results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.evaluation_queue_query">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">evaluation_queue_query</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">uri</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#evaluation_queue_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.evaluation_queue_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is to query the evaluation queue service.
+The limit parameter is set at 20 by default.
+Using a larger limit results in fewer calls
+to the service, but if responses are large enough to be a
+burden on the service they may be truncated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – A Synapse object</p></li>
+<li><p><strong>uri</strong> – A URI for evaluation queues (select * from evaluation_12345)</p></li>
+<li><p><strong>limit</strong> – How many records should be returned per request</p></li>
+<li><p><strong>offset</strong> – At what record offset from the first should iteration start</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>dict</em> – A generator over some paginated results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.get_challenge">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">get_challenge</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#get_challenge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.get_challenge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Challenge associated with a Project.</p>
+<p>See the definition of a Challenge object here:
+<a class="reference external" href="https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html">https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity</strong> – An Entity or Synapse ID of a Project.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Challenge object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.get_contributors">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">get_contributors</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationids</em>, <em class="sig-param">status='SCORED'</em>, <em class="sig-param">start_datetime=None</em>, <em class="sig-param">end_datetime=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#get_contributors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.get_contributors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get contributors from a list of evaluation ids
+Note: the date and time is in UTC</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>evaluationids</strong> – a list of evaluation ids</p></li>
+<li><p><strong>status</strong> – Submission status. Default = SCORED</p></li>
+<li><p><strong>start_datetime</strong> – start date time in YYYY-MM-DD H:M format,
+example: 2019-01-01 1:00</p></li>
+<li><p><strong>end_datetime</strong> – end date time in YYYY-MM-DD H:M format,
+example: 2019-01-01 23:59</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of contributors’ user ids</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.invite_member_to_team">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">invite_member_to_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">team</em>, <em class="sig-param">user=None</em>, <em class="sig-param">email=None</em>, <em class="sig-param">message=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#invite_member_to_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.invite_member_to_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invite members to a team</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>team</strong> – Synapse Team id or name</p></li>
+<li><p><strong>user</strong> – Synapse username or profile id</p></li>
+<li><p><strong>email</strong> – Email of user, do not specify both email and user,
+but must specify one</p></li>
+<li><p><strong>message</strong> – Message for people getting invited to the team</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.list_evaluations">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">list_evaluations</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#list_evaluations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.list_evaluations" title="Permalink to this definition">¶</a></dt>
+<dd><p>List evaluation queues of a Synapse project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>project</strong> – Synapse id/entity of project</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="challengeutils.utils.mock_response">
+<em class="property">class </em><code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">mock_response</code><a class="reference internal" href="_modules/challengeutils/utils.html#mock_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.mock_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mocked status code to return</p>
+<dl class="attribute">
+<dt id="challengeutils.utils.mock_response.status_code">
+<code class="sig-name descname">status_code</code><em class="property"> = 200</em><a class="headerlink" href="#challengeutils.utils.mock_response.status_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.register_team">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">register_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">team</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#register_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.register_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers team to challenge</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>entity</strong> – An Entity or Synapse ID to lookup</p></li>
+<li><p><strong>team</strong> – Team name or team Id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Team id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.team_members_diff">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_diff</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#team_members_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the diff between teama and teamb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>a</strong> – Synapse Team id or name</p></li>
+<li><p><strong>b</strong> – Synapse Team id or name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of synapse user profiles in teama but not in teamb</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.team_members_intersection">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_intersection</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#team_members_intersection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the intersection between teama and teamb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>a</strong> – Synapse Team id or name</p></li>
+<li><p><strong>b</strong> – Synapse Team id or name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of synapse user profiles that belong in both teams</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.team_members_union">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_union</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#team_members_union"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_union" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the union between teama and teamb</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>a</strong> – Synapse Team id or name</p></li>
+<li><p><strong>b</strong> – Synapse Team id or name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set of a combination of synapse user profiles from both teams</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.update_all_submissions_annotation_acl">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">update_all_submissions_annotation_acl</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">annotations</em>, <em class="sig-param">status='SCORED'</em>, <em class="sig-param">is_private=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#update_all_submissions_annotation_acl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.update_all_submissions_annotation_acl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to change the acl of a list of known annotation keys on
+all submissions of a evaluation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – synapse object</p></li>
+<li><p><strong>evaluationid</strong> – evaluation id</p></li>
+<li><p><strong>annotations</strong> – list of annotation keys to make public</p></li>
+<li><p><strong>status</strong> – ALL, VALIDATED, INVALID</p></li>
+<li><p><strong>is_private</strong> – whether the annotation is private or not, default to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.update_single_submission_status">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">update_single_submission_status</code><span class="sig-paren">(</span><em class="sig-param">status</em>, <em class="sig-param">add_annotations</em>, <em class="sig-param">is_private=True</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/utils.html#update_single_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.update_single_submission_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will update a single submission’s status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status</strong> – syn.getSubmissionStatus()</p></li>
+<li><p><strong>add_annotations</strong> – Annotations that you want to add in dict or
+submission status annotations format.
+If dict, all submissions will be added as
+private submissions</p></li>
+<li><p><strong>is_private</strong> – Annotations are set to private (default is True)</p></li>
+<li><p><strong>force</strong> – Force update the annotation from
+private to public and vice versa.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Updated submission status</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-challengeutils.writeup_attacher">
+<span id="writeup-attacher"></span><h1>Writeup attacher<a class="headerlink" href="#module-challengeutils.writeup_attacher" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="challengeutils.writeup_attacher.append_writeup_to_main_submission">
+<code class="sig-prename descclassname">challengeutils.writeup_attacher.</code><code class="sig-name descname">append_writeup_to_main_submission</code><span class="sig-paren">(</span><em class="sig-param">row</em>, <em class="sig-param">syn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/writeup_attacher.html#append_writeup_to_main_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.writeup_attacher.append_writeup_to_main_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that appends the write up synapse id and archived
+write up synapse id on the main submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row</strong> – Dictionary row[‘team’], row[‘objectId’], row[‘archived’],
+row[‘entityId’]</p></li>
+<li><p><strong>syn</strong> – synapse object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.writeup_attacher.attach_writeup">
+<code class="sig-prename descclassname">challengeutils.writeup_attacher.</code><code class="sig-name descname">attach_writeup</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">writeup_queueid</em>, <em class="sig-param">submission_queueid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/writeup_attacher.html#attach_writeup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.writeup_attacher.attach_writeup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach the write up to the submission queue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writeup_queueid</strong> – Write up evaluation queue id</p></li>
+<li><p><strong>submission_queueid</strong> – Submission queue id</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -78,13 +1217,13 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Create Challenge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#synapse-discussion-service">Synapse Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#download-current-lead-submission">Download current lead submission</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#helpers">Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#mirror-wiki">Mirror wiki</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#permissions">Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#utils">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#writeup-attacher">Writeup attacher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
 </ul>
 
 <div class="relations">

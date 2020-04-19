@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.permissions &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.permissions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Convenience functions to set permissions on Synapse entities,</span>
+<span class="sd">without having to know the granular access control list&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="c1"># For synapseclient &lt; v2.0</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
+
+<span class="n">VIEW</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">]</span>
+<span class="n">SUBMIT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;SUBMIT&#39;</span><span class="p">]</span>
+<span class="n">DOWNLOAD</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">]</span>
+<span class="n">EDIT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">]</span>
+<span class="n">EDIT_AND_DELETE</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">]</span>
+<span class="n">SCORE</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;READ_PRIVATE_SUBMISSION&#39;</span><span class="p">]</span>
+<span class="n">ADMIN_EVALS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DELETE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;SUBMIT&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE_SUBMISSION&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;READ_PRIVATE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">]</span>
+<span class="n">ADMIN</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_SETTINGS&#39;</span><span class="p">,</span> <span class="s1">&#39;MODERATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">]</span>
+<span class="n">EVALUATION_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
+                             <span class="s1">&#39;submit&#39;</span><span class="p">:</span> <span class="n">SUBMIT</span><span class="p">,</span>
+                             <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="n">SCORE</span><span class="p">,</span>
+                             <span class="s1">&#39;admin&#39;</span><span class="p">:</span> <span class="n">ADMIN_EVALS</span><span class="p">,</span>
+                             <span class="s1">&#39;remove&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+<span class="n">ENTITY_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
+                         <span class="s1">&#39;download&#39;</span><span class="p">:</span> <span class="n">DOWNLOAD</span><span class="p">,</span>
+                         <span class="s1">&#39;edit&#39;</span><span class="p">:</span> <span class="n">EDIT</span><span class="p">,</span>
+                         <span class="s1">&#39;edit_and_delete&#39;</span><span class="p">:</span> <span class="n">EDIT_AND_DELETE</span><span class="p">,</span>
+                         <span class="s1">&#39;admin&#39;</span><span class="p">:</span> <span class="n">ADMIN</span><span class="p">,</span>
+                         <span class="s1">&#39;remove&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+
+
+<span class="k">def</span> <span class="nf">_set_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">syn_obj</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to set the ACL on entity or evaluation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        syn_obj: An Evaluation or Entity</span>
+<span class="sd">        permission_level: evaluation permissions: [&quot;view&quot;, &quot;submit&quot;,</span>
+<span class="sd">                          &quot;score&quot;, &quot;admin&quot;]</span>
+<span class="sd">                          entity permissions: [&quot;view&quot;,&quot;download&quot;,&quot;edit&quot;,</span>
+<span class="sd">                          &quot;edit_and_delete&quot;, &quot;admin&quot;]</span>
+<span class="sd">                          &#39;remove&#39; can be specified to delete the permissions</span>
+<span class="sd">        principalid: Synapse id of a user or team.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">syn_obj</span><span class="p">,</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Evaluation</span><span class="p">):</span>
+        <span class="n">permission_level_mapping</span> <span class="o">=</span> <span class="n">EVALUATION_PERMS_MAPPINGS</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">permission_level_mapping</span> <span class="o">=</span> <span class="n">ENTITY_PERMS_MAPPINGS</span>
+
+    <span class="k">if</span> <span class="n">permission_level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">permission_level_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;permission_level must be one of these: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">permission_level_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+    <span class="n">syn</span><span class="o">.</span><span class="n">setPermissions</span><span class="p">(</span><span class="n">syn_obj</span><span class="p">,</span> <span class="n">principalId</span><span class="o">=</span><span class="n">principalid</span><span class="p">,</span>
+                       <span class="n">accessType</span><span class="o">=</span><span class="n">permission_level_mapping</span><span class="p">[</span><span class="n">permission_level</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="set_evaluation_permissions"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.permissions.set_evaluation_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_evaluation_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span>
+                               <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function to set ACL on an entity for a user or team based on</span>
+<span class="sd">    permission levels (view, download...)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        evaluation: An Evaluation or Evaluation id</span>
+<span class="sd">        principalid: Identifier of a user or group. To give anybody on the web</span>
+<span class="sd">                     access, specify None.</span>
+<span class="sd">        permission_level: Can be &quot;view&quot;, &quot;submit&quot;, &quot;score&quot;, &quot;admin&quot;, or</span>
+<span class="sd">                          &#39;remove&#39;. If &#39;remove&#39; is specified, the</span>
+<span class="sd">                          permissions for the principalid is deleted.</span>
+<span class="sd">                          Default is &#39;view&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the evaluation to check for access / validity of entity</span>
+    <span class="n">evaluation</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getEvaluation</span><span class="p">(</span><span class="n">evaluation</span><span class="p">)</span>
+    <span class="n">_set_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_entity_permissions"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.permissions.set_entity_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span>
+                           <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function to set ACL on an entity for a user or team based on</span>
+<span class="sd">    permission levels (view, download...)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        entity: An Entity or Synapse ID to lookup</span>
+<span class="sd">        principalid: Identifier of a user or group. To give anybody on the web</span>
+<span class="sd">                     access, specify None.</span>
+<span class="sd">        permission_level: Can be &quot;view&quot;, &quot;download&quot;, &quot;edit&quot;, &quot;edit_and_delete&quot;,</span>
+<span class="sd">                          &quot;admin&quot; or &#39;remove&#39;. If &#39;remove&#39; is specified, the</span>
+<span class="sd">                          permissions for the principalid is deleted.</span>
+<span class="sd">                          Default is &#39;download&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the entity to check for access / validity of entity</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">downloadFile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_set_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_user_entity_permissions"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.permissions.get_user_entity_permissions">[docs]</a><span class="k">def</span> <span class="nf">get_user_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gets the list of permission that the caller has on a given Entity.</span>
+<span class="sd">    https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/auth/UserEntityPermissions.html</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        entity: Synapse id or Entity</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        UserEntityPermissions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="s2">&quot;/entity/</span><span class="si">{}</span><span class="s2">/permissions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">synid</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">permissions</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
