@@ -1,7 +1,7 @@
 
 # Sage Bionetworks Challenge Utilities
 
-The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/). This package is being maintained by Informatics & Biocomputing (IBC), Computational Oncology Group at Sage Bionetworks.
+The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/). This package is being actively developed and maintained by DREAM and Informatics & Biocomputing (IBC), Computational Oncology Group at Sage Bionetworks.
 
 > Due to the continuous updates in challenge infrastructure, IBC reserves the right to update the behavior of certain functions in this package.  The release description will try to encapsulate any of these breaking changes.
 
