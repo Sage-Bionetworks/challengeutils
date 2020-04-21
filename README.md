@@ -3,7 +3,6 @@
 
 The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/). This package is being actively developed and maintained by DREAM and Informatics & Biocomputing (IBC), Computational Oncology Group at Sage Bionetworks.
 
-
 Automation | Status
 -----------|-------
 [![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg)](https://hub.docker.com/r/sagebionetworks/challengeutils/) | ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)
