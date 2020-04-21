@@ -40,10 +40,12 @@ DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
 LIVE_PAGE_MARKDOWN = (
     '## Banner\n\n'
-    '{row}\n {column width=3}\n'
-    '${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
-    '{column}\n {column width=9} \n'
-    '###! There are ${teammembercount?teamId=%s} preregistered participants. Join them now!\n '
+    '{row}\n {column width=2}\n '
+    '{column}\n {column width=4}\n'
+    '#### ${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
+    '{column}\n {column width=5}\n'
+    '###! There are ${teammembercount?teamId=%s} preregistered participants. <br>**Join them now!**\n '
+    '{column}\n {column width=1}\n '
     '{column}\n{row}\n'
     '\n---\n\n'
     '## Overview\n\n<font size=4>**Goal:**</font>\n\n<font size=4>**Motivation:**</font>\n'
@@ -258,6 +260,15 @@ def main(syn, challenge_name, live_site=None):
         challenge_name: Name of the challenge
         live_site: If there is already a live site, specify live site Synapse
                    id. (Default is None)
+
+    Returns:
+        dict: {"live_projectid": projectid,
+               "staging_projectid": projectid,
+               "admin_teamid": teams['team_admin_id'],
+               "organizer_teamid": teams['team_org_id'],
+               "participant_teamid": teams['team_part_id'],
+               "preregistrantrant_teamid": teams['team_prereg_id']}
+
     """
     # Create teams for challenge sites
     teams = _create_teams(syn, challenge_name)
@@ -303,3 +314,9 @@ def main(syn, challenge_name, live_site=None):
                                                     challenge_name,
                                                     project_live.id)
         syn.store(wikipage)
+    return {"live_projectid": project_live.id,
+            "staging_projectid": project_staging.id,
+            "admin_teamid": teams['team_admin_id'],
+            "organizer_teamid": teams['team_org_id'],
+            "participant_teamid": teams['team_part_id'],
+            "preregistrantrant_teamid": teams['team_prereg_id']}
