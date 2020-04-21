@@ -7,11 +7,11 @@
     <title>challengeutils.discussion &#8212; challengeutils  documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -40,7 +40,7 @@
 <span class="kn">import</span> <span class="nn">synapseclient</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
     <span class="c1"># For synapseclient &lt; v2.0</span>
     <span class="kn">from</span> <span class="nn">synapseclient.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
 
@@ -60,13 +60,13 @@
         <span class="sd">&quot;&quot;&quot;Get the Forum&#39;s metadata for a given project ID.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/project/</span><span class="si">{</span><span class="n">projectid</span><span class="si">}</span><span class="s1">/forum&#39;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/project/</span><span class="si">{projectid}</span><span class="s1">/forum&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_forum">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the Forum&#39;s metadata for a given forum ID.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{</span><span class="n">forumid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum_threads"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_forum_threads">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">,</span> <span class="n">query_filter</span><span class="o">=</span><span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">,</span>
                           <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -83,7 +83,7 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            list: Forum threads</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{</span><span class="n">forumid</span><span class="si">}</span><span class="s1">/threads?filter=</span><span class="si">{</span><span class="n">query_filter</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/threads?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.post_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.post_thread">[docs]</a>    <span class="k">def</span> <span class="nf">post_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
@@ -117,57 +117,57 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            DiscussionThreadBundles</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/entity/</span><span class="si">{</span><span class="n">entityid</span><span class="si">}</span><span class="s2">/threads&quot;</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/entity/</span><span class="si">{entityid}</span><span class="s2">/threads&quot;</span><span class="p">,</span>
                                        <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_thread">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a thread and its statistic given its ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/thread/threadId.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.update_thread_title"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.update_thread_title">[docs]</a>    <span class="k">def</span> <span class="nf">update_thread_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update title of a thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">/title&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/title&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.update_thread_message"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.update_thread_message">[docs]</a>    <span class="k">def</span> <span class="nf">update_thread_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update message of a thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">/message&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/message&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.delete_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.delete_thread">[docs]</a>    <span class="k">def</span> <span class="nf">delete_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restDELETE</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restDELETE</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.restore_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.restore_thread">[docs]</a>    <span class="k">def</span> <span class="nf">restore_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Restore a deleted thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">/restore&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/restore&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.pin_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.pin_thread">[docs]</a>    <span class="k">def</span> <span class="nf">pin_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Pin a thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">/pin&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/pin&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.unpin_thread"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.unpin_thread">[docs]</a>    <span class="k">def</span> <span class="nf">unpin_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unpin a thread</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s2">/unpin&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPUT</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/unpin&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_thread_message_url"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_thread_message_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_message_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messagekey</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;message URL of a thread. The message URL is the URL</span>
 <span class="sd">        to download the file which contains the thread message.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/messageUrl?messageKey=</span><span class="si">{</span><span class="n">messagekey</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/thread/messageUrl?messageKey=</span><span class="si">{messagekey}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.post_reply"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.post_reply">[docs]</a>    <span class="k">def</span> <span class="nf">post_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a new thread in a forum</span>
@@ -185,7 +185,7 @@
 
 <div class="viewcode-block" id="DiscussionApi.get_reply"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_reply">[docs]</a>    <span class="k">def</span> <span class="nf">get_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replyid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a reply&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/reply/</span><span class="si">{</span><span class="n">replyid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/reply/</span><span class="si">{replyid}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_thread_replies"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_thread_replies">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">query_filter</span><span class="o">=</span><span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">,</span>
                            <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -200,7 +200,7 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            list: Forum threads replies</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">replies</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s1">/replies?filter=</span><span class="si">{</span><span class="n">query_filter</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">replies</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{threadid}</span><span class="s1">/replies?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="n">replies</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_reply_message_url"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_reply_message_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_reply_message_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messagekey</span><span class="p">):</span>
@@ -208,27 +208,27 @@
 <span class="sd">        to download the file which contains the thread message.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/reply/messageUrl?messageKey=</span><span class="si">{</span><span class="n">messagekey</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/reply/messageUrl?messageKey=</span><span class="si">{messagekey}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum_threadcount"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_forum_threadcount">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threadcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">,</span> <span class="n">query_filter</span><span class="o">=</span><span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Total number of threads given forum ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">threadcount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{</span><span class="n">forumid</span><span class="si">}</span><span class="s1">/threadcount?filter=</span><span class="si">{</span><span class="n">query_filter</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">threadcount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/threadcount?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">threadcount</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_thread_replycount"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_thread_replycount">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replycount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">query_filter</span><span class="o">=</span><span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Total number of replies given thread ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">replycount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{</span><span class="n">threadid</span><span class="si">}</span><span class="s1">/replycount?filter=</span><span class="si">{</span><span class="n">query_filter</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">replycount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{threadid}</span><span class="s1">/replycount?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">replycount</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum_moderators"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_forum_moderators">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_moderators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get moderators given a forum ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{</span><span class="n">forumid</span><span class="si">}</span><span class="s1">/moderators&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/moderators&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_threadcount_referencing_entities"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_threadcount_referencing_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entityid_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get list of entity and count pairs, with count is the number of</span>
@@ -499,7 +499,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -516,7 +516,7 @@
       &copy;2019, Thomas Yu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

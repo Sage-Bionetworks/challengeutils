@@ -7,11 +7,11 @@
     <title>challengeutils.createchallenge &#8212; challengeutils  documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -55,7 +55,7 @@
 <span class="kn">import</span> <span class="nn">synapseclient</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
-<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
     <span class="c1"># For synapseclient &lt; v2.0</span>
     <span class="kn">from</span> <span class="nn">synapseclient.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
 <span class="kn">import</span> <span class="nn">synapseutils</span>
@@ -73,10 +73,12 @@
 
 <span class="n">LIVE_PAGE_MARKDOWN</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s1">&#39;## Banner</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-    <span class="s1">&#39;</span><span class="si">{row}</span><span class="se">\n</span><span class="s1"> {column width=3}</span><span class="se">\n</span><span class="s1">&#39;</span>
-    <span class="s1">&#39;${jointeam?teamId=</span><span class="si">%s</span><span class="s1">&amp;isChallenge=false&amp;isMemberMessage=You have successfully preregistered for the challenge&amp;text=Click here to preregister&amp;isSimpleRequestButton=true&amp;requestOpenText=Your registration is in progress&amp;successMessage=Your registration is in progress}</span><span class="se">\n</span><span class="s1"> &#39;</span>
-    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="s1"> {column width=9} </span><span class="se">\n</span><span class="s1">&#39;</span>
-    <span class="s1">&#39;###! There are ${teammembercount?teamId=</span><span class="si">%s</span><span class="s1">} preregistered participants. Join them now!</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{row}</span><span class="se">\n</span><span class="s1"> {column width=2}</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="s1"> {column width=4}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;#### ${jointeam?teamId=</span><span class="si">%s</span><span class="s1">&amp;isChallenge=false&amp;isMemberMessage=You have successfully preregistered for the challenge&amp;text=Click here to preregister&amp;isSimpleRequestButton=true&amp;requestOpenText=Your registration is in progress&amp;successMessage=Your registration is in progress}</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="s1"> {column width=5}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="s1">&#39;###! There are ${teammembercount?teamId=</span><span class="si">%s</span><span class="s1">} preregistered participants. &lt;br&gt;**Join them now!**</span><span class="se">\n</span><span class="s1"> &#39;</span>
+    <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="s1"> {column width=1}</span><span class="se">\n</span><span class="s1"> &#39;</span>
     <span class="s1">&#39;</span><span class="si">{column}</span><span class="se">\n</span><span class="si">{row}</span><span class="se">\n</span><span class="s1">&#39;</span>
     <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">---</span><span class="se">\n\n</span><span class="s1">&#39;</span>
     <span class="s1">&#39;## Overview</span><span class="se">\n\n</span><span class="s1">&lt;font size=4&gt;**Goal:**&lt;/font&gt;</span><span class="se">\n\n</span><span class="s1">&lt;font size=4&gt;**Motivation:**&lt;/font&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -291,6 +293,15 @@
 <span class="sd">        challenge_name: Name of the challenge</span>
 <span class="sd">        live_site: If there is already a live site, specify live site Synapse</span>
 <span class="sd">                   id. (Default is None)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: {&quot;live_projectid&quot;: projectid,</span>
+<span class="sd">               &quot;staging_projectid&quot;: projectid,</span>
+<span class="sd">               &quot;admin_teamid&quot;: teams[&#39;team_admin_id&#39;],</span>
+<span class="sd">               &quot;organizer_teamid&quot;: teams[&#39;team_org_id&#39;],</span>
+<span class="sd">               &quot;participant_teamid&quot;: teams[&#39;team_part_id&#39;],</span>
+<span class="sd">               &quot;preregistrantrant_teamid&quot;: teams[&#39;team_prereg_id&#39;]}</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Create teams for challenge sites</span>
     <span class="n">teams</span> <span class="o">=</span> <span class="n">_create_teams</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_name</span><span class="p">)</span>
@@ -335,7 +346,13 @@
                                                     <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">],</span>
                                                     <span class="n">challenge_name</span><span class="p">,</span>
                                                     <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">wikipage</span><span class="p">)</span></div>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">wikipage</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;live_projectid&quot;</span><span class="p">:</span> <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;staging_projectid&quot;</span><span class="p">:</span> <span class="n">project_staging</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;admin_teamid&quot;</span><span class="p">:</span> <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_admin_id&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;organizer_teamid&quot;</span><span class="p">:</span> <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_org_id&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;participant_teamid&quot;</span><span class="p">:</span> <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;preregistrantrant_teamid&quot;</span><span class="p">:</span> <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_prereg_id&#39;</span><span class="p">]}</span></div>
 </pre></div>
 
           </div>
@@ -386,7 +403,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -403,7 +420,7 @@
       &copy;2019, Thomas Yu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

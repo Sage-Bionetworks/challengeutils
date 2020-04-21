@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>challengeutils.__main__ &#8212; challengeutils  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for challengeutils.__main__</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;challengeutils command line client&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.core.retry</span> <span class="kn">import</span> <span class="n">with_retry</span>
+<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="c1"># For synapseclient &lt; v2.0</span>
+    <span class="kn">from</span> <span class="nn">synapseclient.retry</span> <span class="kn">import</span> <span class="n">_with_retry</span> <span class="k">as</span> <span class="n">with_retry</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">createchallenge</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">download_current_lead_submission</span> <span class="k">as</span> <span class="n">dl_cur</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">evaluation_queue</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">helpers</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mirrorwiki</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permissions</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">writeup_attacher</span>
+<span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="command_mirrorwiki"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_mirrorwiki">[docs]</a><span class="k">def</span> <span class="nf">command_mirrorwiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For all challenges, you should be editting the staging site and then</span>
+<span class="sd">    using the merge script to mirror staging to live site.  The script will</span>
+<span class="sd">    compare wiki titles between the staging and live site and update the live</span>
+<span class="sd">    site with respect to what has changed on the staging site.  Note, this is</span>
+<span class="sd">    different from copying the wikis. To copy the wikis, please look at</span>
+<span class="sd">    synapseutils.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils mirrorwiki syn12345 syn23456</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mirrorwiki</span><span class="o">.</span><span class="n">mirrorwiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">entityid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">destinationid</span><span class="p">,</span>
+                          <span class="n">args</span><span class="o">.</span><span class="n">forceupdate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="command_createchallenge"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_createchallenge">[docs]</a><span class="k">def</span> <span class="nf">command_createchallenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a challenge space in Synapse.  This pulls from a standard</span>
+<span class="sd">    DREAM template and creates the Projects and Teams that you will need</span>
+<span class="sd">    for a challenge.  For more information on all the components this function</span>
+<span class="sd">    creates, please head to `challenge administration &lt;https://docs.synapse.org/articles/challenge_administration.html&gt;`_.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils createchallenge &quot;Challenge Name Here&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">challenge_components</span> <span class="o">=</span> <span class="n">createchallenge</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">challengename</span><span class="p">,</span>
+                                                <span class="n">args</span><span class="o">.</span><span class="n">livesiteid</span><span class="p">)</span>
+    <span class="c1"># component: project or team</span>
+    <span class="c1"># componentid: project id or teamid</span>
+    <span class="n">urls</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">component</span><span class="p">,</span> <span class="n">componentid</span> <span class="ow">in</span> <span class="n">challenge_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;projectid&quot;</span><span class="p">):</span>
+            <span class="n">urls</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://www.synapse.org/#!Synapse:</span><span class="si">{componentid}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">component</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;teamid&quot;</span><span class="p">):</span>
+            <span class="n">urls</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://www.synapse.org/#!Team:</span><span class="si">{componentid}</span><span class="s2">&quot;</span>
+    <span class="n">urls</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">challengename</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Production site): </span><span class="si">{live_projectid}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Staging site): </span><span class="si">{staging_projectid}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Admin team): </span><span class="si">{admin_teamid}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Participant team): </span><span class="si">{organizer_teamid}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Organizer team): </span><span class="si">{participant_teamid}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> (Pre-registrant team): </span><span class="si">{preregistrantrant_teamid}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">urls</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">challenge_components</span></div>
+
+<div class="viewcode-block" id="command_query"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_query">[docs]</a><span class="k">def</span> <span class="nf">command_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Command line convenience function to call evaluation queue query</span>
+<span class="sd">    Evaluation queues offer a separate query service from the rest of Synapse.</span>
+<span class="sd">    This query function will print the leaderboard in a csv format in standard</span>
+<span class="sd">    out.  Proceed `here &lt;https://docs.synapse.org/rest/GET/evaluation/submission/query.html&gt;`_</span>
+<span class="sd">    to learn more about this query service.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils query &quot;select objectId, status from evaluation_12345&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">querydf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">offset</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">render</span><span class="p">:</span>
+        <span class="c1"># Check if submitterId column exists</span>
+        <span class="k">if</span> <span class="n">querydf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;submitterId&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">submitter_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">_get_submitter_name</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">)</span>
+                               <span class="k">for</span> <span class="n">submitterid</span> <span class="ow">in</span> <span class="n">querydf</span><span class="p">[</span><span class="s1">&#39;submitterId&#39;</span><span class="p">]]</span>
+            <span class="n">querydf</span><span class="p">[</span><span class="s1">&#39;submitterName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">submitter_names</span>
+        <span class="c1"># Check if createdOn column exists</span>
+        <span class="k">if</span> <span class="n">querydf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;createdOn&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">createdons</span> <span class="o">=</span> <span class="p">[</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">from_unix_epoch_time</span><span class="p">(</span><span class="n">createdon</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">createdon</span> <span class="ow">in</span> <span class="n">querydf</span><span class="p">[</span><span class="s1">&#39;createdOn&#39;</span><span class="p">]]</span>
+            <span class="n">querydf</span><span class="p">[</span><span class="s1">&#39;createdOn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">createdons</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">outputfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">querydf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">querydf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="command_change_status"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_change_status">[docs]</a><span class="k">def</span> <span class="nf">command_change_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Each submission has a status, this is a convenience function to change</span>
+<span class="sd">    the status of a submission.  Here is a list of `valid statuses &lt;https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html&gt;`_</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils changestatus 1234545 INVALID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">status</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">command_writeup_attach</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Most challenges require participants to submit a writeup.  Using the</span>
+<span class="sd">    new archive-challenge-project-tool system of receiving writeups, this is</span>
+<span class="sd">    a convenience function to merge the writeup and archived write up Synapse</span>
+<span class="sd">    ids to the main challenge queue</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils attachwriteup writeupid submissionqueueid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">writeup_attacher</span><span class="o">.</span><span class="n">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">writeupqueue</span><span class="p">,</span>
+                                    <span class="n">args</span><span class="o">.</span><span class="n">submissionqueue</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="command_set_entity_acl"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_set_entity_acl">[docs]</a><span class="k">def</span> <span class="nf">command_set_entity_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets permissions on entities for users or teams.  By default the user is</span>
+<span class="sd">    public if there is no user or team specified and the default permission</span>
+<span class="sd">    is view.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils setentityacl syn123545 user_or_team view</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">entityid</span><span class="p">,</span>
+                                       <span class="n">principalid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">principalid</span><span class="p">,</span>
+                                       <span class="n">permission_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">permission_level</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="command_set_evaluation_acl"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_set_evaluation_acl">[docs]</a><span class="k">def</span> <span class="nf">command_set_evaluation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets permissions on queues for users or teams.  By default the user is</span>
+<span class="sd">    public if there is no user or team specified and the default permission</span>
+<span class="sd">    is view.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils setevaluationacl 12345 user_or_team score</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">set_evaluation_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">evaluationid</span><span class="p">,</span>
+                                           <span class="n">principalid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">principalid</span><span class="p">,</span>
+                                           <span class="n">permission_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">permission_level</span><span class="p">)</span>  <span class="c1"># noqa pylint: disable=line-too-long</span></div>
+
+
+<span class="k">def</span> <span class="nf">command_set_evaluation_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the evaluation quota on existing evaluation queues.</span>
+<span class="sd">    This WILL erase any old quota you had previously set.</span>
+<span class="sd">    Note - round_start must be specified with either round_end or</span>
+<span class="sd">    round_duration and number_of_rounds must be defined for the</span>
+<span class="sd">    time limits to work.  submission_limit will work without number_of_rounds.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils setevaluationquota 12345 \</span>
+<span class="sd">                                          --round_start 2020-02-21T17:00:00 \</span>
+<span class="sd">                                          --round_end 2020-02-23T17:00:00 \</span>
+<span class="sd">                                          --num_rounds 2 \</span>
+<span class="sd">                                          --sub_limit 3</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">evaluation_queue</span><span class="o">.</span><span class="n">set_evaluation_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">evaluationid</span><span class="p">,</span>
+                                                <span class="n">round_start</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">round_start</span><span class="p">,</span>
+                                                <span class="n">round_end</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">round_end</span><span class="p">,</span>
+                                                <span class="n">number_of_rounds</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_rounds</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                <span class="n">submission_limit</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">sub_limit</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                <span class="n">round_duration</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">round_duration</span><span class="p">))</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+
+
+<span class="k">def</span> <span class="nf">command_dl_cur_lead_sub</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="n">dl_cur</span><span class="o">.</span><span class="n">download_current_lead_sub</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">cutoff_annotation</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="command_list_evaluations"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">command_list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Lists evaluation queues of a project</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils listevaluations projectid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">projectid</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">command_download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="n">submission_dict</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>
+                                                <span class="n">download_location</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">download_location</span><span class="p">)</span> <span class="c1"># noqa pylint: disable=line-too-long</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">submission_dict</span><span class="p">[</span><span class="s1">&#39;file_path&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;submission-&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="s1">&#39;submission-&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span>
+        <span class="n">submission_dict</span><span class="p">[</span><span class="s1">&#39;file_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;submission-&#39;</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sub_out</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">submission_dict</span><span class="p">,</span> <span class="n">sub_out</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">submission_dict</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">command_annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Annotate a Synapse submission with a json file.  This function</span>
+<span class="sd">    is used by a ChallengeWorkflowTemplates tool.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils annotatesubmission 12345 annotations.json --to_public</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># By default is_private is True, so the cli is to_public as False</span>
+    <span class="c1"># Which would be that is_private is True.</span>
+    <span class="n">is_private</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">to_public</span>
+    <span class="n">with_retry</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                           <span class="n">args</span><span class="o">.</span><span class="n">annotation_values</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                           <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                           <span class="n">force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">),</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
+               <span class="n">wait</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+               <span class="n">retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+               <span class="n">retry_status_codes</span><span class="o">=</span><span class="p">[</span><span class="mi">412</span><span class="p">,</span> <span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">],</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">command_send_email</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Command line interface to send Synapse email&quot;&quot;&quot;</span>
+    <span class="c1"># Must escape the backslash and replace all \n with</span>
+    <span class="c1"># html breaks</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">)</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">userIds</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">userids</span><span class="p">,</span>
+                    <span class="n">messageSubject</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                    <span class="n">messageBody</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="command_kill_docker_over_quota"><a class="viewcode-back" href="../../client.html#challengeutils.__main__.command_kill_docker_over_quota">[docs]</a><span class="k">def</span> <span class="nf">command_kill_docker_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets an annotation on Synapse Docker submissions such that it will</span>
+<span class="sd">    be terminated by the orchestrator. Usually applies to submissions</span>
+<span class="sd">    that have been running for longer than the alloted time.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils killdockeroverquota evaluationid quota</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">helpers</span><span class="o">.</span><span class="n">kill_docker_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">evaluationid</span><span class="p">,</span>
+                                              <span class="n">quota</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">quota</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">build_parser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Builds the argument parser and returns the result.&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Challenge utility functions&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;--synapse_config&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CONFIG_FILE</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;credentials file&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span>
+                        <span class="n">version</span><span class="o">=</span><span class="s1">&#39;challengeutils </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__version__</span><span class="p">))</span>
+
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s1">&#39;commands&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The following commands are available:&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;For additional help: &quot;challengeutils &lt;COMMAND&gt; -h&quot;&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_createChallenge</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;createchallenge&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Creates a challenge from a template&#39;</span><span class="p">)</span>
+    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;challengename&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Challenge name&quot;</span><span class="p">)</span>
+    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--livesiteid&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Option to specify the live site synapse Id&quot;</span>
+              <span class="s2">&quot; there is already a live site&quot;</span><span class="p">))</span>
+    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_createchallenge</span><span class="p">)</span>
+
+    <span class="n">parser_mirrorWiki</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;mirrorwiki&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This command mirrors wiki pages. It relies on the wiki titles &quot;</span>
+              <span class="s2">&quot;between two Synapse Projects to be the same and will merge the &quot;</span>
+              <span class="s2">&quot;updates from entity&#39;s wikis to destination&#39;s wikis. &quot;</span>
+              <span class="s2">&quot;Do not confuse this function with copy wiki.&quot;</span><span class="p">))</span>
+
+    <span class="n">parser_mirrorWiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;entityid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Synapse Id of the project&#39;s wiki changes you have staged&quot;</span><span class="p">)</span>
+    <span class="n">parser_mirrorWiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;destinationid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Synapse Id of project whose wiki you want to update&#39;</span>
+              <span class="s1">&#39; with the entityid&#39;</span><span class="p">))</span>
+    <span class="n">parser_mirrorWiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--forceupdate&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Update the wikipages even if they are the same&#39;</span><span class="p">)</span>
+    <span class="n">parser_mirrorWiki</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_mirrorwiki</span><span class="p">)</span>
+
+    <span class="n">parser_query</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;query&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Queries on a evaluation queue&#39;</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;uri&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Synapse ID of the project&#39;s wiki you want to copy&quot;</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--outputfile&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File that you want your query results to be written to.&quot;</span>
+             <span class="s2">&quot;If not specified, it is written as stdout.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--render&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Renders submitterId and createdOn values in leaderboard&quot;</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--limit&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;How many records should be returned per request&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--offset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;At what record offset from the first should iteration start&#39;</span><span class="p">)</span>
+    <span class="n">parser_query</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_query</span><span class="p">)</span>
+
+    <span class="n">parser_change_status</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;changestatus&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Changes the status of a submission id&#39;</span><span class="p">)</span>
+    <span class="n">parser_change_status</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Synapse submission Id&quot;</span><span class="p">)</span>
+    <span class="n">parser_change_status</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Status to change submission to&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_change_status</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_change_status</span><span class="p">)</span>
+
+    <span class="n">parser_attach_writeup</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;attachwriteup&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Attach the write ups of a challenge to its main challenge queue&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_attach_writeup</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;writeupqueue&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Write up submission queue evaluation id&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_attach_writeup</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionqueue&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Challenge submission queue evaluation id&#39;</span><span class="p">)</span>
+    <span class="n">parser_attach_writeup</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_writeup_attach</span><span class="p">)</span>
+
+    <span class="n">parser_set_entity_acl</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;setentityacl&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the permissions of a Synapse Entity&#39;</span><span class="p">)</span>
+    <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;entityid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Entity Synapse id&#39;</span><span class="p">)</span>
+    <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;principalid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse user or Team name/id&#39;</span><span class="p">)</span>
+    <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;permission_level&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Permissions&#39;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
+            <span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="s1">&#39;download&#39;</span><span class="p">,</span> <span class="s1">&#39;edit&#39;</span><span class="p">,</span> <span class="s1">&#39;edit_and_delete&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">])</span>
+
+    <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_entity_acl</span><span class="p">)</span>
+
+    <span class="n">parser_set_evaluation_acl</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;setevaluationacl&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the permissions of a Synapse Evaluation Queue&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;evaluationid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse Evaluation Queue id&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;principalid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse user or Team name/id&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;permission_level&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Permissions&#39;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">])</span>
+
+    <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_evaluation_acl</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;download_current_lead_submission&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Downloads current leading submission for participant&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s2">&quot;--submissionid&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Int, or str(int) for submissionid, of current submission.&quot;</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--status&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Submission status&quot;</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;--cutoff_annotation&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;met_cutoff&quot;</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_dl_cur_lead_sub</span><span class="p">)</span>
+
+    <span class="n">parser_list_evals</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;listevaluations&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List all evaluation queues of a project&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_list_evals</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;projectid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse id of project&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_list_evals</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_list_evaluations</span><span class="p">)</span>
+
+    <span class="n">parser_download_submission</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;downloadsubmission&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Download a Synapse submission&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse id of submission&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--download_location&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Specify download location. Defaults to current working dir&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+    <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output json results into a file&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_download_submission</span><span class="p">)</span>
+
+    <span class="n">parser_annotate_sub</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;annotatesubmission&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Annotate a Synapse submission with a json file&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Submission ID&quot;</span><span class="p">)</span>
+    <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;annotation_values&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;JSON file of annotations with key:value pair&quot;</span><span class="p">)</span>
+    <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--to_public&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Annotations are by default private except to queue &quot;</span>
+             <span class="s2">&quot;administrator(s), so change them to be public&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;--force&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Ability to update annotations if the key has &quot;</span>
+             <span class="s2">&quot;different ACLs, warning will occur if this parameter &quot;</span>
+             <span class="s2">&quot;isn&#39;t specified and the same key has different ACLs&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
+        <span class="n">func</span><span class="o">=</span><span class="n">command_annotate_submission_with_json</span><span class="p">)</span>
+
+    <span class="n">parser_send_email</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;sendemail&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Send a Synapse email&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_send_email</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--userids&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of user ids&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">parser_send_email</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--subject&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Email message subject&#39;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">parser_send_email</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--message&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Email message body&#39;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">parser_send_email</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_send_email</span><span class="p">)</span>
+
+    <span class="n">parser_kill_docker</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;killdockeroverquota&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Kill Docker submissions over the quota&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;evaluationid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse evaluation queue id&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;quota&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Time quota submission has to run in milliseconds&quot;</span><span class="p">)</span>
+    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_kill_docker_over_quota</span><span class="p">)</span>
+
+    <span class="n">parser_set_quota</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;setevaluationquota&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the quota on an existing evaluation queue. &#39;</span>
+             <span class="s1">&#39;This WILL erase any old quota you had previously set if no &#39;</span>
+             <span class="s1">&#39;optional parameters are given&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;evaluationid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse evaluation queue id&#39;</span><span class="p">)</span>
+    <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--round_start&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Start of round (local military time) in YEAR-MM-DDTHH:MM:SS &#39;</span>
+             <span class="s1">&#39;format (ie. 2020-02-21T17:00:00)&#39;</span><span class="p">)</span>
+
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--round_end&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;End of round (local military time) in YEAR-MM-DDTHH:MM:SS &#39;</span>
+             <span class="s1">&#39;format (ie. 2020-02-21T17:00:00)&#39;</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--round_duration&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Round duration in milliseconds&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--num_rounds&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of rounds (must set for time related quota to work)&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--sub_limit&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of submissions allowed per team&#39;</span><span class="p">)</span>
+
+    <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_evaluation_quota</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span>
+
+
+<span class="k">def</span> <span class="nf">perform_main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;func&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+
+<span class="k">def</span> <span class="nf">synapse_login</span><span class="p">(</span><span class="n">synapse_config</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Synapse</span><span class="p">(</span><span class="n">configPath</span><span class="o">=</span><span class="n">synapse_config</span><span class="p">)</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_login</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">synapse_config</span><span class="p">)</span>
+    <span class="n">perform_main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Thomas Yu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

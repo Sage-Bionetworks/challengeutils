@@ -7,11 +7,11 @@
     <title>Create Challenge &#8212; challengeutils  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="User Guide" href="client.html" />
@@ -44,7 +44,7 @@ team associated with it.</p>
 <p>For more information on challenges administration:
 <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">https://docs.synapse.org/articles/challenge_administration.html</a></p>
 <p>Example (run on bash)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Plouf Challenge&quot;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Plouf Challenge&quot;</span>
 </pre></div>
 </div>
 <p>TODO Add participants
@@ -149,6 +149,20 @@ Allow for users to set up the live site themselves</p>
 <li><p><strong>live_site</strong> – If there is already a live site, specify live site Synapse
 id. (Default is None)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>{“live_projectid”: projectid,</dt><dd><p>”staging_projectid”: projectid,
+“admin_teamid”: teams[‘team_admin_id’],
+“organizer_teamid”: teams[‘team_org_id’],
+“participant_teamid”: teams[‘team_part_id’],
+“preregistrantrant_teamid”: teams[‘team_prereg_id’]}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1243,7 +1257,7 @@ row[‘entityId’]</p></li>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -1260,7 +1274,7 @@ row[‘entityId’]</p></li>
       &copy;2019, Thomas Yu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
