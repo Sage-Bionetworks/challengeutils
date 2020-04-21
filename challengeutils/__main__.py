@@ -8,10 +8,10 @@ import pandas as pd
 import synapseclient
 
 try:
-    from synapseclient.core.retry import _with_retry
+    from synapseclient.core.retry import with_retry
 except ModuleNotFoundError:
     # For synapseclient < v2.0
-    from synapseclient.retry import _with_retry
+    from synapseclient.retry import _with_retry as with_retry
 
 from . import createchallenge
 from . import download_current_lead_submission as dl_cur
@@ -191,14 +191,14 @@ def command_annotate_submission_with_json(syn, args):
     # By default is_private is True, so the cli is to_public as False
     # Which would be that is_private is True.
     is_private = not args.to_public
-    _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
-                                                            args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                            is_private=is_private,  # noqa pylint: disable=line-too-long
-                                                            force=args.force),  # noqa pylint: disable=line-too-long
-                wait=3,
-                retries=10,
-                retry_status_codes=[412, 429, 500, 502, 503, 504],
-                verbose=True)
+    with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
+                                                           args.annotation_values,  # noqa pylint: disable=line-too-long
+                                                           is_private=is_private,  # noqa pylint: disable=line-too-long
+                                                           force=args.force),  # noqa pylint: disable=line-too-long
+               wait=3,
+               retries=10,
+               retry_status_codes=[412, 429, 500, 502, 503, 504],
+               verbose=True)
 
 
 def command_send_email(syn, args):
