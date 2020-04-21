@@ -66,7 +66,7 @@ def command_createchallenge(syn, args):
             "{name} (Participant team): {organizer_teamid}",
             "{name} (Organizer team): {participant_teamid}",
             "{name} (Pre-registrant team): {preregistrantrant_teamid}")
-    print("\n"+ "\n".join(text).format(**urls))
+    print("\n" + "\n".join(text).format(**urls))
     return challenge_components
 
 def command_query(syn, args):
