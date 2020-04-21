@@ -1,13 +1,12 @@
 
 # Sage Bionetworks Challenge Utilities
 
-The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/).
+The `challengeutils` package provides an interface for managing Sage Bionetworks Challenges administered using [Synapse](https://www.synapse.org), including [DREAM Challenges](http://dreamchallenges.org/). This package is being actively developed and maintained by DREAM and Informatics & Biocomputing (IBC), Computational Oncology Group at Sage Bionetworks.
 
 Automation | Status
 -----------|-------
 [![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg)](https://hub.docker.com/r/sagebionetworks/challengeutils/) | ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)
 pypi | [![Get challengeutils from PyPI](https://img.shields.io/pypi/v/challengeutils.svg)](https://pypi.python.org/pypi/challengeutils)
-readthedocs | [![Documentation Status](https://readthedocs.org/projects/challengeutils/badge/?version=latest)](https://challengeutils.readthedocs.io/en/latest/)
 travis | [![Build Status master branch](https://travis-ci.org/Sage-Bionetworks/challengeutils.svg?branch=master)](https://travis-ci.org/Sage-Bionetworks/challengeutils)
 
 
@@ -20,7 +19,7 @@ challengeutils -v
 
 ## Usage
 
-Below is documentation for some of the key features in the `challengeutils` command line client.  There is also auto built readthedocs [documentation](https://challengeutils.readthedocs.io/en/latest/) which can be configured [here](https://readthedocs.org/projects/challengeutils/)
+Below is documentation for some of the key features in the `challengeutils` command line client.  The documentation can be found [here](https://sage-bionetworks.github.io/challengeutils/).
 
 ```
 challengeutils -h
