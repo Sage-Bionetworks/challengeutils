@@ -49,7 +49,7 @@ the status of a submission.  Here is a list of <a class="reference external" hre
 <dt id="challengeutils.__main__.command_createchallenge">
 <code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_createchallenge</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/__main__.html#command_createchallenge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.__main__.command_createchallenge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a challenge space in Synapse.  This pulls from a standard
-DREAM challenge template and creates the Projects and Teams that you will need
+DREAM template and creates the Projects and Teams that you will need
 for a challenge.  For more information on all the components this function
 creates, please head to <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">challenge administration</a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Challenge Name Here&quot;</span>
@@ -64,6 +64,19 @@ creates, please head to <a class="reference external" href="https://docs.synapse
 be terminated by the orchestrator. Usually applies to submissions
 that have been running for longer than the alloted time.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">killdockeroverquota</span> <span class="n">evaluationid</span> <span class="n">quota</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.__main__.command_set_evaluation_quota">
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_evaluation_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/__main__.html#command_set_evaluation_quota"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.__main__.command_set_evaluation_quota" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the evaluation quota on existing evaluation queues.
+This WILL erase any old quota you had previously set.
+Note - round_start must be specified with either round_end or
+round_duration and number_of_rounds must be defined for the
+time limits to work.  submission_limit will work without number_of_rounds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationquota</span> <span class="mi">12345</span>                                           <span class="o">--</span><span class="n">round_start</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">21</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">round_end</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">23</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">num_rounds</span> <span class="mi">2</span>                                           <span class="o">--</span><span class="n">sub_limit</span> <span class="mi">3</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -122,6 +135,16 @@ is view.</p>
 public if there is no user or team specified and the default permission
 is view.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationacl</span> <span class="mi">12345</span> <span class="n">user_or_team</span> <span class="n">score</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.__main__.command_annotate_submission_with_json">
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/challengeutils/__main__.html#command_annotate_submission_with_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.__main__.command_annotate_submission_with_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate a Synapse submission with a json file.  This function
+is used by a ChallengeWorkflowTemplates tool.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">annotatesubmission</span> <span class="mi">12345</span> <span class="n">annotations</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">to_public</span>
 </pre></div>
 </div>
 </dd></dl>
