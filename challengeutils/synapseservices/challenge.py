@@ -43,13 +43,10 @@ class Challenge(Service):
         return self._id
 
     @id.setter
-    def id(self, id: str) -> str:
+    def id(self, id: str):
         """Sets the id of this Challenge.
 
         Args:
-            The id of this Challenge.
-
-        Returns:
             The id of this Challenge.
 
         """
@@ -61,7 +58,7 @@ class Challenge(Service):
         return self._projectId
 
     @projectId.setter
-    def projectId(self, projectId: str) -> str:
+    def projectId(self, projectId: str):
         """Sets the projectId of this Challenge.
 
         Args:
@@ -76,14 +73,11 @@ class Challenge(Service):
         return self._etag
 
     @etag.setter
-    def etag(self, etag: str) -> str:
+    def etag(self, etag: str):
         """Sets the etag of this Challenge.
 
         Args:
             etag: The etag of this Challenge.
-
-        Returns:
-            The etag of this Challenge.
 
         """
         self._etag = etag
@@ -94,14 +88,11 @@ class Challenge(Service):
         return self._participantTeamId
 
     @participantTeamId.setter
-    def participantTeamId(self, participantTeamId: str) -> str:
+    def participantTeamId(self, participantTeamId: str):
         """Sets the participant team id of this Challenge.
 
         Args:
             participantTeamId: The participant team id of this Challenge.
-
-        Returns:
-            The participant team id of this Challenge.
 
         """
         self._participantTeamId = participantTeamId
