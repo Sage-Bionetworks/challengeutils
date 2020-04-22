@@ -13,6 +13,7 @@ class Challenge(Service):
         projectId: The ID of the Project the challenge is used with.
         participantTeamId: The ID of the Team which users join to participate
                            in the Challenge
+
     """
     def __init__(self, id: str = None, projectId: str = None, etag:
                  str = None, participantTeamId: str = None):
@@ -37,66 +38,70 @@ class Challenge(Service):
         self._participantTeamId = participantTeamId
 
     @property
-    def id(self):
-        """Gets the id of this Activity.
-        :return: The id of this Activity.
-        :rtype: str
-        """
+    def id(self) -> str:
+        """Gets the id of this Challenge."""
         return self._id
 
     @id.setter
-    def id(self, id):
-        """Sets the id of this Activity.
-        :param id: The id of this Activity.
-        :type id: str
+    def id(self, id: str) -> str:
+        """Sets the id of this Challenge.
+
+        Args:
+            The id of this Challenge.
+
+        Returns:
+            The id of this Challenge.
+
         """
         self._id = id
 
     @property
-    def projectId(self):
-        """Gets the id of this Activity.
-        :return: The id of this Activity.
-        :rtype: str
-        """
+    def projectId(self) -> str:
+        """Gets the id of this Challenge."""
         return self._projectId
 
     @projectId.setter
-    def projectId(self, projectId):
-        """Sets the id of this Activity.
-        :param id: The id of this Activity.
-        :type id: str
+    def projectId(self, projectId: str) -> str:
+        """Sets the projectId of this Challenge.
+
+        Args:
+            The projectId of this Challenge.
+
         """
         self._projectId = projectId
 
     @property
-    def etag(self):
-        """Gets the id of this Activity.
-        :return: The id of this Activity.
-        :rtype: str
-        """
+    def etag(self) -> str:
+        """Gets the etag of this Challenge."""
         return self._etag
 
     @etag.setter
-    def etag(self, etag):
-        """Sets the id of this Activity.
-        :param id: The id of this Activity.
-        :type id: str
-        """
-        self._id = etag
+    def etag(self, etag: str) -> str:
+        """Sets the etag of this Challenge.
 
+        Args:
+            etag: The etag of this Challenge.
+
+        Returns:
+            The etag of this Challenge.
+
+        """
+        self._etag = etag
 
     @property
-    def participantTeamId(self):
-        """Gets the id of this Activity.
-        :return: The id of this Activity.
-        :rtype: str
-        """
+    def participantTeamId(self) -> str:
+        """Gets the participant team id of this Challenge."""
         return self._participantTeamId
 
     @participantTeamId.setter
-    def participantTeamId(self, participantTeamId):
-        """Sets the id of this Activity.
-        :param id: The id of this Activity.
-        :type id: str
+    def participantTeamId(self, participantTeamId: str) -> str:
+        """Sets the participant team id of this Challenge.
+
+        Args:
+            participantTeamId: The participant team id of this Challenge.
+
+        Returns:
+            The participant team id of this Challenge.
+
         """
         self._participantTeamId = participantTeamId
