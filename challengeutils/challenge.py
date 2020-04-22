@@ -88,6 +88,7 @@ class ChallengeApi:
 
         Args:
             challengeid: A Synapse Challenge id
+
         """
         return self.syn.restDELETE(f'/challenge/{challengeid}')
 
@@ -163,6 +164,7 @@ def create_challenge(syn: Synapse, project: Union[Project, str],
 
     Returns:
         Challenge object
+
     """
     synid = id_of(project)
     teamid = id_of(team)
