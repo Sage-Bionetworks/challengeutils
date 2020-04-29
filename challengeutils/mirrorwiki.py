@@ -100,7 +100,7 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
                                                                   content_types,
                                                                   file_names)
                 new_attachments = [filehandle['newFileHandle']['id']
-                                   for filehandle in copied_filehandles['copyResults']]
+                                   for filehandle in copied_filehandles]
             else:
                 new_attachments = []
             destination_wiki.update({'attachmentFileHandleIds': new_attachments})
