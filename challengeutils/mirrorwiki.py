@@ -1,15 +1,88 @@
 import logging
 import re
-import synapseutils
+from typing import Union
+
+from synapseclient import File, Folder, Project
 try:
     from synapseclient.core.exceptions import SynapseHTTPError
 except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.exceptions import SynapseHTTPError
+import synapseutils
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+PREVIEW_FILE_HANDLE = "org.sagebionetworks.repo.model.file.PreviewFileHandle"
+SynapseWikiCls = Union[File, Folder, Project]
+
+
+def replace_wiki_text(markdown: str, wiki_mapping: dict,
+                      entity: SynapseWikiCls, dest: SynapseWikiCls) -> str:
+    """Remap wiki text with correct synapse links
+
+    Args:
+        markdown: Markdown text
+        wiki_mapping: mapping of old to new wiki pages
+        entity: Synapse entity with wiki
+        dest: Synapse entity with wiki
+
+    Returns:
+        Remapped markdown string
+    """
+    for entity_page_id in wiki_mapping:
+        dest_subwiki = wiki_mapping[entity_page_id]
+        # Replace the wiki
+        orig_text = f"{entity.id}/wiki/{entity_page_id}"
+        map_to_text = f"{dest.id}/wiki/{dest_subwiki}"
+        markdown = re.sub(orig_text, map_to_text, markdown)
+        # Some widgets that you fill in with synapse links
+        # are auto encoded. / -> %2F
+        orig_text = f"{entity.id}%2Fwiki%2F{entity_page_id}"
+        map_to_text = f"{dest.id}%2Fwiki%2F{dest_subwiki}"
+        markdown = re.sub(orig_text, map_to_text, markdown)
+    markdown = re.sub(entity.id, dest.id, markdown)
+    return markdown
+
+
+def copy_attachments(syn, entity_wiki):
+    """Copy wiki attachments
+
+    Args:
+        syn: Synapse connection
+        entity_wiki: Wiki you are copying
+    """
+    # All attachments must be updated
+    if entity_wiki['attachmentFileHandleIds']:
+        attachments = [
+            syn._getFileHandleDownload(filehandleid,
+                                       entity_wiki.id,
+                                       objectType='WikiAttachment')
+            for filehandleid in entity_wiki['attachmentFileHandleIds']
+        ]
+        # Remove preview attachments
+        no_previews = [
+            attachment['fileHandle'] for attachment in attachments
+            if attachment['fileHandle']['concreteType'] != PREVIEW_FILE_HANDLE
+        ]
+        content_types = [attachment['contentType']
+                         for attachment in no_previews]
+        file_names = [attachment['fileName'] for attachment in no_previews]
+        copied_filehandles = synapseutils.copyFileHandles(
+            syn, no_previews, ["WikiAttachment"]*len(no_previews),
+            [entity_wiki.id]*len(no_previews),
+            content_types, file_names
+        )
+        new_attachments = [filehandle['newFileHandle']['id']
+                           for filehandle in copied_filehandles]
+    else:
+        new_attachments = []
+    return new_attachments
+
+
+def _get_headers():
+    pass
 
 def mirrorwiki(syn, entity, destination, force_merge=False):
     """
@@ -55,7 +128,7 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
         # don't exist in the old page
         if entity_wiki_pages.get(wiki['title']) is not None:
             wiki_mapping[entity_wiki_pages[wiki['title']]] = wiki['id']
-    # TODO: Need to account for new pages ###
+    # TODO: Need to account for new pages
     for title in entity_wiki_pages:
         entity_wiki = syn.getWiki(entity, entity_wiki_pages[title])
         # If destination wiki does not have the title page, do not update
@@ -66,44 +139,17 @@ def mirrorwiki(syn, entity, destination, force_merge=False):
                 logger.info("Skipping page update: {}".format(title))
             else:
                 logger.info("Updating: {}".format(title))
-                destination_wiki.markdown = entity_wiki.markdown
-                for entity_page_id in wiki_mapping:
-                    entity_project_and_wiki_id = "{}/wiki/{}".format(
-                        entity.id,
-                        entity_page_id)
-                    destination_project_and_wiki_id = "{}/wiki/{}".format(
-                        destination.id,
-                        wiki_mapping[entity_page_id])
-                    destination_wiki.markdown = re.sub(entity_project_and_wiki_id,
-                                                       destination_project_and_wiki_id,
-                                                       destination_wiki.markdown)
-                    # Some widgets that you fill in with synapse links are auto encoded. / -> %2F
-                    encoded_entity_project_and_wiki_id = "{}%2Fwiki%2F{}".format(entity.id, entity_page_id)
-                    encoded_destination_project_and_wiki_id = "{}%2Fwiki%2F{}".format(destination.id, wiki_mapping[entity_page_id])
-                    destination_wiki.markdown = re.sub(encoded_entity_project_and_wiki_id,
-                                                       encoded_destination_project_and_wiki_id,
-                                                       destination_wiki.markdown)
-                destination_wiki.markdown = re.sub(entity.id,
-                                                   destination.id,
-                                                   destination_wiki.markdown)
-            # All attachments must be updated
-            if len(entity_wiki['attachmentFileHandleIds']) > 0:
-                attachments = [syn._getFileHandleDownload(filehandleid, entity_wiki.id, objectType='WikiAttachment') for filehandleid in entity_wiki['attachmentFileHandleIds']]
-                # Remove preview attachments
-                no_previews = [attachment['fileHandle'] for attachment in attachments if attachment['fileHandle']['concreteType'] != "org.sagebionetworks.repo.model.file.PreviewFileHandle"]
-                content_types = [attachment['contentType'] for attachment in no_previews]
-                file_names = [attachment['fileName'] for attachment in no_previews]
-                copied_filehandles = synapseutils.copyFileHandles(syn,
-                                                                  no_previews,
-                                                                  ["WikiAttachment"]*len(no_previews),
-                                                                  [entity_wiki.id]*len(no_previews),
-                                                                  content_types,
-                                                                  file_names)
-                new_attachments = [filehandle['newFileHandle']['id']
-                                   for filehandle in copied_filehandles['copyResults']]
-            else:
-                new_attachments = []
-            destination_wiki.update({'attachmentFileHandleIds': new_attachments})
+                markdown = replace_wiki_text(markdown=entity_wiki.markdown,
+                                             wiki_mapping=wiki_mapping,
+                                             entity=entity,
+                                             dest=destination)
+                destination_wiki.markdown = markdown
+
+                new_attachments = copy_attachments(syn, entity_wiki)
+
+                destination_wiki.update(
+                    {'attachmentFileHandleIds': new_attachments}
+                )
             destination_wiki = syn.store(destination_wiki)
         else:
             logger.info("{}: title not existent in destination wikis".format(title))
