@@ -13,14 +13,10 @@ except ModuleNotFoundError:
     # For synapseclient < v2.0
     from synapseclient.retry import _with_retry as with_retry
 
-from . import createchallenge
-from . import download_current_lead_submission as dl_cur
-from . import evaluation_queue
-from . import helpers
-from . import mirrorwiki
-from . import permissions
-from . import utils
-from . import writeup_attacher
+from . import (createchallenge, challenge,
+               download_current_lead_submission as dl_cur,
+               evaluation_queue, helpers, mirrorwiki, permissions, utils,
+               writeup_attacher)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -238,6 +234,16 @@ def command_kill_docker_over_quota(syn, args):
     """
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
+
+def command_list_registered_challenges(syn, args):
+    """
+    List the challenges a user is registered to. Defaults to the
+    logged in synapse user is userid isn't specified.
+
+    >>> challengeutils list-registered-challenges
+    >>> challengeutils list-registered-challenges --userid 1223
+    """
+    list(challenge.get_registered_challenges(syn, userid=args.userid))
 
 
 def build_parser():
@@ -554,6 +560,22 @@ def build_parser():
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
+    parser_list_challenge = subparsers.add_parser(
+        'list-registered-challenges',
+        help="List the challenges a user is registered to. Defaults to the"
+             "logged in synapse user is userid isn't specified."
+    )
+
+    parser_list_challenge.add_argument(
+        "--userid",
+        type=str,
+        help='Synapse User id or username',
+        default=None
+    )
+
+    parser_list_challenge.set_defaults(
+        func=command_list_registered_challenges
+    )
     return parser
 
 

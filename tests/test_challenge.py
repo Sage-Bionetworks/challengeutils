@@ -1,7 +1,7 @@
 """Tests challenge services"""
 import json
-import mock
-from mock import patch
+from unittest import mock
+from unittest.mock import Mock, patch
 import uuid
 
 import synapseclient
@@ -11,7 +11,7 @@ from challengeutils.synapseservices.challenge import Challenge
 from challengeutils.challenge import ChallengeApi
 
 
-def test_challenge():
+def test_challenge_obj():
     """Tests that a challenge object can be instantiated"""
     challenge_dict = {'id': 'challenge_1',
                       'projectId': 'project_1',
@@ -38,6 +38,19 @@ class TestChallengeApi:
                                participantTeamId=self.teamid)
 
         self.expected = Challenge(**self.challenge_dict)
+
+    def test_get_registered_challenges(self):
+        """Tests that a challenge object can be instantiated"""
+        challenge_list = [self.challenge_dict]*2
+        with patch.object(self.syn, "_GET_paginated",
+                          return_value=challenge_list) as patch_restpost:
+            challenge_objs = self.challenge_api.get_registered_challenges(
+                participantId=2222
+            )
+            assert list(challenge_objs) == [self.expected]*2
+            patch_restpost.assert_called_once_with(
+                '/challenge?participantId=2222'
+            )
 
     def test_create_challenge(self):
         """Tests that a challenge object can be instantiated"""
@@ -166,3 +179,18 @@ class TestChallenge:
             patch_create.assert_called_once_with(projectid=self.projectid,
                                                  teamid=self.teamid)
             assert chal == self.input
+
+    def test_list_registered_challenges(self):
+        """Test listing of registered challenges"""
+        userprofile = Mock(ownerId=2222)
+        with patch.object(self.syn, "getUserProfile",
+                          return_value=userprofile) as patch_get_user,\
+             patch.object(ChallengeApi, "get_registered_challenges",
+                          return_value=[self.input]) as patch_get_challenges,\
+             patch.object(self.syn, "get",
+                          return_value=self.project) as patch_get:
+            projects = challenge.list_registered_challenges(self.syn)
+            assert list(projects) == [self.project]
+            patch_get_user.assert_called_once()
+            patch_get_challenges.assert_called_once_with(participantId=2222)
+            patch_get.assert_called_once_with(self.projectid)

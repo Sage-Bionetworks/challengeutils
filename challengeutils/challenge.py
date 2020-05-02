@@ -1,6 +1,6 @@
 """Synapse Challenge Services"""
 import json
-from typing import Union
+from typing import Union, Iterator
 
 from synapseclient import Project, Synapse, Team
 try:
@@ -41,6 +41,23 @@ class ChallengeApi:
         challenge = self.syn.restPOST('/challenge',
                                       str(new_challenge))
         return Challenge(**challenge)
+
+    def get_registered_challenges(self,
+                                  participantId: str) -> Iterator[Challenge]:
+        """Gets a list of challenges a participant is registered to
+
+        Args:
+            participantId: A Synapse User Id
+
+        Yields:
+            A synapseservices.Challenge
+
+        """
+        challenges = self.syn._GET_paginated(
+            f'/challenge?participantId={participantId}'
+        )
+        for challenge in challenges:
+            yield Challenge(**challenge)
 
     def get_challenge(self, challengeid: str = None,
                       projectid: str = None) -> Challenge:
@@ -134,6 +151,31 @@ class ChallengeApi:
                                  json.dumps(team_dict))
 
 
+def get_registered_challenges(syn: Synapse,
+                              userid: str = None) -> Iterator[Project]:
+    """Get the Synapse Challenge Projects a user is registered to.
+    Defaults to the logged in synapse user.
+
+    Args:
+        syn: Synapse connection
+        userid: Specify userid if you want to know the challenges
+                another Synapse user is registered to.
+
+    Yields:
+        A synapseclient.Project
+
+    """
+    challenge_api = ChallengeApi(syn=syn)
+    # This will return the logged in user profile is None is passed in
+    profile = syn.getUserProfile(userid)
+    userid = profile.ownerId
+    registered = challenge_api.get_registered_challenges(participantId=userid)
+    for challenge in registered:
+        challenge_ent = syn.get(challenge.projectId)
+        print(challenge_ent.name)
+        yield challenge_ent
+
+
 def get_challenge(syn: Synapse, project: Union[Project, str]) -> Challenge:
     """Get the Challenge associated with a Project.
 
@@ -141,6 +183,7 @@ def get_challenge(syn: Synapse, project: Union[Project, str]) -> Challenge:
     https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
 
     Args:
+        syn: Synapse connection
         project: A synapseclient.Project or its id
 
     Returns:
