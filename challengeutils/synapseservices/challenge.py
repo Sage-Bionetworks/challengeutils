@@ -39,60 +39,36 @@ class Challenge(Service):
 
     @property
     def id(self) -> str:
-        """Gets the id of this Challenge."""
+        """The `id` property of this Challenge."""
         return self._id
 
     @id.setter
-    def id(self, id: str):
-        """Sets the id of this Challenge.
-
-        Args:
-            The id of this Challenge.
-
-        """
-        self._id = id
+    def id(self, value: str):
+        self._id = value
 
     @property
     def projectId(self) -> str:
-        """Gets the id of this Challenge."""
+        """The `projectId` property of this Challenge."""
         return self._projectId
 
     @projectId.setter
-    def projectId(self, projectId: str):
-        """Sets the projectId of this Challenge.
-
-        Args:
-            The projectId of this Challenge.
-
-        """
-        self._projectId = projectId
+    def projectId(self, value: str):
+        self._projectId = value
 
     @property
     def etag(self) -> str:
-        """Gets the etag of this Challenge."""
+        """The `etag` property of this Challenge."""
         return self._etag
 
     @etag.setter
-    def etag(self, etag: str):
-        """Sets the etag of this Challenge.
-
-        Args:
-            etag: The etag of this Challenge.
-
-        """
-        self._etag = etag
+    def etag(self, value: str):
+        self._etag = value
 
     @property
     def participantTeamId(self) -> str:
-        """Gets the participant team id of this Challenge."""
+        """The `participantTeamId` property of this Challenge."""
         return self._participantTeamId
 
     @participantTeamId.setter
-    def participantTeamId(self, participantTeamId: str):
-        """Sets the participant team id of this Challenge.
-
-        Args:
-            participantTeamId: The participant team id of this Challenge.
-
-        """
-        self._participantTeamId = participantTeamId
+    def participantTeamId(self, value: str):
+        self._participantTeamId = value
