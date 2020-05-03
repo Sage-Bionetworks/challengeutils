@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Union, List
+from typing import Union, List, Dict
 
 from synapseclient import File, Folder, Project, Wiki, Synapse
 try:
@@ -15,13 +15,11 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 PREVIEW_FILE_HANDLE = "org.sagebionetworks.repo.model.file.PreviewFileHandle"
-# These are the synapse entities that can have wikis
-SynapseWikiCls = Union[File, Folder, Project]
 
 
 def _replace_wiki_text(markdown: str, wiki_mapping: dict,
-                       entity: SynapseWikiCls,
-                       destination: SynapseWikiCls) -> str:
+                       entity: Union[File, Folder, Project],
+                       destination: Union[File, Folder, Project]) -> str:
     """Remap wiki text with correct synapse links
 
     Args:
@@ -49,12 +47,15 @@ def _replace_wiki_text(markdown: str, wiki_mapping: dict,
     return markdown
 
 
-def _copy_attachments(syn: Synapse, entity_wiki: Wiki):
+def _copy_attachments(syn: Synapse, entity_wiki: Wiki) -> list:
     """Copy wiki attachments
 
     Args:
         syn: Synapse connection
         entity_wiki: Wiki you are copying
+
+    Returns:
+        Synapse Attachment filehandleids
 
     """
     # All attachments must be updated
@@ -85,7 +86,8 @@ def _copy_attachments(syn: Synapse, entity_wiki: Wiki):
     return new_attachments
 
 
-def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
+def _get_headers(syn: Synapse,
+                 entity: Union[File, Folder, Project]) -> List[dict]:
     """Get wiki headers.
 
     Args:
@@ -94,6 +96,7 @@ def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
 
     Returns:
         List of wiki headers
+
     """
 
     try:
@@ -107,8 +110,10 @@ def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
     return wiki_headers
 
 
-def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
-                 force=False, dryrun=False, **kwargs):
+def _update_wiki(syn: Synapse, entity_wiki_pages: Dict[str, Wiki],
+                 destination_wiki_pages: Dict[str, Wiki],
+                 force: bool = False, dryrun: bool = False,
+                 **kwargs) -> Dict[str, Wiki]:
     """Updates wiki pages.
 
     Args:
@@ -153,8 +158,10 @@ def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
     return mirrored_wiki
 
 
-def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
-                               destination: SynapseWikiCls) -> dict:
+def _get_wikipages_and_mapping(syn: Synapse,
+                               entity: Union[File, Folder, Project],
+                               destination: Union[File, Folder, Project]
+                               ) -> dict:
     """Get entity/destination pages and mapping of wiki pages
 
     Args:
@@ -194,9 +201,9 @@ def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
             'wiki_mapping': wiki_mapping}
 
 
-def mirror(syn: Synapse, entity: SynapseWikiCls,
-           destination: SynapseWikiCls, force=False,
-           dryrun=False):
+def mirror(syn: Synapse, entity: Union[File, Folder, Project],
+           destination: Union[File, Folder, Project], force: bool = False,
+           dryrun: bool = False):
     """Mirrors (sync) wiki pages by using the wikipage titles between two
     Synapse Entities.  This function only works if `entity` and `destination`
     are the same type and both must have wiki pages.  Only wiki pages with the

@@ -192,6 +192,26 @@ class TestMirrorWiki:
             assert mirrored == [self.entity_wiki]
             patch_store.assert_not_called()
 
+    def test__update_wiki_integration(self):
+        """Make sure correct parameters are called"""
+        with patch.object(mirrorwiki, "_replace_wiki_text",
+                          return_value=self.expected_markdown) as patch_rep,\
+             patch.object(mirrorwiki, "_copy_attachments",
+                          return_value=[]) as patch_copy,\
+             patch.object(self.syn, "store"):
+            mirrored = mirrorwiki._update_wiki(self.syn,
+                                               self.entity_wiki_pages,
+                                               self.destination_wiki_pages,
+                                               entity=self.entity,
+                                               destination=self.destination,
+                                               wiki_mapping=self.wiki_mapping,
+                                               dryrun=True)
+            patch_rep.assert_called_once_with(markdown=self.markdown,
+                                              wiki_mapping=self.wiki_mapping,
+                                              entity=self.entity,
+                                              destination=self.destination)
+            patch_copy.assert_called_once_with(self.syn, self.entity_wiki)
+
     def test__get_wikipages_and_mapping(self):
         """Test that page is updated when markdown is different between
         entity and destination
@@ -221,10 +241,28 @@ class TestMirrorWiki:
             wiki_dict = mirrorwiki._get_wikipages_and_mapping(
                 self.syn, self.entity, self.destination
             )
-            print(wiki_dict['destination_wiki_pages'])
         assert wiki_dict == {'entity_wiki_pages': {},
                              'destination_wiki_pages': self.entity_wiki_pages,
                              'wiki_mapping': {}}
+
+    def test__get_wikipages_and_mapping_integration(self):
+        """Integration test: make sure right parameters are callled
+        """
+        get_header_calls = [mock.call(self.syn, self.entity),
+                            mock.call(self.syn, self.destination)]
+        get_wiki_calls = [mock.call(self.entity, '2222'),
+                          mock.call(self.destination, '5555')]
+        headers = [self.entity_wiki_headers, self.destination_wiki_headers]
+        wikis = [self.entity_wiki, self.entity_wiki]
+        with patch.object(mirrorwiki, "_get_headers",
+                          side_effect=headers) as patch_get_headers,\
+             patch.object(self.syn, "getWiki",
+                          side_effect=wikis) as patch_wiki:
+            wiki_dict = mirrorwiki._get_wikipages_and_mapping(
+                self.syn, self.entity, self.destination
+            )
+            patch_get_headers.assert_has_calls(get_header_calls)
+            patch_wiki.assert_has_calls(get_wiki_calls)
 
     def test_mirror(self):
         """Integration test: Tests all parameters are called correctly"""
