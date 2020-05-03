@@ -2,13 +2,12 @@
 Test challengeutils.utils functions
 '''
 import json
-import os
 import re
 import tempfile
+from unittest import mock
+from unittest.mock import patch
 import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations

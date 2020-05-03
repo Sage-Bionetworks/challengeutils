@@ -1,8 +1,8 @@
 """Test create challenge"""
+from unittest import mock
+from unittest.mock import patch
 import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
 from synapseclient.core.exceptions import SynapseHTTPError
