@@ -32,6 +32,7 @@ def replace_wiki_text(markdown: str, wiki_mapping: dict,
 
     Returns:
         Remapped markdown string
+
     """
     for entity_page_id in wiki_mapping:
         dest_subwiki = wiki_mapping[entity_page_id]
@@ -54,6 +55,7 @@ def copy_attachments(syn: Synapse, entity_wiki: Wiki):
     Args:
         syn: Synapse connection
         entity_wiki: Wiki you are copying
+
     """
     # All attachments must be updated
     if entity_wiki['attachmentFileHandleIds']:
@@ -84,7 +86,7 @@ def copy_attachments(syn: Synapse, entity_wiki: Wiki):
 
 
 def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
-    """Get wiki headers
+    """Get wiki headers.
 
     Args:
         syn: Synapse connection
@@ -107,17 +109,17 @@ def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
 
 def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
                 force=False, dryrun=False, **kwargs):
-    """Updates wiki pages
+    """Updates wiki pages.
 
     Args:
         entity_wiki_pages: Mapping between wiki title and synapseclient.Wiki
         destination_wiki_pages: Mapping between wiki title and
                                 synapseclient.Wiki
         force: This will update a page even if its the same. Default is False.
+
         **kwargs: Same parameters as mirrorwiki.replace_wiki_text
 
     """
-    # TODO: Need to account for new pages
     for title in entity_wiki_pages:
         # If destination wiki does not have the title page, do not update
         if destination_wiki_pages.get(title) is None:
@@ -147,6 +149,47 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
             destination_wiki = syn.store(destination_wiki)
 
 
+def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
+                               destination: SynapseWikiCls) -> dict:
+    """Get entity/destination pages and mapping of wiki pages
+
+    Args:
+        syn: Synapse connection
+        entity: Synapse File, Project, Folder Entity or Id with
+                Wiki you want to copy
+        destination: Synapse File, Project, Folder Entity or Id
+                     with Wiki that matches entity
+
+    Returns:
+        {'entity_wiki_pages': {'title': synapseclient.Wiki}
+         'destination_wiki_pages': {'title': synapseclient.Wiki}
+         'wiki_mapping': {'wiki_id': 'dest_wiki_id'}}
+
+    """
+    entity_wiki = _get_headers(syn, entity)
+    destination_wiki = _get_headers(syn, destination)
+
+    entity_wiki_pages = {}
+    for wiki in entity_wiki:
+        entity_wiki = syn.getWiki(entity, wiki['id'])
+        entity_wiki_pages[wiki['title']] = entity_wiki
+
+    # Mapping dictionary containing wiki page mapping between
+    # entity and destination
+    wiki_mapping = {}
+    destination_wiki_pages = {}
+    for wiki in destination_wiki:
+        destination_wiki = syn.getWiki(destination, wiki['id'])
+        destination_wiki_pages[wiki['title']] = destination_wiki
+        # Account for pages that exist in the new page that
+        # don't exist in the old page
+        if entity_wiki_pages.get(wiki['title']) is not None:
+            wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
+    return {'entity_wiki_pages': entity_wiki_pages,
+            'destination_wiki_pages': destination_wiki_pages,
+            'wiki_mapping': wiki_mapping}
+
+
 def mirror(syn: Synapse, entity: SynapseWikiCls,
            destination: SynapseWikiCls, force=False,
            dryrun=False):
@@ -173,31 +216,13 @@ def mirror(syn: Synapse, entity: SynapseWikiCls,
         raise ValueError("Can only mirror wiki pages between similar "
                          "entity types")
 
-    entity_wiki = _get_headers(syn, entity)
-    destination_wiki = _get_headers(syn, destination)
-
-    # Get mapping of wiki pages
-    entity_wiki_pages = {}
-    for wiki in entity_wiki:
-        entity_wiki = syn.getWiki(entity, wiki['id'])
-        entity_wiki_pages[wiki['title']] = entity_wiki
-
-    # Mapping dictionary containing wiki page mapping between
-    # entity and destination
-    wiki_mapping = {}
-    destination_wiki_pages = {}
-    for wiki in destination_wiki:
-        destination_wiki = syn.getWiki(destination, wiki['id'])
-        destination_wiki_pages[wiki['title']] = destination_wiki
-        # Account for pages that exist in the new page that
-        # don't exist in the old page
-        if entity_wiki_pages.get(wiki['title']) is not None:
-            wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
+    # Get entity/destination pages and mapping of wiki pages
+    pages_and_mappings = _get_wikipages_and_mapping(syn, entity,
+                                                    destination)
 
     if dryrun:
         logger.info("Your wiki pages will not be mirrored. `dryrun` is True")
-    update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
+    update_wiki(syn, **pages_and_mappings,
                 force=force, dryrun=dryrun,
-                wiki_mapping=wiki_mapping,
                 entity=entity,
                 destination=destination)
