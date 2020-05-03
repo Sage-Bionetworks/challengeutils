@@ -130,7 +130,7 @@ def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         entity_wiki = entity_wiki_pages[title]
         destination_wiki = destination_wiki_pages[title]
         markdown = _replace_wiki_text(markdown=entity_wiki.markdown,
-                                     **kwargs)
+                                      **kwargs)
 
         if destination_wiki.markdown == markdown and not force:
             logger.info(f"No page updates: {title}")
