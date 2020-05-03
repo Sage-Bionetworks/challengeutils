@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
-from synapseclient import File, Folder, Project, Wiki, Synapse
+from synapseclient import Project, Wiki, Synapse
 try:
     from synapseclient.core.exceptions import SynapseHTTPError
 except ModuleNotFoundError:
@@ -15,8 +15,10 @@ from challengeutils import mirrorwiki
 
 
 class TestMirrorWiki:
-    
+    """Tests mirroring wiki"""
+
     def setup(self):
+        """Setting up all variables for tests"""
         self.markdown = "test\nsyn123/wiki/2222\nsyn123%2Fwiki%2F2222\nsyn123"
         self.wiki_mapping = {'2222': '5555'}
         self.entity = Project(name="foo", id="syn123")
@@ -75,7 +77,7 @@ class TestMirrorWiki:
              patch.object(synapseutils, "copyFileHandles",
                           return_value=self.new_filehandle) as patch_copy:
             attachments = mirrorwiki._copy_attachments(self.syn,
-                                                      self.entity_wiki)
+                                                       self.entity_wiki)
             assert attachments == ["12356"]
             patch_get_handle.assert_has_calls(get_filehandle_calls)
             patch_copy.assert_called_once_with(self.syn,
@@ -91,7 +93,7 @@ class TestMirrorWiki:
         """Test no attachments are returned when there are no attachments"""
         self.entity_wiki.attachmentFileHandleIds = []
         attachments = mirrorwiki._copy_attachments(self.syn,
-                                                  self.entity_wiki)
+                                                   self.entity_wiki)
         assert attachments == []
 
     def test__get_headers(self):
@@ -128,7 +130,8 @@ class TestMirrorWiki:
              patch.object(mirrorwiki, "_copy_attachments",
                           return_value=[]),\
              patch.object(self.syn, "store"):
-            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+            mirrored = mirrorwiki._update_wiki(self.syn,
+                                               self.entity_wiki_pages,
                                                self.destination_wiki_pages,
                                                entity=self.entity,
                                                destination=self.destination,
@@ -144,7 +147,8 @@ class TestMirrorWiki:
                           return_value=self.markdown),\
              patch.object(mirrorwiki, "_copy_attachments",
                           return_value=[]):
-            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+            mirrored = mirrorwiki._update_wiki(self.syn,
+                                               self.entity_wiki_pages,
                                                self.destination_wiki_pages,
                                                entity=self.entity,
                                                destination=self.destination,
@@ -160,7 +164,8 @@ class TestMirrorWiki:
              patch.object(mirrorwiki, "_copy_attachments",
                           return_value=[]),\
              patch.object(self.syn, "store"):
-            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+            mirrored = mirrorwiki._update_wiki(self.syn,
+                                               self.entity_wiki_pages,
                                                self.destination_wiki_pages,
                                                entity=self.entity,
                                                destination=self.destination,
@@ -176,7 +181,8 @@ class TestMirrorWiki:
              patch.object(mirrorwiki, "_copy_attachments",
                           return_value=[]),\
              patch.object(self.syn, "store") as patch_store:
-            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+            mirrored = mirrorwiki._update_wiki(self.syn,
+                                               self.entity_wiki_pages,
                                                self.destination_wiki_pages,
                                                entity=self.entity,
                                                destination=self.destination,
