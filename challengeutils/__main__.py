@@ -235,6 +235,7 @@ def command_kill_docker_over_quota(syn, args):
     helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
                                               quota=args.quota)
 
+
 def command_list_registered_challenges(syn, args):
     """
     List the challenges a user is registered to. Defaults to the

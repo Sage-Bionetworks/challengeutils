@@ -115,7 +115,7 @@ class TestChallengeApi:
 
     def test_get_registered_participants(self):
         """Tests getting registered participants"""
-        with patch.object(self.syn, "_GET_paginated")  as patch_restget:
+        with patch.object(self.syn, "_GET_paginated") as patch_restget:
             self.challenge_api.get_registered_participants(
                 challengeid=self.challengeid
             )
@@ -180,7 +180,7 @@ class TestChallenge:
                                                  teamid=self.teamid)
             assert chal == self.input
 
-    def test_list_registered_challenges(self):
+    def test_get_registered_challenges(self):
         """Test listing of registered challenges"""
         userprofile = Mock(ownerId=2222)
         with patch.object(self.syn, "getUserProfile",
@@ -189,7 +189,7 @@ class TestChallenge:
                           return_value=[self.input]) as patch_get_challenges,\
              patch.object(self.syn, "get",
                           return_value=self.project) as patch_get:
-            projects = challenge.list_registered_challenges(self.syn)
+            projects = challenge.get_registered_challenges(self.syn)
             assert list(projects) == [self.project]
             patch_get_user.assert_called_once()
             patch_get_challenges.assert_called_once_with(participantId=2222)
