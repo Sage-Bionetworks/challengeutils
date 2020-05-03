@@ -181,6 +181,10 @@ def command_list_evaluations(syn, args):
 
 
 def command_download_submission(syn, args):
+    """Downloads a Synapse Submission given a submission id
+
+    >>> challengeutils downloadsubmission submissionid
+    """
     submission_dict = utils.download_submission(syn, args.submissionid,
                                                 download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
