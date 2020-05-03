@@ -19,9 +19,9 @@ PREVIEW_FILE_HANDLE = "org.sagebionetworks.repo.model.file.PreviewFileHandle"
 SynapseWikiCls = Union[File, Folder, Project]
 
 
-def replace_wiki_text(markdown: str, wiki_mapping: dict,
-                      entity: SynapseWikiCls,
-                      destination: SynapseWikiCls) -> str:
+def _replace_wiki_text(markdown: str, wiki_mapping: dict,
+                       entity: SynapseWikiCls,
+                       destination: SynapseWikiCls) -> str:
     """Remap wiki text with correct synapse links
 
     Args:
@@ -49,7 +49,7 @@ def replace_wiki_text(markdown: str, wiki_mapping: dict,
     return markdown
 
 
-def copy_attachments(syn: Synapse, entity_wiki: Wiki):
+def _copy_attachments(syn: Synapse, entity_wiki: Wiki):
     """Copy wiki attachments
 
     Args:
@@ -85,7 +85,7 @@ def copy_attachments(syn: Synapse, entity_wiki: Wiki):
     return new_attachments
 
 
-def get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
+def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
     """Get wiki headers.
 
     Args:
@@ -107,8 +107,8 @@ def get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
     return wiki_headers
 
 
-def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
-                force=False, dryrun=False, **kwargs):
+def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
+                 force=False, dryrun=False, **kwargs):
     """Updates wiki pages.
 
     Args:
@@ -129,7 +129,7 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         # Generate new markdown text
         entity_wiki = entity_wiki_pages[title]
         destination_wiki = destination_wiki_pages[title]
-        markdown = replace_wiki_text(markdown=entity_wiki.markdown,
+        markdown = _replace_wiki_text(markdown=entity_wiki.markdown,
                                      **kwargs)
 
         if destination_wiki.markdown == markdown and not force:
@@ -140,7 +140,7 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
 
         # Should copy over the attachments every time because
         # someone could name attachments with the same name
-        new_attachments = copy_attachments(syn, entity_wiki)
+        new_attachments = _copy_attachments(syn, entity_wiki)
 
         destination_wiki.update(
             {'attachmentFileHandleIds': new_attachments}
@@ -166,8 +166,8 @@ def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
          'wiki_mapping': {'wiki_id': 'dest_wiki_id'}}
 
     """
-    entity_wiki = get_headers(syn, entity)
-    destination_wiki = get_headers(syn, destination)
+    entity_wiki = _get_headers(syn, entity)
+    destination_wiki = _get_headers(syn, destination)
 
     entity_wiki_pages = {}
     for wiki in entity_wiki:
@@ -222,7 +222,7 @@ def mirror(syn: Synapse, entity: SynapseWikiCls,
 
     if dryrun:
         logger.info("Your wiki pages will not be mirrored. `dryrun` is True")
-    update_wiki(syn, **pages_and_mappings,
-                force=force, dryrun=dryrun,
-                entity=entity,
-                destination=destination)
+    _update_wiki(syn, **pages_and_mappings,
+                 force=force, dryrun=dryrun,
+                 entity=entity,
+                 destination=destination)

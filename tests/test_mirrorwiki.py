@@ -50,7 +50,7 @@ class TestMirrorWiki:
 
     def test_replace_wiki_text(self):
         """Tests replacing of wiki text"""
-        new_markdown = mirrorwiki.replace_wiki_text(
+        new_markdown = mirrorwiki._replace_wiki_text(
             markdown=self.markdown,
             wiki_mapping=self.wiki_mapping,
             entity=self.entity,
@@ -68,7 +68,7 @@ class TestMirrorWiki:
                           side_effect=self.filehandles) as patch_get_handle,\
              patch.object(synapseutils, "copyFileHandles",
                           return_value=self.new_filehandle) as patch_copy:
-            attachments = mirrorwiki.copy_attachments(self.syn,
+            attachments = mirrorwiki._copy_attachments(self.syn,
                                                       self.entity_wiki)
             assert attachments == ["12356"]
             patch_get_handle.assert_has_calls(get_filehandle_calls)
@@ -84,7 +84,7 @@ class TestMirrorWiki:
     def test_copy_attachments_none(self):
         """Test no attachments are returned when there are no attachments"""
         self.entity_wiki.attachmentFileHandleIds = []
-        attachments = mirrorwiki.copy_attachments(self.syn,
+        attachments = mirrorwiki._copy_attachments(self.syn,
                                                   self.entity_wiki)
         assert attachments == []
 
@@ -92,7 +92,7 @@ class TestMirrorWiki:
         """Test getting headers"""
         with patch.object(self.syn, "getWikiHeaders",
                           return_value="test") as patch_get:
-            headers = mirrorwiki.get_headers(self.syn, self.entity)
+            headers = mirrorwiki._get_headers(self.syn, self.entity)
             assert headers == "test"
             patch_get.assert_called_once_with(self.entity)
 
@@ -103,5 +103,5 @@ class TestMirrorWiki:
              pytest.raises(ValueError,
                            match="foo has no Wiki. Mirroring wikis "
                                  "require that both `entity` .*"):
-            mirrorwiki.get_headers(self.syn, self.entity)
+            mirrorwiki._get_headers(self.syn, self.entity)
     
