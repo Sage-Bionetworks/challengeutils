@@ -25,7 +25,7 @@ class TestMirrorWiki:
             "test\nsyn555/wiki/5555\nsyn555%2Fwiki%2F5555\nsyn555"
         )
         self.syn = mock.create_autospec(Synapse)
-        self.entity_wiki = Wiki(markdown=self.markdown, id="111",
+        self.entity_wiki = Wiki(markdown=self.markdown, id="2222",
                                 owner="syn123",
                                 attachmentFileHandleIds=['322', '333'])
         self.filehandles = [
@@ -47,8 +47,12 @@ class TestMirrorWiki:
             }
         ]
         self.new_filehandle = [{'newFileHandle': {"id": "12356"}}]
-        self.entity_wiki_pages = {'2222': self.entity_wiki}
-        self.destination_wiki_pages = {'2222': self.entity_wiki}
+        self.entity_wiki_pages = {'test': self.entity_wiki}
+        self.destination_wiki_pages = {'test': self.entity_wiki}
+
+        # wiki headers
+        self.entity_wiki_headers = [{"id": "2222", "title": "test"}]
+        self.destination_wiki_headers = [{"id": "5555", "title": "test"}]
 
     def test__replace_wiki_text(self):
         """Tests replacing of wiki text"""
@@ -180,3 +184,37 @@ class TestMirrorWiki:
                                                dryrun=True)
             assert mirrored == [self.entity_wiki]
             patch_store.assert_not_called()
+
+    def test__get_wikipages_and_mapping(self):
+        """Test that page is updated when markdown is different between
+        entity and destination
+        """
+        headers = [self.entity_wiki_headers, self.destination_wiki_headers]
+        wikis = [self.entity_wiki, self.entity_wiki]
+        with patch.object(mirrorwiki, "_get_headers",
+                          side_effect=headers),\
+             patch.object(self.syn, "getWiki", side_effect=wikis):
+            wiki_dict = mirrorwiki._get_wikipages_and_mapping(
+                self.syn, self.entity, self.destination
+            )
+            print(wiki_dict['destination_wiki_pages'])
+        assert wiki_dict == {'entity_wiki_pages': self.entity_wiki_pages,
+                             'destination_wiki_pages': self.entity_wiki_pages,
+                             'wiki_mapping': self.wiki_mapping}
+
+    def test__get_wikipages_and_mapping_none(self):
+        """Test that wiki pages that exist in the destination also exist
+        in the old page
+        """
+        headers = [[], self.destination_wiki_headers]
+        with patch.object(mirrorwiki, "_get_headers",
+                          side_effect=headers),\
+             patch.object(self.syn, "getWiki",
+                          return_value=self.entity_wiki):
+            wiki_dict = mirrorwiki._get_wikipages_and_mapping(
+                self.syn, self.entity, self.destination
+            )
+            print(wiki_dict['destination_wiki_pages'])
+        assert wiki_dict == {'entity_wiki_pages': {},
+                             'destination_wiki_pages': self.entity_wiki_pages,
+                             'wiki_mapping': {}}

@@ -189,6 +189,7 @@ def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
         # don't exist in the old page
         if entity_wiki_pages.get(wiki['title']) is not None:
             wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
+
     return {'entity_wiki_pages': entity_wiki_pages,
             'destination_wiki_pages': destination_wiki_pages,
             'wiki_mapping': wiki_mapping}
