@@ -49,6 +49,7 @@ class TestMirrorWiki:
             }
         ]
         self.new_filehandle = [{'newFileHandle': {"id": "12356"}}]
+        # wiki page mapping {'title': Wiki}
         self.entity_wiki_pages = {'test': self.entity_wiki}
         self.destination_wiki_pages = {'test': self.entity_wiki}
 
@@ -224,3 +225,27 @@ class TestMirrorWiki:
         assert wiki_dict == {'entity_wiki_pages': {},
                              'destination_wiki_pages': self.entity_wiki_pages,
                              'wiki_mapping': {}}
+
+    def test_mirror(self):
+        """Integration test: Tests all parameters are called correctly"""
+        entities = [self.entity, self.destination]
+        mappings = {'entity_wiki_pages': self.entity_wiki_pages,
+                    'destination_wiki_pages': self.entity_wiki_pages,
+                    'wiki_mapping': self.wiki_mapping}
+        get_calls = [mock.call(self.entity, downloadFile=False),
+                     mock.call(self.destination, downloadFile=False)]
+        with patch.object(self.syn, "get",
+                          side_effect=entities) as patch_get,\
+             patch.object(mirrorwiki, "_get_wikipages_and_mapping",
+                          return_value=mappings) as patch_get_mapping,\
+             patch.object(mirrorwiki, "_update_wiki") as patch_update:
+            mirrorwiki.mirror(self.syn, entity=self.entity,
+                              destination=self.destination,
+                              force=True, dryrun=True)
+            patch_get.assert_has_calls(get_calls)
+            patch_get_mapping.assert_called_once_with(self.syn, self.entity,
+                                                      self.destination)
+            patch_update.assert_called_once_with(self.syn, **mappings,
+                                                 force=True, dryrun=True,
+                                                 entity=self.entity,
+                                                 destination=self.destination)

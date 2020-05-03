@@ -185,8 +185,7 @@ def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
     for wiki in destination_wiki:
         destination_wiki = syn.getWiki(destination, wiki['id'])
         destination_wiki_pages[wiki['title']] = destination_wiki
-        # Account for pages that exist in the new page that
-        # don't exist in the old page
+        # Only map wiki pages that exist in `entity` (source)
         if entity_wiki_pages.get(wiki['title']) is not None:
             wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
 
