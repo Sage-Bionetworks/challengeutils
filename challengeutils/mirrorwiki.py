@@ -85,7 +85,7 @@ def copy_attachments(syn: Synapse, entity_wiki: Wiki):
     return new_attachments
 
 
-def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
+def get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
     """Get wiki headers.
 
     Args:
@@ -166,8 +166,8 @@ def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,
          'wiki_mapping': {'wiki_id': 'dest_wiki_id'}}
 
     """
-    entity_wiki = _get_headers(syn, entity)
-    destination_wiki = _get_headers(syn, destination)
+    entity_wiki = get_headers(syn, entity)
+    destination_wiki = get_headers(syn, destination)
 
     entity_wiki_pages = {}
     for wiki in entity_wiki:
