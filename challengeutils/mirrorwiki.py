@@ -123,9 +123,7 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         if destination_wiki_pages.get(title) is None:
             logger.info(f"Title doesn't exist at destination: {title}")
             continue
-        # entity_wiki = syn.getWiki(entity, entity_wiki_pages[title])
-        # destination_wiki = syn.getWiki(destination,
-        #                                destination_wiki_pages[title])
+
         # Generate new markdown text
         entity_wiki = entity_wiki_pages[title]
         destination_wiki = destination_wiki_pages[title]
