@@ -1,8 +1,8 @@
 import logging
 import re
-from typing import Union
+from typing import Union, List
 
-from synapseclient import File, Folder, Project
+from synapseclient import File, Folder, Project, Wiki, Synapse
 try:
     from synapseclient.core.exceptions import SynapseHTTPError
 except ModuleNotFoundError:
@@ -15,11 +15,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 PREVIEW_FILE_HANDLE = "org.sagebionetworks.repo.model.file.PreviewFileHandle"
+# These are the synapse entities that can have wikis
 SynapseWikiCls = Union[File, Folder, Project]
 
 
 def replace_wiki_text(markdown: str, wiki_mapping: dict,
-                      entity: SynapseWikiCls, dest: SynapseWikiCls) -> str:
+                      entity: SynapseWikiCls,
+                      destination: SynapseWikiCls) -> str:
     """Remap wiki text with correct synapse links
 
     Args:
@@ -35,18 +37,18 @@ def replace_wiki_text(markdown: str, wiki_mapping: dict,
         dest_subwiki = wiki_mapping[entity_page_id]
         # Replace the wiki
         orig_text = f"{entity.id}/wiki/{entity_page_id}"
-        map_to_text = f"{dest.id}/wiki/{dest_subwiki}"
+        map_to_text = f"{destination.id}/wiki/{dest_subwiki}"
         markdown = re.sub(orig_text, map_to_text, markdown)
         # Some widgets that you fill in with synapse links
         # are auto encoded. / -> %2F
         orig_text = f"{entity.id}%2Fwiki%2F{entity_page_id}"
-        map_to_text = f"{dest.id}%2Fwiki%2F{dest_subwiki}"
+        map_to_text = f"{destination.id}%2Fwiki%2F{dest_subwiki}"
         markdown = re.sub(orig_text, map_to_text, markdown)
-    markdown = re.sub(entity.id, dest.id, markdown)
+    markdown = re.sub(entity.id, destination.id, markdown)
     return markdown
 
 
-def copy_attachments(syn, entity_wiki):
+def copy_attachments(syn: Synapse, entity_wiki: Wiki):
     """Copy wiki attachments
 
     Args:
@@ -81,75 +83,114 @@ def copy_attachments(syn, entity_wiki):
     return new_attachments
 
 
-def _get_headers():
-    pass
+def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
+    """Get wiki headers
 
-def mirrorwiki(syn, entity, destination, force_merge=False):
+    Args:
+        syn: Synapse connection
+        entity: A Synapse Entity
+
+    Returns:
+        List of wiki headers
     """
-    This script is responsible for mirroring wiki pages
-    It relies on the wiki titles between two Synapse Projects to be
-    The same and will merge the updates from entity's wikis to
-    destination's wikis
+
+    try:
+        wiki_headers = syn.getWikiHeaders(entity)
+    except SynapseHTTPError:
+        raise ValueError(f"{entity.name} has no Wiki. Mirroring wikis "
+                         "require that both `entity` and `destination` "
+                         "have the same wiki structure. If you want to copy "
+                         "a wiki page from `entity` to `destination`, you may "
+                         "want to use `synapseutils.copyWiki`")
+    return wiki_headers
+
+
+def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
+                force=False, **kwargs):
+    """Updates wiki pages
+
+    Args:
+        entity_wiki_pages: Mapping between wiki title and synapseclient.Wiki
+        destination_wiki_pages: Mapping between wiki title and
+                                synapseclient.Wiki
+        force: This will update a page even if its the same. Default is False.
+        **kwargs: Same parameters as mirrorwiki.replace_wiki_text
+
+    """
+    # TODO: Need to account for new pages
+    for title in entity_wiki_pages:
+        # If destination wiki does not have the title page, do not update
+        if destination_wiki_pages.get(title) is None:
+            logger.info(f"{title}: page title does not exist in destination.")
+            continue
+        # entity_wiki = syn.getWiki(entity, entity_wiki_pages[title])
+        # destination_wiki = syn.getWiki(destination,
+        #                                destination_wiki_pages[title])
+        # Generate new markdown text
+        entity_wiki = entity_wiki_pages[title]
+        destination_wiki = destination_wiki_pages[title]
+        markdown = replace_wiki_text(markdown=entity_wiki.markdown,
+                                     **kwargs)
+
+        if destination_wiki.markdown == markdown and not force:
+            logger.info(f"Skipping page update: {title}")
+        else:
+            logger.info(f"Updating: {title}")
+            destination_wiki.markdown = markdown
+
+        # Should copy over the attachments every time because
+        # someone could name attachments with the same name
+        new_attachments = copy_attachments(syn, entity_wiki)
+
+        destination_wiki.update(
+            {'attachmentFileHandleIds': new_attachments}
+        )
+        destination_wiki = syn.store(destination_wiki)
+
+
+def mirrorwiki(syn: Synapse, entity: SynapseWikiCls,
+               destination: SynapseWikiCls, force=False):
+    """Mirrors wiki pages by using the wikipage titles between two
+    Synapse Entities.  This function only works if `entity` and
+    `destination` are the same type and both must have wiki pages.
 
     Args:
         entity: Synapse File, Project, Folder Entity or Id with
                 Wiki you want to copy
         destination: Synapse File, Project, Folder Entity or Id
                      with Wiki that matches entity
-        force_merge: this will update a page even if its the same
+        force: this will update a page even if its the same
 
-    Returns:
-        nothing
     """
     entity = syn.get(entity, downloadFile=False)
     destination = syn.get(destination, downloadFile=False)
-    # TODO: getWikiHeaders fails when there is no wiki
-    entity_wiki = syn.getWikiHeaders(entity)
-    try:
-        destination_wiki = syn.getWikiHeaders(destination)
-    except SynapseHTTPError:
-        raise ValueError("The destination Project has no Wiki. Mirroring a"
-                         " Wiki requires that the source and destination "
-                         "Projects have the same structure. You may want "
-                         "to use the copy wiki functionality provided "
-                         "by 'synapseutils.copyWiki'")
+    if type(entity) is not type(destination):
+        raise ValueError("Can only mirror wiki pages between similar "
+                         "entity types")
+
+    entity_wiki = _get_headers(syn, entity)
+    destination_wiki = _get_headers(syn, destination)
 
     # Get mapping of wiki pages
     entity_wiki_pages = {}
     for wiki in entity_wiki:
-        entity_wiki_pages[wiki['title']] = wiki['id']
-    destination_wiki_pages = {}
+        entity_wiki = syn.getWiki(entity, wiki['id'])
+        entity_wiki_pages[wiki['title']] = entity_wiki
+
     # Mapping dictionary containing wiki page mapping between
     # entity and destination
     wiki_mapping = {}
+    destination_wiki_pages = {}
     for wiki in destination_wiki:
-        destination_wiki_pages[wiki['title']] = wiki['id']
+        destination_wiki = syn.getWiki(destination, wiki['id'])
+        destination_wiki_pages[wiki['title']] = destination_wiki
         # Account for pages that exist in the new page that
         # don't exist in the old page
         if entity_wiki_pages.get(wiki['title']) is not None:
-            wiki_mapping[entity_wiki_pages[wiki['title']]] = wiki['id']
-    # TODO: Need to account for new pages
-    for title in entity_wiki_pages:
-        entity_wiki = syn.getWiki(entity, entity_wiki_pages[title])
-        # If destination wiki does not have the title page, do not update
-        if destination_wiki_pages.get(title) is not None:
-            destination_wiki = syn.getWiki(destination,
-                                           destination_wiki_pages[title])
-            if destination_wiki.markdown == entity_wiki.markdown and not force_merge:
-                logger.info("Skipping page update: {}".format(title))
-            else:
-                logger.info("Updating: {}".format(title))
-                markdown = replace_wiki_text(markdown=entity_wiki.markdown,
-                                             wiki_mapping=wiki_mapping,
-                                             entity=entity,
-                                             dest=destination)
-                destination_wiki.markdown = markdown
+            wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
 
-                new_attachments = copy_attachments(syn, entity_wiki)
-
-                destination_wiki.update(
-                    {'attachmentFileHandleIds': new_attachments}
-                )
-            destination_wiki = syn.store(destination_wiki)
-        else:
-            logger.info("{}: title not existent in destination wikis".format(title))
+    update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
+                force=force,
+                wiki_mapping=wiki_mapping,
+                entity=entity,
+                destination=destination)

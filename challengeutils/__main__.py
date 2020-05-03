@@ -33,12 +33,12 @@ def command_mirrorwiki(syn, args):
     compare wiki titles between the staging and live site and update the live
     site with respect to what has changed on the staging site.  Note, this is
     different from copying the wikis. To copy the wikis, please look at
-    synapseutils.
+    `synapseutils.copyWiki`.
 
     >>> challengeutils mirrorwiki syn12345 syn23456
     """
     mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
-                          args.forceupdate)
+                          force=args.forceupdate)
 
 
 def command_createchallenge(syn, args):
