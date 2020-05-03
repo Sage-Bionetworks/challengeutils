@@ -106,7 +106,7 @@ def _get_headers(syn: Synapse, entity: SynapseWikiCls) -> List[dict]:
 
 
 def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
-                force=False, **kwargs):
+                force=False, dryrun=False, **kwargs):
     """Updates wiki pages
 
     Args:
@@ -121,7 +121,7 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
     for title in entity_wiki_pages:
         # If destination wiki does not have the title page, do not update
         if destination_wiki_pages.get(title) is None:
-            logger.info(f"{title}: page title does not exist in destination.")
+            logger.info(f"Title doesn't exist at destination: {title}")
             continue
         # entity_wiki = syn.getWiki(entity, entity_wiki_pages[title])
         # destination_wiki = syn.getWiki(destination,
@@ -133,7 +133,7 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
                                      **kwargs)
 
         if destination_wiki.markdown == markdown and not force:
-            logger.info(f"Skipping page update: {title}")
+            logger.info(f"No page updates: {title}")
         else:
             logger.info(f"Updating: {title}")
             destination_wiki.markdown = markdown
@@ -145,21 +145,28 @@ def update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         destination_wiki.update(
             {'attachmentFileHandleIds': new_attachments}
         )
-        destination_wiki = syn.store(destination_wiki)
+        if not dryrun:
+            destination_wiki = syn.store(destination_wiki)
 
 
-def mirrorwiki(syn: Synapse, entity: SynapseWikiCls,
-               destination: SynapseWikiCls, force=False):
-    """Mirrors wiki pages by using the wikipage titles between two
-    Synapse Entities.  This function only works if `entity` and
-    `destination` are the same type and both must have wiki pages.
+def mirror(syn: Synapse, entity: SynapseWikiCls,
+           destination: SynapseWikiCls, force=False,
+           dryrun=False):
+    """Mirrors (sync) wiki pages by using the wikipage titles between two
+    Synapse Entities.  This function only works if `entity` and `destination`
+    are the same type and both must have wiki pages.  Only wiki pages with the
+    same titles will be copied from `entity` to `destination` - if there is
+    a wiki page that you want to add, you will have to create a wiki page
+    first in the `destination` with the same name.
 
     Args:
         entity: Synapse File, Project, Folder Entity or Id with
                 Wiki you want to copy
         destination: Synapse File, Project, Folder Entity or Id
                      with Wiki that matches entity
-        force: this will update a page even if its the same
+        force: Update a page even if its the same. Default to False.
+        dryrun: Show the pages that have changed but don't update. Default
+                is False.
 
     """
     entity = syn.get(entity, downloadFile=False)
@@ -189,8 +196,10 @@ def mirrorwiki(syn: Synapse, entity: SynapseWikiCls,
         if entity_wiki_pages.get(wiki['title']) is not None:
             wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
 
+    if dryrun:
+        logger.info("Your wiki pages will not be mirrored. `dryrun` is True")
     update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
-                force=force,
+                force=force, dryrun=dryrun,
                 wiki_mapping=wiki_mapping,
                 entity=entity,
                 destination=destination)

@@ -28,17 +28,20 @@ logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
-    """For all challenges, you should be editting the staging site and then
-    using the merge script to mirror staging to live site.  The script will
-    compare wiki titles between the staging and live site and update the live
-    site with respect to what has changed on the staging site.  Note, this is
-    different from copying the wikis. To copy the wikis, please look at
-    `synapseutils.copyWiki`.
+    """Mirrors (sync) wiki pages by using the wikipage titles between two
+    Synapse Entities.  This function only works if `entity` and `destination`
+    are the same type and both must have wiki pages.  Only wiki pages with the
+    same titles will be copied from `entity` to `destination` - if there is
+    a wiki page that you want to add, you will have to create a wiki page
+    first in the `destination` with the same name.
+
+    Note: this is different from copying a wiki - to copy a wiki, please look
+    at `synapseutils.copyWiki`.
 
     >>> challengeutils mirrorwiki syn12345 syn23456
     """
-    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
-                          force=args.forceupdate)
+    mirrorwiki.mirror(syn, args.entityid, args.destinationid,
+                      force=args.force, dryrun=args.dryrun)
 
 
 def command_createchallenge(syn, args):
@@ -270,27 +273,39 @@ def build_parser():
               " there is already a live site"))
     parser_createChallenge.set_defaults(func=command_createchallenge)
 
-    parser_mirrorWiki = subparsers.add_parser(
+    parser_mirrorwiki = subparsers.add_parser(
         'mirrorwiki',
-        help=("This command mirrors wiki pages. It relies on the wiki titles "
-              "between two Synapse Projects to be the same and will merge the "
-              "updates from entity's wikis to destination's wikis. "
-              "Do not confuse this function with copy wiki."))
+        help="Mirrors (sync) wiki pages by using the wikipage titles between "
+             "two Synapse Entities. This function only works if `entity` and "
+             "`destination`are the same type and both must have wiki pages. "
+             "Only wiki pages with the same titles will be copied from "
+             "`entity` to `destination` - if there is a wiki page that you "
+             "want to add, you will have to create a wiki page first in the "
+             "`destination` with the same name."
+    )
 
-    parser_mirrorWiki.add_argument(
+    parser_mirrorwiki.add_argument(
         "entityid",
         type=str,
-        help="Synapse Id of the project's wiki changes you have staged")
-    parser_mirrorWiki.add_argument(
+        help="Synapse Id of the project's wiki changes you have staged"
+    )
+    parser_mirrorwiki.add_argument(
         "destinationid",
         type=str,
-        help=('Synapse Id of project whose wiki you want to update'
-              ' with the entityid'))
-    parser_mirrorWiki.add_argument(
-        "--forceupdate",
+        help="Synapse Id of project whose wiki you want to update "
+             "with the entityid"
+    )
+    parser_mirrorwiki.add_argument(
+        "--force",
         action='store_true',
-        help='Update the wikipages even if they are the same')
-    parser_mirrorWiki.set_defaults(func=command_mirrorwiki)
+        help='Update the wikipages even if they are the same'
+    )
+    parser_mirrorwiki.add_argument(
+        "--dryrun",
+        action='store_true',
+        help="Show the pages that have changed but don't update."
+    )
+    parser_mirrorwiki.set_defaults(func=command_mirrorwiki)
 
     parser_query = subparsers.add_parser(
         'query',
