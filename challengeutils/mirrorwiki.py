@@ -120,6 +120,7 @@ def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         **kwargs: Same parameters as mirrorwiki.replace_wiki_text
 
     """
+    mirrored_wiki = []
     for title in entity_wiki_pages:
         # If destination wiki does not have the title page, do not update
         if destination_wiki_pages.get(title) is None:
@@ -137,6 +138,7 @@ def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         else:
             logger.info(f"Updating: {title}")
             destination_wiki.markdown = markdown
+            mirrored_wiki.append(destination_wiki)
 
         # Should copy over the attachments every time because
         # someone could name attachments with the same name
@@ -147,6 +149,8 @@ def _update_wiki(syn, entity_wiki_pages, destination_wiki_pages,
         )
         if not dryrun:
             destination_wiki = syn.store(destination_wiki)
+
+    return mirrored_wiki
 
 
 def _get_wikipages_and_mapping(syn: Synapse, entity: SynapseWikiCls,

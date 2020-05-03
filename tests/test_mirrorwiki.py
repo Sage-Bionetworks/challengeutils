@@ -47,8 +47,10 @@ class TestMirrorWiki:
             }
         ]
         self.new_filehandle = [{'newFileHandle': {"id": "12356"}}]
+        self.entity_wiki_pages = {'2222': self.entity_wiki}
+        self.destination_wiki_pages = {'2222': self.entity_wiki}
 
-    def test_replace_wiki_text(self):
+    def test__replace_wiki_text(self):
         """Tests replacing of wiki text"""
         new_markdown = mirrorwiki._replace_wiki_text(
             markdown=self.markdown,
@@ -57,8 +59,8 @@ class TestMirrorWiki:
             destination=self.destination
         )
         assert new_markdown == self.expected_markdown
-    
-    def test_copy_attachments(self):
+
+    def test__copy_attachments(self):
         """Test copying attachments. Test preview filehandles aren't copied"""
         get_filehandle_calls = [mock.call("322", self.entity_wiki.id,
                                           objectType='WikiAttachment'),
@@ -81,14 +83,14 @@ class TestMirrorWiki:
                                                ['testing'],
                                                ['foobar'])
 
-    def test_copy_attachments_none(self):
+    def test__copy_attachments_none(self):
         """Test no attachments are returned when there are no attachments"""
         self.entity_wiki.attachmentFileHandleIds = []
         attachments = mirrorwiki._copy_attachments(self.syn,
                                                   self.entity_wiki)
         assert attachments == []
 
-    def test_get_headers(self):
+    def test__get_headers(self):
         """Test getting headers"""
         with patch.object(self.syn, "getWikiHeaders",
                           return_value="test") as patch_get:
@@ -96,7 +98,7 @@ class TestMirrorWiki:
             assert headers == "test"
             patch_get.assert_called_once_with(self.entity)
 
-    def test_get_headers_raiseerror(self):
+    def test__get_headers_raiseerror(self):
         """Test correct error is raised"""
         with patch.object(self.syn, "getWikiHeaders",
                           side_effect=SynapseHTTPError),\
@@ -104,4 +106,77 @@ class TestMirrorWiki:
                            match="foo has no Wiki. Mirroring wikis "
                                  "require that both `entity` .*"):
             mirrorwiki._get_headers(self.syn, self.entity)
-    
+
+    def test__update_wiki_no_title(self):
+        """Test that nothing is updated when title doesnt exist in
+        destination
+        """
+        mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+                                           {'dne': "foo"})
+        assert mirrored == []
+
+    def test__update_wiki_samemarkdown_force(self):
+        """Test that page is updated when markdown is the same between
+        entity and destination with force=True
+        """
+        with patch.object(mirrorwiki, "_replace_wiki_text",
+                          return_value=self.markdown),\
+             patch.object(mirrorwiki, "_copy_attachments",
+                          return_value=[]),\
+             patch.object(self.syn, "store"):
+            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+                                               self.destination_wiki_pages,
+                                               entity=self.entity,
+                                               destination=self.destination,
+                                               wiki_mapping=self.wiki_mapping,
+                                               force=True)
+            assert mirrored == [self.entity_wiki]
+
+    def test__update_wiki_samemarkdown(self):
+        """Test that nothing is updated when markdown is the same between
+        entity and destination
+        """
+        with patch.object(mirrorwiki, "_replace_wiki_text",
+                          return_value=self.markdown),\
+             patch.object(mirrorwiki, "_copy_attachments",
+                          return_value=[]):
+            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+                                               self.destination_wiki_pages,
+                                               entity=self.entity,
+                                               destination=self.destination,
+                                               wiki_mapping=self.wiki_mapping)
+            assert mirrored == []
+
+    def test__update_wiki_differentmarkdown(self):
+        """Test that page is updated when markdown is different between
+        entity and destination
+        """
+        with patch.object(mirrorwiki, "_replace_wiki_text",
+                          return_value=self.expected_markdown),\
+             patch.object(mirrorwiki, "_copy_attachments",
+                          return_value=[]),\
+             patch.object(self.syn, "store"):
+            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+                                               self.destination_wiki_pages,
+                                               entity=self.entity,
+                                               destination=self.destination,
+                                               wiki_mapping=self.wiki_mapping)
+            assert mirrored == [self.entity_wiki]
+
+    def test__update_wiki_dryrun(self):
+        """Test that page is updated when markdown is different between
+        entity and destination
+        """
+        with patch.object(mirrorwiki, "_replace_wiki_text",
+                          return_value=self.expected_markdown),\
+             patch.object(mirrorwiki, "_copy_attachments",
+                          return_value=[]),\
+             patch.object(self.syn, "store") as patch_store:
+            mirrored = mirrorwiki._update_wiki(self.syn, self.entity_wiki_pages,
+                                               self.destination_wiki_pages,
+                                               entity=self.entity,
+                                               destination=self.destination,
+                                               wiki_mapping=self.wiki_mapping,
+                                               dryrun=True)
+            assert mirrored == [self.entity_wiki]
+            patch_store.assert_not_called()
