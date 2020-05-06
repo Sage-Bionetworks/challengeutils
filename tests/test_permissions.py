@@ -1,7 +1,7 @@
 """Test permissions"""
-import pytest
-from mock import patch, create_autospec
+from unittest.mock import patch, create_autospec
 
+import pytest
 import synapseclient
 
 from challengeutils import permissions

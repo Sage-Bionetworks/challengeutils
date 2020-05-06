@@ -1,6 +1,9 @@
-import mock
-import challengeutils.utils
+from unittest import mock
+
 import synapseclient
+
+import challengeutils.utils
+
 
 member1 = challengeutils.utils.NewUserProfile(
     ownerId='1234', firstName='test', lastName='foo', userName='temp')

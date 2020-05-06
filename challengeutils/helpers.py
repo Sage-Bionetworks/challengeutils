@@ -4,8 +4,10 @@ Challenge helper functions
 import os
 import sys
 import time
+
 import synapseclient
 import synapseutils
+
 from . import utils
 
 WORKFLOW_LAST_UPDATED_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"

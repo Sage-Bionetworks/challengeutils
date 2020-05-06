@@ -1,15 +1,11 @@
 """Test create challenge"""
+from unittest import mock
+from unittest.mock import patch
 import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # support synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
 from challengeutils import createchallenge
