@@ -3,11 +3,11 @@ Test scoring harness functions
 '''
 # pylint: disable=redefined-outer-name
 import copy
-import mock
-from mock import patch
 import os
-import pytest
+from unittest import mock
+from unittest.mock import patch
 
+import pytest
 import synapseclient
 
 import scoring_harness.base_processor

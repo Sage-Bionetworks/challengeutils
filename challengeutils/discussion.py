@@ -5,11 +5,7 @@ import json
 import requests
 
 import synapseclient
-try:
-    from synapseclient.core.utils import id_of
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.utils import id_of
+from synapseclient.core.utils import id_of
 
 from .synapseservices.discussion import Forum
 

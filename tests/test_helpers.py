@@ -1,10 +1,12 @@
 '''
 Test challengeutils helper functions
 '''
-import mock
-from mock import patch
+from unittest import mock
+from unittest.mock import patch
+
 import pytest
 import synapseclient
+
 from challengeutils import helpers, utils
 
 SYN = mock.create_autospec(synapseclient.Synapse)

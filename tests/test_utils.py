@@ -4,17 +4,14 @@ Test challengeutils.utils functions
 import json
 import re
 import tempfile
+from unittest import mock
+from unittest.mock import patch
+import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # support synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 
 import challengeutils.utils
 

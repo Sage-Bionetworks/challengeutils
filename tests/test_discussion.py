@@ -2,10 +2,10 @@
 Test challengeutils.discussion functions
 '''
 import json
-import mock
-import requests
+from unittest import mock
 import uuid
 
+import requests
 import synapseclient
 
 from challengeutils import discussion

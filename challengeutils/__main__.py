@@ -7,11 +7,8 @@ import os
 import pandas as pd
 import synapseclient
 
-try:
-    from synapseclient.core.retry import with_retry
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.retry import _with_retry as with_retry
+from synapseclient.core.retry import with_retry
+from synapseclient.core.utils import from_unix_epoch_time
 
 from . import (createchallenge, challenge,
                download_current_lead_submission as dl_cur,
@@ -84,7 +81,7 @@ def command_query(syn, args):
             querydf['submitterName'] = submitter_names
         # Check if createdOn column exists
         if querydf.get('createdOn') is not None:
-            createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
+            createdons = [from_unix_epoch_time(createdon)
                           for createdon in querydf['createdOn']]
             querydf['createdOn'] = createdons
     if args.outputfile is not None:
@@ -180,6 +177,10 @@ def command_list_evaluations(syn, args):
 
 
 def command_download_submission(syn, args):
+    """Downloads a Synapse Submission given a submission id
+
+    >>> challengeutils downloadsubmission submissionid
+    """
     submission_dict = utils.download_submission(syn, args.submissionid,
                                                 download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
