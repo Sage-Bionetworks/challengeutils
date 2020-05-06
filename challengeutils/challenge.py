@@ -166,7 +166,7 @@ def get_registered_challenges(syn: Synapse,
 
     """
     challenge_api = ChallengeApi(syn=syn)
-    # This will return the logged in user profile is None is passed in
+    # This will return the logged in user profile if None is passed in
     profile = syn.getUserProfile(userid)
     userid = profile.ownerId
     registered = challenge_api.get_registered_challenges(participantId=userid)
