@@ -11,9 +11,6 @@ import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
-from synapseclient.core.utils import id_of
-
-from synapseservices.challenge import Challenge
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
