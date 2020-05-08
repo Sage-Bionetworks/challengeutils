@@ -1,26 +1,20 @@
-.. challengeutils documentation master file, created by
-   sphinx-quickstart on Sun Nov 10 18:08:14 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to challengeutils' documentation!
-=======================================================
-
-
-===================
-Command Line Client
-===================
+.. include:: README.rst
 
 .. toctree::
-   :maxdepth: 4
+   :caption: Command-Line Client
+   :maxdepth: 2
 
-   client
-
-===================================
-challengeutils Python Documentation
-===================================
+   client/participant
+   client/admin
 
 .. toctree::
-   :maxdepth: 4
+   :caption: Python Functions
+   :maxdepth: 2
 
-   challengeutils
+   python/wiki
+   python/submissions
+   python/writeups
+   python/discussion
+   python/helpers
+   python/permissions
+   python/utils
