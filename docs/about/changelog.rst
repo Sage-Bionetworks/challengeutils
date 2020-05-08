@@ -14,7 +14,7 @@ v2.0.0
 **Coming soon!**
 
 Note that challengeutils 2.0.0 will be a backward-incompatible release for 
-two reasons: 1) Python 2 is deprecated; and 2) synapseclient >2.0.0 is no 
+two reasons: 1) Python 2 is deprecated; and 2) synapseclient <2.0.0 is no 
 longer supported.
 
 v1.6.0
