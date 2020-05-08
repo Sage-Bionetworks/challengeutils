@@ -11,11 +11,18 @@ For older releases, visit the `GitHub releases`_.
 v2.0.0
 ------
 
-**Coming soon!**
+.. Important::
+    **Support for synapseclient<2.0.0 is no longer available**; upgrade to the
+    latest version with:
 
-Note that challengeutils 2.0.0 will be a backward-incompatible release for 
-two reasons: 1) Python 2 is deprecated; and 2) synapseclient <2.0.0 is no 
-longer supported.
+    .. code:: console
+
+        $ pip install synapseclient --upgrade
+
+- Refine ``challenge`` services
+- Update library dependency, e.g. using ``unittest.mock`` instead of ``mock``
+- Fix queue query CLI errors
+- Fix ``mirrorwiki`` error
 
 v1.6.0
 ------
