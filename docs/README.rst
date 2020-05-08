@@ -14,13 +14,21 @@ challengeutils
     :target: https://travis-ci.org/Sage-Bionetworks/challengeutils
     :alt: Build status
 
-This package provides an interface for managing Sage Bionetworks Challenges 
-administered using Synapse_, including `DREAM Challenges`_. This package is
-being actively developed and maintained by DREAM and Informatics & Biocomputing
-(IBC), Computational Oncology Group at Sage Bionetworks.
+**challengeutils** is a set of tools and commands that provides an interface
+for  managing crowd-sourced challenges administered on Synapse_, including but
+not limited to, `DREAM Challenges`_. Its main purpose is to ease the process
+of creating, monitoring, and ending a challenge, as well as provide useful
+functions for post-competition analysis.
+
+.. image:: static/challenge.png
+    :alt: Sample challenge page on Synapse
+
+challengeutils is written in Python and uses the synapseclient_ library to
+pull information from Synapse (account required).
 
 .. _Synapse: https://www.synapse.org/
 .. _DREAM Challenges: http://dreamchallenges.org/
+.. _synapseclient: https://python-docs.synapse.org/build/html/index.html
 
 Installation
 ============
@@ -36,11 +44,16 @@ To install from the source:
 
     $ python setup.py install
 
-.. Attention:: synapseclient <2.0.0 is no longer supported, so some features may break if you are not on the latest client.
+.. Attention:: 
+
+    ``synapseclient <2.0.0`` is no longer supported, so some features may
+    break if you are not on the latest client.
 
 Contributing
 ============
-If you would like to propose a change to challengeutils, you can find more information
-on contributing in our `contributing guide`_ on GitHub.
+Interested in contributing? **Awesome!** We follow the typical `GitHub workflow`_
+of forking a repo, creating a branch, and opening pull requests. For more
+information on how you can add or propose a change, visit our `contributing guide`_.
 
+.. _Github workflow: https://guides.github.com/introduction/flow/
 .. _contributing guide: https://github.com/Sage-Bionetworks/challengeutils#contributing

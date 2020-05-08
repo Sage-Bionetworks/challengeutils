@@ -1,14 +1,7 @@
 .. include:: README.rst
 
 .. toctree::
-   :caption: Command-Line Client
-   :maxdepth: 2
-
-   client/participant
-   client/admin
-
-.. toctree::
-   :caption: Python Functions
+   :caption: Python Client
    :maxdepth: 2
 
    python/wiki
@@ -18,3 +11,25 @@
    python/helpers
    python/permissions
    python/utils
+
+.. toctree::
+   :caption: Command-Line Client
+   :maxdepth: 2
+
+   client/overview
+   client/participant
+   client/admin
+   client/source
+
+.. toctree::
+   :caption: Demo & Examples
+   :maxdepth: 2
+
+   demo/challenge.rst
+
+.. toctree::
+   :caption: About
+   :maxdepth: 1
+
+   about/changelog
+   about/authors

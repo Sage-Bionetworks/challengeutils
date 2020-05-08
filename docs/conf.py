@@ -21,11 +21,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'challengeutils'
-copyright = '2019-2020, Sage Bionetworks'
+copyright = '2017-2020, Sage Bionetworks'
 author = 'Thomas Yu'
 
 # The short X.Y version
-version = ''
+version = '1.6'
 # The full version, including alpha/beta/rc tags
 release = version
 
@@ -82,20 +82,21 @@ pygments_style = 'default'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_logo = 'logo.png'
+html_logo = 'static/logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'logo_only': True
+    'logo_only': True,
+    'prev_next_buttons_location': None
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+# html_static_path = ['static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
