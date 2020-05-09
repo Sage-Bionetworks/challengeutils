@@ -3,11 +3,7 @@ import re
 from typing import Union, List, Dict
 
 from synapseclient import File, Folder, Project, Wiki, Synapse
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
 logging.basicConfig()
