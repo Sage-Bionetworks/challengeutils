@@ -8,6 +8,15 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+
+v2.0.1
+------
+- Added `CONTRIBUTING.md`
+- Revised `README.md`
+- Added `CODE_OF_CONDUCT.md`
+- Update `version`
+
+
 v2.0.0
 ------
 
