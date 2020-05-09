@@ -10,6 +10,14 @@ The following commands must be ran with ``challengeutils``, e.g.
 
     $ challengeutils <built-in command> <options>
 
+Note that the majority of the commands listed here will require certain
+permissions on the relevant Sypanse entities, e.g. ``admin`` permissions
+or ``score`` permissions.
+
+For more information on Synapse permissions, see here_.
+
+.. _here: https://docs.synapse.org/articles/sharing_settings.html#sharing-settings
+
 -------
 
 
@@ -20,7 +28,7 @@ Synopsis
 ^^^^^^^^
 
 createchallenge
-    "CHALLENGE NAME HERE" [--livesiteid ]
+    "CHALLENGE NAME HERE" [--livesiteid SYNID]
 
 Description
 ^^^^^^^^^^^
@@ -31,12 +39,19 @@ on various Challenge components, see `challenge administration`_.
 
 .. _challenge administration: https://docs.synapse.org/articles/challenge_administration.html
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils createchallenge
 
-.. cmdoption:: --livesiteid
+.. cmdoption:: "CHALLENGE NAME HERE"
+
+    Name of the challenge
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: --livesiteid SYNID
 
     Overwrite an existing live site
 
@@ -69,10 +84,21 @@ then use this command to sync over the changes to the live site.
 .. _synapseutils: https://python-docs.synapse.org/build/html/synapseutils.html
 
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils mirrorwiki
+
+.. cmdoption:: source_id
+
+    Synpase ID of the source wiki to be synced
+
+.. cmdoption:: dest_id
+
+    Synapse ID of the destination wiki to be synced to
+
+Optional
+^^^^^^^^
 
 .. cmdoption:: --forceupdate
 
@@ -88,12 +114,21 @@ Synopsis
 ^^^^^^^^
 
 listevaluations
-    projectid
+    project_id
 
 Description
 ^^^^^^^^^^^
 
-List all evaluation queues of a Synapse project
+List all evaluation queues of a Synapse project.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils listevaluations
+
+.. cmdoption:: project_id
+
+    Project ID on Synapse, e.g. ``syn12345678``
 
 -------
 
@@ -105,7 +140,7 @@ Synopsis
 ^^^^^^^^
 
 setevaluationquota
-    evalid [--round_start yyyy-MM-ddTHH:mm:ss 
+    eval_id [--round_start yyyy-MM-ddTHH:mm:ss 
     [--round_end yyyy-MM-ddTHH:mm:ss]
     [--round_duration n]
     [--num_rounds n] [--sub_limit n]
@@ -113,18 +148,27 @@ setevaluationquota
 Description
 ^^^^^^^^^^^
 
-Set the quota of an evaluation queue
+Set the quota of an evaluation queue. Quota options include the round
+starting date, round ending date, round duration, number of rounds, and 
+submission limit.
 
 .. Warning::
 
-    This **will** erase all settings previously set for the queue,
-    unless otherwise specified by the parameters when you run this
-    command.
+    When this command is used, **all settings previously set for the queue
+    will be erased**. For any settings you do not want to update or remove,
+    pass the original values into the optional parameters defined below.
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils setevaluationquota
+
+.. cmdoption:: eval_id
+
+    Evaluation ID on Synapse, e.g. ``9876543``
+
+Optional
+^^^^^^^^
 
 .. cmdoption:: --round_start
 
@@ -165,6 +209,23 @@ Description
 Set the evaluation permissions for ``user_or_team`` with 
 ``permission_level`` access.
 
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils setevaluationquota
+
+.. cmdoption:: eval_id
+
+    Evaluation ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: user_or_team
+
+    Synapse user or team ID, e.g. ``1234567``
+
+.. cmdoption:: permission_level
+
+    One of: ``view``, ``submit``, ``score``, ``admin``, ``remove``
+
 -------
 
 
@@ -181,12 +242,19 @@ query
 Description
 ^^^^^^^^^^^
 
-Query an evaluation queue
+Query an evaluation queue.
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils query
+
+.. cmdoption:: "QUERY"
+
+    SQL-like query in URI format
+
+Optional
+^^^^^^^^
 
 .. cmdoption:: --outputfile file
 
@@ -194,7 +262,7 @@ Options
 
 .. cmdoption:: --render
 
-    Render submitterId and createdOn values in leaderboard
+    Render ``submitterId`` and ``createdOn`` values in leaderboard
 
 .. cmdoption:: --limit 20
 
@@ -214,17 +282,24 @@ Synopsis
 ^^^^^^^^
 
 downloadsubmission
-    subid [--download_location path] [--output file]
+    sub_id [--download_location path] [--output file]
 
 Description
 ^^^^^^^^^^^
 
-Download a Submission object
+Download a Submission object.
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils downloadsubmission
+
+.. cmdoption:: sub_id
+
+    Submission ID on Synapse, e.g. ``9876543``
+
+Optional
+^^^^^^^^
 
 .. cmdoption:: --download_location path
 
@@ -244,21 +319,46 @@ Synopsis
 ^^^^^^^^
 
 annotatesubmission
-    synid json_file [--to_public ]
+    sub_id json_file [-p ] [-f]
 
 Description
 ^^^^^^^^^^^
 
-foo
+Annotate a Submission object with a JSON file.  The file should comprise of
+a list of key-value pairs, where the key is the annotation and the value is
+the annotation value, e.g.
 
-Options
-^^^^^^^
+.. code:: json
+
+    {
+        "round": 1,
+        "score": 100
+    }
+
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils annotatesubmission
 
-.. cmdoption:: --help, -h
+.. cmdoption:: sub_id
 
-    Show help message and exit
+    Submission ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: json_file
+
+    Filepath to the JSON file containing the annotations
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -p, --to_public
+
+    Allow the annotation to be viewable by the public (default: annotation
+    is viewable by the queue administrator(s) only)
+
+.. cmdoption:: -f, --force
+
+    Force the update, even if the key has a different ACL
 
 
 -------
@@ -270,21 +370,27 @@ Synopsis
 ^^^^^^^^
 
 changestatus
-    synid json_file [--to_public ]
+    sub_id status
 
 Description
 ^^^^^^^^^^^
 
-foo
+Update the ``status`` annotation of a Submission Status object.
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils changestatus
 
-.. cmdoption:: --help, -h
+.. cmdoption:: sub_id
 
-    Show help message and exit
+    Submission ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: status
+
+    One of: ``RECEIVED``, ``ACCEPTED``, ``INVALID``, ``VALIDATED``, 
+    ``SCORED``, ``OPEN``, ``CLOSED``, ``EVALUATION_IN_PROGRESS``,
+    ``REJECTED``
 
 -------
 
@@ -296,21 +402,26 @@ Synopsis
 ^^^^^^^^
 
 killdockeroverquota
-    synid json_file [--to_public ]
+    eval_id time_quota
 
 Description
 ^^^^^^^^^^^
 
-foo
+Terminate a Docker submission (usually applies to submissions that have a
+runtime longer than the alloted time).
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils killdockeroverquota
 
-.. cmdoption:: --help, -h
+.. cmdoption:: eval_id
 
-    Show help message and exit
+    Evaluation ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: time_quota
+
+    Time quota in milliseconds allowed for a submission
 
 -------
 
@@ -322,19 +433,28 @@ Synopsis
 ^^^^^^^^
 
 setentityacl
-    synid json_file [--to_public ]
+    ent_id user_or_team permission_level
 
 Description
 ^^^^^^^^^^^
 
-foo
+Set the entity permissions for ``user_or_team`` with 
+``permission_level`` access.
 
-Options
-^^^^^^^
+Positional
+^^^^^^^^^^
 
 .. program:: challengeutils setentityacl
 
-.. cmdoption:: --help, -h
+.. cmdoption:: ent_id
 
-    Show help message and exit
+    Entity ID on Synapse, e.g. ``syn12345678``
+
+.. cmdoption:: user_or_team
+
+    Synapse user or team ID, e.g. ``1234567``
+
+.. cmdoption:: permission_level
+
+    One of: ``view``, ``submit``, ``score``, ``admin``, ``remove``
 
