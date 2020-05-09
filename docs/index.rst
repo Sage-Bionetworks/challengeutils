@@ -16,7 +16,6 @@
    :caption: Command-Line Client
    :maxdepth: 2
 
-   client/overview
    client/participant
    client/admin
    client/source
