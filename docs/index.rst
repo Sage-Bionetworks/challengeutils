@@ -22,7 +22,7 @@
    client/source
 
 .. toctree::
-   :caption: Demo & Examples
+   :caption: Demos & Examples
    :maxdepth: 2
 
    demo/challenge.rst
