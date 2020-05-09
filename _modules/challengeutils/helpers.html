@@ -1,34 +1,175 @@
 
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>challengeutils.helpers &mdash; challengeutils 1.6 documentation</title>
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>challengeutils.helpers &#8212; challengeutils  documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/writeups.html">Writeups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for challengeutils.helpers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
@@ -37,16 +178,18 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
 <span class="kn">import</span> <span class="nn">synapseclient</span>
 <span class="kn">import</span> <span class="nn">synapseutils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">challenge</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="n">WORKFLOW_LAST_UPDATED_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated&quot;</span>
 <span class="n">WORKFLOW_START_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted&quot;</span>
 <span class="n">TIME_REMAINING_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining&quot;</span>
 
 
-<div class="viewcode-block" id="rename_submission_files"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.rename_submission_files">[docs]</a><span class="k">def</span> <span class="nf">rename_submission_files</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="rename_submission_files"><a class="viewcode-back" href="../../python/helpers.html#challengeutils.helpers.rename_submission_files">[docs]</a><span class="k">def</span> <span class="nf">rename_submission_files</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span>
                             <span class="n">status</span><span class="o">=</span><span class="s2">&quot;SCORED&quot;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This function renames the submission files of an evaluation queue.</span>
@@ -77,7 +220,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">newname</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_team_wikis"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.create_team_wikis">[docs]</a><span class="k">def</span> <span class="nf">create_team_wikis</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">synid</span><span class="p">,</span> <span class="n">templateid</span><span class="p">,</span> <span class="n">tracker_table_synid</span><span class="p">):</span>
+<div class="viewcode-block" id="create_team_wikis"><a class="viewcode-back" href="../../python/helpers.html#challengeutils.helpers.create_team_wikis">[docs]</a><span class="k">def</span> <span class="nf">create_team_wikis</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">synid</span><span class="p">,</span> <span class="n">templateid</span><span class="p">,</span> <span class="n">tracker_table_synid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function that creates wiki pages from a template by looking at teams that</span>
 <span class="sd">    are registered for a challenge.  The teams that have a wiki made for them</span>
@@ -89,11 +232,11 @@
 <span class="sd">        trackerTableSynId: Synapse id of Table that tracks if wiki pages</span>
 <span class="sd">                           have been made per team</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">challenge_ent</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">synid</span><span class="p">)</span>
-    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_challenge</span><span class="p">(</span><span class="n">challenge_ent</span><span class="p">)</span>
+
+    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">challenge</span><span class="o">.</span><span class="n">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">challenge_ent</span><span class="p">)</span>
     <span class="n">registered_teams</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span>
-        <span class="s2">&quot;/challenge/</span><span class="si">{}</span><span class="s2">/challengeTeam&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">challenge_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+        <span class="s2">&quot;/challenge/</span><span class="si">{}</span><span class="s2">/challengeTeam&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">challenge_obj</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">registered_teams</span><span class="p">:</span>
         <span class="n">submitted_teams</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">tableQuery</span><span class="p">(</span>
             <span class="s2">&quot;SELECT * FROM </span><span class="si">{}</span><span class="s2"> where teamId = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -117,7 +260,7 @@
             <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">tracking_table</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kill_docker_submission_over_quota"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.kill_docker_submission_over_quota">[docs]</a><span class="k">def</span> <span class="nf">kill_docker_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation_id</span><span class="p">,</span> <span class="n">quota</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">):</span>
+<div class="viewcode-block" id="kill_docker_submission_over_quota"><a class="viewcode-back" href="../../python/helpers.html#challengeutils.helpers.kill_docker_submission_over_quota">[docs]</a><span class="k">def</span> <span class="nf">kill_docker_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation_id</span><span class="p">,</span> <span class="n">quota</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Kills any docker container that exceeds the run time quota</span>
 <span class="sd">    Rerunning submissions will require setting TimeRemaining annotation</span>
@@ -154,7 +297,7 @@
     <span class="c1"># annotation to a positive integer</span>
 
 
-<div class="viewcode-block" id="archive_writeup"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.helpers.archive_writeup">[docs]</a><span class="k">def</span> <span class="nf">archive_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s2">&quot;VALIDATED&quot;</span><span class="p">,</span> <span class="n">reArchive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="archive_writeup"><a class="viewcode-back" href="../../python/helpers.html#challengeutils.helpers.archive_writeup">[docs]</a><span class="k">def</span> <span class="nf">archive_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s2">&quot;VALIDATED&quot;</span><span class="p">,</span> <span class="n">reArchive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Archive the submissions for the given evaluation queue and</span>
 <span class="sd">    store them in the destination synapse folder.</span>
@@ -193,78 +336,43 @@
             <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
 </pre></div>
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+          <footer>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Sage Bionetworks
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Thomas Yu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

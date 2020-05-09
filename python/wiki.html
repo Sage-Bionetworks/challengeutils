@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Challenge Wiki &mdash; challengeutils 1.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Submissions" href="submissions.html" />
+    <link rel="prev" title="challengeutils" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Challenge Wiki</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.createchallenge">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.mirrorwiki">Updating</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writeups.html">Writeups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Challenge Wiki</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/python/wiki.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="challenge-wiki">
+<h1>Challenge Wiki<a class="headerlink" href="#challenge-wiki" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.createchallenge">
+<span id="create"></span><h2>Create<a class="headerlink" href="#module-challengeutils.createchallenge" title="Permalink to this headline">¶</a></h2>
+<p>Creates challenge space in Synapse</p>
+<p>Input:  Challenge Project name
+Output: The skeleton for two challenges site with initial wiki, four teams</p>
+<blockquote>
+<div><p>(admin, participants, organizers, and preregistrants), and
+a challenge widget added on live site with a participant
+team associated with it.</p>
+</div></blockquote>
+<p>For more information on challenges administration:
+<a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">https://docs.synapse.org/articles/challenge_administration.html</a></p>
+<p>Example (run on bash)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Plouf Challenge&quot;</span>
+</pre></div>
+</div>
+<p>TODO Add participants
+TODO Add tests</p>
+<dl class="function">
+<dt id="challengeutils.createchallenge.check_existing_and_delete_wiki">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">check_existing_and_delete_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#check_existing_and_delete_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.check_existing_and_delete_wiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if wiki exists, and if so prompt to delete</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>synid</strong> – Synapse id of an Entity</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_challenge_widget">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_challenge_widget</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_live</em>, <em class="sig-param">team_part_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_challenge_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_challenge_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates challenge widget - activates a Synapse project
+If challenge object exists, it retrieves existing object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>project_live</strong> – Synapse id of live challenge project</p></li>
+<li><p><strong>team_part_id</strong> – Synapse team id of participant team</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_evaluation_queue">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_evaluation_queue</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">name</em>, <em class="sig-param">description</em>, <em class="sig-param">parentid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_evaluation_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_evaluation_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Evaluation Queues</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>name</strong> – Name of evaluation queue</p></li>
+<li><p><strong>description</strong> – Description of queue</p></li>
+<li><p><strong>parentid</strong> – Synapse project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evalation Queue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_project">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Synapse Project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>project_name</strong> – Name of project</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Project Entity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.create_team">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">team_name</em>, <em class="sig-param">desc</em>, <em class="sig-param">can_public_join=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Synapse Team</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synpase object</p></li>
+<li><p><strong>team_name</strong> – Name of team</p></li>
+<li><p><strong>desc</strong> – Description of team</p></li>
+<li><p><strong>can_public_join</strong> – true for teams which members can join without
+an invitation or approval. Default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Synapse Team id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.createchallenge.main">
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">challenge_name</em>, <em class="sig-param">live_site=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates two project entity for challenge sites.
+1) live (public) and 2) staging (private until launch)
+Allow for users to set up the live site themselves</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>challenge_name</strong> – Name of the challenge</p></li>
+<li><p><strong>live_site</strong> – If there is already a live site, specify live site Synapse
+id. (Default is None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>{“live_projectid”: projectid,</dt><dd><p>”staging_projectid”: projectid,
+“admin_teamid”: teams[‘team_admin_id’],
+“organizer_teamid”: teams[‘team_org_id’],
+“participant_teamid”: teams[‘team_part_id’],
+“preregistrantrant_teamid”: teams[‘team_prereg_id’]}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-challengeutils.mirrorwiki">
+<span id="updating"></span><h2>Updating<a class="headerlink" href="#module-challengeutils.mirrorwiki" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="challengeutils.mirrorwiki.mirrorwiki">
+<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">destination</em>, <em class="sig-param">force_merge=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/mirrorwiki.html#mirrorwiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirrorwiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>This script is responsible for mirroring wiki pages
+It relies on the wiki titles between two Synapse Projects to be
+The same and will merge the updates from entity’s wikis to
+destination’s wikis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> – Synapse File, Project, Folder Entity or Id with
+Wiki you want to copy</p></li>
+<li><p><strong>destination</strong> – Synapse File, Project, Folder Entity or Id
+with Wiki that matches entity</p></li>
+<li><p><strong>force_merge</strong> – this will update a page even if its the same</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Sage Bionetworks
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

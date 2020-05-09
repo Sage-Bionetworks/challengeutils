@@ -1,34 +1,175 @@
 
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>challengeutils.utils &mdash; challengeutils 1.6 documentation</title>
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>challengeutils.utils &#8212; challengeutils  documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/writeups.html">Writeups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for challengeutils.utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -43,15 +184,7 @@
 <span class="kn">import</span> <span class="nn">synapseclient</span>
 <span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
 <span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">is_submission_status_annotations</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
-    <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
-<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="c1"># For synapseclient &lt; v2.0</span>
-    <span class="kn">from</span> <span class="nn">synapseclient.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
-    <span class="kn">from</span> <span class="nn">synapseclient.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
-
-<span class="kn">from</span> <span class="nn">synapseservices.challenge</span> <span class="kn">import</span> <span class="n">Challenge</span>
+<span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -111,7 +244,7 @@
     <span class="k">return</span> <span class="n">annotation_dict</span>
 
 
-<div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will update a single submission&#39;s status</span>
@@ -183,7 +316,7 @@
     <span class="k">return</span> <span class="n">status</span></div>
 
 
-<div class="viewcode-block" id="evaluation_queue_query"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.evaluation_queue_query">[docs]</a><span class="k">def</span> <span class="nf">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="evaluation_queue_query"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.evaluation_queue_query">[docs]</a><span class="k">def</span> <span class="nf">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is to query the evaluation queue service.</span>
 <span class="sd">    The limit parameter is set at 20 by default.</span>
@@ -217,47 +350,6 @@
             <span class="k">yield</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="get_challenge"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.get_challenge">[docs]</a><span class="k">def</span> <span class="nf">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the Challenge associated with a Project.</span>
-
-<span class="sd">    See the definition of a Challenge object here:</span>
-<span class="sd">    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        entity: An Entity or Synapse ID of a Project.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Challenge object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
-    <span class="n">challenge</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="s2">&quot;/entity/</span><span class="si">%s</span><span class="s2">/challenge&quot;</span> <span class="o">%</span> <span class="n">synid</span><span class="p">)</span>
-    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">Challenge</span><span class="p">(</span><span class="o">**</span><span class="n">challenge</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">challenge_obj</span></div>
-
-
-<div class="viewcode-block" id="create_challenge"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.create_challenge">[docs]</a><span class="k">def</span> <span class="nf">create_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates Challenge associated with a Project</span>
-
-<span class="sd">    See the definition of a Challenge object here:</span>
-<span class="sd">    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse connection</span>
-<span class="sd">        entity: An Entity or Synapse ID of a Project.</span>
-<span class="sd">        team: A Team or Team ID.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Challenge object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
-    <span class="n">teamid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
-    <span class="n">challenge_object</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;participantTeamId&#39;</span><span class="p">:</span> <span class="n">teamid</span><span class="p">,</span>
-                        <span class="s1">&#39;projectId&#39;</span><span class="p">:</span> <span class="n">synid</span><span class="p">}</span>
-    <span class="n">challenge</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s1">&#39;/challenge&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">challenge_object</span><span class="p">))</span>
-    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">Challenge</span><span class="p">(</span><span class="o">**</span><span class="n">challenge</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">challenge_obj</span></div>
-
-
 <span class="k">def</span> <span class="nf">_change_annotation_acl</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">annotation_type</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Helper function to locate the existing annotation</span>
@@ -280,7 +372,7 @@
     <span class="k">return</span> <span class="n">annotations</span>
 
 
-<div class="viewcode-block" id="change_submission_annotation_acl"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_submission_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="change_submission_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change the acl of a list of known annotation keys</span>
 <span class="sd">    on one submission</span>
@@ -305,7 +397,7 @@
     <span class="k">return</span> <span class="n">status</span></div>
 
 
-<div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
+<div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
                                           <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change the acl of a list of known annotation keys on</span>
@@ -326,7 +418,7 @@
         <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="invite_member_to_team"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.invite_member_to_team">[docs]</a><span class="k">def</span> <span class="nf">invite_member_to_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="invite_member_to_team"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.invite_member_to_team">[docs]</a><span class="k">def</span> <span class="nf">invite_member_to_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Invite members to a team</span>
 
@@ -364,29 +456,7 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="register_team"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.register_team">[docs]</a><span class="k">def</span> <span class="nf">register_team</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Registers team to challenge</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        entity: An Entity or Synapse ID to lookup</span>
-<span class="sd">        team: Team name or team Id</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Team id</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="n">challengeid</span> <span class="o">=</span> <span class="n">get_challenge</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-    <span class="n">teamid</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">team</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-    <span class="n">challenge_object</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;challengeId&#39;</span><span class="p">:</span> <span class="n">challengeid</span><span class="p">,</span> <span class="s1">&#39;teamId&#39;</span><span class="p">:</span> <span class="n">teamid</span><span class="p">}</span>
-    <span class="n">registered_team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span>
-        <span class="s1">&#39;/challenge/</span><span class="si">%s</span><span class="s1">/challengeTeam&#39;</span> <span class="o">%</span> <span class="n">challengeid</span><span class="p">,</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">challenge_object</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">registered_team</span><span class="p">[</span><span class="s1">&#39;teamId&#39;</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="change_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;RECEIVED&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="change_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;RECEIVED&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Function to change a submission status</span>
 
@@ -404,7 +474,7 @@
     <span class="k">return</span> <span class="n">sub_status</span></div>
 
 
-<div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
                                  <span class="n">change_to_status</span><span class="o">=</span><span class="s1">&#39;VALIDATED&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Function to change submission status of all submissions in a queue</span>
@@ -426,7 +496,7 @@
         <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="NewUserProfile"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.NewUserProfile">[docs]</a><span class="k">class</span> <span class="nc">NewUserProfile</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">UserProfile</span><span class="p">):</span>
+<div class="viewcode-block" id="NewUserProfile"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.NewUserProfile">[docs]</a><span class="k">class</span> <span class="nc">NewUserProfile</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">UserProfile</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create new user profile that makes Userprofiles hashable</span>
 <span class="sd">    SYNPY-879</span>
@@ -451,7 +521,7 @@
     <span class="k">return</span> <span class="n">members_set</span>
 
 
-<div class="viewcode-block" id="team_members_diff"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_diff">[docs]</a><span class="k">def</span> <span class="nf">team_members_diff</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<div class="viewcode-block" id="team_members_diff"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_diff">[docs]</a><span class="k">def</span> <span class="nf">team_members_diff</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculates the diff between teama and teamb</span>
 
@@ -469,7 +539,7 @@
     <span class="k">return</span> <span class="n">members_not_in_teamb</span></div>
 
 
-<div class="viewcode-block" id="team_members_intersection"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_intersection">[docs]</a><span class="k">def</span> <span class="nf">team_members_intersection</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<div class="viewcode-block" id="team_members_intersection"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_intersection">[docs]</a><span class="k">def</span> <span class="nf">team_members_intersection</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculates the intersection between teama and teamb</span>
 
@@ -487,7 +557,7 @@
     <span class="k">return</span> <span class="n">intersect_members</span></div>
 
 
-<div class="viewcode-block" id="team_members_union"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.team_members_union">[docs]</a><span class="k">def</span> <span class="nf">team_members_union</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<div class="viewcode-block" id="team_members_union"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_union">[docs]</a><span class="k">def</span> <span class="nf">team_members_union</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Calculates the union between teama and teamb</span>
 
@@ -563,7 +633,7 @@
     <span class="k">return</span> <span class="n">contributors</span>
 
 
-<div class="viewcode-block" id="get_contributors"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.get_contributors">[docs]</a><span class="k">def</span> <span class="nf">get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationids</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="get_contributors"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.get_contributors">[docs]</a><span class="k">def</span> <span class="nf">get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationids</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
                      <span class="n">start_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Function to get contributors from a list of evaluation ids</span>
@@ -589,7 +659,7 @@
     <span class="k">return</span> <span class="n">all_contributors</span></div>
 
 
-<div class="viewcode-block" id="list_evaluations"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+<div class="viewcode-block" id="list_evaluations"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    List evaluation queues of a Synapse project</span>
 
@@ -604,7 +674,7 @@
                                                   <span class="n">evalid</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">id</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="download_submission"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.download_submission">[docs]</a><span class="k">def</span> <span class="nf">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="download_submission"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.download_submission">[docs]</a><span class="k">def</span> <span class="nf">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Download submission and return json</span>
 
@@ -628,12 +698,12 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="mock_response"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.mock_response">[docs]</a><span class="k">class</span> <span class="nc">mock_response</span><span class="p">:</span>
+<div class="viewcode-block" id="mock_response"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.mock_response">[docs]</a><span class="k">class</span> <span class="nc">mock_response</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Mocked status code to return&quot;&quot;&quot;</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span></div>
 
 
-<div class="viewcode-block" id="annotate_submission_with_json"><a class="viewcode-back" href="../../challengeutils.html#challengeutils.utils.annotate_submission_with_json">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_values</span><span class="p">,</span>
+<div class="viewcode-block" id="annotate_submission_with_json"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.annotate_submission_with_json">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_values</span><span class="p">,</span>
                                   <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                   <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -683,78 +753,43 @@
     <span class="k">return</span> <span class="n">submitter_name</span>
 </pre></div>
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">challengeutils</a></h1>
+          <footer>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Sage Bionetworks
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../client.html">User Guide</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html">Create Challenge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.discussion">Synapse Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.download_current_lead_submission">Download current lead submission</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.helpers">Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.mirrorwiki">Mirror wiki</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.permissions">Permissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.utils">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../challengeutils.html#module-challengeutils.writeup_attacher">Writeup attacher</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Thomas Yu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

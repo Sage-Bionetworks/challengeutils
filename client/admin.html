@@ -1,0 +1,761 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Admin Built-in Commands &mdash; challengeutils 1.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Source" href="source.html" />
+    <link rel="prev" title="Participant Built-in Commands" href="participant.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/writeups.html">Writeups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Admin Built-in Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-challenge">Create a challenge</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#positional">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mirror-wiki-changes">Mirror wiki changes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#list-evaluations">List evaluations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Positional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#set-an-evaluation-quota">Set an evaluation quota</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#update-an-evaluation-acl">Update an evaluation ACL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Positional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#query-an-evaluation">Query an evaluation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#download-a-submission">Download a submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#annotate-a-submission">Annotate a submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#update-a-submission-status">Update a submission status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">Positional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#stop-a-docker-submission">Stop a Docker submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id31">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id32">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">Positional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#update-an-entity-acl">Update an entity ACL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id34">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id36">Positional</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Admin Built-in Commands</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/client/admin.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="admin-built-in-commands">
+<span id="challengeutils-admin-cmd"></span><h1>Admin Built-in Commands<a class="headerlink" href="#admin-built-in-commands" title="Permalink to this headline">¶</a></h1>
+<p>The following commands must be ran with <code class="docutils literal notranslate"><span class="pre">challengeutils</span></code>, e.g.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> challengeutils &lt;built-in command&gt; &lt;options&gt;
+</pre></div>
+</div>
+<p>Note that the majority of the commands listed here will require certain
+permissions on the relevant Sypanse entities, e.g. <code class="docutils literal notranslate"><span class="pre">admin</span></code> permissions
+or <code class="docutils literal notranslate"><span class="pre">score</span></code> permissions.</p>
+<p>For more information on Synapse permissions, see <a class="reference external" href="https://docs.synapse.org/articles/sharing_settings.html#sharing-settings">here</a>.</p>
+<hr class="docutils" />
+<div class="section" id="create-a-challenge">
+<h2>Create a challenge<a class="headerlink" href="#create-a-challenge" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="synopsis">
+<h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>createchallenge</dt><dd><p>“CHALLENGE NAME HERE” [–livesiteid SYNID]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<p>Create a challenge space in Synapse, including two Projects and
+four Teams that are needed for a challenge. For more information
+on various Challenge components, see <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">challenge administration</a>.</p>
+</div>
+<div class="section" id="positional">
+<h3>Positional<a class="headerlink" href="#positional" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-createchallenge-arg-challenge">
+<code class="sig-name descname">&quot;CHALLENGE</code><code class="sig-prename descclassname"> NAME HERE&quot;</code><a class="headerlink" href="#cmdoption-challengeutils-createchallenge-arg-challenge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the challenge</p>
+</dd></dl>
+
+</div>
+<div class="section" id="optional">
+<h3>Optional<a class="headerlink" href="#optional" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-createchallenge-livesiteid">
+<code class="sig-name descname">--livesiteid</code><code class="sig-prename descclassname"> SYNID</code><a class="headerlink" href="#cmdoption-challengeutils-createchallenge-livesiteid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite an existing live site</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="mirror-wiki-changes">
+<h2>Mirror wiki changes<a class="headerlink" href="#mirror-wiki-changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>mirrorwiki</dt><dd><p>source_id dest_id [–forceupdate]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Sync changes made from a source wiki to the destination wiki, e.g. from staging
+to live. Updates will only occur in wiki pages that have matching titles in the
+source wiki.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This command is different from copying wikis. To copy, see <a class="reference external" href="https://python-docs.synapse.org/build/html/synapseutils.html">synapseutils</a>.</p>
+</div>
+<p>For best practice, <strong>make all edits to the staging site of a challenge only</strong>,
+then use this command to sync over the changes to the live site.</p>
+</div>
+<div class="section" id="id3">
+<h3>Positional<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-mirrorwiki-arg-source-id">
+<code class="sig-name descname">source_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-mirrorwiki-arg-source-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synpase ID of the source wiki to be synced</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-mirrorwiki-arg-dest-id">
+<code class="sig-name descname">dest_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-mirrorwiki-arg-dest-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synapse ID of the destination wiki to be synced to</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id4">
+<h3>Optional<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-mirrorwiki-forceupdate">
+<code class="sig-name descname">--forceupdate</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-mirrorwiki-forceupdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force-update the wiki pages, even if there are no changes</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="list-evaluations">
+<h2>List evaluations<a class="headerlink" href="#list-evaluations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Synopsis<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>listevaluations</dt><dd><p>project_id</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id6">
+<h3>Description<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>List all evaluation queues of a Synapse project.</p>
+</div>
+<div class="section" id="id7">
+<h3>Positional<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-listevaluations-arg-project-id">
+<code class="sig-name descname">project_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-listevaluations-arg-project-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">syn12345678</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="set-an-evaluation-quota">
+<h2>Set an evaluation quota<a class="headerlink" href="#set-an-evaluation-quota" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>Synopsis<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>setevaluationquota</dt><dd><p>eval_id [–round_start yyyy-MM-ddTHH:mm:ss
+[–round_end yyyy-MM-ddTHH:mm:ss]
+[–round_duration n]
+[–num_rounds n] [–sub_limit n]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id9">
+<h3>Description<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>Set the quota of an evaluation queue. Quota options include the round
+starting date, round ending date, round duration, number of rounds, and
+submission limit.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When this command is used, <strong>all settings previously set for the queue
+will be erased</strong>. For any settings you do not want to update or remove,
+pass the original values into the optional parameters defined below.</p>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>Positional<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-arg-eval-id">
+<code class="sig-name descname">eval_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-arg-eval-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="id11">
+<h3>Optional<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-round-start">
+<code class="sig-name descname">--round_start</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-round-start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start of round in yyyy-MM-ddTHH:mm:ss (local military time) format</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-round-end">
+<code class="sig-name descname">--round_end</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-round-end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End of round in yyyy-MM-ddTHH:mm:ss (local military time) format;
+do not use with <code class="docutils literal notranslate"><span class="pre">round_duration</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-round-duration">
+<code class="sig-name descname">--round_duration</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-round-duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Round duration in milliseconds; do not use with <code class="docutils literal notranslate"><span class="pre">round_end</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-num-rounds">
+<code class="sig-name descname">--num_rounds</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-num-rounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of rounds (must set for time-related quotas to work)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-sub-limit">
+<code class="sig-name descname">--sub_limit</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-sub-limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of submissions allowed per round</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="update-an-evaluation-acl">
+<h2>Update an evaluation ACL<a class="headerlink" href="#update-an-evaluation-acl" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h3>Synopsis<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>setevaluationacl</dt><dd><p>evalid user_or_team permission_level</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id13">
+<h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Set the evaluation permissions for <code class="docutils literal notranslate"><span class="pre">user_or_team</span></code> with
+<code class="docutils literal notranslate"><span class="pre">permission_level</span></code> access.</p>
+</div>
+<div class="section" id="id14">
+<h3>Positional<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="id15">
+<code class="sig-name descname">eval_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-arg-user-or-team">
+<code class="sig-name descname">user_or_team</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-arg-user-or-team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synapse user or team ID, e.g. <code class="docutils literal notranslate"><span class="pre">1234567</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setevaluationquota-arg-permission-level">
+<code class="sig-name descname">permission_level</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setevaluationquota-arg-permission-level" title="Permalink to this definition">¶</a></dt>
+<dd><p>One of: <code class="docutils literal notranslate"><span class="pre">view</span></code>, <code class="docutils literal notranslate"><span class="pre">submit</span></code>, <code class="docutils literal notranslate"><span class="pre">score</span></code>, <code class="docutils literal notranslate"><span class="pre">admin</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="query-an-evaluation">
+<h2>Query an evaluation<a class="headerlink" href="#query-an-evaluation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>Synopsis<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>query</dt><dd><p>“QUERY” [–outputfile file] [–render]
+[–limit n] [–offset n]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id17">
+<h3>Description<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>Query an evaluation queue.</p>
+</div>
+<div class="section" id="id18">
+<h3>Positional<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-query-arg-query">
+<code class="sig-name descname">&quot;QUERY&quot;</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-query-arg-query" title="Permalink to this definition">¶</a></dt>
+<dd><p>SQL-like query in URI format</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id19">
+<h3>Optional<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-query-outputfile">
+<code class="sig-name descname">--outputfile</code><code class="sig-prename descclassname"> file</code><a class="headerlink" href="#cmdoption-challengeutils-query-outputfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print query results to this file (default: prints to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-query-render">
+<code class="sig-name descname">--render</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-query-render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render <code class="docutils literal notranslate"><span class="pre">submitterId</span></code> and <code class="docutils literal notranslate"><span class="pre">createdOn</span></code> values in leaderboard</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-query-limit">
+<code class="sig-name descname">--limit</code><code class="sig-prename descclassname"> 20</code><a class="headerlink" href="#cmdoption-challengeutils-query-limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only return this number of results (default: 20)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-query-offset">
+<code class="sig-name descname">--offset</code><code class="sig-prename descclassname"> 0</code><a class="headerlink" href="#cmdoption-challengeutils-query-offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return results starting at this offset (default: 0)</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="download-a-submission">
+<h2>Download a submission<a class="headerlink" href="#download-a-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id20">
+<h3>Synopsis<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>downloadsubmission</dt><dd><p>sub_id [–download_location path] [–output file]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id21">
+<h3>Description<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>Download a Submission object.</p>
+</div>
+<div class="section" id="id22">
+<h3>Positional<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-downloadsubmission-arg-sub-id">
+<code class="sig-name descname">sub_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-downloadsubmission-arg-sub-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="id23">
+<h3>Optional<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-downloadsubmission-download-location">
+<code class="sig-name descname">--download_location</code><code class="sig-prename descclassname"> path</code><a class="headerlink" href="#cmdoption-challengeutils-downloadsubmission-download-location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify download location (default: current working directory)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-downloadsubmission-output">
+<code class="sig-name descname">--output</code><code class="sig-prename descclassname"> file</code><a class="headerlink" href="#cmdoption-challengeutils-downloadsubmission-output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print JSON results to this file (default: prints to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>)</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="annotate-a-submission">
+<h2>Annotate a submission<a class="headerlink" href="#annotate-a-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id24">
+<h3>Synopsis<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>annotatesubmission</dt><dd><p>sub_id json_file [-p ] [-f]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id25">
+<h3>Description<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<p>Annotate a Submission object with a JSON file.  The file should comprise of
+a list of key-value pairs, where the key is the annotation and the value is
+the annotation value, e.g.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;round&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;score&quot;</span><span class="p">:</span> <span class="mi">100</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id26">
+<h3>Positional<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-annotatesubmission-arg-sub-id">
+<code class="sig-name descname">sub_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-annotatesubmission-arg-sub-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-annotatesubmission-arg-json-file">
+<code class="sig-name descname">json_file</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-annotatesubmission-arg-json-file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filepath to the JSON file containing the annotations</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id27">
+<h3>Optional<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-annotatesubmission-p">
+<code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--to_public</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-annotatesubmission-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow the annotation to be viewable by the public (default: annotation
+is viewable by the queue administrator(s) only)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-annotatesubmission-f">
+<code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--force</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-annotatesubmission-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force the update, even if the key has a different ACL</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="update-a-submission-status">
+<h2>Update a submission status<a class="headerlink" href="#update-a-submission-status" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id28">
+<h3>Synopsis<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>changestatus</dt><dd><p>sub_id status</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id29">
+<h3>Description<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<p>Update the <code class="docutils literal notranslate"><span class="pre">status</span></code> annotation of a Submission Status object.</p>
+</div>
+<div class="section" id="id30">
+<h3>Positional<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-changestatus-arg-sub-id">
+<code class="sig-name descname">sub_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-changestatus-arg-sub-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-changestatus-arg-status">
+<code class="sig-name descname">status</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-changestatus-arg-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>One of: <code class="docutils literal notranslate"><span class="pre">RECEIVED</span></code>, <code class="docutils literal notranslate"><span class="pre">ACCEPTED</span></code>, <code class="docutils literal notranslate"><span class="pre">INVALID</span></code>, <code class="docutils literal notranslate"><span class="pre">VALIDATED</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SCORED</span></code>, <code class="docutils literal notranslate"><span class="pre">OPEN</span></code>, <code class="docutils literal notranslate"><span class="pre">CLOSED</span></code>, <code class="docutils literal notranslate"><span class="pre">EVALUATION_IN_PROGRESS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">REJECTED</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="stop-a-docker-submission">
+<h2>Stop a Docker submission<a class="headerlink" href="#stop-a-docker-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id31">
+<h3>Synopsis<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>killdockeroverquota</dt><dd><p>eval_id time_quota</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id32">
+<h3>Description<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<p>Terminate a Docker submission (usually applies to submissions that have a
+runtime longer than the alloted time).</p>
+</div>
+<div class="section" id="id33">
+<h3>Positional<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-killdockeroverquota-arg-eval-id">
+<code class="sig-name descname">eval_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-killdockeroverquota-arg-eval-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-killdockeroverquota-arg-time-quota">
+<code class="sig-name descname">time_quota</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-killdockeroverquota-arg-time-quota" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time quota in milliseconds allowed for a submission</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="update-an-entity-acl">
+<h2>Update an entity ACL<a class="headerlink" href="#update-an-entity-acl" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id34">
+<h3>Synopsis<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>setentityacl</dt><dd><p>ent_id user_or_team permission_level</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id35">
+<h3>Description<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<p>Set the entity permissions for <code class="docutils literal notranslate"><span class="pre">user_or_team</span></code> with
+<code class="docutils literal notranslate"><span class="pre">permission_level</span></code> access.</p>
+</div>
+<div class="section" id="id36">
+<h3>Positional<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setentityacl-arg-ent-id">
+<code class="sig-name descname">ent_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setentityacl-arg-ent-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Entity ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">syn12345678</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setentityacl-arg-user-or-team">
+<code class="sig-name descname">user_or_team</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setentityacl-arg-user-or-team" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synapse user or team ID, e.g. <code class="docutils literal notranslate"><span class="pre">1234567</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-setentityacl-arg-permission-level">
+<code class="sig-name descname">permission_level</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setentityacl-arg-permission-level" title="Permalink to this definition">¶</a></dt>
+<dd><p>One of: <code class="docutils literal notranslate"><span class="pre">view</span></code>, <code class="docutils literal notranslate"><span class="pre">submit</span></code>, <code class="docutils literal notranslate"><span class="pre">score</span></code>, <code class="docutils literal notranslate"><span class="pre">admin</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Sage Bionetworks
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

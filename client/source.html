@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Source &mdash; challengeutils 1.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="General Challenge Workflow" href="../demo/challenge.html" />
+    <link rel="prev" title="Admin Built-in Commands" href="admin.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/writeups.html">Writeups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.__main__">Participant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin">Admin</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Source</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/client/source.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="source">
+<h1>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-challengeutils.__main__">
+<span id="participant"></span><h2>Participant<a class="headerlink" href="#module-challengeutils.__main__" title="Permalink to this headline">¶</a></h2>
+<p>challengeutils command line client</p>
+<dl class="function">
+<dt id="challengeutils.__main__.command_list_registered_challenges">
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_list_registered_challenges</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_list_registered_challenges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.__main__.command_list_registered_challenges" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the challenges a user is registered to. Defaults to the
+logged in synapse user is userid isn’t specified.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="nb">list</span><span class="o">-</span><span class="n">registered</span><span class="o">-</span><span class="n">challenges</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="nb">list</span><span class="o">-</span><span class="n">registered</span><span class="o">-</span><span class="n">challenges</span> <span class="o">--</span><span class="n">userid</span> <span class="mi">1223</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="admin">
+<h2>Admin<a class="headerlink" href="#admin" title="Permalink to this headline">¶</a></h2>
+<p>challengeutils command line client</p>
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_createchallenge</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_createchallenge"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a challenge space in Synapse.  This pulls from a standard
+DREAM template and creates the Projects and Teams that you will need
+for a challenge.  For more information on all the components this function
+creates, please head to <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">challenge administration</a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Challenge Name Here&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_mirrorwiki"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>For all challenges, you should be editting the staging site and then
+using the merge script to mirror staging to live site.  The script will
+compare wiki titles between the staging and live site and update the live
+site with respect to what has changed on the staging site.  Note, this is
+different from copying the wikis. To copy the wikis, please look at
+synapseutils.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">mirrorwiki</span> <span class="n">syn12345</span> <span class="n">syn23456</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_list_evaluations</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_list_evaluations"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Lists evaluation queues of a project</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">listevaluations</span> <span class="n">projectid</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_evaluation_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_evaluation_quota"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the evaluation quota on existing evaluation queues.
+This WILL erase any old quota you had previously set.
+Note - round_start must be specified with either round_end or
+round_duration and number_of_rounds must be defined for the
+time limits to work.  submission_limit will work without number_of_rounds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationquota</span> <span class="mi">12345</span>                                           <span class="o">--</span><span class="n">round_start</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">21</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">round_end</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">23</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">num_rounds</span> <span class="mi">2</span>                                           <span class="o">--</span><span class="n">sub_limit</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_evaluation_acl</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_evaluation_acl"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets permissions on queues for users or teams.  By default the user is
+public if there is no user or team specified and the default permission
+is view.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationacl</span> <span class="mi">12345</span> <span class="n">user_or_team</span> <span class="n">score</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_query</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_query"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Command line convenience function to call evaluation queue query
+Evaluation queues offer a separate query service from the rest of Synapse.
+This query function will print the leaderboard in a csv format in standard
+out.  Proceed <a class="reference external" href="https://docs.synapse.org/rest/GET/evaluation/submission/query.html">here</a>
+to learn more about this query service.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">query</span> <span class="s2">&quot;select objectId, status from evaluation_12345&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_download_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_download_submission"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Downloads a Synapse Submission given a submission id</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">downloadsubmission</span> <span class="n">submissionid</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_annotate_submission_with_json"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Annotate a Synapse submission with a json file.  This function
+is used by a ChallengeWorkflowTemplates tool.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">annotatesubmission</span> <span class="mi">12345</span> <span class="n">annotations</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">to_public</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_change_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_change_status"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Each submission has a status, this is a convenience function to change
+the status of a submission.  Here is a list of <a class="reference external" href="https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html">valid statuses</a></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">changestatus</span> <span class="mi">1234545</span> <span class="n">INVALID</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_kill_docker_over_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_kill_docker_over_quota"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets an annotation on Synapse Docker submissions such that it will
+be terminated by the orchestrator. Usually applies to submissions
+that have been running for longer than the alloted time.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">killdockeroverquota</span> <span class="n">evaluationid</span> <span class="n">quota</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_entity_acl</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_entity_acl"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets permissions on entities for users or teams.  By default the user is
+public if there is no user or team specified and the default permission
+is view.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setentityacl</span> <span class="n">syn123545</span> <span class="n">user_or_team</span> <span class="n">view</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017-2020, Sage Bionetworks
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
