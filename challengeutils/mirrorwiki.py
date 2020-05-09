@@ -191,6 +191,9 @@ def _get_wikipages_and_mapping(syn: Synapse,
         # Only map wiki pages that exist in `entity` (source)
         if entity_wiki_pages.get(wiki['title']) is not None:
             wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
+        else:
+            logger.info("Title exists at destination but not in "
+                        f"entity: {wiki['title']}")
 
     return {'entity_wiki_pages': entity_wiki_pages,
             'destination_wiki_pages': destination_wiki_pages,
