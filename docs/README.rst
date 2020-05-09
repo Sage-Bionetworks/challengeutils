@@ -2,17 +2,21 @@
 challengeutils
 **************
 
-.. image:: https://img.shields.io/docker/automated/sagebionetworks/challengeutils
+.. image:: https://img.shields.io/docker/automated/sagebionetworks/challengeutils?logo=docker&logoColor=white&label=build
     :target: https://hub.docker.com/r/sagebionetworks/challengeutils/
     :alt: Docker build automation
 
-.. image:: https://img.shields.io/pypi/v/challengeutils
+.. image:: https://img.shields.io/pypi/v/challengeutils?logo=python&logoColor=white
     :target: https://pypi.python.org/pypi/challengeutils
     :alt: PyPI version
 
-.. image:: https://travis-ci.org/Sage-Bionetworks/challengeutils.svg?branch=develop
+.. image:: https://img.shields.io/travis/Sage-Bionetworks/challengeutils?logo=travis-ci&logoColor=white
     :target: https://travis-ci.org/Sage-Bionetworks/challengeutils
     :alt: Build status
+
+.. image:: https://img.shields.io/github/stars/Sage-Bionetworks/challengeutils?style=social
+    :target: https://github.com/Sage-Bionetworks/challengeutils
+    :alt: GitHub stars
 
 **challengeutils** is a set of tools and commands that provides an interface
 for  managing crowd-sourced challenges administered on Synapse_, including but
@@ -23,7 +27,7 @@ functions for post-competition analysis.
 .. image:: static/challenge.png
     :alt: Sample challenge page on Synapse
 
-challengeutils is written in Python and uses the synapseclient_ library to
+**challengeutils** is written in Python and uses the synapseclient_ library to
 pull information from Synapse (account required).
 
 .. _Synapse: https://www.synapse.org/
