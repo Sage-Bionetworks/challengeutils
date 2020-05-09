@@ -33,4 +33,11 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        pytest --cov=challengeutils tests/
+        pytest tests/ --doctest-modules --cov=challengeutils --cov-report=html
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@master
+      with:
+        name: pytest-results-${{ matrix.python-version }}
+        path: htmlcov
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
