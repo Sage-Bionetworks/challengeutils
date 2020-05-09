@@ -60,4 +60,4 @@ of forking a repo, creating a branch, and opening pull requests. For more
 information on how you can add or propose a change, visit our `contributing guide`_.
 
 .. _Github workflow: https://guides.github.com/introduction/flow/
-.. _contributing guide: https://github.com/Sage-Bionetworks/challengeutils#contributing
+.. _contributing guide: https://github.com/Sage-Bionetworks/challengeutils/blob/master/CONTRIBUTING.md
