@@ -12,7 +12,7 @@ travis | [![Build Status master branch](https://travis-ci.org/Sage-Bionetworks/c
 
 ## Documentation
 
-The documentation can be found [here](https://sage-bionetworks.github.io/challengeutils/).
+`challengeutils` functionality is documented, [click here to check it out](https://sage-bionetworks.github.io/challengeutils/)!
 
 
 ## Installation
