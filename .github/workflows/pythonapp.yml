@@ -33,4 +33,4 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        pytest tests/ --doctest-modules --junitxml=junit/test-results.xml --cov=challengeutils --cov-report=xml --cov-report=html
+        pytest --cov=challengeutils tests/
