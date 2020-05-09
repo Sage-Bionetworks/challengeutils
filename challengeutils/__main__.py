@@ -304,7 +304,7 @@ def build_parser():
              "with the entityid"
     )
     parser_mirrorwiki.add_argument(
-        "--force",
+        "-f", "--force",
         action='store_true',
         help='Update the wikipages even if they are the same'
     )
