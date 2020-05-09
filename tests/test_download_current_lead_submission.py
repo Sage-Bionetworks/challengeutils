@@ -1,9 +1,9 @@
 """Test download current lead submission"""
 import os
 import tempfile
+from unittest import mock
+from unittest.mock import patch
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
 

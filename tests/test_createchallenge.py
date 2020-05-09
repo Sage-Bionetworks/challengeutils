@@ -1,21 +1,15 @@
 """Test create challenge"""
+from unittest import mock
+from unittest.mock import patch
 import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # support synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
-from challengeutils import createchallenge
-from challengeutils import utils
-from challengeutils import permissions
-from synapseservices.challenge import Challenge
+from challengeutils import challenge, createchallenge, permissions, utils
+from challengeutils.synapseservices.challenge import Challenge
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 
@@ -70,7 +64,7 @@ def test_create_challenge_widget():
                               projectId=project,
                               etag=etag,
                               participantTeamId=teamid)
-    with patch.object(utils, "create_challenge",
+    with patch.object(challenge, "create_challenge",
                       return_value=challenge_obj) as patch_create:
         chal = createchallenge.create_challenge_widget(SYN, project, teamid)
         assert chal == challenge_obj
@@ -87,9 +81,9 @@ def test_existing_create_challenge_widget():
                               projectId=project,
                               etag=etag,
                               participantTeamId=teamid)
-    with patch.object(utils, "create_challenge",
+    with patch.object(challenge, "create_challenge",
                       side_effect=SynapseHTTPError) as patch_create,\
-        patch.object(utils, "get_challenge",
+        patch.object(challenge, "get_challenge",
                      return_value=challenge_obj) as patch_get:
         chal = createchallenge.create_challenge_widget(SYN, project, teamid)
         assert chal == challenge_obj

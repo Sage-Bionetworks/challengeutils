@@ -20,15 +20,10 @@ import logging
 import sys
 
 import synapseclient
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
-from . import utils
-from . import permissions
+from . import challenge, permissions, utils
 
 logger = logging.getLogger(__name__)
 
@@ -153,12 +148,12 @@ def create_challenge_widget(syn, project_live, team_part_id):
         team_part_id: Synapse team id of participant team
     """
     try:
-        challenge = utils.create_challenge(syn, project_live, team_part_id)
-        logger.info("Created Challenge ({})".format(challenge.id))
+        chal_obj = challenge.create_challenge(syn, project_live, team_part_id)
+        logger.info("Created Challenge ({})".format(chal_obj.id))
     except SynapseHTTPError:
-        challenge = utils.get_challenge(syn, project_live)
-        logger.info("Fetched existing Challenge ({})".format(challenge.id))
-    return challenge
+        chal_obj = challenge.get_challenge(syn, project_live)
+        logger.info("Fetched existing Challenge ({})".format(chal_obj.id))
+    return chal_obj
 
 
 def _update_wikipage_string(wikipage_string, challengeid, teamid,
