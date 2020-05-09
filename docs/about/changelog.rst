@@ -36,9 +36,7 @@ v1.6.0
 v1.5.2
 ------
 
-.. image:: ../static/tom.png
-    :width: 60
-    :alt: Tom
+- Lock down ``synapseclient==1.9.4`` version in ``requirements.txt``
 
 v1.5.1
 ------
