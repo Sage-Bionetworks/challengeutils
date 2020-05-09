@@ -22,4 +22,4 @@ If you would like to help make **challengeutils** better, either through
 code,documentation, tests, or bug reports, don't hesitate to do so!  See 
 our `contributing guide`_ for more information.
 
-.. _contributing guide: https://github.com/Sage-Bionetworks/challengeutils#contributing
+.. _contributing guide: https://github.com/Sage-Bionetworks/challengeutils/blob/master/CONTRIBUTING.md
