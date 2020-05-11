@@ -3,6 +3,7 @@ Test challengeutils.discussion functions
 '''
 import json
 from unittest import mock
+from unittest.mock import patch
 import uuid
 
 import requests
@@ -211,7 +212,7 @@ def test_get_entity_threads():
         assert entity_threads == response
 
 
-def test_copy_thread():
+def test__copy_thread():
     """Tests copying of threads"""
     profile = synapseclient.UserProfile(ownerId="test",
                                         userName="foobar")
@@ -225,13 +226,27 @@ def test_copy_thread():
                            return_value=thread_text) as patch_thread_text,\
          mock.patch.object(discussion, "create_thread",
                            return_value=THREAD_OBJ) as patch_create_thread:
-        thread = discussion.copy_thread(syn, THREAD_OBJ, PROJECTID)
+        thread = discussion._copy_thread(syn, THREAD_OBJ, PROJECTID)
         patch_getuserprofile.assert_called_once_with(THREAD_OBJ['createdBy'])
         patch_thread_text.assert_called_once_with(syn, THREAD_OBJ['messageKey'])
         patch_create_thread.assert_called_once_with(syn, PROJECTID,
                                                     THREAD_OBJ['title'],
                                                     new_thread_text)
         assert thread == THREAD_OBJ
+
+
+def test_copy_thread():
+    """Tests copying thread and replies"""
+    with patch.object(discussion, "_copy_thread",
+                      return_value=THREAD_OBJ) as patch_copy_threads,\
+         patch.object(discussion, "get_thread_replies",
+                      return_value=[REPLY_OBJ]) as patch_thread_replies,\
+         patch.object(discussion, "copy_reply") as patch_copy_reply:
+        discussion.copy_thread(syn, THREAD_OBJ, PROJECTID)
+        patch_copy_threads.assert_called_once_with(syn, THREAD_OBJ, PROJECTID)
+        patch_thread_replies.assert_called_once_with(syn, THREAD_OBJ['id'])
+        patch_copy_reply.assert_called_once_with(syn, REPLY_OBJ,
+                                                 THREAD_OBJ['id'])
 
 
 def test_copy_reply():
@@ -264,14 +279,8 @@ def test_copy_forum():
     with mock.patch.object(discussion, "get_forum_threads",
                            return_value=[THREAD_OBJ]) as patch_get_threads,\
          mock.patch.object(discussion, "copy_thread",
-                           return_value=new_thread) as patch_copy_thread,\
-         mock.patch.object(discussion, "get_thread_replies",
-                           return_value=[REPLY_OBJ]) as patch_thread_replies,\
-         mock.patch.object(discussion, "copy_reply") as patch_copy_reply:
+                           return_value=new_thread) as patch_copy_thread:
         discussion.copy_forum(syn, PROJECTID, new_projectid)
         patch_get_threads.assert_called_once_with(syn, PROJECTID)
         patch_copy_thread.assert_called_once_with(syn, THREAD_OBJ,
                                                   new_projectid)
-        patch_thread_replies.assert_called_once_with(syn, THREAD_OBJ['id'])
-        patch_copy_reply.assert_called_once_with(syn, REPLY_OBJ,
-                                                 new_thread['id'])
