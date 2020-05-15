@@ -36,10 +36,10 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        new_challenge = Challenge(participantTeamId=teamid,
-                                  projectId=projectid)
+        challenge_object = {'participantTeamId': teamid,
+                            'projectId': projectid}
         challenge = self.syn.restPOST('/challenge',
-                                      str(new_challenge))
+                                      json.dumps(challenge_object))
         return Challenge(**challenge)
 
     def get_registered_challenges(self,
@@ -93,11 +93,11 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        new_challenge = Challenge(id=challengeid,
-                                  participantTeamId=teamid,
-                                  projectId=projectid)
+        challenge_object = {'id': challengeid,
+                            'participantTeamId': teamid,
+                            'projectId': projectid}
         challenge = self.syn.restPUT(f'/challenge/{challengeid}',
-                                     str(new_challenge))
+                                     json.dumps(challenge_object))
         return Challenge(**challenge)
 
     def delete_challenge(self, challengeid: str):
