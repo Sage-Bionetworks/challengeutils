@@ -56,6 +56,8 @@ class TestChallengeApi:
         """Tests that a challenge object can be instantiated"""
         new_challenge = Challenge(projectId=self.projectid,
                                   participantTeamId=self.teamid)
+        challenge_object = {'participantTeamId': self.teamid,
+                            'projectId': self.projectid}
         with patch.object(self.syn, "restPOST",
                           return_value=self.challenge_dict) as patch_restpost:
             challenge_obj = self.challenge_api.create_challenge(
@@ -63,8 +65,9 @@ class TestChallengeApi:
                 projectid=self.projectid
             )
             assert challenge_obj == self.expected
-            patch_restpost.assert_called_once_with('/challenge',
-                                                   str(new_challenge))
+            patch_restpost.assert_called_once_with(
+                '/challenge', json.dumps(challenge_object)
+            )
 
     def test_get_challenge__with_id(self):
         """Tests getting challenge with challenge id"""
@@ -92,6 +95,9 @@ class TestChallengeApi:
 
     def test_update_challenge(self):
         """Tests updating Challenge"""
+        challenge_dict = {"id": self.challengeid,
+                          "participantTeamId": self.teamid,
+                          "projectId": self.projectid}
         with patch.object(self.syn, "restPUT",
                           return_value=self.challenge_dict) as patch_restput:
             challenge_obj = self.challenge_api.update_challenge(
@@ -102,7 +108,7 @@ class TestChallengeApi:
             assert challenge_obj == self.expected
             patch_restput.assert_called_once_with(
                 f'/challenge/{self.challengeid}',
-                str(self.input)
+                json.dumps(challenge_dict)
             )
 
     def test_delete_challenge(self):
