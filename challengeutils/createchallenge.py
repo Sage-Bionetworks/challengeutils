@@ -281,8 +281,8 @@ def main(syn, challenge_name, live_site=None):
     else:
         project_live = syn.get(live_site)
 
-    challenge = create_challenge_widget(syn, project_live,
-                                        teams['team_part_id'])
+    challenge_obj = create_challenge_widget(syn, project_live,
+                                            teams['team_part_id'])
     create_evaluation_queue(syn, '%s Project Submission' % challenge_name,
                             'Project Submission',
                             project_live.id)
@@ -304,7 +304,7 @@ def main(syn, challenge_name, live_site=None):
     for page in new_wikiids:
         wikipage = syn.getWiki(project_staging, page['id'])
         wikipage.markdown = _update_wikipage_string(wikipage.markdown,
-                                                    challenge.id,
+                                                    challenge_obj.id,
                                                     teams['team_part_id'],
                                                     challenge_name,
                                                     project_live.id)
