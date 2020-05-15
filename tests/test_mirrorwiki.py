@@ -4,11 +4,7 @@ from unittest.mock import patch
 
 import pytest
 from synapseclient import Project, Wiki, Synapse
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
 from challengeutils import mirrorwiki
