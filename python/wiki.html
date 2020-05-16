@@ -183,22 +183,19 @@
 <h1>Challenge Wiki<a class="headerlink" href="#challenge-wiki" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-challengeutils.createchallenge">
 <span id="create"></span><h2>Create<a class="headerlink" href="#module-challengeutils.createchallenge" title="Permalink to this headline">¶</a></h2>
-<p>Creates challenge space in Synapse</p>
-<p>Input:  Challenge Project name
-Output: The skeleton for two challenges site with initial wiki, four teams</p>
-<blockquote>
-<div><p>(admin, participants, organizers, and preregistrants), and
+<p>The skeleton for two challenges site with initial wiki, four teams
+(admin, participants, organizers, and preregistrants), and
 a challenge widget added on live site with a participant
 team associated with it.</p>
-</div></blockquote>
 <p>For more information on challenges administration:
 <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">https://docs.synapse.org/articles/challenge_administration.html</a></p>
-<p>Example (run on bash)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Plouf Challenge&quot;</span>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">challengeutils</span>
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+<span class="n">challengeutils</span><span class="o">.</span><span class="n">createchallenge</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="s2">&quot;Plouf Challenge&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>TODO Add participants
-TODO Add tests</p>
 <dl class="function">
 <dt id="challengeutils.createchallenge.check_existing_and_delete_wiki">
 <code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">check_existing_and_delete_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#check_existing_and_delete_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.check_existing_and_delete_wiki" title="Permalink to this definition">¶</a></dt>
@@ -320,13 +317,32 @@ id. (Default is None)</p></li>
 </div>
 <div class="section" id="module-challengeutils.mirrorwiki">
 <span id="updating"></span><h2>Updating<a class="headerlink" href="#module-challengeutils.mirrorwiki" title="Permalink to this headline">¶</a></h2>
+<p>Mirrors (sync) wiki pages by using the wikipage titles between
+two Synapse Entities. This function only works if <cite>entity</cite> and
+<cite>destination`are the same type and both must have wiki pages.
+Only wiki pages with the same titles will be copied from
+`entity</cite> to <cite>destination</cite> - if there is a wiki page that you
+want to add, you will have to create a wiki page first in the
+<cite>destination</cite> with the same name.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">challengeutils</span>
+<span class="kn">import</span> <span class="nn">synapseclient</span>
+<span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+<span class="n">source_project</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;syn123&quot;</span><span class="p">)</span>
+<span class="n">target_project</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;syn234&quot;</span><span class="p">)</span>
+<span class="n">challengeutils</span><span class="o">.</span><span class="n">mirrorwiki</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="n">syn</span><span class="o">=</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="o">=</span><span class="n">source_project</span><span class="p">,</span>
+                                 <span class="n">destination</span><span class="o">=</span><span class="n">target_project</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="function">
-<dt id="challengeutils.mirrorwiki.mirrorwiki">
-<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">entity</em>, <em class="sig-param">destination</em>, <em class="sig-param">force_merge=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/mirrorwiki.html#mirrorwiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirrorwiki" title="Permalink to this definition">¶</a></dt>
-<dd><p>This script is responsible for mirroring wiki pages
-It relies on the wiki titles between two Synapse Projects to be
-The same and will merge the updates from entity’s wikis to
-destination’s wikis</p>
+<dt id="challengeutils.mirrorwiki.mirror">
+<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirror</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, entity: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], destination: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], force: bool = False, dryrun: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/mirrorwiki.html#mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mirrors (sync) wiki pages by using the wikipage titles between two
+Synapse Entities.  This function only works if <cite>entity</cite> and <cite>destination</cite>
+are the same type and both must have wiki pages.  Only wiki pages with the
+same titles will be copied from <cite>entity</cite> to <cite>destination</cite> - if there is
+a wiki page that you want to add, you will have to create a wiki page
+first in the <cite>destination</cite> with the same name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -334,11 +350,10 @@ destination’s wikis</p>
 Wiki you want to copy</p></li>
 <li><p><strong>destination</strong> – Synapse File, Project, Folder Entity or Id
 with Wiki that matches entity</p></li>
-<li><p><strong>force_merge</strong> – this will update a page even if its the same</p></li>
+<li><p><strong>force</strong> – Update a page even if its the same. Default to False.</p></li>
+<li><p><strong>dryrun</strong> – Show the pages that have changed but don’t update. Default
+is False.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>nothing</p>
 </dd>
 </dl>
 </dd></dl>

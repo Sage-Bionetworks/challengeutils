@@ -110,6 +110,7 @@
 <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2-1-0">v2.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-1">v2.0.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-0">v2.0.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v1-6-0">v1.6.0</a></li>
@@ -187,6 +188,19 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <p>This changelog is used to track all major changes to <strong>challengeutils</strong>.</p>
 <p>For older releases, visit the <a class="reference external" href="https://github.com/Sage-Bionetworks/challengeutils/releases">GitHub releases</a>.</p>
+<div class="section" id="v2-1-0">
+<h2>v2.1.0<a class="headerlink" href="#v2-1-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Remove <cite>invite_member_to_team</cite> function as functionality is in <cite>synapseclient</cite></p></li>
+<li><p><cite>challengeutils.discussion.copy_thread</cite> now also copies replies instead of just the thread</p></li>
+<li><p>Do not use <cite>Challenge</cite> class to instantiate the body of <cite>restPOST</cite> or <cite>restPUT</cite> calls</p></li>
+<li><p>Add automation of code coverage</p></li>
+<li><p>Refactored and added tests for <cite>challengeutils.mirrorwiki</cite></p></li>
+<li><p><cite>challengeutils.mirrorwiki.mirrorwiki</cite> renamed to <cite>challengeutils.mirrorwiki.mirror</cite></p></li>
+<li><p>Added <cite>dryrun</cite> parameter to let users know which pages would be updated in <cite>challengeutils.mirrorwiki</cite></p></li>
+<li><p>Revise documentation</p></li>
+</ul>
+</div>
 <div class="section" id="v2-0-1">
 <h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -211,6 +225,7 @@ latest version with:</p>
 <li><p>Update library dependency, e.g. using <code class="docutils literal notranslate"><span class="pre">unittest.mock</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mock</span></code></p></li>
 <li><p>Fix queue query CLI errors</p></li>
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">mirrorwiki</span></code> error</p></li>
+<li><p><strong>Release is 2.0.0.dev0 on pypi</strong></p></li>
 </ul>
 </div>
 <div class="section" id="v1-6-0">
@@ -238,6 +253,7 @@ latest version with:</p>
 <li><p>Add auto-generated documentation</p></li>
 <li><p>Fix CLI command for annotating submission</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">setevaluationquota</span></code> command</p></li>
+<li><p><strong>Release is 1.5.0.dev0 on pypi</strong></p></li>
 </ul>
 </div>
 </div>

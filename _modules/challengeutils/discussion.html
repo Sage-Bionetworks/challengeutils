@@ -531,6 +531,23 @@
 
 
 <div class="viewcode-block" id="copy_thread"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_thread">[docs]</a><span class="k">def</span> <span class="nf">copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copies a discussion thread and its replies to a project</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: synapse object</span>
+<span class="sd">        thread: Synapse Thread</span>
+<span class="sd">        project: Synapse Project or its id to copy thread to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Thread bundle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_thread_obj</span> <span class="o">=</span> <span class="n">_copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
+    <span class="n">thread_replies</span> <span class="o">=</span> <span class="n">get_thread_replies</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">reply</span> <span class="ow">in</span> <span class="n">thread_replies</span><span class="p">:</span>
+        <span class="n">copy_reply</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">reply</span><span class="p">,</span> <span class="n">new_thread_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span></div>
+
+
+<span class="k">def</span> <span class="nf">_copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copies a discussion thread to a project</span>
 
 <span class="sd">    Args:</span>
@@ -548,8 +565,9 @@
     <span class="n">on_behalf_of</span> <span class="o">=</span> <span class="s2">&quot;On behalf of @</span><span class="si">{user}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">get_thread_text</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">[</span><span class="s1">&#39;messageKey&#39;</span><span class="p">])</span>
     <span class="n">new_thread_text</span> <span class="o">=</span> <span class="n">on_behalf_of</span> <span class="o">+</span> <span class="n">text</span>
+    <span class="n">new_thread_obj</span> <span class="o">=</span> <span class="n">create_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">projectid</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">new_thread_text</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">create_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">projectid</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">new_thread_text</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">new_thread_obj</span>
 
 
 <div class="viewcode-block" id="copy_reply"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_reply">[docs]</a><span class="k">def</span> <span class="nf">copy_reply</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">reply</span><span class="p">,</span> <span class="n">thread</span><span class="p">):</span>
@@ -582,10 +600,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">threads</span> <span class="o">=</span> <span class="n">get_forum_threads</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
-        <span class="n">new_thread_obj</span> <span class="o">=</span> <span class="n">copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">,</span> <span class="n">new_project</span><span class="p">)</span>
-        <span class="n">thread_replies</span> <span class="o">=</span> <span class="n">get_thread_replies</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">reply</span> <span class="ow">in</span> <span class="n">thread_replies</span><span class="p">:</span>
-            <span class="n">copy_reply</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">reply</span><span class="p">,</span> <span class="n">new_thread_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span></div>
+        <span class="n">copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">,</span> <span class="n">new_project</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

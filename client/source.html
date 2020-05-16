@@ -215,12 +215,14 @@ creates, please head to <a class="reference external" href="https://docs.synapse
 <dl class="function">
 <dt>
 <code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_mirrorwiki"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>For all challenges, you should be editting the staging site and then
-using the merge script to mirror staging to live site.  The script will
-compare wiki titles between the staging and live site and update the live
-site with respect to what has changed on the staging site.  Note, this is
-different from copying the wikis. To copy the wikis, please look at
-synapseutils.</p>
+<dd><p>Mirrors (sync) wiki pages by using the wikipage titles between two
+Synapse Entities.  This function only works if <cite>entity</cite> and <cite>destination</cite>
+are the same type and both must have wiki pages.  Only wiki pages with the
+same titles will be copied from <cite>entity</cite> to <cite>destination</cite> - if there is
+a wiki page that you want to add, you will have to create a wiki page
+first in the <cite>destination</cite> with the same name.</p>
+<p>Note: this is different from copying a wiki - to copy a wiki, please look
+at <cite>synapseutils.copyWiki</cite>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">mirrorwiki</span> <span class="n">syn12345</span> <span class="n">syn23456</span>
 </pre></div>
 </div>

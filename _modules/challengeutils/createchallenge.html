@@ -172,23 +172,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for challengeutils.createchallenge</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Creates challenge space in Synapse</span>
-
-<span class="sd">Input:  Challenge Project name</span>
-<span class="sd">Output: The skeleton for two challenges site with initial wiki, four teams</span>
-<span class="sd">        (admin, participants, organizers, and preregistrants), and</span>
-<span class="sd">        a challenge widget added on live site with a participant</span>
-<span class="sd">        team associated with it.</span>
+<span></span><span class="sd">&quot;&quot;&quot;The skeleton for two challenges site with initial wiki, four teams</span>
+<span class="sd">(admin, participants, organizers, and preregistrants), and</span>
+<span class="sd">a challenge widget added on live site with a participant</span>
+<span class="sd">team associated with it.</span>
 
 <span class="sd">For more information on challenges administration:</span>
 <span class="sd">https://docs.synapse.org/articles/challenge_administration.html</span>
 
-<span class="sd">Example (run on bash)</span>
+<span class="sd">Example::</span>
 
-<span class="sd">&gt;&gt;&gt; challengeutils createchallenge &quot;Plouf Challenge&quot;</span>
+<span class="sd">    import challengeutils</span>
+<span class="sd">    import synapseclient</span>
+<span class="sd">    syn = synapseclient.login()</span>
+<span class="sd">    challengeutils.createchallenge.main(syn, &quot;Plouf Challenge&quot;)</span>
 
-<span class="sd">TODO Add participants</span>
-<span class="sd">TODO Add tests</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -201,6 +199,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># TODO: Add participants</span>
 <span class="c1"># A pre-defined wiki project is used as initial template for challenge sites.</span>
 <span class="c1"># To copy over the template synapseutils.copyWiki() function is used with</span>
 <span class="c1"># template id as source and new challenge project entity synId as destination.</span>
@@ -455,8 +454,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">project_live</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">live_site</span><span class="p">)</span>
 
-    <span class="n">challenge</span> <span class="o">=</span> <span class="n">create_challenge_widget</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span>
-                                        <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">])</span>
+    <span class="n">challenge_obj</span> <span class="o">=</span> <span class="n">create_challenge_widget</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project_live</span><span class="p">,</span>
+                                            <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">])</span>
     <span class="n">create_evaluation_queue</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Project Submission&#39;</span> <span class="o">%</span> <span class="n">challenge_name</span><span class="p">,</span>
                             <span class="s1">&#39;Project Submission&#39;</span><span class="p">,</span>
                             <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -478,7 +477,7 @@
     <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">new_wikiids</span><span class="p">:</span>
         <span class="n">wikipage</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">project_staging</span><span class="p">,</span> <span class="n">page</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
         <span class="n">wikipage</span><span class="o">.</span><span class="n">markdown</span> <span class="o">=</span> <span class="n">_update_wikipage_string</span><span class="p">(</span><span class="n">wikipage</span><span class="o">.</span><span class="n">markdown</span><span class="p">,</span>
-                                                    <span class="n">challenge</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                    <span class="n">challenge_obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                                                     <span class="n">teams</span><span class="p">[</span><span class="s1">&#39;team_part_id&#39;</span><span class="p">],</span>
                                                     <span class="n">challenge_name</span><span class="p">,</span>
                                                     <span class="n">project_live</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
