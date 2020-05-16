@@ -65,7 +65,7 @@ Synopsis
 ^^^^^^^^
 
 mirrorwiki
-    source_id dest_id [--forceupdate]
+    source_id dest_id [--force]
 
 Description
 ^^^^^^^^^^^
@@ -100,7 +100,7 @@ Positional
 Optional
 ^^^^^^^^
 
-.. cmdoption:: --forceupdate
+.. cmdoption:: -f, --force
 
     Force-update the wiki pages, even if there are no changes
 

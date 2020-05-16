@@ -1,20 +1,18 @@
-"""Creates challenge space in Synapse
-
-Input:  Challenge Project name
-Output: The skeleton for two challenges site with initial wiki, four teams
-        (admin, participants, organizers, and preregistrants), and
-        a challenge widget added on live site with a participant
-        team associated with it.
+"""The skeleton for two challenges site with initial wiki, four teams
+(admin, participants, organizers, and preregistrants), and
+a challenge widget added on live site with a participant
+team associated with it.
 
 For more information on challenges administration:
 https://docs.synapse.org/articles/challenge_administration.html
 
-Example (run on bash)
+Example::
 
->>> challengeutils createchallenge "Plouf Challenge"
+    import challengeutils
+    import synapseclient
+    syn = synapseclient.login()
+    challengeutils.createchallenge.main(syn, "Plouf Challenge")
 
-TODO Add participants
-TODO Add tests
 """
 import logging
 import sys
@@ -27,6 +25,7 @@ from . import challenge, permissions, utils
 
 logger = logging.getLogger(__name__)
 
+# TODO: Add participants
 # A pre-defined wiki project is used as initial template for challenge sites.
 # To copy over the template synapseutils.copyWiki() function is used with
 # template id as source and new challenge project entity synId as destination.
@@ -281,8 +280,8 @@ def main(syn, challenge_name, live_site=None):
     else:
         project_live = syn.get(live_site)
 
-    challenge = create_challenge_widget(syn, project_live,
-                                        teams['team_part_id'])
+    challenge_obj = create_challenge_widget(syn, project_live,
+                                            teams['team_part_id'])
     create_evaluation_queue(syn, '%s Project Submission' % challenge_name,
                             'Project Submission',
                             project_live.id)
@@ -304,7 +303,7 @@ def main(syn, challenge_name, live_site=None):
     for page in new_wikiids:
         wikipage = syn.getWiki(project_staging, page['id'])
         wikipage.markdown = _update_wikipage_string(wikipage.markdown,
-                                                    challenge.id,
+                                                    challenge_obj.id,
                                                     teams['team_part_id'],
                                                     challenge_name,
                                                     project_live.id)

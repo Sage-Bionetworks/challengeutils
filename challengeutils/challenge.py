@@ -3,11 +3,7 @@ import json
 from typing import Union, Iterator
 
 from synapseclient import Project, Synapse, Team
-try:
-    from synapseclient.core.utils import id_of
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.utils import id_of
+from synapseclient.core.utils import id_of
 
 from .synapseservices.challenge import Challenge
 
@@ -36,10 +32,10 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        new_challenge = Challenge(participantTeamId=teamid,
-                                  projectId=projectid)
+        challenge_object = {'participantTeamId': teamid,
+                            'projectId': projectid}
         challenge = self.syn.restPOST('/challenge',
-                                      str(new_challenge))
+                                      json.dumps(challenge_object))
         return Challenge(**challenge)
 
     def get_registered_challenges(self,
@@ -93,11 +89,11 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        new_challenge = Challenge(id=challengeid,
-                                  participantTeamId=teamid,
-                                  projectId=projectid)
+        challenge_object = {'id': challengeid,
+                            'participantTeamId': teamid,
+                            'projectId': projectid}
         challenge = self.syn.restPUT(f'/challenge/{challengeid}',
-                                     str(new_challenge))
+                                     json.dumps(challenge_object))
         return Challenge(**challenge)
 
     def delete_challenge(self, challengeid: str):

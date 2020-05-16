@@ -244,44 +244,6 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
         syn.store(new_status)
 
 
-def invite_member_to_team(syn, team, user=None, email=None, message=None):
-    """
-    Invite members to a team
-
-    Args:
-        syn: Synapse object
-        team: Synapse Team id or name
-        user: Synapse username or profile id
-        email: Email of user, do not specify both email and user,
-               but must specify one
-        message: Message for people getting invited to the team
-    """
-    teamid = syn.getTeam(team)['id']
-    is_member = False
-    invite = {'teamId': str(teamid)}
-
-    if email is None:
-        userid = syn.getUserProfile(user)['ownerId']
-        request = \
-            "/team/{teamId}/member/{individualId}/membershipStatus".format(
-                teamId=str(teamid),
-                individualId=str(userid))
-        membership_status = syn.restGET(request)
-        is_member = membership_status['isMember']
-        invite['inviteeId'] = str(userid)
-    else:
-        invite['inviteeEmail'] = email
-
-    if message is not None:
-        invite['message'] = message
-
-    if not is_member:
-        invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
-        return invite
-
-    return None
-
-
 def change_submission_status(syn, submissionid, status='RECEIVED'):
     '''
     Function to change a submission status
