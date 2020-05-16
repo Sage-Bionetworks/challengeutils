@@ -17,7 +17,7 @@ git pull upstream develop
 ```
 
 ### Install development dependencies
-This will install all the dependencies of the package including the develop branch of challengeutils.
+This will install all the dependencies of the package including the active branch of `challengeutils`.
 
 ```
 pip install -r requirements-dev.txt
