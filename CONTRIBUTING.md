@@ -1,6 +1,9 @@
 
 ## Contributing
 
+We welcome all contributions!  Please head to [issues](https://github.com/Sage-Bionetworks/challengeutils/issues) to either file any bugs/feature requests or find a task you want to assist with.  Make sure to assign yourself the task if you decide to work on it.
+
+
 ### Fork and clone this repository
 
 See the [Github docs](https://help.github.com/articles/fork-a-repo/) for how to make a copy (a fork) of a repository to your own Github account.
