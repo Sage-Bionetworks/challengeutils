@@ -1,5 +1,5 @@
 """Testing writeup attacher"""
-import mock
+from unittest import mock
 
 import pandas as pd
 import synapseclient
