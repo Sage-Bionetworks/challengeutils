@@ -5,13 +5,9 @@ import json
 import requests
 
 import synapseclient
-try:
-    from synapseclient.core.utils import id_of
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.utils import id_of
+from synapseclient.core.utils import id_of
 
-from synapseservices.discussion import Forum
+from .synapseservices.discussion import Forum
 
 QUERY_LIMIT = 1000
 
@@ -361,6 +357,23 @@ def create_thread_reply(syn, threadid, message):
 
 
 def copy_thread(syn, thread, project):
+    """Copies a discussion thread and its replies to a project
+
+    Args:
+        syn: synapse object
+        thread: Synapse Thread
+        project: Synapse Project or its id to copy thread to
+
+    Returns:
+        dict: Thread bundle
+    """
+    new_thread_obj = _copy_thread(syn, thread, project)
+    thread_replies = get_thread_replies(syn, thread['id'])
+    for reply in thread_replies:
+        copy_reply(syn, reply, new_thread_obj['id'])
+
+
+def _copy_thread(syn, thread, project):
     """Copies a discussion thread to a project
 
     Args:
@@ -378,8 +391,9 @@ def copy_thread(syn, thread, project):
     on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
     text = get_thread_text(syn, thread['messageKey'])
     new_thread_text = on_behalf_of + text
+    new_thread_obj = create_thread(syn, projectid, title, new_thread_text)
 
-    return create_thread(syn, projectid, title, new_thread_text)
+    return new_thread_obj
 
 
 def copy_reply(syn, reply, thread):
@@ -412,7 +426,4 @@ def copy_forum(syn, project, new_project):
     """
     threads = get_forum_threads(syn, project)
     for thread in threads:
-        new_thread_obj = copy_thread(syn, thread, new_project)
-        thread_replies = get_thread_replies(syn, thread['id'])
-        for reply in thread_replies:
-            copy_reply(syn, reply, new_thread_obj['id'])
+        copy_thread(syn, thread, new_project)

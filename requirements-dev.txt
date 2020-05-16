@@ -1,0 +1,6 @@
+-e .
+synapseclient==2.0.0
+pandas
+pytest
+sphinx_rtd_theme
+Sphinx

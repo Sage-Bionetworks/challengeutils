@@ -7,21 +7,13 @@ import os
 import pandas as pd
 import synapseclient
 
-try:
-    from synapseclient.core.retry import _with_retry
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.retry import _with_retry
+from synapseclient.core.retry import with_retry
+from synapseclient.core.utils import from_unix_epoch_time
 
-from . import createchallenge
-from . import dockertools
-from . import download_current_lead_submission as dl_cur
-from . import evaluation_queue
-from . import helpers
-from . import mirrorwiki
-from . import permissions
-from . import utils
-from . import writeup_attacher
+from . import (createchallenge, challenge,
+               download_current_lead_submission as dl_cur,
+               evaluation_queue, helpers, mirrorwiki, permissions, utils,
+               writeup_attacher)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -29,17 +21,20 @@ logger = logging.getLogger(__name__)
 
 
 def command_mirrorwiki(syn, args):
-    """For all challenges, you should be editting the staging site and then
-    using the merge script to mirror staging to live site.  The script will
-    compare wiki titles between the staging and live site and update the live
-    site with respect to what has changed on the staging site.  Note, this is
-    different from copying the wikis. To copy the wikis, please look at
-    synapseutils.
+    """Mirrors (sync) wiki pages by using the wikipage titles between two
+    Synapse Entities.  This function only works if `entity` and `destination`
+    are the same type and both must have wiki pages.  Only wiki pages with the
+    same titles will be copied from `entity` to `destination` - if there is
+    a wiki page that you want to add, you will have to create a wiki page
+    first in the `destination` with the same name.
+
+    Note: this is different from copying a wiki - to copy a wiki, please look
+    at `synapseutils.copyWiki`.
 
     >>> challengeutils mirrorwiki syn12345 syn23456
     """
-    mirrorwiki.mirrorwiki(syn, args.entityid, args.destinationid,
-                          args.forceupdate)
+    mirrorwiki.mirror(syn, args.entityid, args.destinationid,
+                      force=args.force, dryrun=args.dryrun)
 
 
 def command_createchallenge(syn, args):
@@ -50,8 +45,25 @@ def command_createchallenge(syn, args):
 
     >>> challengeutils createchallenge "Challenge Name Here"
     """
-    createchallenge.main(syn, args.challengename, args.livesiteid)
-
+    challenge_components = createchallenge.main(syn, args.challengename,
+                                                args.livesiteid)
+    # component: project or team
+    # componentid: project id or teamid
+    urls = {}
+    for component, componentid in challenge_components.items():
+        if component.endswith("projectid"):
+            urls[component] = f"https://www.synapse.org/#!Synapse:{componentid}"
+        elif component.endswith("teamid"):
+            urls[component] = f"https://www.synapse.org/#!Team:{componentid}"
+    urls['name'] = args.challengename
+    text = ("{name} (Production site): {live_projectid}",
+            "{name} (Staging site): {staging_projectid}",
+            "{name} (Admin team): {admin_teamid}",
+            "{name} (Participant team): {organizer_teamid}",
+            "{name} (Organizer team): {participant_teamid}",
+            "{name} (Pre-registrant team): {preregistrantrant_teamid}")
+    print("\n" + "\n".join(text).format(**urls))
+    return challenge_components
 
 def command_query(syn, args):
     """Command line convenience function to call evaluation queue query
@@ -72,7 +84,7 @@ def command_query(syn, args):
             querydf['submitterName'] = submitter_names
         # Check if createdOn column exists
         if querydf.get('createdOn') is not None:
-            createdons = [synapseclient.utils.from_unix_epoch_time(createdon)
+            createdons = [from_unix_epoch_time(createdon)
                           for createdon in querydf['createdOn']]
             querydf['createdOn'] = createdons
     if args.outputfile is not None:
@@ -168,6 +180,10 @@ def command_list_evaluations(syn, args):
 
 
 def command_download_submission(syn, args):
+    """Downloads a Synapse Submission given a submission id
+
+    >>> challengeutils downloadsubmission submissionid
+    """
     submission_dict = utils.download_submission(syn, args.submissionid,
                                                 download_location=args.download_location) # noqa pylint: disable=line-too-long
     if args.output:
@@ -192,14 +208,14 @@ def command_annotate_submission_with_json(syn, args):
     # By default is_private is True, so the cli is to_public as False
     # Which would be that is_private is True.
     is_private = not args.to_public
-    _with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
-                                                            args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                            is_private=is_private,  # noqa pylint: disable=line-too-long
-                                                            force=args.force),  # noqa pylint: disable=line-too-long
-                wait=3,
-                retries=10,
-                retry_status_codes=[412, 429, 500, 502, 503, 504],
-                verbose=True)
+    with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
+                                                           args.annotation_values,  # noqa pylint: disable=line-too-long
+                                                           is_private=is_private,  # noqa pylint: disable=line-too-long
+                                                           force=args.force),  # noqa pylint: disable=line-too-long
+               wait=3,
+               retries=10,
+               retry_status_codes=[412, 429, 500, 502, 503, 504],
+               verbose=True)
 
 
 def command_send_email(syn, args):
@@ -239,6 +255,17 @@ def command_validate_docker(syn, args):
         out.write(json.dumps(result))
 
 
+def command_list_registered_challenges(syn, args):
+    """
+    List the challenges a user is registered to. Defaults to the
+    logged in synapse user is userid isn't specified.
+
+    >>> challengeutils list-registered-challenges
+    >>> challengeutils list-registered-challenges --userid 1223
+    """
+    list(challenge.get_registered_challenges(syn, userid=args.userid))
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -271,24 +298,36 @@ def build_parser():
 
     parser_mirrorwiki = subparsers.add_parser(
         'mirrorwiki',
-        help=("This command mirrors wiki pages. It relies on the wiki titles "
-              "between two Synapse Projects to be the same and will merge the "
-              "updates from entity's wikis to destination's wikis. "
-              "Do not confuse this function with copy wiki."))
+        help="Mirrors (sync) wiki pages by using the wikipage titles between "
+             "two Synapse Entities. This function only works if `entity` and "
+             "`destination`are the same type and both must have wiki pages. "
+             "Only wiki pages with the same titles will be copied from "
+             "`entity` to `destination` - if there is a wiki page that you "
+             "want to add, you will have to create a wiki page first in the "
+             "`destination` with the same name."
+    )
 
     parser_mirrorwiki.add_argument(
         "entityid",
         type=str,
-        help="Synapse Id of the project's wiki changes you have staged")
+        help="Synapse Id of the project's wiki changes you have staged"
+    )
     parser_mirrorwiki.add_argument(
         "destinationid",
         type=str,
-        help=('Synapse Id of project whose wiki you want to update'
-              ' with the entityid'))
+        help="Synapse Id of project whose wiki you want to update "
+             "with the entityid"
+    )
     parser_mirrorwiki.add_argument(
-        "--forceupdate",
+        "-f", "--force",
         action='store_true',
-        help='Update the wikipages even if they are the same')
+        help='Update the wikipages even if they are the same'
+    )
+    parser_mirrorwiki.add_argument(
+        "--dryrun",
+        action='store_true',
+        help="Show the pages that have changed but don't update."
+    )
     parser_mirrorwiki.set_defaults(func=command_mirrorwiki)
 
     parser_query = subparsers.add_parser(
@@ -553,15 +592,33 @@ def build_parser():
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
+    parser_list_challenge = subparsers.add_parser(
+        'list-registered-challenges',
+        help="List the challenges a user is registered to. Defaults to the"
+             "logged in synapse user is userid isn't specified."
+    )
+
+    parser_list_challenge.add_argument(
+        "--userid",
+        type=str,
+        help='Synapse User id or username',
+        default=None
+    )
+
+    parser_list_challenge.set_defaults(
+        func=command_list_registered_challenges
+    )
+
     parser_validate_docker = subparsers.add_parser(
         'validatedocker',
-        help='Validate Docker container')
-
+        help='Validate Docker container'
+    )
     parser_validate_docker.add_argument("-s", "--submissionid",
                                         required=True, help="Submission id")
     parser_validate_docker.add_argument("-r", "--results", required=True,
                                         help="validation results")
     parser_validate_docker.set_defaults(func=command_validate_docker)
+
     return parser
 
 

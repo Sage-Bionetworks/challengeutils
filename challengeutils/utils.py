@@ -10,15 +10,7 @@ import urllib
 import synapseclient
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.annotations import is_submission_status_annotations
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-    from synapseclient.core.utils import id_of
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
-    from synapseclient.utils import id_of
-
-from synapseservices.challenge import Challenge
+from synapseclient.core.exceptions import SynapseHTTPError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -184,47 +176,6 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challenge(syn, entity):
-    """Get the Challenge associated with a Project.
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
-
-    Args:
-        entity: An Entity or Synapse ID of a Project.
-
-    Returns:
-        Challenge object
-    """
-    synid = id_of(entity)
-    challenge = syn.restGET("/entity/%s/challenge" % synid)
-    challenge_obj = Challenge(**challenge)
-    return challenge_obj
-
-
-def create_challenge(syn, entity, team):
-    """Creates Challenge associated with a Project
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
-
-    Args:
-        syn: Synapse connection
-        entity: An Entity or Synapse ID of a Project.
-        team: A Team or Team ID.
-
-    Returns:
-        Challenge object
-    """
-    synid = id_of(entity)
-    teamid = id_of(team)
-    challenge_object = {'participantTeamId': teamid,
-                        'projectId': synid}
-    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
-    challenge_obj = Challenge(**challenge)
-    return challenge_obj
-
-
 def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
     '''
     Helper function to locate the existing annotation
@@ -291,66 +242,6 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
         new_status = change_submission_annotation_acl(status, annotations,
                                                       is_private=is_private)
         syn.store(new_status)
-
-
-def invite_member_to_team(syn, team, user=None, email=None, message=None):
-    """
-    Invite members to a team
-
-    Args:
-        syn: Synapse object
-        team: Synapse Team id or name
-        user: Synapse username or profile id
-        email: Email of user, do not specify both email and user,
-               but must specify one
-        message: Message for people getting invited to the team
-    """
-    teamid = syn.getTeam(team)['id']
-    is_member = False
-    invite = {'teamId': str(teamid)}
-
-    if email is None:
-        userid = syn.getUserProfile(user)['ownerId']
-        request = \
-            "/team/{teamId}/member/{individualId}/membershipStatus".format(
-                teamId=str(teamid),
-                individualId=str(userid))
-        membership_status = syn.restGET(request)
-        is_member = membership_status['isMember']
-        invite['inviteeId'] = str(userid)
-    else:
-        invite['inviteeEmail'] = email
-
-    if message is not None:
-        invite['message'] = message
-
-    if not is_member:
-        invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
-        return invite
-
-    return None
-
-
-def register_team(syn, entity, team):
-    '''
-    Registers team to challenge
-
-    Args:
-        syn: Synapse object
-        entity: An Entity or Synapse ID to lookup
-        team: Team name or team Id
-
-    Returns:
-        Team id
-    '''
-
-    challengeid = get_challenge(syn, entity)['id']
-    teamid = syn.getTeam(team)['id']
-    challenge_object = {'challengeId': challengeid, 'teamId': teamid}
-    registered_team = syn.restPOST(
-        '/challenge/%s/challengeTeam' % challengeid,
-        json.dumps(challenge_object))
-    return registered_team['teamId']
 
 
 def change_submission_status(syn, submissionid, status='RECEIVED'):

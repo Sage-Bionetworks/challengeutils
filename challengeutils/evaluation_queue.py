@@ -1,6 +1,8 @@
 """Evaluation Queue helper functions"""
 import time
 
+from synapseclient import Synapse
+
 
 def _convert_date_to_epoch(date_string):
     """Converts local time dates in YEAR-MM-DDTHH:MM:SS format
@@ -83,7 +85,7 @@ def _create_quota(round_start: str = None, round_end: str = None,
     return quota
 
 
-def set_evaluation_quota(syn: 'Synapse', evalid: int, **kwargs):
+def set_evaluation_quota(syn: Synapse, evalid: int, **kwargs):
     """Sets evaluation submission limit quota.  This WILL erase any old quota
     you had previously set. Note - round_start must be specified with either
     round_end or round_duration and number_of_rounds must be defined for the

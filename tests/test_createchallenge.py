@@ -1,21 +1,15 @@
 """Test create challenge"""
+from unittest import mock
+from unittest.mock import patch
 import uuid
 
-import mock
-from mock import patch
 import pytest
 import synapseclient
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    # support synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
-from challengeutils import createchallenge
-from challengeutils import utils
-from challengeutils import permissions
-from synapseservices.challenge import Challenge
+from challengeutils import challenge, createchallenge, permissions, utils
+from challengeutils.synapseservices.challenge import Challenge
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 
@@ -70,7 +64,7 @@ def test_create_challenge_widget():
                               projectId=project,
                               etag=etag,
                               participantTeamId=teamid)
-    with patch.object(utils, "create_challenge",
+    with patch.object(challenge, "create_challenge",
                       return_value=challenge_obj) as patch_create:
         chal = createchallenge.create_challenge_widget(SYN, project, teamid)
         assert chal == challenge_obj
@@ -87,9 +81,9 @@ def test_existing_create_challenge_widget():
                               projectId=project,
                               etag=etag,
                               participantTeamId=teamid)
-    with patch.object(utils, "create_challenge",
+    with patch.object(challenge, "create_challenge",
                       side_effect=SynapseHTTPError) as patch_create,\
-        patch.object(utils, "get_challenge",
+        patch.object(challenge, "get_challenge",
                      return_value=challenge_obj) as patch_get:
         chal = createchallenge.create_challenge_widget(SYN, project, teamid)
         assert chal == challenge_obj
@@ -268,10 +262,10 @@ def test_livesitenone_main():
 
 def test_livesite_main():
     """Tests main when live site is not None"""
-    team_map = {'team_part_id': 'syn1234',
-                'team_admin_id': 'syn1234',
-                'team_prereg_id': 'syn1234',
-                'team_org_id': 'syn1234'}
+    team_map = {'team_part_id': '1234',
+                'team_admin_id': '2345',
+                'team_prereg_id': '3456',
+                'team_org_id': '4567'}
     teamid = str(uuid.uuid1())
     project = str(uuid.uuid1())
     chalid = str(uuid.uuid1())
@@ -301,6 +295,13 @@ def test_livesite_main():
          patch.object(createchallenge, "_update_wikipage_string",
                       return_value=wiki),\
          patch.object(SYN, "store"):
-        createchallenge.main(SYN, challenge_name, live_site="syn123")
+        components = createchallenge.main(SYN, challenge_name,
+                                          live_site="syn123")
         assert patch_set_perms.call_count == 2
         assert patch_create_proj.call_count == 1
+        assert components == {"live_projectid": proj.id,
+                              "staging_projectid": proj.id,
+                              "admin_teamid": '2345',
+                              "organizer_teamid": '4567',
+                              "participant_teamid": '1234',
+                              "preregistrantrant_teamid": '3456'}
