@@ -604,7 +604,6 @@ def build_parser():
         help='Synapse User id or username',
         default=None
     )
-
     parser_list_challenge.set_defaults(
         func=command_list_registered_challenges
     )

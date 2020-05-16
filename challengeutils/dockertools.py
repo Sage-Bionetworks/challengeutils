@@ -3,7 +3,7 @@ import base64
 import urllib.parse
 
 import requests
-
+from requests import Response
 
 ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
                     "synapse": "https://docker.synapse.org"}
@@ -102,7 +102,7 @@ def check_docker_exists(docker_resp: 'Response'):
         raise ValueError("Docker image and sha digest must exist.")
 
 
-def check_docker_size(docker_resp: 'Response', size: int = 1000):
+def check_docker_size(docker_resp: Response, size: int = 1000):
     """Checks Docker container is less than specified size
 
     Args:
