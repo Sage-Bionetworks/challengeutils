@@ -1,3 +1,22 @@
+"""Mirrors (sync) wiki pages by using the wikipage titles between
+two Synapse Entities. This function only works if `entity` and
+`destination`are the same type and both must have wiki pages.
+Only wiki pages with the same titles will be copied from
+`entity` to `destination` - if there is a wiki page that you
+want to add, you will have to create a wiki page first in the
+`destination` with the same name.
+
+Example::
+
+    import challengeutils
+    import synapseclient
+    syn = synapseclient.login()
+    source_project = syn.get("syn123")
+    target_project = syn.get("syn234")
+    challengeutils.mirrorwiki.mirror(syn=syn, entity=source_project,
+                                     destination=target_project)
+
+"""
 import logging
 import re
 from typing import Union, List, Dict

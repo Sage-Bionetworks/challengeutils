@@ -1,20 +1,18 @@
-"""Creates challenge space in Synapse
-
-Input:  Challenge Project name
-Output: The skeleton for two challenges site with initial wiki, four teams
-        (admin, participants, organizers, and preregistrants), and
-        a challenge widget added on live site with a participant
-        team associated with it.
+"""The skeleton for two challenges site with initial wiki, four teams
+(admin, participants, organizers, and preregistrants), and
+a challenge widget added on live site with a participant
+team associated with it.
 
 For more information on challenges administration:
 https://docs.synapse.org/articles/challenge_administration.html
 
-Example (run on bash)
+Example::
 
->>> challengeutils createchallenge "Plouf Challenge"
+    import challengeutils
+    import synapseclient
+    syn = synapseclient.login()
+    challengeutils.createchallenge.main(syn, "Plouf Challenge")
 
-TODO Add participants
-TODO Add tests
 """
 import logging
 import sys
@@ -27,6 +25,7 @@ from . import challenge, permissions, utils
 
 logger = logging.getLogger(__name__)
 
+# TODO: Add participants
 # A pre-defined wiki project is used as initial template for challenge sites.
 # To copy over the template synapseutils.copyWiki() function is used with
 # template id as source and new challenge project entity synId as destination.

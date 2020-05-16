@@ -8,6 +8,16 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v2.1.0
+------
+- Remove `invite_member_to_team` function as functionality is in `synapseclient`
+- `challengeutils.discussion.copy_thread` now also copies replies instead of just the thread
+- Do not use `Challenge` class to instantiate the body of `restPOST` or `restPUT` calls
+- Add automation of code coverage
+- Refactored and added tests for `challengeutils.mirrorwiki`
+- `challengeutils.mirrorwiki.mirrorwiki` renamed to `challengeutils.mirrorwiki.mirror`
+- Added `dryrun` parameter to let users know which pages would be updated in `challengeutils.mirrorwiki`
+- Revise documentation
 
 v2.0.1
 ------
@@ -32,6 +42,7 @@ v2.0.0
 - Update library dependency, e.g. using ``unittest.mock`` instead of ``mock``
 - Fix queue query CLI errors
 - Fix ``mirrorwiki`` error
+- **Release is 2.0.0.dev0 on pypi**
 
 v1.6.0
 ------
@@ -58,3 +69,4 @@ v1.5.0
 - Add auto-generated documentation
 - Fix CLI command for annotating submission
 - Add ``setevaluationquota`` command
+- **Release is 1.5.0.dev0 on pypi**
