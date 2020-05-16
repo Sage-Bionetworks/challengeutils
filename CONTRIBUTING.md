@@ -60,3 +60,12 @@ cd docs
 make html
 open _build/html/index.html
 ```
+
+### Release Procedure (For Package Maintainers)
+
+* Always merge all new features into `develop` branch first (unless it is a minor patch into `master`)
+* update `__version__.py` to not have `-dev`
+* update `docs/about/changelog.md` with release information
+* Merge develop into master branch
+* Check documentation build for docs: https://sage-bionetworks.github.io/challengeutils/
+* Create release tag (`v...`) and include release notes.  Also include any known bugs for each release here.
