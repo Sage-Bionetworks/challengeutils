@@ -4,8 +4,9 @@ import logging
 import time
 
 import pandas as pd
-from synapseclient.utils import id_of
-from synapseclient import Evaluation
+from synapseclient import Evaluation, Synapse
+from synapseclient.core.utils import id_of
+
 from . import utils
 
 logging.basicConfig(level=logging.INFO)
@@ -189,7 +190,7 @@ class JoinFilterAnnotateQueues(metaclass=ABCMeta):
         self.annotate(filtered_leaderboarddf)
 
 
-def set_evaluation_quota(syn: 'Synapse', evalid: int, **kwargs) -> Evaluation:
+def set_evaluation_quota(syn: Synapse, evalid: int, **kwargs) -> Evaluation:
     """Sets evaluation submission limit quota.  This WILL erase any old quota
     you had previously set. Note - round_start must be specified with either
     round_end or round_duration and number_of_rounds must be defined for the

@@ -4,9 +4,11 @@ Challenge helper functions
 import os
 import sys
 import time
+
 import synapseclient
 import synapseutils
-from . import utils
+
+from . import challenge, utils
 
 WORKFLOW_LAST_UPDATED_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"
 WORKFLOW_START_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted"
@@ -56,11 +58,11 @@ def create_team_wikis(syn, synid, templateid, tracker_table_synid):
         trackerTableSynId: Synapse id of Table that tracks if wiki pages
                            have been made per team
     """
-
     challenge_ent = syn.get(synid)
-    challenge_obj = utils.get_challenge(challenge_ent)
+
+    challenge_obj = challenge.get_challenge(syn, challenge_ent)
     registered_teams = syn._GET_paginated(
-        "/challenge/{}/challengeTeam".format(challenge_obj['id']))
+        "/challenge/{}/challengeTeam".format(challenge_obj.id))
     for i in registered_teams:
         submitted_teams = syn.tableQuery(
             "SELECT * FROM {} where teamId = '{}'".format(
