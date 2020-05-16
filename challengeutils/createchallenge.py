@@ -1,33 +1,31 @@
-"""Creates challenge space in Synapse
-
-Input:  Challenge Project name
-Output: The skeleton for two challenges site with initial wiki, four teams
-        (admin, participants, organizers, and preregistrants), and
-        a challenge widget added on live site with a participant
-        team associated with it.
+"""The skeleton for two challenges site with initial wiki, four teams
+(admin, participants, organizers, and preregistrants), and
+a challenge widget added on live site with a participant
+team associated with it.
 
 For more information on challenges administration:
 https://docs.synapse.org/articles/challenge_administration.html
 
-Example (run on bash)
+Example::
 
->>> challengeutils createchallenge "Plouf Challenge"
+    import challengeutils
+    import synapseclient
+    syn = synapseclient.login()
+    challengeutils.createchallenge.main(syn, "Plouf Challenge")
 
-TODO Add participants
-TODO Add tests
 """
 import logging
 import sys
 
 import synapseclient
-from synapseclient.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
-from . import utils
-from . import permissions
+from . import challenge, permissions, utils
 
 logger = logging.getLogger(__name__)
 
+# TODO: Add participants
 # A pre-defined wiki project is used as initial template for challenge sites.
 # To copy over the template synapseutils.copyWiki() function is used with
 # template id as source and new challenge project entity synId as destination.
@@ -36,10 +34,12 @@ DREAM_CHALLENGE_TEMPLATE_SYNID = "syn18058986"  # Template 2.0
 
 LIVE_PAGE_MARKDOWN = (
     '## Banner\n\n'
-    '{row}\n {column width=3}\n'
-    '${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
-    '{column}\n {column width=9} \n'
-    '###! There are ${teammembercount?teamId=%s} preregistered participants. Join them now!\n '
+    '{row}\n {column width=2}\n '
+    '{column}\n {column width=4}\n'
+    '#### ${jointeam?teamId=%s&isChallenge=false&isMemberMessage=You have successfully preregistered for the challenge&text=Click here to preregister&isSimpleRequestButton=true&requestOpenText=Your registration is in progress&successMessage=Your registration is in progress}\n '
+    '{column}\n {column width=5}\n'
+    '###! There are ${teammembercount?teamId=%s} preregistered participants. <br>**Join them now!**\n '
+    '{column}\n {column width=1}\n '
     '{column}\n{row}\n'
     '\n---\n\n'
     '## Overview\n\n<font size=4>**Goal:**</font>\n\n<font size=4>**Motivation:**</font>\n'
@@ -147,12 +147,12 @@ def create_challenge_widget(syn, project_live, team_part_id):
         team_part_id: Synapse team id of participant team
     """
     try:
-        challenge = utils.create_challenge(syn, project_live, team_part_id)
-        logger.info("Created Challenge ({})".format(challenge.id))
+        chal_obj = challenge.create_challenge(syn, project_live, team_part_id)
+        logger.info("Created Challenge ({})".format(chal_obj.id))
     except SynapseHTTPError:
-        challenge = utils.get_challenge(syn, project_live)
-        logger.info("Fetched existing Challenge ({})".format(challenge.id))
-    return challenge
+        chal_obj = challenge.get_challenge(syn, project_live)
+        logger.info("Fetched existing Challenge ({})".format(chal_obj.id))
+    return chal_obj
 
 
 def _update_wikipage_string(wikipage_string, challengeid, teamid,
@@ -254,6 +254,15 @@ def main(syn, challenge_name, live_site=None):
         challenge_name: Name of the challenge
         live_site: If there is already a live site, specify live site Synapse
                    id. (Default is None)
+
+    Returns:
+        dict: {"live_projectid": projectid,
+               "staging_projectid": projectid,
+               "admin_teamid": teams['team_admin_id'],
+               "organizer_teamid": teams['team_org_id'],
+               "participant_teamid": teams['team_part_id'],
+               "preregistrantrant_teamid": teams['team_prereg_id']}
+
     """
     # Create teams for challenge sites
     teams = _create_teams(syn, challenge_name)
@@ -271,8 +280,8 @@ def main(syn, challenge_name, live_site=None):
     else:
         project_live = syn.get(live_site)
 
-    challenge = create_challenge_widget(syn, project_live,
-                                        teams['team_part_id'])
+    challenge_obj = create_challenge_widget(syn, project_live,
+                                            teams['team_part_id'])
     create_evaluation_queue(syn, '%s Project Submission' % challenge_name,
                             'Project Submission',
                             project_live.id)
@@ -294,8 +303,14 @@ def main(syn, challenge_name, live_site=None):
     for page in new_wikiids:
         wikipage = syn.getWiki(project_staging, page['id'])
         wikipage.markdown = _update_wikipage_string(wikipage.markdown,
-                                                    challenge.id,
+                                                    challenge_obj.id,
                                                     teams['team_part_id'],
                                                     challenge_name,
                                                     project_live.id)
         syn.store(wikipage)
+    return {"live_projectid": project_live.id,
+            "staging_projectid": project_staging.id,
+            "admin_teamid": teams['team_admin_id'],
+            "organizer_teamid": teams['team_org_id'],
+            "participant_teamid": teams['team_part_id'],
+            "preregistrantrant_teamid": teams['team_prereg_id']}
