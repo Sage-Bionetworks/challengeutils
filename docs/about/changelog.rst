@@ -12,11 +12,11 @@ v2.1.0
 ------
 - Remove `invite_member_to_team` function as functionality is in `synapseclient`
 - `challengeutils.discussion.copy_thread` now also copies replies instead of just the thread
-- Do not use `Challenge` class to instantiate the body of `restPOST` or `restPUT` calls
-- Add automation of code coverage
+- Fixed `challengeutils.createchallenge` function bug - Do not use `Challenge` class to instantiate the body of `restPOST` or `restPUT` calls
 - Refactored and added tests for `challengeutils.mirrorwiki`
 - `challengeutils.mirrorwiki.mirrorwiki` renamed to `challengeutils.mirrorwiki.mirror`
 - Added `dryrun` parameter to let users know which pages would be updated in `challengeutils.mirrorwiki`
+- Add automation of code coverage
 - Revise documentation
 
 v2.0.1
