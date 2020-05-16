@@ -1,0 +1,5 @@
+pandas==1.0.1
+synapseclient==2.0.0
+pytest
+sphinx_rtd_theme
+Sphinx
