@@ -64,6 +64,7 @@ def command_createchallenge(syn, args):
     print("\n" + "\n".join(text).format(**urls))
     return challenge_components
 
+
 def command_query(syn, args):
     """Command line convenience function to call evaluation queue query
     Evaluation queues offer a separate query service from the rest of Synapse.
@@ -139,7 +140,14 @@ def command_archive_project(syn, args):
 
     >>> challengeutils archiveproject 9876543
     """
-    writeups.archive_project(syn, args.submissionid, args.admin)
+    archived = submission.archive_project(syn, args.submissionid, args.admin)
+
+    if args.output:
+        with open(args.output, "w") as out:
+            json.dump(archived, out)
+        logger.info(args.output)
+    else:
+        logger.info(archived)
 
 
 def command_set_entity_acl(syn, args):
@@ -606,7 +614,7 @@ def build_parser():
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     parser_validate_project = subparsers.add_parser(
-        'validateproject',
+        'validate_project',
         help="Validate a Project submission"
     )
     parser_validate_project.add_argument(
@@ -629,13 +637,13 @@ def build_parser():
         help="Check that the Project is shared with this admin username",
     )
     parser_validate_project.add_argument(
-        "--output",
+        "-o", "--output",
         type=str,
         help='Output json results into a file')
     parser_validate_project.set_defaults(func=command_validate_project)
 
     parser_archive_project = subparsers.add_parser(
-        'archiveproject',
+        'archive_project',
         help="Archive a Project (by copying)"
     )
     parser_archive_project.add_argument(
@@ -647,8 +655,12 @@ def build_parser():
         "admin",
         help="Admin username/ID"
     )
-    parser_archive_project.set_defaults(func=command_archive_project)
 
+    parser_archive_project.add_argument(
+        "-o", "--output",
+        type=str,
+        help='Output json results into a file')
+    parser_archive_project.set_defaults(func=command_archive_project)
 
     parser_list_challenge = subparsers.add_parser(
         'list-registered-challenges',

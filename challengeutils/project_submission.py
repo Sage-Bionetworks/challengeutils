@@ -3,15 +3,10 @@ import time
 
 import pandas as pd
 import synapseutils
-from synapseclient import AUTHENTICATED_USERS, entity, Project
+from synapseclient import AUTHENTICATED_USERS, entity, Project, Submission
 
-# To account different versions of synapseclient.
-try:
-    from synapseclient.annotations import to_submission_status_annotations
-    from synapseclient.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    from synapseclient.core.annotations import to_submission_status_annotations
-    from synapseclient.core.exceptions import SynapseHTTPError
+from synapseclient.annotations import to_submission_status_annotations
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from . import utils
 from . import permissions
@@ -28,12 +23,11 @@ def append_writeup_to_main_submission(row, syn):
         syn: synapse object
     '''
     if pd.isnull(row['archived']):
-        print("NO WRITEUP: " + row['team'])
+        print("NO WRITEUP: " + row['submitterId'])
     else:
         status = syn.getSubmissionStatus(row['objectId'])
         add_writeup_dict = {
             'writeUp': row['entityId'], 'archivedWriteUp': row['archived']}
-
         add_writeup = to_submission_status_annotations(
             add_writeup_dict, is_private=False)
         new_status = utils.update_single_submission_status(
@@ -51,17 +45,16 @@ def attach_writeup(syn, writeup_queueid, submission_queueid):
     '''
     writeups = list(utils.evaluation_queue_query(
         syn,
-        "select team, entityId, archived from evaluation_{} "
-        "where status == 'VALIDATED'".format(writeup_queueid)))
+        "select submitterId, entityId, archived from evaluation_{} "
+        "where writeup_status == 'VALIDATED'".format(writeup_queueid)))
     submissions = list(utils.evaluation_queue_query(
         syn,
-        "select objectId, team from evaluation_{} "
-        "where status == 'SCORED'".format(submission_queueid)))
+        "select objectId, submitterId from evaluation_{} "
+        "where prediction_file_status == 'SCORED'".format(submission_queueid)))
     writeupsdf = pd.DataFrame(writeups)
     submissionsdf = pd.DataFrame(submissions)
     submissions_with_writeupsdf = \
-        submissionsdf.merge(writeupsdf, on="team", how="left")
-
+        submissionsdf.merge(writeupsdf, on="submitterId", how="left")
     submissions_with_writeupsdf.apply(
         lambda row: append_writeup_to_main_submission(row, syn), axis=1)
 
@@ -113,7 +106,8 @@ def archive_project(syn, submission, admin):
                           f"{writeup.entityId}")
     archive = syn.store(new_project)
     permissions.set_entity_permissions(syn, archive, admin, "admin")
-    synapseutils.copy(syn, writeup.entityId, archive.id)
+    archived = synapseutils.copy(syn, writeup.entityId, archive.id)
+    return {"archived": archived.get(writeup.entityId)}
 
 
 # TODO: move to utils module

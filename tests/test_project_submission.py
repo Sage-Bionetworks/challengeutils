@@ -3,10 +3,7 @@ import unittest.mock as mock
 from unittest.mock import Mock, patch
 
 import synapseclient
-try:
-    from synapseclient.exceptions import SynapseHTTPError
-except ModuleNotFoundError:
-    from synapseclient.core.exceptions import SynapseHTTPError
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from challengeutils import project_submission as submission
 
@@ -23,7 +20,6 @@ def test_validate_project_command_success():
     with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
             patch.object(SYN, "getPermissions") as patch_perms:
         results = submission.validate_project(SYN, patch_sub, "syn000")
-        #assert patch_sub.assert_called_once_with("syn000")
         assert results.get('writeup_status') == "VALIDATED"
         assert not patch_perms.called
 
@@ -34,7 +30,6 @@ def test_validate_project_command_fail():
     with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub, \
             patch.object(SYN, "getPermissions") as patch_perms:
         results = submission.validate_project(SYN, patch_sub, "syn123")
-        #assert patch_sub.assert_called_once_with("syn123")
         assert results.get('writeup_status') == "INVALID"
         assert not patch_perms.called
 
@@ -89,8 +84,13 @@ def test__validate_admin_permissions_admin_permissions_req():
     """
 
     with patch.object(SYN, "getPermissions") as patch_perms:
-        submission._validate_admin_permissions(SYN, PROJ, admin="me")
+        errors = submission._validate_admin_permissions(SYN, PROJ, admin="me")
         patch_perms.assert_called_once()
+
+        message = ("Your private project should be shared with me. Visit "
+                   "https://docs.synapse.org/articles/sharing_settings.html "
+                   "for more details.")
+        assert errors == message
 
 
 # test private project with public requirement
@@ -101,17 +101,20 @@ def test__validate_public_permissions_public_permissions_req():
     """
 
     with patch.object(SYN, "getPermissions") as patch_perms:
-        submission._validate_public_permissions(SYN, PROJ)
+        errors = submission._validate_public_permissions(SYN, PROJ)
         assert patch_perms.call_count == 2
 
-# FIXME: doesn't work
+        message = ("Your project is not publicly available. Visit "
+                   "https://docs.synapse.org/articles/sharing_settings.html "
+                   "for more details.")
+        assert errors == message
+
+
 def test__check_project_permissions_errorcode():
     mocked_403 = SynapseHTTPError("foo", response=Mock(status_code=403))
-    with patch.object(submission, "_check_project_permissions",
+    with patch.object(SYN, "getPermissions",
                       side_effect=mocked_403) as patch_perms:
         errors = submission._check_project_permissions(
             SYN, PROJ, public=True, admin="bob")
         assert errors == [
             "Submission is private; please update its sharing settings."]
-
-# TODO: add tests for actual permission errors
