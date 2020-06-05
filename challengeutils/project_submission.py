@@ -100,7 +100,7 @@ def archive_project(syn, submission, admin):
         admin - user who will own the archived project
     """
     writeup = syn.getSubmission(submission)
-    name = writeup.name.replace("&", "+").replace("'", "")
+    name = writeup.entity.name.replace("&", "+").replace("'", "")
     curr_time = int(round(time.time() * 1000))
     new_project = Project(f"Archived {name} {curr_time} {writeup.id} " +
                           f"{writeup.entityId}")
