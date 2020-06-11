@@ -30,6 +30,7 @@ def test_annotate_submission_with_json():
          patch.object(syn, "store") as patch_syn_store:
         response = annotations.annotate_submission_with_json(
             syn, "1234", tempfile_path.name,
+            status='SCORED',
             is_private=True,
             force=False
         )
@@ -40,7 +41,8 @@ def test_annotate_submission_with_json():
             force=False
         )
         patch_new_update.assert_called_once_with(
-            status, add_annotations
+            status, add_annotations,
+            status='SCORED'
         )
         patch_syn_store.assert_called_once_with(status)
         assert response.status_code == 200
