@@ -14,15 +14,15 @@ from synapseclient.core.utils import (to_unix_epoch_time,
 
 from .utils import update_single_submission_status
 
-
+# TODO: Remove once synapseclient==2.1.0
 def _identity(x):
     return x
 
-
+# TODO: Remove once synapseclient==2.1.0
 def raise_anno_type_error(anno_type: str):
     raise ValueError(f"Unknown type in annotations response: {anno_type}")
 
-
+# TODO: Remove once synapseclient==2.1.0
 ANNO_TYPE_TO_FUNC: typing.Dict[
     str, typing.Callable[
         [str],
@@ -38,14 +38,14 @@ ANNO_TYPE_TO_FUNC: typing.Dict[
         }
     )
 
-
+# TODO: Remove once synapseclient==2.1.0
 def is_synapse_annotations(annotations: typing.Mapping):
     """Tests if the given object is a Synapse-style Annotations object."""
     if not isinstance(annotations, collections.abc.Mapping):
         return False
     return annotations.keys() >= {'id', 'etag', 'annotations'}
 
-
+# TODO: Remove once synapseclient==2.1.0
 def _annotation_value_list_element_type(annotation_values: typing.List):
     if not annotation_values:
         raise ValueError("annotations value list can not be empty")
@@ -57,7 +57,7 @@ def _annotation_value_list_element_type(annotation_values: typing.List):
 
     return object
 
-
+# TODO: Remove once synapseclient==2.1.0
 class Annotations(dict):
     """
     Represent Synapse Entity annotations as a flat dictionary with
@@ -113,7 +113,7 @@ class Annotations(dict):
             raise ValueError("etag must not be None")
         self._etag = str(value)
 
-
+# TODO: Remove once synapseclient==2.1.0
 def to_synapse_annotations(
         annotations: Annotations
     ) -> typing.Dict[str, typing.Any]:
@@ -158,7 +158,7 @@ def to_synapse_annotations(
                                  'value': [str(e) for e in elements]}
     return synapse_annos
 
-
+# TODO: Remove once synapseclient==2.1.0
 def from_synapse_annotations(
         raw_annotations: typing.Dict[str, typing.Any]
     ) -> Annotations:
@@ -175,32 +175,6 @@ def from_synapse_annotations(
         annos[key] = [conversion_func(v) for v in value_and_type['value']]
 
     return annos
-
-
-def convert_old_annotation_json(annotations):
-    """Transforms a parsed JSON dictionary of old style annotations
-    into a new style consistent with the entity bundle v2 format."""
-
-    converted = {k: v for k, v in annotations.items() if k in ('id', 'etag')}
-    converted_annos = converted['annotations'] = {}
-
-    type_mapping = {
-        'doubleAnnotations': 'DOUBLE',
-        'stringAnnotations': 'STRING',
-        'longAnnotations': "LONG",
-        'dateAnnotations': 'TIMESTAMP_MS',
-    }
-
-    for old_type_key, converted_type in type_mapping.items():
-        values = annotations.get(old_type_key)
-        if values:
-            for k, vs in values.items():
-                converted_annos[k] = {
-                    'type': converted_type,
-                    'value': vs,
-                }
-    return converted
-
 
 
 def _convert_to_annotation_cls(
@@ -260,7 +234,7 @@ class mock_response:
 
 
 def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  is_private=True,
+                                  status=None, is_private=True,
                                   force=False):
     '''
     ChallengeWorkflowTemplate tool: Annotates submission with annotation
@@ -272,6 +246,7 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
         syn: Synapse object
         submissionid: Submission id
         annotation_values: Annotation json file
+        status: A submission status (e.g. RECEIVED, SCORED...)
         is_private: Set annotations acl to private (default is True)
         force: Force change the annotation from
                private to public and vice versa.
@@ -279,14 +254,16 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
     Returns:
         mocked response object (200)
     '''
-    status = syn.getSubmissionStatus(submissionid)
+    sub_status = syn.getSubmissionStatus(submissionid)
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
-    status = update_single_submission_status(status, annotation_json,
-                                             is_private=is_private,
-                                             force=force)
-    status = update_submission_status(status, annotation_json)
-    status = syn.store(status)
+    # TODO: Remove once submissionview is fully supported
+    sub_status = update_single_submission_status(sub_status, annotation_json,
+                                                 is_private=is_private,
+                                                 force=force)
+    sub_status = update_submission_status(sub_status, annotation_json,
+                                          status=status)
+    sub_status = syn.store(sub_status)
     # TODO: no need to return this (with_retry works without code
     # in synapseclient==2.1.0)
     return mock_response
