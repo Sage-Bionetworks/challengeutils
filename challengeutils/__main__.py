@@ -13,7 +13,7 @@ from synapseclient.core.utils import from_unix_epoch_time
 from . import (createchallenge, challenge,
                download_current_lead_submission as dl_cur,
                evaluation_queue, helpers, mirrorwiki, permissions, utils,
-               writeup_attacher)
+               writeup_attacher, annotations)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -208,14 +208,18 @@ def command_annotate_submission_with_json(syn, args):
     # By default is_private is True, so the cli is to_public as False
     # Which would be that is_private is True.
     is_private = not args.to_public
-    with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
-                                                           args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                           is_private=is_private,  # noqa pylint: disable=line-too-long
-                                                           force=args.force),  # noqa pylint: disable=line-too-long
-               wait=3,
-               retries=10,
-               retry_status_codes=[412, 429, 500, 502, 503, 504],
-               verbose=True)
+    with_retry(
+        lambda: annotations.annotate_submission_with_json(
+            syn, args.submissionid,
+            args.annotation_values,
+            is_private=is_private,
+            force=args.force
+        ),
+        wait=3,
+        retries=10,
+        retry_status_codes=[412, 429, 500, 502, 503, 504],
+        verbose=True
+    )
 
 
 def command_send_email(syn, args):
