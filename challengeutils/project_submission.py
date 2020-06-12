@@ -3,7 +3,7 @@ import time
 
 import pandas as pd
 import synapseutils
-from synapseclient import AUTHENTICATED_USERS, entity, Project, Submission
+from synapseclient import AUTHENTICATED_USERS, entity, Project
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
 

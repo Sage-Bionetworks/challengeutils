@@ -12,7 +12,7 @@ from synapseclient.core.utils import from_unix_epoch_time
 from . import (createchallenge, challenge,
                download_current_lead_submission as dl_cur,
                evaluation_queue, helpers, mirrorwiki, permissions,
-               project_submission as submission, utils)
+               project_submission, utils)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -110,20 +110,20 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    submission.attach_writeup(syn, args.writeupqueue,
-                              args.submissionqueue)
+    project_submission.attach_writeup(syn, args.writeupqueue,
+                                      args.submissionqueue)
 
 
 def command_validate_project(syn, args):
     """
     Validate a Project submission, e.g. writeup.
 
-    >>> challengeutils validateproject 9876543 syn123 \
+    >>> challengeutils validate_project 9876543 syn123 \
                                        [--public] \
                                        [--admin bob] \
                                        [--output foo.txt]
     """
-    results = submission.validate_project(
+    results = project_submission.validate_project(
         syn, args.submissionid, args.challengewiki, args.public, args.admin)
 
     if args.output:
@@ -138,9 +138,10 @@ def command_archive_project(syn, args):
     """
     Archive a Project submission by creating a copy of it.
 
-    >>> challengeutils archiveproject 9876543
+    >>> challengeutils archive_project 9876543
     """
-    archived = submission.archive_project(syn, args.submissionid, args.admin)
+    archived = project_submission.archive_project(
+        syn, args.submissionid, args.admin)
 
     if args.output:
         with open(args.output, "w") as out:
