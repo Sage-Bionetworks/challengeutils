@@ -122,8 +122,7 @@ class Annotations(dict):
 
 # TODO: Remove once synapseclient==2.1.0
 def to_synapse_annotations(
-        annotations: Annotations
-    ) -> typing.Dict[str, typing.Any]:
+        annotations: Annotations) -> typing.Dict[str, typing.Any]:
     """Transforms a simple flat dictionary to a Synapse-style Annotation
     object.
     https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/annotation/v2/Annotations.html
@@ -168,8 +167,7 @@ def to_synapse_annotations(
 
 # TODO: Remove once synapseclient==2.1.0
 def from_synapse_annotations(
-        raw_annotations: typing.Dict[str, typing.Any]
-    ) -> Annotations:
+        raw_annotations: typing.Dict[str, typing.Any]) -> Annotations:
     """Transforms a Synapse-style Annotation object to a simple flat
     dictionary."""
     if not is_synapse_annotations(raw_annotations):
@@ -187,8 +185,7 @@ def from_synapse_annotations(
 
 def _convert_to_annotation_cls(
         sub_status: SubmissionStatus,
-        values: typing.Union[Annotations, dict]
-    ) -> Annotations:
+        values: typing.Union[Annotations, dict]) -> Annotations:
     """Convert synapse style annotation or dict to synapseclient.Annotation
 
     Args:
