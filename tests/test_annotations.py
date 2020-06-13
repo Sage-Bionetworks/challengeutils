@@ -83,3 +83,55 @@ def test__convert_to_annotation_cls_synapse_style():
     assert annotation_cls == {"foo": ["doo"]}
     assert annotation_cls.id == '6'
     assert annotation_cls.etag == '123'
+
+
+def test_update_submission_status_empty():
+    """Test update empty existing submission annotations"""
+    sub_status = SubmissionStatus(id="5", etag="12")
+    expected_status = {
+        'id': '5',
+        'etag': '12',
+        "submissionAnnotations": {
+            'annotations': {
+                'foo': {
+                    'type': 'STRING',
+                    'value': ['doo']
+                }
+            },
+            'id': '5',
+            'etag': '12'
+        },
+        'status': "RECEIVED"
+    }
+    new_status = annotations.update_submission_status(
+        sub_status, {"foo": "doo"}, status="RECEIVED"
+    )
+    assert new_status == expected_status
+
+
+def test_update_submission_status():
+    """Test update existing submission annotations"""
+    sub_status = SubmissionStatus(id="5", etag="12",
+                                  submissionAnnotations={"foo": "test"})
+    expected_status = {
+        'id': '5',
+        'etag': '12',
+        "submissionAnnotations": {
+            'annotations': {
+                'foo': {
+                    'type': 'STRING',
+                    'value': ['doo']
+                },
+                'new': {
+                    'type': 'STRING',
+                    'value': ['wow']
+                }
+            },
+            'id': '5',
+            'etag': '12'
+        }
+    }
+    new_status = annotations.update_submission_status(
+        sub_status, {"foo": "doo", "new": "wow"}
+    )
+    assert new_status == expected_status
