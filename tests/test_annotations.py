@@ -46,3 +46,40 @@ def test_annotate_submission_with_json():
         )
         patch_syn_store.assert_called_once_with(status)
         assert response.status_code == 200
+
+
+def test__convert_to_annotation_cls_dict():
+    """Test that dictionary is converted to synapseclient.Annotations"""
+    status = SubmissionStatus(id="5", etag="12")
+
+    annotation_cls = annotations._convert_to_annotation_cls(
+        status,
+        {"foo": "test"}
+    )
+    assert isinstance(annotation_cls, annotations.Annotations)
+    assert annotation_cls == {"foo": "test"}
+    assert annotation_cls.id == '5'
+    assert annotation_cls.etag == '12'
+
+
+def test__convert_to_annotation_cls_synapse_style():
+    """Test that synapse style annotations is converted to
+    synapseclient.Annotations"""
+    status = SubmissionStatus(id="5", etag="12")
+    annots = {
+        'id': '6',
+        'etag': '123',
+        'annotations': {
+            'foo': {
+                'type': 'STRING',
+                'value': ['doo']
+            }
+        }
+    }
+    annotation_cls = annotations._convert_to_annotation_cls(
+        status, annots
+    )
+    assert isinstance(annotation_cls, annotations.Annotations)
+    assert annotation_cls == {"foo": ["doo"]}
+    assert annotation_cls.id == '6'
+    assert annotation_cls.etag == '123'
