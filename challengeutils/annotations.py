@@ -14,13 +14,16 @@ from synapseclient.core.utils import (to_unix_epoch_time,
 
 from .utils import update_single_submission_status
 
+
 # TODO: Remove once synapseclient==2.1.0
 def _identity(x):
     return x
 
+
 # TODO: Remove once synapseclient==2.1.0
 def raise_anno_type_error(anno_type: str):
     raise ValueError(f"Unknown type in annotations response: {anno_type}")
+
 
 # TODO: Remove once synapseclient==2.1.0
 ANNO_TYPE_TO_FUNC: typing.Dict[
@@ -38,12 +41,14 @@ ANNO_TYPE_TO_FUNC: typing.Dict[
         }
     )
 
+
 # TODO: Remove once synapseclient==2.1.0
 def is_synapse_annotations(annotations: typing.Mapping):
     """Tests if the given object is a Synapse-style Annotations object."""
     if not isinstance(annotations, collections.abc.Mapping):
         return False
     return annotations.keys() >= {'id', 'etag', 'annotations'}
+
 
 # TODO: Remove once synapseclient==2.1.0
 def _annotation_value_list_element_type(annotation_values: typing.List):
@@ -56,6 +61,7 @@ def _annotation_value_list_element_type(annotation_values: typing.List):
         return first_element_type
 
     return object
+
 
 # TODO: Remove once synapseclient==2.1.0
 class Annotations(dict):
@@ -80,7 +86,7 @@ class Annotations(dict):
         :param values:  (Optional) dictionary of values to be copied into
                         annotations
 
-        :param \**kwargs: additional key-value pairs to be added as
+        :param **kwargs: additional key-value pairs to be added as
                           annotations
         """
         super().__init__()
@@ -112,6 +118,7 @@ class Annotations(dict):
         if value is None:
             raise ValueError("etag must not be None")
         self._etag = str(value)
+
 
 # TODO: Remove once synapseclient==2.1.0
 def to_synapse_annotations(
@@ -157,6 +164,7 @@ def to_synapse_annotations(
             nested_annos[key] = {'type': 'STRING',
                                  'value': [str(e) for e in elements]}
     return synapse_annos
+
 
 # TODO: Remove once synapseclient==2.1.0
 def from_synapse_annotations(
