@@ -3,11 +3,12 @@ Interact with Synapse discussion API endpoints.
 '''
 import json
 import requests
+from typing import Iterator
 
 import synapseclient
 from synapseclient.core.utils import id_of
 
-from .synapseservices.discussion import Forum
+from .synapseservices.discussion import Forum, Thread
 
 QUERY_LIMIT = 1000
 
@@ -19,20 +20,22 @@ class DiscussionApi:
             syn = synapseclient.login()
         self.syn = syn
 
-    def get_project_forum(self, projectid):
+    def get_project_forum(self, projectid: str) -> Forum:
         """Get the Forum's metadata for a given project ID.
         https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html
         """
         return Forum(**self.syn.restGET(f'/project/{projectid}/forum'))
 
-    def get_forum(self, forumid):
+    def get_forum(self, forumid: str) -> Forum:
         """Get the Forum's metadata for a given forum ID.
         https://rest-docs.synapse.org/rest/GET/forum/forumId.html
         """
         return Forum(**self.syn.restGET(f'/forum/{forumid}'))
 
-    def get_forum_threads(self, forumid, query_filter='EXCLUDE_DELETED',
-                          limit=20, offset=0):
+    def get_forum_threads(self, forumid: str,
+                          query_filter: str = 'EXCLUDE_DELETED',
+                          limit: int = 20,
+                          offset: int = 0) -> Iterator[Thread]:
         """Get N number of threads for a given forum ID
         https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html
 
@@ -45,11 +48,14 @@ class DiscussionApi:
 
         Yields:
             list: Forum threads
+
         """
         uri = f'/forum/{forumid}/threads?filter={query_filter}'
-        return self.syn._GET_paginated(uri, limit=limit, offset=offset)
+        threads = self.syn._GET_paginated(uri, limit=limit, offset=offset)
+        for thread in threads:
+            yield Thread(**thread)
 
-    def post_thread(self, forumid, title, message):
+    def post_thread(self, forumid: str, title: str, message: str) -> Thread:
         """Create a new thread in a forum
         https://rest-docs.synapse.org/rest/POST/thread.html
 
@@ -64,10 +70,13 @@ class DiscussionApi:
         request_obj = {'forumId': forumid,
                        'title': title,
                        'messageMarkdown': message}
-        return self.syn.restPOST('/thread',
-                                 body=json.dumps(request_obj))
+        thread = self.syn.restPOST('/thread',
+                                   body=json.dumps(request_obj))
+        return Thread(**thread)
 
-    def get_threads_referencing_entity(self, entityid, limit=20, offset=0):
+    def get_threads_referencing_entity(self, entityid: str,
+                                       limit: int = 20,
+                                       offset: int = 0) -> Iterator[Thread]:
         """
         Get N number of threads that belongs to projects user can
         view and references the given entity
@@ -80,50 +89,52 @@ class DiscussionApi:
         Yields:
             DiscussionThreadBundles
         """
-        return self.syn._GET_paginated(f"/entity/{entityid}/threads",
-                                       limit=limit, offset=offset)
+        threads = self.syn._GET_paginated(f"/entity/{entityid}/threads",
+                                          limit=limit, offset=offset)
+        for thread in threads:
+            yield Thread(**thread)
 
-    def get_thread(self, threadid):
+    def get_thread(self, threadid: str) -> Thread:
         """Get a thread and its statistic given its ID
         https://rest-docs.synapse.org/rest/GET/thread/threadId.html
         """
-        return self.syn.restGET(f"/thread/{threadid}")
+        return Thread(**self.syn.restGET(f"/thread/{threadid}"))
 
-    def update_thread_title(self, threadid):
+    def update_thread_title(self, threadid: str) -> Thread:
         """Update title of a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html
         """
-        return self.syn.restPOST(f"/thread/{threadid}/title")
+        return Thread(**self.syn.restPUT(f"/thread/{threadid}/title"))
 
-    def update_thread_message(self, threadid):
+    def update_thread_message(self, threadid: str) -> Thread:
         """Update message of a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html
         """
-        return self.syn.restPOST(f"/thread/{threadid}/message")
+        return Thread(**self.syn.restPUT(f"/thread/{threadid}/message"))
 
-    def delete_thread(self, threadid):
+    def delete_thread(self, threadid: str):
         """Delete thread
         https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html
         """
-        return self.syn.restDELETE(f"/thread/{threadid}")
+        self.syn.restDELETE(f"/thread/{threadid}")
 
     def restore_thread(self, threadid):
         """Restore a deleted thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html
         """
-        return self.syn.restPUT(f"/thread/{threadid}/restore")
+        self.syn.restPUT(f"/thread/{threadid}/restore")
 
     def pin_thread(self, threadid):
         """Pin a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html
         """
-        return self.syn.restPUT(f"/thread/{threadid}/pin")
+        self.syn.restPUT(f"/thread/{threadid}/pin")
 
     def unpin_thread(self, threadid):
         """Unpin a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html
         """
-        return self.syn.restPUT(f"/thread/{threadid}/unpin")
+        self.syn.restPUT(f"/thread/{threadid}/unpin")
 
     def get_thread_message_url(self, messagekey):
         """message URL of a thread. The message URL is the URL
@@ -187,7 +198,7 @@ class DiscussionApi:
         replycount = f'/thread/{threadid}/replycount?filter={query_filter}'
         return self.syn.restGET(replycount)
 
-    def get_forum_moderators(self, forumid):
+    def get_forum_moderators(self, forumid) -> Iterator[int]:
         """Get moderators given a forum ID
         https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html
         """
@@ -264,19 +275,40 @@ def _get_text(url):
     return response
 
 
-def get_thread_text(syn, messagekey):
+# def get_thread_text(syn, messagekey):
+#     '''
+#     Get thread text by the messageKey that is returned by getting thread
+
+#     Args:
+#         syn: Synapse object
+#         messagekey: Three part key from DiscussionThreadBundle.messageKey
+
+#     Returns:
+#         str: Thread text
+#     '''
+#     api = DiscussionApi(syn)
+#     url = api.get_thread_message_url(messagekey)
+#     thread_response = _get_text(url)
+#     return thread_response.text
+
+
+def get_thread_text(syn, thread):
     '''
-    Get thread text by the messageKey that is returned by getting thread
+    Get a thread's text
 
     Args:
         syn: Synapse object
-        messagekey: Three part key from DiscussionThreadBundle.messageKey
+        thread: challengeutils.synapseservices.Thread or its id
 
     Returns:
         str: Thread text
     '''
     api = DiscussionApi(syn)
-    url = api.get_thread_message_url(messagekey)
+    if not isinstance(thread, Thread):
+        threadid = id_of(thread)
+        thread = api.get_thread(threadid)
+    # Get the message URL with the message key
+    url = api.get_thread_message_url(thread.messagekey)
     thread_response = _get_text(url)
     return thread_response.text
 
@@ -368,9 +400,9 @@ def copy_thread(syn, thread, project):
         dict: Thread bundle
     """
     new_thread_obj = _copy_thread(syn, thread, project)
-    thread_replies = get_thread_replies(syn, thread['id'])
+    thread_replies = get_thread_replies(syn, thread.id)
     for reply in thread_replies:
-        copy_reply(syn, reply, new_thread_obj['id'])
+        copy_reply(syn, reply, new_thread_obj.id)
 
 
 def _copy_thread(syn, thread, project):
@@ -385,11 +417,11 @@ def _copy_thread(syn, thread, project):
         dict: Thread bundle
     """
     projectid = id_of(project)
-    title = thread['title']
-    author = thread['createdBy']
+    title = thread.title
+    author = thread.createdBy
     username = syn.getUserProfile(author)['userName']
-    on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
-    text = get_thread_text(syn, thread['messageKey'])
+    on_behalf_of = f"On behalf of @{username}\n\n"
+    text = get_thread_text(syn, thread)
     new_thread_text = on_behalf_of + text
     new_thread_obj = create_thread(syn, projectid, title, new_thread_text)
 
