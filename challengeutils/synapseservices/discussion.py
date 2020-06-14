@@ -22,12 +22,7 @@ class Forum(Service):
 
     @classmethod
     def from_dict(cls, dikt) -> 'Forum':
-        """Returns the dict as a model
-        :param dikt: A dict.
-        :type: dict
-        :return: The Activity of this Activity.  # noqa: E501
-        :rtype: Activity
-        """
+        """Returns the dict as a model"""
         return deserialize_model(dikt, cls)
 
     @property
@@ -129,12 +124,7 @@ class Thread(Service):
 
     @classmethod
     def from_dict(cls, dikt) -> 'Thread':
-        """Returns the dict as a model
-        :param dikt: A dict.
-        :type: dict
-        :return: The Activity of this Activity.  # noqa: E501
-        :rtype: Activity
-        """
+        """Returns the dict as a model"""
         return deserialize_model(dikt, cls)
 
     @property

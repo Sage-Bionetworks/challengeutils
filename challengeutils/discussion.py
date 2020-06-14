@@ -419,7 +419,7 @@ def _copy_thread(syn, thread: Thread, project: Union[Project, str]) -> Thread:
     """
     projectid = id_of(project)
     title = thread.title
-    author = thread.createdBy
+    author = thread.createdby
     username = syn.getUserProfile(author)['userName']
     on_behalf_of = f"On behalf of @{username}\n\n"
     text = get_thread_text(syn, thread)
