@@ -2,10 +2,11 @@
 Interact with Synapse discussion API endpoints.
 '''
 import json
-import requests
-from typing import Iterator
+from typing import Iterator, Union
 
+import requests
 import synapseclient
+from synapseclient import Project, Synapse
 from synapseclient.core.utils import id_of
 
 from .synapseservices.discussion import Forum, Thread
@@ -15,7 +16,7 @@ QUERY_LIMIT = 1000
 
 class DiscussionApi:
     """Discussion API calls"""
-    def __init__(self, syn=None):
+    def __init__(self, syn: Synapse = None):
         if syn is None:
             syn = synapseclient.login()
         self.syn = syn
@@ -239,7 +240,7 @@ def get_forum_threads(syn, ent, query_filter='EXCLUDE_DELETED',
     return response
 
 
-def get_thread_replies(syn, thread, query_filter='EXCLUDE_DELETED',
+def get_thread_replies(syn: Synapse, thread, query_filter='EXCLUDE_DELETED',
                        limit=20, offset=0):
     """Gets replies of a thread
 
@@ -292,7 +293,7 @@ def _get_text(url):
 #     return thread_response.text
 
 
-def get_thread_text(syn, thread):
+def get_thread_text(syn, thread: Thread) -> str:
     '''
     Get a thread's text
 
@@ -405,7 +406,7 @@ def copy_thread(syn, thread, project):
         copy_reply(syn, reply, new_thread_obj.id)
 
 
-def _copy_thread(syn, thread, project):
+def _copy_thread(syn, thread: Thread, project: Union[Project, str]) -> Thread:
     """Copies a discussion thread to a project
 
     Args:
@@ -414,7 +415,7 @@ def _copy_thread(syn, thread, project):
         project: Synapse Project or its id to copy thread to
 
     Returns:
-        dict: Thread bundle
+        synapseservices.Thread
     """
     projectid = id_of(project)
     title = thread.title
