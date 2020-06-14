@@ -2,11 +2,11 @@
 Interact with Synapse discussion API endpoints.
 '''
 import json
-from typing import Iterator, Union
+from typing import Iterator, List, Union
 
 import requests
 import synapseclient
-from synapseclient import Project, Synapse
+from synapseclient import Project, Synapse, UserProfile
 from synapseclient.core.utils import id_of
 
 from .synapseservices.discussion import Forum, Thread
@@ -329,7 +329,8 @@ def get_thread_reply_text(syn, messagekey):
     return thread_reply_response.text
 
 
-def get_forum_participants(syn, ent):
+def get_forum_participants(syn: Synapse,
+                           ent: Union[Project, str]) -> List[UserProfile]:
     '''
     Get all forum participants
 
@@ -386,7 +387,8 @@ def create_thread_reply(syn, threadid, message):
     return replyobj
 
 
-def copy_thread(syn, thread, project):
+def copy_thread(syn: Synapse, thread: Thread,
+                project: Union[Project, str]) -> Thread:
     """Copies a discussion thread and its replies to a project
 
     Args:
@@ -447,12 +449,13 @@ def copy_reply(syn, reply, thread):
     return create_thread_reply(syn, threadid, new_reply_text)
 
 
-def copy_forum(syn, project, new_project):
+def copy_forum(syn: Synapse, project: Union[Project, str],
+               new_project: Union[Project, str]):
     """Copies the discussion forum of a project to another project
 
     Args:
         syn: synapse object
-        project: Synapse Project
+        project: Synapse Project or its id
         new_project: Synapse Project to copy forum to
     """
     threads = get_forum_threads(syn, project)
