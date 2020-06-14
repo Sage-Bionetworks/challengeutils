@@ -505,3 +505,15 @@ def _get_submitter_name(syn, submitterid):
         team = syn.getTeam(submitterid)
         submitter_name = team['name']
     return submitter_name
+
+
+def delete_submission(syn, submissionid):
+    """Deletes a submission
+
+    Args:
+        syn: Synapse object
+        submissionid: Id of a submission
+
+    """
+    sub = syn.getSubmission(submissionid, downloadFile=False)
+    syn.delete(sub)
