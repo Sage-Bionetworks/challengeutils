@@ -216,49 +216,46 @@ class DiscussionApi:
                                  body=json.dumps(entities))
 
 
-def get_forum_threads(syn, ent, query_filter='EXCLUDE_DELETED',
-                      limit=20, offset=0):
+def get_forum_threads(syn: Synapse, ent: Union[Project, str],
+                      **kwargs) -> Iterator[Thread]:
     """
     Gets threads from a forum
 
     Args:
         syn: synapse object
         ent: Synapse Project entity or id
-        query_filter:  filter forum threads returned. Can be NO_FILTER,
-                       DELETED_ONLY, EXCLUDE_DELETED.
-                       Defaults to EXCLUDE_DELETED.
+        **kwargs: query_filter: filter forum threads returned. Can be,
+                                NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+                                Defaults to EXCLUDE_DELETED.
+                  limit, offset
 
     Yields:
-        list: Forum threads
+        synapseservices.Thread
     """
     api = DiscussionApi(syn)
     synid = id_of(ent)
     forum_obj = api.get_project_forum(synid)
-    response = api.get_forum_threads(forum_obj.id,
-                                     query_filter=query_filter,
-                                     limit=limit, offset=offset)
-    return response
+    threads = api.get_forum_threads(forum_obj.id, **kwargs)
+    return threads
 
 
-def get_thread_replies(syn: Synapse, thread, query_filter='EXCLUDE_DELETED',
-                       limit=20, offset=0):
+def get_thread_replies(syn: Synapse, thread, **kwargs):
     """Gets replies of a thread
 
     Args:
         syn: synapse object
         thread: Synapse thread or id
-        query_filter:  filter forum threads returned. Can be NO_FILTER,
-                       DELETED_ONLY, EXCLUDE_DELETED.
-                       Defaults to EXCLUDE_DELETED.
+        **kwargs: query_filter: filter forum threads returned. Can be,
+                                NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+                                Defaults to EXCLUDE_DELETED.
+                  limit, offset
 
     Yields:
-        list: Thread replies
+        Thread replies
     """
     api = DiscussionApi(syn)
     threadid = id_of(thread)
-    response = api.get_thread_replies(threadid,
-                                      query_filter=query_filter,
-                                      limit=limit, offset=offset)
+    response = api.get_thread_replies(threadid, **kwargs)
     return response
 
 
@@ -293,7 +290,7 @@ def _get_text(url):
 #     return thread_response.text
 
 
-def get_thread_text(syn, thread: Thread) -> str:
+def get_thread_text(syn: Synapse, thread: Thread) -> str:
     '''
     Get a thread's text
 
@@ -404,6 +401,7 @@ def copy_thread(syn, thread, project):
     thread_replies = get_thread_replies(syn, thread.id)
     for reply in thread_replies:
         copy_reply(syn, reply, new_thread_obj.id)
+    return new_thread_obj
 
 
 def _copy_thread(syn, thread: Thread, project: Union[Project, str]) -> Thread:
