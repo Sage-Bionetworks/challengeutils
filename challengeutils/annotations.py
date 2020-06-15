@@ -196,6 +196,8 @@ def _convert_to_annotation_cls(
         A synapseclient.Annotations
 
     """
+    if isinstance(values, Annotations):
+        return values
     if is_synapse_annotations(values):
         values = from_synapse_annotations(values)
     else:

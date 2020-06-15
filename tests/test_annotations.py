@@ -85,6 +85,18 @@ def test__convert_to_annotation_cls_synapse_style():
     assert annotation_cls.etag == '123'
 
 
+def test__convert_to_annotation_cls_annotations():
+    """Test that if an Annotation cls is passed in that nothing
+    is done"""
+    status = SubmissionStatus(id="5", etag="12")
+    expected = annotations.Annotations(id="5", etag="12",
+                                       values={'foo': 'bar'})
+    annotation_cls = annotations._convert_to_annotation_cls(
+        status, expected
+    )
+    assert expected == annotation_cls
+
+
 def test_update_submission_status_empty():
     """Test update empty existing submission annotations"""
     sub_status = SubmissionStatus(id="5", etag="12")
