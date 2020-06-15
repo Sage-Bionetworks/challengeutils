@@ -292,6 +292,14 @@ def command_list_registered_challenges(syn, args):
     list(challenge.get_registered_challenges(syn, userid=args.userid))
 
 
+def command_delete_submission(syn, args):
+    """Deletes a submission
+
+    >>> challengeutils delete-submission 12345
+    """
+    utils.delete_submission(syn, args.submissionid)
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(
@@ -683,6 +691,19 @@ def build_parser():
     parser_list_challenge.set_defaults(
         func=command_list_registered_challenges
     )
+
+    parser_delete_sub = subparsers.add_parser(
+        'delete-submission',
+        help='Deletes a submission'
+    )
+
+    parser_delete_sub.add_argument(
+        "submissionid",
+        type=str,
+        help="Synapse submission Id"
+    )
+
+    parser_delete_sub.set_defaults(func=command_delete_submission)
 
     return parser
 

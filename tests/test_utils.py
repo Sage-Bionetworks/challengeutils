@@ -5,7 +5,7 @@ import json
 import re
 import tempfile
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import uuid
 
 import pytest
@@ -265,3 +265,13 @@ def test_teamid__get_submitter_name():
         assert submittername == teaminfo['name']
         patch_get_user.assert_called_once_with(submitterid)
         patch_get_team.assert_called_once_with(submitterid)
+
+
+def test_delete_submission():
+    """Test deleting a submission"""
+    sub = Mock()
+    with patch.object(syn, "getSubmission", return_value=sub) as patch_get,\
+         patch.object(syn, "delete") as patch_delete:
+        challengeutils.utils.delete_submission(syn, "12345")
+        patch_get.assert_called_once_with("12345", downloadFile=False)
+        patch_delete.assert_called_once_with(sub)
