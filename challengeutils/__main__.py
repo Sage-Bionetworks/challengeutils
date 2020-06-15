@@ -118,7 +118,7 @@ def command_validate_project(syn, args):
     """
     Validate a Project submission, e.g. writeup.
 
-    >>> challengeutils validate_project 9876543 syn123 \
+    >>> challengeutils validate-project 9876543 syn123 \
                                        [--public] \
                                        [--admin bob] \
                                        [--output foo.txt]
@@ -138,7 +138,7 @@ def command_archive_project(syn, args):
     """
     Archive a Project submission by creating a copy of it.
 
-    >>> challengeutils archive_project 9876543
+    >>> challengeutils archive-project 9876543
     """
     archived = project_submission.archive_project(
         syn, args.submissionid, args.admin)
@@ -627,7 +627,7 @@ def build_parser():
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     parser_validate_project = subparsers.add_parser(
-        'validate_project',
+        'validate-project',
         help="Validate a Project submission"
     )
     parser_validate_project.add_argument(
@@ -656,7 +656,7 @@ def build_parser():
     parser_validate_project.set_defaults(func=command_validate_project)
 
     parser_archive_project = subparsers.add_parser(
-        'archive_project',
+        'archive-project',
         help="Archive a Project (by copying)"
     )
     parser_archive_project.add_argument(

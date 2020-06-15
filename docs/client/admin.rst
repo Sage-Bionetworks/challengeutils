@@ -479,7 +479,7 @@ correct users.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils validate_project
+.. program:: challengeutils validate-project
 
 .. cmdoption:: submissionid
 
@@ -525,7 +525,7 @@ Archives a Project submission by copying it
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils archive_project
+.. program:: challengeutils archive-project
 
 .. cmdoption:: submissionid
 
@@ -541,3 +541,28 @@ Optional
 .. cmdoption:: -o, --output
 
     Output the results into a json file
+
+-------
+
+Delete a submission
+-------------------
+
+Synopsis
+^^^^^^^^
+
+delete-submission
+    sub_id
+
+Description
+^^^^^^^^^^^
+
+Delete a submission
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils delete-submission
+
+.. cmdoption:: sub_id
+
+    Submission ID on Synapse, e.g. ``9876543``
