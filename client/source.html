@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Source &mdash; challengeutils 2.1 documentation</title>
+  <title>Source &mdash; challengeutils 2.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                2.1
+                2.2
               </div>
             
           
@@ -321,6 +321,33 @@ that have been running for longer than the alloted time.</p>
 public if there is no user or team specified and the default permission
 is view.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setentityacl</span> <span class="n">syn123545</span> <span class="n">user_or_team</span> <span class="n">view</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_validate_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_validate_project"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validate a Project submission, e.g. writeup.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">validate</span><span class="o">-</span><span class="n">project</span> <span class="mi">9876543</span> <span class="n">syn123</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">public</span><span class="p">]</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">admin</span> <span class="n">bob</span><span class="p">]</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">foo</span><span class="o">.</span><span class="n">txt</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_archive_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_archive_project"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Archive a Project submission by creating a copy of it.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">archive</span><span class="o">-</span><span class="n">project</span> <span class="mi">9876543</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_delete_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_delete_submission"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes a submission</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">delete</span><span class="o">-</span><span class="n">submission</span> <span class="mi">12345</span>
 </pre></div>
 </div>
 </dd></dl>

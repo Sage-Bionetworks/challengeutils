@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Admin Built-in Commands &mdash; challengeutils 2.1 documentation</title>
+  <title>Admin Built-in Commands &mdash; challengeutils 2.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                2.1
+                2.2
               </div>
             
           
@@ -171,6 +171,26 @@
 <li class="toctree-l3"><a class="reference internal" href="#id34">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id35">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id36">Positional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#validate-a-project-submission">Validate a Project Submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id37">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id38">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#archive-a-project-submission">Archive a Project Submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id42">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">Positional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">Optional</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#delete-a-submission">Delete a submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id45">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Positional</a></li>
 </ul>
 </li>
 </ul>
@@ -712,6 +732,121 @@ runtime longer than the alloted time).</p>
 <dt id="cmdoption-challengeutils-setentityacl-arg-permission-level">
 <code class="sig-name descname">permission_level</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-setentityacl-arg-permission-level" title="Permalink to this definition">¶</a></dt>
 <dd><p>One of: <code class="docutils literal notranslate"><span class="pre">view</span></code>, <code class="docutils literal notranslate"><span class="pre">submit</span></code>, <code class="docutils literal notranslate"><span class="pre">score</span></code>, <code class="docutils literal notranslate"><span class="pre">admin</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="validate-a-project-submission">
+<h2>Validate a Project Submission<a class="headerlink" href="#validate-a-project-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id37">
+<h3>Synopsis<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>validate_project</dt><dd><p>submissionid challengewiki permission_level [-p] [-a] [-o]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id38">
+<h3>Description<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<p>Validates a Synapse Project submission by making sure it is shared with the
+correct users.</p>
+</div>
+<div class="section" id="id39">
+<h3>Positional<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-validate-project-arg-submissionid">
+<code class="sig-name descname">submissionid</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-validate-project-arg-submissionid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-validate-project-arg-challengewiki">
+<code class="sig-name descname">challengewiki</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-validate-project-arg-challengewiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synapse ID of challenge project</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id40">
+<h3>Optional<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-validate-project-p">
+<code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--public</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-validate-project-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the Project is shared with the public</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-validate-project-a">
+<code class="sig-name descname">-a</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--admin</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-validate-project-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the Project is shared with this admin username/team</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-validate-project-o">
+<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--output</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-validate-project-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the validation results into a json file</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="archive-a-project-submission">
+<h2>Archive a Project Submission<a class="headerlink" href="#archive-a-project-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id41">
+<h3>Synopsis<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>archive_project</dt><dd><p>submissionid admin [-o]</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id42">
+<h3>Description<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<p>Archives a Project submission by copying it</p>
+</div>
+<div class="section" id="id43">
+<h3>Positional<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-archive-project-arg-submissionid">
+<code class="sig-name descname">submissionid</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-archive-project-arg-submissionid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-archive-project-arg-admin">
+<code class="sig-name descname">admin</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-archive-project-arg-admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synapse ID of user or team</p>
+</dd></dl>
+
+</div>
+<div class="section" id="id44">
+<h3>Optional<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-archive-project-o">
+<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--output</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-archive-project-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the results into a json file</p>
+</dd></dl>
+
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="delete-a-submission">
+<h2>Delete a submission<a class="headerlink" href="#delete-a-submission" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id45">
+<h3>Synopsis<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>delete-submission</dt><dd><p>sub_id</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id46">
+<h3>Description<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<p>Delete a submission</p>
+</div>
+<div class="section" id="id47">
+<h3>Positional<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-challengeutils-delete-submission-arg-sub-id">
+<code class="sig-name descname">sub_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-delete-submission-arg-sub-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submission ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
 </dd></dl>
 
 </div>

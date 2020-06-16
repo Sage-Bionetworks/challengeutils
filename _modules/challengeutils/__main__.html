@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>challengeutils.__main__ &mdash; challengeutils 2.1 documentation</title>
+  <title>challengeutils.__main__ &mdash; challengeutils 2.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                2.1
+                2.2
               </div>
             
           
@@ -180,14 +180,13 @@
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">synapseclient</span>
-
 <span class="kn">from</span> <span class="nn">synapseclient.core.retry</span> <span class="kn">import</span> <span class="n">with_retry</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">from_unix_epoch_time</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span>
                <span class="n">download_current_lead_submission</span> <span class="k">as</span> <span class="n">dl_cur</span><span class="p">,</span>
-               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span>
-               <span class="n">writeup_attacher</span><span class="p">)</span>
+               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
+               <span class="n">project_submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">annotations</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -239,6 +238,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">urls</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">challenge_components</span></div>
 
+
 <div class="viewcode-block" id="command_query"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_query">[docs]</a><span class="k">def</span> <span class="nf">command_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Command line convenience function to call evaluation queue query</span>
 <span class="sd">    Evaluation queues offer a separate query service from the rest of Synapse.</span>
@@ -284,8 +284,45 @@
 
 <span class="sd">    &gt;&gt;&gt; challengeutils attachwriteup writeupid submissionqueueid</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">writeup_attacher</span><span class="o">.</span><span class="n">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">writeupqueue</span><span class="p">,</span>
-                                    <span class="n">args</span><span class="o">.</span><span class="n">submissionqueue</span><span class="p">)</span>
+    <span class="n">project_submission</span><span class="o">.</span><span class="n">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">writeupqueue</span><span class="p">,</span>
+                                      <span class="n">args</span><span class="o">.</span><span class="n">submissionqueue</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="command_validate_project"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_validate_project">[docs]</a><span class="k">def</span> <span class="nf">command_validate_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate a Project submission, e.g. writeup.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils validate-project 9876543 syn123 \</span>
+<span class="sd">                                       [--public] \</span>
+<span class="sd">                                       [--admin bob] \</span>
+<span class="sd">                                       [--output foo.txt]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">project_submission</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">challengewiki</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">public</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">admin</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="command_archive_project"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_archive_project">[docs]</a><span class="k">def</span> <span class="nf">command_archive_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Archive a Project submission by creating a copy of it.</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils archive-project 9876543</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">archived</span> <span class="o">=</span> <span class="n">project_submission</span><span class="o">.</span><span class="n">archive_project</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">admin</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">archived</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">archived</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="command_set_entity_acl"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_set_entity_acl">[docs]</a><span class="k">def</span> <span class="nf">command_set_entity_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -359,7 +396,7 @@
 <span class="sd">    &gt;&gt;&gt; challengeutils downloadsubmission submissionid</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">submission_dict</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>
-                                                <span class="n">download_location</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">download_location</span><span class="p">)</span> <span class="c1"># noqa pylint: disable=line-too-long</span>
+                                                <span class="n">download_location</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">download_location</span><span class="p">)</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">submission_dict</span><span class="p">[</span><span class="s1">&#39;file_path&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -382,14 +419,18 @@
     <span class="c1"># By default is_private is True, so the cli is to_public as False</span>
     <span class="c1"># Which would be that is_private is True.</span>
     <span class="n">is_private</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">to_public</span>
-    <span class="n">with_retry</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
-                                                           <span class="n">args</span><span class="o">.</span><span class="n">annotation_values</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
-                                                           <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
-                                                           <span class="n">force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">),</span>  <span class="c1"># noqa pylint: disable=line-too-long</span>
-               <span class="n">wait</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-               <span class="n">retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-               <span class="n">retry_status_codes</span><span class="o">=</span><span class="p">[</span><span class="mi">412</span><span class="p">,</span> <span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">],</span>
-               <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="n">with_retry</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">annotations</span><span class="o">.</span><span class="n">annotate_submission_with_json</span><span class="p">(</span>
+            <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">annotation_values</span><span class="p">,</span>
+            <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>
+            <span class="n">force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
+        <span class="p">),</span>
+        <span class="n">wait</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">retry_status_codes</span><span class="o">=</span><span class="p">[</span><span class="mi">412</span><span class="p">,</span> <span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">],</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">command_send_email</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -423,6 +464,14 @@
 <span class="sd">    &gt;&gt;&gt; challengeutils list-registered-challenges --userid 1223</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">list</span><span class="p">(</span><span class="n">challenge</span><span class="o">.</span><span class="n">get_registered_challenges</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">userid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">userid</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="command_delete_submission"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_delete_submission">[docs]</a><span class="k">def</span> <span class="nf">command_delete_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Deletes a submission</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils delete-submission 12345</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">delete_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">build_parser</span><span class="p">():</span>
@@ -751,6 +800,55 @@
 
     <span class="n">parser_set_quota</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_evaluation_quota</span><span class="p">)</span>
 
+    <span class="n">parser_validate_project</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;validate-project&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Validate a Project submission&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Submission ID&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;challengewiki&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Synapse ID of Challenge wiki&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--public&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Check that the Project is shared with the public&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;--admin&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Check that the Project is shared with this admin username&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output json results into a file&#39;</span><span class="p">)</span>
+    <span class="n">parser_validate_project</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_validate_project</span><span class="p">)</span>
+
+    <span class="n">parser_archive_project</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;archive-project&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Archive a Project (by copying)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_archive_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Submission ID&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_archive_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Admin username/ID&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">parser_archive_project</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output json results into a file&#39;</span><span class="p">)</span>
+    <span class="n">parser_archive_project</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_archive_project</span><span class="p">)</span>
+
     <span class="n">parser_list_challenge</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;list-registered-challenges&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List the challenges a user is registered to. Defaults to the&quot;</span>
@@ -767,6 +865,20 @@
     <span class="n">parser_list_challenge</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
         <span class="n">func</span><span class="o">=</span><span class="n">command_list_registered_challenges</span>
     <span class="p">)</span>
+
+    <span class="n">parser_delete_sub</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;delete-submission&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Deletes a submission&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">parser_delete_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Synapse submission Id&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">parser_delete_sub</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_delete_submission</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span>
 
 

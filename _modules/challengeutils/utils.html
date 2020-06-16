@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>challengeutils.utils &mdash; challengeutils 2.1 documentation</title>
+  <title>challengeutils.utils &mdash; challengeutils 2.2 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                2.1
+                2.2
               </div>
             
           
@@ -182,14 +182,14 @@
 <span class="kn">import</span> <span class="nn">urllib</span>
 
 <span class="kn">import</span> <span class="nn">synapseclient</span>
-<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
-<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">is_submission_status_annotations</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_submission_status_annotations</span><span class="p">,</span>
+                                       <span class="n">to_submission_status_annotations</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <span class="k">def</span> <span class="nf">_switch_annotation_permission</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">,</span>
                                   <span class="n">existing_annotations</span><span class="p">,</span>
                                   <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -224,7 +224,7 @@
             <span class="s2">&quot;force=True&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">change_keys</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">existing_annotations</span>
 
-
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <span class="k">def</span> <span class="nf">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Convert private / public submission status objects to dictionary</span>
@@ -243,7 +243,7 @@
                        <span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">is_private</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">annotation_dict</span>
 
-
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -316,6 +316,7 @@
     <span class="k">return</span> <span class="n">status</span></div>
 
 
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <div class="viewcode-block" id="evaluation_queue_query"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.evaluation_queue_query">[docs]</a><span class="k">def</span> <span class="nf">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is to query the evaluation queue service.</span>
@@ -371,7 +372,7 @@
             <span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_private</span>
     <span class="k">return</span> <span class="n">annotations</span>
 
-
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <div class="viewcode-block" id="change_submission_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change the acl of a list of known annotation keys</span>
@@ -396,7 +397,7 @@
     <span class="n">status</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">submission_annotations</span>
     <span class="k">return</span> <span class="n">status</span></div>
 
-
+<span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
                                           <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -435,7 +436,7 @@
     <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">sub_status</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sub_status</span></div>
 
-
+<span class="c1"># TODO: Can possibly deprecate once using submissionview</span>
 <div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
                                  <span class="n">change_to_status</span><span class="o">=</span><span class="s1">&#39;VALIDATED&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -660,41 +661,6 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="mock_response"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.mock_response">[docs]</a><span class="k">class</span> <span class="nc">mock_response</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mocked status code to return&quot;&quot;&quot;</span>
-    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span></div>
-
-
-<div class="viewcode-block" id="annotate_submission_with_json"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.annotate_submission_with_json">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_values</span><span class="p">,</span>
-                                  <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                  <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    ChallengeWorkflowTemplate tool: Annotates submission with annotation</span>
-<span class="sd">    values from a json file and uses exponential backoff to retry when</span>
-<span class="sd">    there are concurrent update issues (HTTP 412).  Must return a object</span>
-<span class="sd">    with status_code that has a range between 200-209</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        submissionid: Submission id</span>
-<span class="sd">        annotation_values: Annotation json file</span>
-<span class="sd">        is_private: Set annotations acl to private (default is True)</span>
-<span class="sd">        force: Force change the annotation from</span>
-<span class="sd">               private to public and vice versa.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        mocked response object (200)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">annotation_values</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
-        <span class="n">annotation_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotation_json</span><span class="p">,</span>
-                                             <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>
-                                             <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">mock_response</span></div>
-
-
 <span class="k">def</span> <span class="nf">_get_submitter_name</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get the Synapse team name or the username given a submitterid</span>
 
@@ -713,6 +679,18 @@
         <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">submitterid</span><span class="p">)</span>
         <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">team</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">submitter_name</span>
+
+
+<div class="viewcode-block" id="delete_submission"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.delete_submission">[docs]</a><span class="k">def</span> <span class="nf">delete_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Deletes a submission</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Id of a submission</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">downloadFile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

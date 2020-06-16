@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utils &mdash; challengeutils 2.1 documentation</title>
+  <title>Utils &mdash; challengeutils 2.2 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                2.1
+                2.2
               </div>
             
           
@@ -187,30 +187,6 @@ SYNPY-879</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="challengeutils.utils.annotate_submission_with_json">
-<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_values</em>, <em class="sig-param">is_private=True</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#annotate_submission_with_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.annotate_submission_with_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>ChallengeWorkflowTemplate tool: Annotates submission with annotation
-values from a json file and uses exponential backoff to retry when
-there are concurrent update issues (HTTP 412).  Must return a object
-with status_code that has a range between 200-209</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> – Synapse object</p></li>
-<li><p><strong>submissionid</strong> – Submission id</p></li>
-<li><p><strong>annotation_values</strong> – Annotation json file</p></li>
-<li><p><strong>is_private</strong> – Set annotations acl to private (default is True)</p></li>
-<li><p><strong>force</strong> – Force change the annotation from
-private to public and vice versa.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>mocked response object (200)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="challengeutils.utils.change_all_submission_status">
 <code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">change_all_submission_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">submission_status='SCORED'</em>, <em class="sig-param">change_to_status='VALIDATED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#change_all_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.change_all_submission_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to change submission status of all submissions in a queue
@@ -263,6 +239,20 @@ on one submission</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Updated submission status</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.utils.delete_submission">
+<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">delete_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#delete_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.delete_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse object</p></li>
+<li><p><strong>submissionid</strong> – Id of a submission</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -346,18 +336,6 @@ example: 2019-01-01 23:59</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="challengeutils.utils.mock_response">
-<em class="property">class </em><code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">mock_response</code><a class="reference internal" href="../_modules/challengeutils/utils.html#mock_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.mock_response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mocked status code to return</p>
-<dl class="attribute">
-<dt id="challengeutils.utils.mock_response.status_code">
-<code class="sig-name descname">status_code</code><em class="property"> = 200</em><a class="headerlink" href="#challengeutils.utils.mock_response.status_code" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="function">
