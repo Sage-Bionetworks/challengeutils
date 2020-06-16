@@ -6,14 +6,13 @@ import os
 
 import pandas as pd
 import synapseclient
-
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
 from . import (createchallenge, challenge,
                download_current_lead_submission as dl_cur,
-               evaluation_queue, helpers, mirrorwiki, permissions, utils,
-               writeup_attacher)
+               evaluation_queue, helpers, mirrorwiki, permissions,
+               project_submission, utils, annotations)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -65,6 +64,7 @@ def command_createchallenge(syn, args):
     print("\n" + "\n".join(text).format(**urls))
     return challenge_components
 
+
 def command_query(syn, args):
     """Command line convenience function to call evaluation queue query
     Evaluation queues offer a separate query service from the rest of Synapse.
@@ -110,8 +110,45 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    writeup_attacher.attach_writeup(syn, args.writeupqueue,
-                                    args.submissionqueue)
+    project_submission.attach_writeup(syn, args.writeupqueue,
+                                      args.submissionqueue)
+
+
+def command_validate_project(syn, args):
+    """
+    Validate a Project submission, e.g. writeup.
+
+    >>> challengeutils validate-project 9876543 syn123 \
+                                       [--public] \
+                                       [--admin bob] \
+                                       [--output foo.txt]
+    """
+    results = project_submission.validate_project(
+        syn, args.submissionid, args.challengewiki, args.public, args.admin)
+
+    if args.output:
+        with open(args.output, "w") as out:
+            json.dump(results, out)
+        logger.info(args.output)
+    else:
+        logger.info(results)
+
+
+def command_archive_project(syn, args):
+    """
+    Archive a Project submission by creating a copy of it.
+
+    >>> challengeutils archive-project 9876543
+    """
+    archived = project_submission.archive_project(
+        syn, args.submissionid, args.admin)
+
+    if args.output:
+        with open(args.output, "w") as out:
+            json.dump(archived, out)
+        logger.info(args.output)
+    else:
+        logger.info(archived)
 
 
 def command_set_entity_acl(syn, args):
@@ -185,7 +222,7 @@ def command_download_submission(syn, args):
     >>> challengeutils downloadsubmission submissionid
     """
     submission_dict = utils.download_submission(syn, args.submissionid,
-                                                download_location=args.download_location) # noqa pylint: disable=line-too-long
+                                                download_location=args.download_location)  # noqa pylint: disable=line-too-long
     if args.output:
         filepath = submission_dict['file_path']
         if filepath is not None:
@@ -208,14 +245,18 @@ def command_annotate_submission_with_json(syn, args):
     # By default is_private is True, so the cli is to_public as False
     # Which would be that is_private is True.
     is_private = not args.to_public
-    with_retry(lambda: utils.annotate_submission_with_json(syn, args.submissionid,  # noqa pylint: disable=line-too-long
-                                                           args.annotation_values,  # noqa pylint: disable=line-too-long
-                                                           is_private=is_private,  # noqa pylint: disable=line-too-long
-                                                           force=args.force),  # noqa pylint: disable=line-too-long
-               wait=3,
-               retries=10,
-               retry_status_codes=[412, 429, 500, 502, 503, 504],
-               verbose=True)
+    with_retry(
+        lambda: annotations.annotate_submission_with_json(
+            syn, args.submissionid,
+            args.annotation_values,
+            is_private=is_private,
+            force=args.force
+        ),
+        wait=3,
+        retries=10,
+        retry_status_codes=[412, 429, 500, 502, 503, 504],
+        verbose=True
+    )
 
 
 def command_send_email(syn, args):
@@ -249,6 +290,14 @@ def command_list_registered_challenges(syn, args):
     >>> challengeutils list-registered-challenges --userid 1223
     """
     list(challenge.get_registered_challenges(syn, userid=args.userid))
+
+
+def command_delete_submission(syn, args):
+    """Deletes a submission
+
+    >>> challengeutils delete-submission 12345
+    """
+    utils.delete_submission(syn, args.submissionid)
 
 
 def build_parser():
@@ -577,6 +626,55 @@ def build_parser():
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
+    parser_validate_project = subparsers.add_parser(
+        'validate-project',
+        help="Validate a Project submission"
+    )
+    parser_validate_project.add_argument(
+        "submissionid",
+        type=int,
+        help="Submission ID",
+    )
+    parser_validate_project.add_argument(
+        "challengewiki",
+        type=str,
+        help="Synapse ID of Challenge wiki",
+    )
+    parser_validate_project.add_argument(
+        "-p", "--public",
+        help="Check that the Project is shared with the public",
+        action="store_true"
+    )
+    parser_validate_project.add_argument(
+        "-a", "--admin",
+        help="Check that the Project is shared with this admin username",
+    )
+    parser_validate_project.add_argument(
+        "-o", "--output",
+        type=str,
+        help='Output json results into a file')
+    parser_validate_project.set_defaults(func=command_validate_project)
+
+    parser_archive_project = subparsers.add_parser(
+        'archive-project',
+        help="Archive a Project (by copying)"
+    )
+    parser_archive_project.add_argument(
+        "submissionid",
+        type=int,
+        help="Submission ID"
+    )
+    parser_archive_project.add_argument(
+        "admin",
+        help="Admin username/ID"
+    )
+
+    parser_archive_project.add_argument(
+        "-o", "--output",
+        type=str,
+        help='Output json results into a file')
+    parser_archive_project.set_defaults(func=command_archive_project)
+
     parser_list_challenge = subparsers.add_parser(
         'list-registered-challenges',
         help="List the challenges a user is registered to. Defaults to the"
@@ -593,6 +691,20 @@ def build_parser():
     parser_list_challenge.set_defaults(
         func=command_list_registered_challenges
     )
+
+    parser_delete_sub = subparsers.add_parser(
+        'delete-submission',
+        help='Deletes a submission'
+    )
+
+    parser_delete_sub.add_argument(
+        "submissionid",
+        type=str,
+        help="Synapse submission Id"
+    )
+
+    parser_delete_sub.set_defaults(func=command_delete_submission)
+
     return parser
 
 

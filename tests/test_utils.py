@@ -5,7 +5,7 @@ import json
 import re
 import tempfile
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import uuid
 
 import pytest
@@ -238,32 +238,6 @@ def test_specifyloc_download_submission():
         assert sub_dict == expected_submission_dict
 
 
-def test_annotate_submission_with_json():
-    add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = tempfile.NamedTemporaryFile()
-    with open(tempfile_path.name, "w") as annotation_file:
-        json.dump(add_annotations, annotation_file)
-    status = {"foo": "bar"}
-    with mock.patch.object(
-            syn, "getSubmissionStatus",
-            return_value=status) as patch_get_submission, \
-        mock.patch.object(
-            challengeutils.utils, "update_single_submission_status",
-            return_value=status) as patch_update, \
-            mock.patch.object(syn, "store") as patch_syn_store:
-        response = challengeutils.utils.annotate_submission_with_json(
-            syn, "1234", tempfile_path.name,
-            is_private=True,
-            force=False)
-        patch_get_submission.assert_called_once_with("1234")
-        patch_update.assert_called_once_with(
-            status, add_annotations,
-            is_private=True,
-            force=False)
-        patch_syn_store.assert_called_once_with(status)
-        assert response.status_code == 200
-
-
 def test_userid__get_submitter_name():
     """Get username if userid is passed in"""
     submitterid = 2222
@@ -291,3 +265,13 @@ def test_teamid__get_submitter_name():
         assert submittername == teaminfo['name']
         patch_get_user.assert_called_once_with(submitterid)
         patch_get_team.assert_called_once_with(submitterid)
+
+
+def test_delete_submission():
+    """Test deleting a submission"""
+    sub = Mock()
+    with patch.object(syn, "getSubmission", return_value=sub) as patch_get,\
+         patch.object(syn, "delete") as patch_delete:
+        challengeutils.utils.delete_submission(syn, "12345")
+        patch_get.assert_called_once_with("12345", downloadFile=False)
+        patch_delete.assert_called_once_with(sub)
