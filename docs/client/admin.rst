@@ -467,7 +467,7 @@ Validate a Project Submission
 Synopsis
 ^^^^^^^^
 
-validate_project
+validate-project
     submissionid challengewiki permission_level [-p] [-a] [-o]
 
 Description
@@ -514,7 +514,7 @@ Archive a Project Submission
 Synopsis
 ^^^^^^^^
 
-archive_project
+archive-project
     submissionid admin [-o]
 
 Description
