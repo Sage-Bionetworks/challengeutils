@@ -11,7 +11,7 @@ import synapseclient
 
 from challengeutils import discussion
 from challengeutils.discussion import DiscussionApi
-from challengeutils.synapseservices.discussion import Forum, Thread
+from challengeutils.synapseservices.discussion import Forum, Thread, Reply
 
 syn = mock.create_autospec(synapseclient.Synapse)
 api = DiscussionApi(syn)
@@ -40,17 +40,20 @@ THREAD_DICT = {
     'forumId': FORUM_OBJ.id
 }
 THREAD_OBJ = Thread(**THREAD_DICT)
-REPLY_OBJ = {'threadId': THREAD_OBJ.id,
-             'messageKey': str(uuid.uuid1()),
-             'modifiedOn': '2019-06-27T04:07:56.000Z',
-             'isDeleted': False,
-             'createdBy': '333',
-             'etag': 'sdf-1e89-4c84-dsf-sdfsdf',
-             'isEdited': False,
-             'id': str(uuid.uuid1()),
-             'projectId': PROJECTID,
-             'createdOn': '2019-06-27T04:07:56.000Z',
-             'forumId': FORUM_OBJ.id}
+REPLY_DICT = {
+    'threadId': THREAD_OBJ.id,
+    'messageKey': str(uuid.uuid1()),
+    'modifiedOn': '2019-06-27T04:07:56.000Z',
+    'isDeleted': False,
+    'createdBy': '333',
+    'etag': 'sdf-1e89-4c84-dsf-sdfsdf',
+    'isEdited': False,
+    'id': str(uuid.uuid1()),
+    'projectId': PROJECTID,
+    'createdOn': '2019-06-27T04:07:56.000Z',
+    'forumId': FORUM_OBJ.id
+}
+REPLY_OBJ = Reply(**REPLY_DICT)
 
 
 class TextResponseMock:
@@ -95,17 +98,17 @@ def test_get_thread_replies():
     '''
     Test get forum threads
     '''
-    response = [REPLY_OBJ]
+    response = [REPLY_DICT]
     with mock.patch.object(syn, "_GET_paginated",
                            return_value=response) as patch_syn_get:
         replies = api.get_thread_replies(222)
+        replies = list(replies)
         patch_syn_get.assert_called_once_with(
-            '/thread/{threadid}/replies?filter={query_filter}'.format(
-                threadid=222, query_filter="EXCLUDE_DELETED"),
-            limit=20, offset=0)
+            '/thread/222/replies?filter=EXCLUDE_DELETED'
+        )
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
-        assert replies == response
+        assert replies == [REPLY_OBJ]
 
 
 def test__get_text():
