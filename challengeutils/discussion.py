@@ -273,23 +273,6 @@ def _get_text(url):
     return response
 
 
-# def get_thread_text(syn, messagekey):
-#     '''
-#     Get thread text by the messageKey that is returned by getting thread
-
-#     Args:
-#         syn: Synapse object
-#         messagekey: Three part key from DiscussionThreadBundle.messageKey
-
-#     Returns:
-#         str: Thread text
-#     '''
-#     api = DiscussionApi(syn)
-#     url = api.get_thread_message_url(messagekey)
-#     thread_response = _get_text(url)
-#     return thread_response.text
-
-
 def get_thread_text(syn: Synapse, thread: Thread) -> str:
     '''
     Get a thread's text
@@ -303,8 +286,7 @@ def get_thread_text(syn: Synapse, thread: Thread) -> str:
     '''
     api = DiscussionApi(syn)
     if not isinstance(thread, Thread):
-        threadid = id_of(thread)
-        thread = api.get_thread(threadid)
+        thread = api.get_thread(thread)
     # Get the message URL with the message key
     url = api.get_thread_message_url(thread.messagekey)
     thread_response = _get_text(url)
@@ -345,7 +327,7 @@ def get_forum_participants(syn: Synapse,
     threads = get_forum_threads(syn, synid)
     users = set()
     for thread in threads:
-        unique_users = set(thread['activeAuthors'])
+        unique_users = set(thread.active_authors)
         users.update(unique_users)
     userprofiles = [syn.getUserProfile(user) for user in users]
     return userprofiles
