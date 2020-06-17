@@ -435,7 +435,7 @@ def copy_reply(syn, reply, thread):
     author = reply.createdby
     username = syn.getUserProfile(author)['userName']
     on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
-    text = get_thread_reply_text(syn, reply.messagekey)
+    text = get_thread_reply_text(syn, reply)
     new_reply_text = on_behalf_of + text
     return create_thread_reply(syn, threadid, new_reply_text)
 
