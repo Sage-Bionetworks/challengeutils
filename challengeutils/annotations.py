@@ -65,11 +65,6 @@ def update_submission_status(sub_status: SubmissionStatus,
     return sub_status
 
 
-class mock_response:
-    """Mocked status code to return"""
-    status_code = 200
-
-
 def annotate_submission_with_json(syn, submissionid, annotation_values,
                                   status=None, is_private=True,
                                   force=False):
@@ -101,6 +96,4 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
     sub_status = update_submission_status(sub_status, annotation_json,
                                           status=status)
     sub_status = syn.store(sub_status)
-    # TODO: no need to return this (with_retry works without code
-    # in synapseclient==2.1.0)
-    return mock_response
+    return sub_status
