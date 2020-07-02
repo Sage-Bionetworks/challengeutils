@@ -319,7 +319,7 @@ def build_parser():
         help='For additional help: "challengeutils <COMMAND> -h"')
 
     parser_createChallenge = subparsers.add_parser(
-        'createchallenge',
+        'create-challenge',
         help='Creates a challenge from a template')
     parser_createChallenge.add_argument(
         "challengename",
@@ -331,7 +331,7 @@ def build_parser():
     parser_createChallenge.set_defaults(func=command_createchallenge)
 
     parser_mirrorwiki = subparsers.add_parser(
-        'mirrorwiki',
+        'mirror-wiki',
         help="Mirrors (sync) wiki pages by using the wikipage titles between "
              "two Synapse Entities. This function only works if `entity` and "
              "`destination`are the same type and both must have wiki pages. "
@@ -394,7 +394,7 @@ def build_parser():
     parser_query.set_defaults(func=command_query)
 
     parser_change_status = subparsers.add_parser(
-        'changestatus',
+        'change-status',
         help='Changes the status of a submission id')
     parser_change_status.add_argument(
         "submissionid",
@@ -408,7 +408,7 @@ def build_parser():
     parser_change_status.set_defaults(func=command_change_status)
 
     parser_attach_writeup = subparsers.add_parser(
-        'attachwriteup',
+        'attach-writeup',
         help='Attach the write ups of a challenge to its main challenge queue')
 
     parser_attach_writeup.add_argument(
@@ -423,7 +423,7 @@ def build_parser():
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     parser_set_entity_acl = subparsers.add_parser(
-        'setentityacl',
+        'set-entity-acl',
         help='Sets the permissions of a Synapse Entity')
     parser_set_entity_acl.add_argument(
         "entityid",
@@ -443,7 +443,7 @@ def build_parser():
     parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
 
     parser_set_evaluation_acl = subparsers.add_parser(
-        'setevaluationacl',
+        'set-evaluation-acl',
         help='Sets the permissions of a Synapse Evaluation Queue')
 
     parser_set_evaluation_acl.add_argument(
@@ -465,7 +465,7 @@ def build_parser():
     parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
 
     parser_dl_cur_lead_sub = subparsers.add_parser(
-        'download_current_lead_submission',
+        'download-current-lead-submission',
         help='Downloads current leading submission for participant')
 
     parser_dl_cur_lead_sub.add_argument(
@@ -489,7 +489,7 @@ def build_parser():
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
     parser_list_evals = subparsers.add_parser(
-        'listevaluations',
+        'list-evaluations',
         help='List all evaluation queues of a project')
 
     parser_list_evals.add_argument(
@@ -500,7 +500,7 @@ def build_parser():
     parser_list_evals.set_defaults(func=command_list_evaluations)
 
     parser_download_submission = subparsers.add_parser(
-        'downloadsubmission',
+        'download-submission',
         help='Download a Synapse submission')
 
     parser_download_submission.add_argument(
@@ -522,7 +522,7 @@ def build_parser():
     parser_download_submission.set_defaults(func=command_download_submission)
 
     parser_annotate_sub = subparsers.add_parser(
-        'annotatesubmission',
+        'annotate-submission',
         help='Annotate a Synapse submission with a json file')
 
     parser_annotate_sub.add_argument(
@@ -546,7 +546,7 @@ def build_parser():
         func=command_annotate_submission_with_json)
 
     parser_send_email = subparsers.add_parser(
-        'sendemail',
+        'send-email',
         help='Send a Synapse email')
 
     parser_send_email.add_argument(
@@ -571,7 +571,7 @@ def build_parser():
     parser_send_email.set_defaults(func=command_send_email)
 
     parser_kill_docker = subparsers.add_parser(
-        'killdockeroverquota',
+        'kill-docker-over-quota',
         help='Kill Docker submissions over the quota')
 
     parser_kill_docker.add_argument(
@@ -586,7 +586,7 @@ def build_parser():
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
 
     parser_set_quota = subparsers.add_parser(
-        'setevaluationquota',
+        'set-evaluation-quota',
         help='Sets the quota on an existing evaluation queue. '
              'This WILL erase any old quota you had previously set if no '
              'optional parameters are given')
