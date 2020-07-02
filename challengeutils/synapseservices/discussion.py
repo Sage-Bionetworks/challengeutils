@@ -335,8 +335,8 @@ class Reply(Service):
         return self._id
 
     @id.setter
-    def id(self, id):
-        self._id = id
+    def id(self, value):
+        self._id = value
 
     @property
     def threadid(self):
