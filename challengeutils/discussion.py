@@ -9,7 +9,7 @@ import synapseclient
 from synapseclient import Project, Synapse, UserProfile
 from synapseclient.core.utils import id_of
 
-from .synapseservices.discussion import Forum, Thread
+from .synapseservices.discussion import Forum, Thread, Reply
 
 QUERY_LIMIT = 1000
 
@@ -35,8 +35,7 @@ class DiscussionApi:
 
     def get_forum_threads(self, forumid: str,
                           query_filter: str = 'EXCLUDE_DELETED',
-                          limit: int = 20,
-                          offset: int = 0) -> Iterator[Thread]:
+                          **kwargs) -> Iterator[Thread]:
         """Get N number of threads for a given forum ID
         https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html
 
@@ -52,7 +51,7 @@ class DiscussionApi:
 
         """
         uri = f'/forum/{forumid}/threads?filter={query_filter}'
-        threads = self.syn._GET_paginated(uri, limit=limit, offset=offset)
+        threads = self.syn._GET_paginated(uri, **kwargs)
         for thread in threads:
             yield Thread(**thread)
 
@@ -76,8 +75,7 @@ class DiscussionApi:
         return Thread(**thread)
 
     def get_threads_referencing_entity(self, entityid: str,
-                                       limit: int = 20,
-                                       offset: int = 0) -> Iterator[Thread]:
+                                       **kwargs) -> Iterator[Thread]:
         """
         Get N number of threads that belongs to projects user can
         view and references the given entity
@@ -91,7 +89,7 @@ class DiscussionApi:
             DiscussionThreadBundles
         """
         threads = self.syn._GET_paginated(f"/entity/{entityid}/threads",
-                                          limit=limit, offset=offset)
+                                          **kwargs)
         for thread in threads:
             yield Thread(**thread)
 
@@ -119,32 +117,32 @@ class DiscussionApi:
         """
         self.syn.restDELETE(f"/thread/{threadid}")
 
-    def restore_thread(self, threadid):
+    def restore_thread(self, threadid: str):
         """Restore a deleted thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html
         """
         self.syn.restPUT(f"/thread/{threadid}/restore")
 
-    def pin_thread(self, threadid):
+    def pin_thread(self, threadid: str):
         """Pin a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html
         """
         self.syn.restPUT(f"/thread/{threadid}/pin")
 
-    def unpin_thread(self, threadid):
+    def unpin_thread(self, threadid: str):
         """Unpin a thread
         https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html
         """
         self.syn.restPUT(f"/thread/{threadid}/unpin")
 
-    def get_thread_message_url(self, messagekey):
+    def get_thread_message_url(self, messagekey: str) -> dict:
         """message URL of a thread. The message URL is the URL
         to download the file which contains the thread message.
         https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html
         """
         return self.syn.restGET(f"/thread/messageUrl?messageKey={messagekey}")
 
-    def post_reply(self, threadid, message):
+    def post_reply(self, threadid: str, message: str) -> Reply:
         """Create a new thread in a forum
         https://rest-docs.synapse.org/rest/POST/reply.html
 
@@ -156,14 +154,17 @@ class DiscussionApi:
             DiscussionReplyBundle
         """
         create_reply = {'threadId': threadid, 'messageMarkdown': message}
-        return self.syn.restPOST('/reply', body=json.dumps(create_reply))
+        return Reply(**self.syn.restPOST('/reply',
+                                         body=json.dumps(create_reply)))
 
-    def get_reply(self, replyid):
-        """Get a reply"""
-        return self.syn.restGET(f'/reply/{replyid}')
+    def get_reply(self, replyid: str) -> Reply:
+        """Get a reply
+        https://rest-docs.synapse.org/rest/GET/reply/replyId.html"""
+        return Reply(**self.syn.restGET(f'/reply/{replyid}'))
 
-    def get_thread_replies(self, threadid, query_filter='EXCLUDE_DELETED',
-                           limit=20, offset=0):
+    def get_thread_replies(self, threadid: str,
+                           query_filter: str = 'EXCLUDE_DELETED',
+                           **kwargs):
         """Get N number of replies for a given thread ID
         https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html
 
@@ -175,37 +176,44 @@ class DiscussionApi:
         Yields:
             list: Forum threads replies
         """
-        replies = f'/thread/{threadid}/replies?filter={query_filter}'
-        return self.syn._GET_paginated(replies, limit=limit, offset=offset)
+        replies = self.syn._GET_paginated(
+            f'/thread/{threadid}/replies?filter={query_filter}',
+            **kwargs
+        )
+        for reply in replies:
+            yield Reply(**reply)
 
-    def get_reply_message_url(self, messagekey):
+    def get_reply_message_url(self, messagekey: str) -> dict:
         """message URL of a thread. The message URL is the URL
         to download the file which contains the thread message.
         https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html
         """
         return self.syn.restGET(f"/reply/messageUrl?messageKey={messagekey}")
 
-    def get_forum_threadcount(self, forumid, query_filter='EXCLUDE_DELETED'):
+    def get_forum_threadcount(self, forumid: str,
+                              query_filter: str = 'EXCLUDE_DELETED') -> int:
         """Total number of threads given forum ID
         https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html
         """
         threadcount = f'/forum/{forumid}/threadcount?filter={query_filter}'
-        return self.syn.restGET(threadcount)
+        return self.syn.restGET(threadcount)['count']
 
-    def get_thread_replycount(self, threadid, query_filter='EXCLUDE_DELETED'):
+    def get_thread_replycount(self, threadid: str,
+                              query_filter: str = 'EXCLUDE_DELETED') -> int:
         """Total number of replies given thread ID
         https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html
         """
         replycount = f'/thread/{threadid}/replycount?filter={query_filter}'
-        return self.syn.restGET(replycount)
+        return self.syn.restGET(replycount)['count']
 
-    def get_forum_moderators(self, forumid) -> Iterator[int]:
+    def get_forum_moderators(self, forumid: str) -> Iterator[int]:
         """Get moderators given a forum ID
         https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html
         """
         return self.syn._GET_paginated(f'/forum/{forumid}/moderators')
 
-    def get_threadcount_referencing_entities(self, entityid_list):
+    def get_threadcount_referencing_entities(self,
+                                             entityid_list: list) -> list:
         """Get list of entity and count pairs, with count is the number of
         threads that belongs to projects user can view and references
         the given entity.
@@ -239,7 +247,7 @@ def get_forum_threads(syn: Synapse, ent: Union[Project, str],
     return threads
 
 
-def get_thread_replies(syn: Synapse, thread, **kwargs):
+def get_thread_replies(syn: Synapse, thread: Thread, **kwargs):
     """Gets replies of a thread
 
     Args:
@@ -255,11 +263,11 @@ def get_thread_replies(syn: Synapse, thread, **kwargs):
     """
     api = DiscussionApi(syn)
     threadid = id_of(thread)
-    response = api.get_thread_replies(threadid, **kwargs)
-    return response
+    replies = api.get_thread_replies(threadid, **kwargs)
+    return replies
 
 
-def _get_text(url):
+def _get_text(url: str):
     '''
     Get the text from a message url
 
@@ -293,10 +301,9 @@ def get_thread_text(syn: Synapse, thread: Thread) -> str:
     return thread_response.text
 
 
-def get_thread_reply_text(syn, messagekey):
+def get_thread_reply_text(syn, reply: Reply) -> str:
     '''
-    Get thread reply text by the messageKey that is returned by
-    getting thread replies
+    Get thread reply text
 
     Args:
         syn: Synapse object
@@ -306,7 +313,9 @@ def get_thread_reply_text(syn, messagekey):
         str: Thread text
     '''
     api = DiscussionApi(syn)
-    url = api.get_reply_message_url(messagekey)
+    if not isinstance(reply, Reply):
+        reply = api.get_reply(reply)
+    url = api.get_reply_message_url(reply.messagekey)
     thread_reply_response = _get_text(url)
     return thread_reply_response.text
 
@@ -423,10 +432,10 @@ def copy_reply(syn, reply, thread):
         dict: Reply bundle
     """
     threadid = id_of(thread)
-    author = reply['createdBy']
+    author = reply.createdby
     username = syn.getUserProfile(author)['userName']
     on_behalf_of = "On behalf of @{user}\n\n".format(user=username)
-    text = get_thread_reply_text(syn, reply['messageKey'])
+    text = get_thread_reply_text(syn, reply)
     new_reply_text = on_behalf_of + text
     return create_thread_reply(syn, threadid, new_reply_text)
 

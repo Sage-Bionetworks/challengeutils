@@ -11,7 +11,7 @@ import synapseclient
 
 from challengeutils import discussion
 from challengeutils.discussion import DiscussionApi
-from challengeutils.synapseservices.discussion import Forum, Thread
+from challengeutils.synapseservices.discussion import Forum, Thread, Reply
 
 syn = mock.create_autospec(synapseclient.Synapse)
 api = DiscussionApi(syn)
@@ -40,17 +40,20 @@ THREAD_DICT = {
     'forumId': FORUM_OBJ.id
 }
 THREAD_OBJ = Thread(**THREAD_DICT)
-REPLY_OBJ = {'threadId': THREAD_OBJ.id,
-             'messageKey': str(uuid.uuid1()),
-             'modifiedOn': '2019-06-27T04:07:56.000Z',
-             'isDeleted': False,
-             'createdBy': '333',
-             'etag': 'sdf-1e89-4c84-dsf-sdfsdf',
-             'isEdited': False,
-             'id': str(uuid.uuid1()),
-             'projectId': PROJECTID,
-             'createdOn': '2019-06-27T04:07:56.000Z',
-             'forumId': FORUM_OBJ.id}
+REPLY_DICT = {
+    'threadId': THREAD_OBJ.id,
+    'messageKey': str(uuid.uuid1()),
+    'modifiedOn': '2019-06-27T04:07:56.000Z',
+    'isDeleted': False,
+    'createdBy': '333',
+    'etag': 'sdf-1e89-4c84-dsf-sdfsdf',
+    'isEdited': False,
+    'id': str(uuid.uuid1()),
+    'projectId': PROJECTID,
+    'createdOn': '2019-06-27T04:07:56.000Z',
+    'forumId': FORUM_OBJ.id
+}
+REPLY_OBJ = Reply(**REPLY_DICT)
 
 
 class TextResponseMock:
@@ -95,17 +98,17 @@ def test_get_thread_replies():
     '''
     Test get forum threads
     '''
-    response = [REPLY_OBJ]
+    response = [REPLY_DICT]
     with mock.patch.object(syn, "_GET_paginated",
                            return_value=response) as patch_syn_get:
         replies = api.get_thread_replies(222)
+        replies = list(replies)
         patch_syn_get.assert_called_once_with(
-            '/thread/{threadid}/replies?filter={query_filter}'.format(
-                threadid=222, query_filter="EXCLUDE_DELETED"),
-            limit=20, offset=0)
+            '/thread/222/replies?filter=EXCLUDE_DELETED'
+        )
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
-        assert replies == response
+        assert replies == [REPLY_OBJ]
 
 
 def test__get_text():
@@ -153,18 +156,34 @@ def test_get_thread_text_threadid():
         patch_get_text.assert_called_once_with('wwwww')
 
 
-def test_get_thread_reply_text():
-    '''Test get thread reply'''
-    messagekey = REPLY_OBJ['messageKey']
-
+def test_get_thread_reply_text_replyobj():
+    '''Test get thread reply with reply object'''
     with mock.patch.object(DiscussionApi,
                            "get_reply_message_url",
                            return_value='wwwww') as patch_get_url,\
         mock.patch.object(discussion,
                           "_get_text",
                           return_value=TextResponseMock) as patch_get_text:
-        thread_text = discussion.get_thread_reply_text(syn, messagekey)
-        patch_get_url.assert_called_once_with(messagekey)
+        thread_text = discussion.get_thread_reply_text(syn, REPLY_OBJ)
+        patch_get_url.assert_called_once_with(REPLY_OBJ.messagekey)
+        assert thread_text == 'text'
+        patch_get_text.assert_called_once_with('wwwww')
+
+
+def test_get_thread_reply_text_replyid():
+    '''Test get thread reply with reply id'''
+    with mock.patch.object(DiscussionApi,
+                           "get_reply",
+                           return_value=REPLY_OBJ) as patch_get_reply,\
+         mock.patch.object(DiscussionApi,
+                           "get_reply_message_url",
+                           return_value='wwwww') as patch_get_url,\
+         mock.patch.object(discussion,
+                           "_get_text",
+                           return_value=TextResponseMock) as patch_get_text:
+        thread_text = discussion.get_thread_reply_text(syn, REPLY_OBJ.id)
+        patch_get_reply.assert_called_once_with(REPLY_OBJ.id)
+        patch_get_url.assert_called_once_with(REPLY_OBJ.messagekey)
         assert thread_text == 'text'
         patch_get_text.assert_called_once_with('wwwww')
 
@@ -208,7 +227,7 @@ def test_create_thread_reply():
     thread_reply_dict = {'threadId': THREAD_OBJ.id,
                          'messageMarkdown': message}
     with mock.patch.object(syn, "restPOST",
-                           return_value=REPLY_OBJ) as patch_get_obj:
+                           return_value=REPLY_DICT) as patch_get_obj:
         replyobj = api.post_reply(THREAD_OBJ.id, message)
         patch_get_obj.assert_called_once_with(
             '/reply', body=json.dumps(thread_reply_dict))
@@ -223,7 +242,7 @@ def test_get_threads_referencing_entity():
         entity_threads = api.get_threads_referencing_entity(PROJECTID)
         entity_threads = list(entity_threads)
         uri = f"/entity/{PROJECTID}/threads"
-        patch_syn_get.assert_called_once_with(uri, limit=20, offset=0)
+        patch_syn_get.assert_called_once_with(uri)
         # Although actual return isn't a string, this test just makes sure that
         # that the result from _GET_Paginated is returned
         assert entity_threads == [THREAD_OBJ]
@@ -281,8 +300,8 @@ def test_copy_reply():
          mock.patch.object(discussion, "create_thread_reply",
                            return_value=REPLY_OBJ) as patch_create_reply:
         reply = discussion.copy_reply(syn, REPLY_OBJ, THREAD_OBJ)
-        patch_getuserprofile.assert_called_once_with(REPLY_OBJ['createdBy'])
-        patch_reply_text.assert_called_once_with(syn, REPLY_OBJ['messageKey'])
+        patch_getuserprofile.assert_called_once_with(REPLY_OBJ.createdby)
+        patch_reply_text.assert_called_once_with(syn, REPLY_OBJ)
         patch_create_reply.assert_called_once_with(syn, THREAD_OBJ.id,
                                                    new_reply_text)
         assert reply == REPLY_OBJ
