@@ -69,8 +69,8 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
         admin - (optional) Project should be shared with this username/ID
 
     Returns:
-        errors_found (dict) - error messages (empty dict if none found)
-        writeup_status (str) - "VALIDATED"/"INVALID"
+        submission_errors (str) - error messages ("" if none found)
+        submission_status (str) - "VALIDATED"/"INVALID"
     """
     writeup = syn.getSubmission(submission)
     errors = []
@@ -87,7 +87,8 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
     errors.extend(permissions_error)
 
     status = "INVALID" if errors else "VALIDATED"
-    return {'errors_found': errors, "writeup_status": status}
+    return {'submission_errors': "\n".join(errors),
+            "submission_status": status}
 
 
 def archive_project(syn, submission, admin):
