@@ -281,7 +281,7 @@ def _get_text(url: str):
     return response
 
 
-def get_thread_text(syn: Synapse, thread: Thread) -> str:
+def get_thread_text(syn: Synapse, thread: Union[Thread, str]) -> str:
     '''
     Get a thread's text
 
