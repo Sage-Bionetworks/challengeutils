@@ -103,4 +103,4 @@ def test_validate_project_command_success(syn_id, output):
 
     with patch.object(SYN, "getSubmission", return_value=PROJ) as patch_sub:
         results = project_submission.validate_project(SYN, patch_sub, syn_id)
-        assert results.get('writeup_status') == output
+        assert results.get('submission_status') == output
