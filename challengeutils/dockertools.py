@@ -5,9 +5,6 @@ import urllib.parse
 import requests
 from requests import Response
 
-ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
-                    "synapse": "https://docker.synapse.org"}
-
 
 class DockerRepository:
     """Forms request url and gets the docker respository
@@ -143,36 +140,3 @@ def validate_docker(docker_repo: str, docker_digest: str, index_endpoint: str,
     check_docker_exists(docker_resp)
     check_docker_size(docker_resp)
     return True
-
-
-def validate_docker_submission(syn, submissionid):
-    """Validates Synapse docker repository + sha digest submission
-    This function requires users to have a synapse config file using
-    synapse username and password
-
-    Args:
-        syn: Synapse connection
-        submissionid: Submission id
-
-    Returns:
-        True if valid, False if not
-    """
-    # Uses synapse config path
-    config = syn.getConfigFile(syn.configPath)
-    authen = dict(config.items("authentication"))
-    if authen.get("username") is None or authen.get("password") is None:
-        raise ValueError('Synapse config file must have username and password')
-
-    docker_sub = syn.getSubmission(submissionid)
-    docker_repository = docker_sub.get("dockerRepositoryName")
-    docker_digest = docker_sub.get("dockerDigest")
-    if docker_repository is None or docker_digest is None:
-        raise ValueError('Submission is not a Docker submission')
-    docker_repo = docker_repository.replace("docker.synapse.org/", "")
-
-    valid = validate_docker(docker_repo=docker_repo,
-                            docker_digest=docker_digest,
-                            index_endpoint=ENDPOINT_MAPPING['synapse'],
-                            username=authen['username'],
-                            password=authen['password'])
-    return valid

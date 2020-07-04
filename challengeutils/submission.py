@@ -7,8 +7,12 @@ from synapseclient import AUTHENTICATED_USERS, entity, Project
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
 
-from . import utils
+from . import dockertools
 from . import permissions
+from . import utils
+
+ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
+                    "synapse": "https://docker.synapse.org"}
 
 
 def append_writeup_to_main_submission(row, syn):
@@ -178,3 +182,38 @@ def _check_project_permissions(syn, submission, public, admin):
         else:
             raise e
     return errors
+
+
+def validate_docker_submission(syn, submissionid):
+    """Validates Synapse docker repository + sha digest submission
+    This function requires users to have a synapse config file using
+    synapse username and password
+
+    Args:
+        syn: Synapse connection
+        submissionid: Submission id
+
+    Returns:
+        True if valid, False if not
+    """
+    # Uses synapse config path
+    config = syn.getConfigFile(syn.configPath)
+    authen = dict(config.items("authentication"))
+    if authen.get("username") is None or authen.get("password") is None:
+        raise ValueError('Synapse config file must have username and password')
+
+    docker_sub = syn.getSubmission(submissionid)
+    docker_repository = docker_sub.get("dockerRepositoryName")
+    docker_digest = docker_sub.get("dockerDigest")
+    if docker_repository is None or docker_digest is None:
+        raise ValueError('Submission is not a Docker submission')
+    docker_repo = docker_repository.replace("docker.synapse.org/", "")
+
+    valid = dockertools.validate_docker(
+        docker_repo=docker_repo,
+        docker_digest=docker_digest,
+        index_endpoint=ENDPOINT_MAPPING['synapse'],
+        username=authen['username'],
+        password=authen['password']
+    )
+    return valid
