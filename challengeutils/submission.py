@@ -11,9 +11,6 @@ from . import dockertools
 from . import permissions
 from . import utils
 
-ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
-                    "synapse": "https://docker.synapse.org"}
-
 
 def append_writeup_to_main_submission(row, syn):
     '''
@@ -212,7 +209,7 @@ def validate_docker_submission(syn, submissionid):
     valid = dockertools.validate_docker(
         docker_repo=docker_repo,
         docker_digest=docker_digest,
-        index_endpoint=ENDPOINT_MAPPING['synapse'],
+        index_endpoint=dockertools.ENDPOINT_MAPPING['synapse'],
         username=authen['username'],
         password=authen['password']
     )

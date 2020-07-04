@@ -5,6 +5,9 @@ import urllib.parse
 import requests
 from requests import Response
 
+ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
+                    "synapse": "https://docker.synapse.org"}
+
 
 class DockerRepository:
     """Forms request url and gets the docker respository
