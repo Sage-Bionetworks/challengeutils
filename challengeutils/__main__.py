@@ -10,7 +10,6 @@ from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
 from . import (createchallenge, challenge, dockertools,
-               download_current_lead_submission as dl_cur,
                evaluation_queue, helpers, mirrorwiki, permissions,
                submission, utils, annotations)
 from .__version__ import __version__
@@ -200,12 +199,10 @@ def command_set_evaluation_quota(syn, args):
 
 
 def command_dl_cur_lead_sub(syn, args):
-    dl_cur.download_current_lead_sub(
-        syn,
-        args.submissionid,
-        args.status,
-        args.cutoff_annotation,
-        verbose=args.verbose)
+    submission.download_current_lead_sub(
+        syn, args.submissionid, args.status, args.cutoff_annotation,
+        verbose=args.verbose
+    )
 
 
 def command_list_evaluations(syn, args):
