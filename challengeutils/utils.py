@@ -8,14 +8,14 @@ import sys
 import urllib
 
 import synapseclient
-from synapseclient.annotations import to_submission_status_annotations
-from synapseclient.annotations import is_submission_status_annotations
+from synapseclient.annotations import (is_submission_status_annotations,
+                                       to_submission_status_annotations)
 from synapseclient.core.exceptions import SynapseHTTPError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+# TODO: Deprecate once fully using submissionviews
 def _switch_annotation_permission(add_annotations,
                                   existing_annotations,
                                   force=False):
@@ -50,7 +50,7 @@ def _switch_annotation_permission(add_annotations,
             "force=True".format(", ".join(change_keys)))
     return existing_annotations
 
-
+# TODO: Deprecate once fully using submissionviews
 def _submission_annotations_to_dict(annotations, is_private=True):
     '''
     Convert private / public submission status objects to dictionary
@@ -69,7 +69,7 @@ def _submission_annotations_to_dict(annotations, is_private=True):
                        annotation['isPrivate'] == is_private}
     return annotation_dict
 
-
+# TODO: Deprecate once fully using submissionviews
 def update_single_submission_status(status, add_annotations, is_private=True,
                                     force=False):
     """
@@ -142,6 +142,7 @@ def update_single_submission_status(status, add_annotations, is_private=True,
     return status
 
 
+# TODO: Deprecate once fully using submissionviews
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
     """
     This is to query the evaluation queue service.
@@ -197,7 +198,7 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
             check[0]['isPrivate'] = is_private
     return annotations
 
-
+# TODO: Deprecate once fully using submissionviews
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     Function to change the acl of a list of known annotation keys
@@ -222,7 +223,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     status.annotations = submission_annotations
     return status
 
-
+# TODO: Deprecate once fully using submissionviews
 def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
                                           status='SCORED', is_private=False):
     """
@@ -261,7 +262,7 @@ def change_submission_status(syn, submissionid, status='RECEIVED'):
     sub_status = syn.store(sub_status)
     return sub_status
 
-
+# TODO: Can possibly deprecate once using submissionview
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
                                  change_to_status='VALIDATED'):
     '''
@@ -486,41 +487,6 @@ def download_submission(syn, submissionid, download_location=None):
     return result
 
 
-class mock_response:
-    """Mocked status code to return"""
-    status_code = 200
-
-
-def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  is_private=True,
-                                  force=False):
-    '''
-    ChallengeWorkflowTemplate tool: Annotates submission with annotation
-    values from a json file and uses exponential backoff to retry when
-    there are concurrent update issues (HTTP 412).  Must return a object
-    with status_code that has a range between 200-209
-
-    Args:
-        syn: Synapse object
-        submissionid: Submission id
-        annotation_values: Annotation json file
-        is_private: Set annotations acl to private (default is True)
-        force: Force change the annotation from
-               private to public and vice versa.
-
-    Returns:
-        mocked response object (200)
-    '''
-    status = syn.getSubmissionStatus(submissionid)
-    with open(annotation_values) as json_data:
-        annotation_json = json.load(json_data)
-    status = update_single_submission_status(status, annotation_json,
-                                             is_private=is_private,
-                                             force=force)
-    status = syn.store(status)
-    return mock_response
-
-
 def _get_submitter_name(syn, submitterid):
     """Get the Synapse team name or the username given a submitterid
 
@@ -539,3 +505,15 @@ def _get_submitter_name(syn, submitterid):
         team = syn.getTeam(submitterid)
         submitter_name = team['name']
     return submitter_name
+
+
+def delete_submission(syn, submissionid):
+    """Deletes a submission
+
+    Args:
+        syn: Synapse object
+        submissionid: Id of a submission
+
+    """
+    sub = syn.getSubmission(submissionid, downloadFile=False)
+    syn.delete(sub)

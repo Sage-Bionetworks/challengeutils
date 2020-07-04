@@ -458,3 +458,111 @@ Positional
 
     One of: ``view``, ``submit``, ``score``, ``admin``, ``remove``
 
+-------
+
+
+Validate a Project Submission
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+validate-project
+    submissionid challengewiki permission_level [-p] [-a] [-o]
+
+Description
+^^^^^^^^^^^
+
+Validates a Synapse Project submission by making sure it is shared with the
+correct users.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils validate-project
+
+.. cmdoption:: submissionid
+
+    Submission ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: challengewiki
+
+    Synapse ID of challenge project
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -p, --public
+
+    Check that the Project is shared with the public
+
+.. cmdoption:: -a, --admin
+
+    Check that the Project is shared with this admin username/team
+
+.. cmdoption:: -o, --output
+
+    Output the validation results into a json file
+
+
+-------
+
+
+Archive a Project Submission
+----------------------------
+
+Synopsis
+^^^^^^^^
+
+archive-project
+    submissionid admin [-o]
+
+Description
+^^^^^^^^^^^
+
+Archives a Project submission by copying it
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils archive-project
+
+.. cmdoption:: submissionid
+
+    Submission ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: admin
+
+    Synapse ID of user or team
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -o, --output
+
+    Output the results into a json file
+
+-------
+
+Delete a submission
+-------------------
+
+Synopsis
+^^^^^^^^
+
+delete-submission
+    sub_id
+
+Description
+^^^^^^^^^^^
+
+Delete a submission
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils delete-submission
+
+.. cmdoption:: sub_id
+
+    Submission ID on Synapse, e.g. ``9876543``

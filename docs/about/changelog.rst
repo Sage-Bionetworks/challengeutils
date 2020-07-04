@@ -8,6 +8,13 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+
+v2.2.0
+------
+- Added `delete_submission`, `validate_project` and `archive_project` functions
+- `Submission Views` are now supported in `Synapse`.  Updating annotations now adds both `annotations` and `submissionAnnotations`.
+
+
 v2.1.0
 ------
 - Remove `invite_member_to_team` function as functionality is in `synapseclient`
