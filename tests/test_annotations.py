@@ -12,12 +12,9 @@ from challengeutils import annotations
 syn = mock.create_autospec(synapseclient.Synapse)
 
 
-def test_annotate_submission_with_json():
+def test_annotate_submission():
     """Test annotation"""
     add_annotations = {'test': 2, 'test2': 2}
-    tempfile_path = tempfile.NamedTemporaryFile()
-    with open(tempfile_path.name, "w") as annotation_file:
-        json.dump(add_annotations, annotation_file)
     status = SubmissionStatus(id="5", etag="12")
     expected_status = Mock()
     # must use annotations.update_single_submission_status instead of
@@ -30,11 +27,9 @@ def test_annotate_submission_with_json():
                       return_value=status) as patch_new_update, \
          patch.object(syn, "store",
                       return_value=expected_status) as patch_syn_store:
-        new_status = annotations.annotate_submission_with_json(
-            syn, "1234", tempfile_path.name,
-            status='SCORED',
-            is_private=True,
-            force=False
+        new_status = annotations.annotate_submission(
+            syn, "1234", add_annotations, status='SCORED',
+            is_private=True, force=False
         )
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
@@ -47,6 +42,30 @@ def test_annotate_submission_with_json():
             status='SCORED'
         )
         patch_syn_store.assert_called_once_with(status)
+        assert new_status == expected_status
+
+
+def test_annotate_submission_with_json():
+    """Test annotation"""
+    add_annotations = {'test': 2, 'test2': 2}
+    tempfile_path = tempfile.NamedTemporaryFile()
+    with open(tempfile_path.name, "w") as annotation_file:
+        json.dump(add_annotations, annotation_file)
+    expected_status = Mock()
+    with patch.object(annotations, "annotate_submission",
+                      return_value=expected_status) as patch_annotate:
+        new_status = annotations.annotate_submission_with_json(
+            syn, "1234", tempfile_path.name,
+            status='SCORED',
+            is_private=True,
+            force=False
+        )
+        patch_annotate.assert_called_once_with(
+            syn, "1234", add_annotations,
+            is_private=True,
+            force=False,
+            status='SCORED'
+        )
         assert new_status == expected_status
 
 
