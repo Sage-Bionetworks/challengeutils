@@ -27,7 +27,7 @@ Create a challenge
 Synopsis
 ^^^^^^^^
 
-createchallenge
+create-challenge
     "CHALLENGE NAME HERE" [--livesiteid SYNID]
 
 Description
@@ -42,7 +42,7 @@ on various Challenge components, see `challenge administration`_.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils createchallenge
+.. program:: challengeutils create-challenge
 
 .. cmdoption:: "CHALLENGE NAME HERE"
 
@@ -64,7 +64,7 @@ Mirror wiki changes
 Synopsis
 ^^^^^^^^
 
-mirrorwiki
+mirror-wiki
     source_id dest_id [--force]
 
 Description
@@ -87,7 +87,7 @@ then use this command to sync over the changes to the live site.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils mirrorwiki
+.. program:: challengeutils mirror-wiki
 
 .. cmdoption:: source_id
 
@@ -113,7 +113,7 @@ List evaluations
 Synopsis
 ^^^^^^^^
 
-listevaluations
+list-evaluations
     project_id
 
 Description
@@ -124,7 +124,7 @@ List all evaluation queues of a Synapse project.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils listevaluations
+.. program:: challengeutils list-evaluations
 
 .. cmdoption:: project_id
 
@@ -139,7 +139,7 @@ Set an evaluation quota
 Synopsis
 ^^^^^^^^
 
-setevaluationquota
+set-evaluation-quota
     eval_id [--round_start yyyy-MM-ddTHH:mm:ss 
     [--round_end yyyy-MM-ddTHH:mm:ss]
     [--round_duration n]
@@ -161,7 +161,7 @@ submission limit.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils setevaluationquota
+.. program:: challengeutils set-evaluation-quota
 
 .. cmdoption:: eval_id
 
@@ -200,7 +200,7 @@ Update an evaluation ACL
 Synopsis
 ^^^^^^^^
 
-setevaluationacl
+set-evaluation-acl
     evalid user_or_team permission_level
 
 Description
@@ -212,7 +212,7 @@ Set the evaluation permissions for ``user_or_team`` with
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils setevaluationquota
+.. program:: challengeutils set-evaluation-quota
 
 .. cmdoption:: eval_id
 
@@ -281,7 +281,7 @@ Download a submission
 Synopsis
 ^^^^^^^^
 
-downloadsubmission
+download-submission
     sub_id [--download_location path] [--output file]
 
 Description
@@ -292,7 +292,7 @@ Download a Submission object.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils downloadsubmission
+.. program:: challengeutils download-submission
 
 .. cmdoption:: sub_id
 
@@ -318,7 +318,7 @@ Annotate a submission
 Synopsis
 ^^^^^^^^
 
-annotatesubmission
+annotate-submission
     sub_id json_file [-p ] [-f]
 
 Description
@@ -338,7 +338,7 @@ the annotation value, e.g.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils annotatesubmission
+.. program:: challengeutils annotate-submission
 
 .. cmdoption:: sub_id
 
@@ -369,7 +369,7 @@ Update a submission status
 Synopsis
 ^^^^^^^^
 
-changestatus
+change-status
     sub_id status
 
 Description
@@ -380,7 +380,7 @@ Update the ``status`` annotation of a Submission Status object.
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils changestatus
+.. program:: challengeutils change-status
 
 .. cmdoption:: sub_id
 
@@ -401,7 +401,7 @@ Stop a Docker submission
 Synopsis
 ^^^^^^^^
 
-killdockeroverquota
+kill-docker-over-quota
     eval_id time_quota
 
 Description
@@ -413,7 +413,7 @@ runtime longer than the alloted time).
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils killdockeroverquota
+.. program:: challengeutils kill-docker-over-quota
 
 .. cmdoption:: eval_id
 
@@ -432,7 +432,7 @@ Update an entity ACL
 Synopsis
 ^^^^^^^^
 
-setentityacl
+set-entity-acl
     ent_id user_or_team permission_level
 
 Description
@@ -444,7 +444,7 @@ Set the entity permissions for ``user_or_team`` with
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils setentityacl
+.. program:: challengeutils set-entity-acl
 
 .. cmdoption:: ent_id
 
