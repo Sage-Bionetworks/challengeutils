@@ -563,6 +563,39 @@ Positional
 
 .. program:: challengeutils delete-submission
 
-.. cmdoption:: sub_id
+.. cmdoption:: submissionid
 
     Submission ID on Synapse, e.g. ``9876543``
+
+
+-------
+
+Validate a Docker Submission
+----------------------------
+
+Synopsis
+^^^^^^^^
+
+validate-docker
+    sub_id [-o]
+
+Description
+^^^^^^^^^^^
+
+Validates a Docker Submission to make sure the image and sha-digest exists.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils validate-docker
+
+.. cmdoption:: submissionid
+
+    Submission ID on Synapse, e.g. ``9876543``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -o, --output
+
+    Output the results into a json file
