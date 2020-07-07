@@ -9,8 +9,8 @@ import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
-from . import (createchallenge, challenge, dockertools,
-               evaluation_queue, helpers, mirrorwiki, permissions,
+from . import (createchallenge, challenge, evaluation_queue,
+               helpers, mirrorwiki, permissions,
                submission, utils, annotations)
 from .__version__ import __version__
 
