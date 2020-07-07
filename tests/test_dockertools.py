@@ -19,14 +19,16 @@ class TestDockerRepository:
 
     def setup(self):
         """Setup test"""
-        self.docker_cls = DockerRepository(docker_repo="testme",
-                                           docker_digest="willthiswork",
-                                           index_endpoint=ENDPOINT_MAPPING["synapse"])
+        self.docker_cls = DockerRepository(
+            docker_repo="testme",
+            docker_digest="willthiswork",
+            index_endpoint=ENDPOINT_MAPPING["synapse"]
+        )
         self.username = "myuser"
         self.password = "mypassword"
         self.token = str(uuid.uuid1())
         self.auth_headers = {'Authorization': f'Bearer {self.token}'}
-        self.request_url = "https://docker.synapse.org/v2/testme/manifests/willthiswork"
+        self.request_url = "https://docker.synapse.org/v2/testme/manifests/willthiswork"  # noqa pylint: disable=line-too-long
 
     def test_string_representation(self):
         """Tests string representation of docker repo"""
@@ -40,7 +42,7 @@ class TestDockerRepository:
     def test__get_bearer_token_url(self):
         """Tests getting bearer token url"""
         request_header = Mock()
-        request_header.headers = {'Www-Authenticate': '"service"="foo","Bearer realm"="baz","scope"="bar"'}
+        request_header.headers = {'Www-Authenticate': '"service"="foo","Bearer realm"="baz","scope"="bar"'}  # noqa pylint: disable=line-too-long
         with patch.object(requests, "get",
                           return_value=request_header) as patch_get:
             url = self.docker_cls._get_bearer_token_url()
@@ -100,19 +102,23 @@ class TestDockerRepository:
         with patch.object(dockertools, 'DockerRepository',
                           return_value=self.docker_cls) as patch_cls,\
              patch.object(self.docker_cls, "get",
-                          return_value=response)  as patch_resp,\
+                          return_value=response) as patch_resp,\
              patch.object(dockertools,
                           "check_docker_exists") as patch_exists,\
              patch.object(dockertools, "check_docker_size") as patch_size:
-            valid = dockertools.validate_docker(docker_repo="testme",
-                                                docker_digest="willthiswork",
-                                                index_endpoint=ENDPOINT_MAPPING["synapse"],
-                                                username=self.username,
-                                                password=self.password)
+            valid = dockertools.validate_docker(
+                docker_repo="testme",
+                docker_digest="willthiswork",
+                index_endpoint=ENDPOINT_MAPPING["synapse"],
+                username=self.username,
+                password=self.password
+            )
             assert valid
-            patch_cls.assert_called_once_with(docker_repo="testme",
-                                              docker_digest="willthiswork",
-                                              index_endpoint=ENDPOINT_MAPPING["synapse"])
+            patch_cls.assert_called_once_with(
+                docker_repo="testme",
+                docker_digest="willthiswork",
+                index_endpoint=ENDPOINT_MAPPING["synapse"]
+            )
             patch_resp.assert_called_once_with(username=self.username,
                                                password=self.password)
             patch_exists.assert_called_once_with(response)

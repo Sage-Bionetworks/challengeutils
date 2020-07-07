@@ -66,9 +66,11 @@ def test__validate_admin_permissions_admin_permissions_req():
             SYN, PROJ, admin=admin)
         patch_perms.assert_called_once()
 
-        message = (f"Your private project should be shared with {admin}. Visit "
-                   "https://docs.synapse.org/articles/sharing_settings.html "
-                   "for more details.")
+        message = (
+            f"Your private project should be shared with {admin}. Visit "
+            "https://docs.synapse.org/articles/sharing_settings.html "
+            "for more details."
+        )
         assert errors == message
 
 
