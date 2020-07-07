@@ -169,7 +169,7 @@ def _check_project_permissions(syn, submission, public, admin):
             if public_error:
                 errors.append(public_error)
 
-        if admin is not None:
+        if not public and admin is not None:
             admin_error = _validate_admin_permissions(syn, submission, admin)
             if admin_error:
                 errors.append(admin_error)
