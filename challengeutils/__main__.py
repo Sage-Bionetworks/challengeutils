@@ -279,17 +279,21 @@ def command_kill_docker_over_quota(syn, args):
 
 
 def command_validate_docker(syn, args):
-    """Validates Docker image"""
+    """Validates Docker image by making sure it exists and is less than one
+    terabyte
+
+    >>> challengeutils validate-docker submissionid
+    """
     invalid_reasons = ''
     try:
-        valid = dockertools.validate_docker_submission(syn, args.submissionid)
+        valid = submission.validate_docker_submission(syn, args.submissionid)
     except ValueError as err:
         invalid_reasons = str(err)
 
     status = "VALIDATED" if valid else "INVALID"
-    result = {'docker_image_errors': invalid_reasons,
-              'docker_image_status': status}
-    with open(args.results, 'w') as out:
+    result = {'submission_errors': invalid_reasons,
+              'submission_status': status}
+    with open(args.output, 'w') as out:
         out.write(json.dumps(result))
 
 
@@ -717,13 +721,17 @@ def build_parser():
     parser_delete_sub.set_defaults(func=command_delete_submission)
 
     parser_validate_docker = subparsers.add_parser(
-        'validatedocker',
+        'validate-docker',
         help='Validate Docker container'
     )
-    parser_validate_docker.add_argument("-s", "--submissionid",
-                                        required=True, help="Submission id")
-    parser_validate_docker.add_argument("-r", "--results", required=True,
-                                        help="validation results")
+    parser_validate_docker.add_argument(
+        "submissionid",
+        help="Submission id"
+    )
+    parser_validate_docker.add_argument(
+        "-o", "--output", required=True,
+        help="Output json results into a file"
+    )
     parser_validate_docker.set_defaults(func=command_validate_docker)
 
     return parser
