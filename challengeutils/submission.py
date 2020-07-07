@@ -1,3 +1,5 @@
+"""Functions that interact with submissions"""
+import os
 import re
 import time
 
@@ -7,8 +9,9 @@ from synapseclient import AUTHENTICATED_USERS, entity, Project
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
 
-from . import utils
+from . import dockertools
 from . import permissions
+from . import utils
 
 
 def append_writeup_to_main_submission(row, syn):
@@ -178,3 +181,121 @@ def _check_project_permissions(syn, submission, public, admin):
         else:
             raise e
     return errors
+
+
+def validate_docker_submission(syn, submissionid):
+    """Validates Synapse docker repository + sha digest submission
+    This function requires users to have a synapse config file using
+    synapse username and password
+
+    Args:
+        syn: Synapse connection
+        submissionid: Submission id
+
+    Returns:
+        True if valid, False if not
+    """
+    # Uses synapse config path
+    config = syn.getConfigFile(syn.configPath)
+    authen = dict(config.items("authentication"))
+    if authen.get("username") is None or authen.get("password") is None:
+        raise ValueError('Synapse config file must have username and password')
+
+    docker_sub = syn.getSubmission(submissionid)
+    docker_repository = docker_sub.get("dockerRepositoryName")
+    docker_digest = docker_sub.get("dockerDigest")
+    if docker_repository is None or docker_digest is None:
+        raise ValueError('Submission is not a Docker submission')
+    docker_repo = docker_repository.replace("docker.synapse.org/", "")
+
+    valid = dockertools.validate_docker(
+        docker_repo=docker_repo,
+        docker_digest=docker_digest,
+        index_endpoint=dockertools.ENDPOINT_MAPPING['synapse'],
+        username=authen['username'],
+        password=authen['password']
+    )
+    return valid
+
+
+def get_submitterid_from_submission_id(syn, submissionid, queue,
+                                       verbose=False):
+    """Gets submitterid from submission id
+
+    Args:
+        syn: Synapse connection
+        submissionid: Submission id
+        queue: Evaluation queue id
+        verbose: Boolean value to print
+
+    Returns:
+        Submitter id
+    """
+    query = ("select submitterId from evaluation_{} "
+             "where objectId == '{}'".format(queue, submissionid))
+    generator = utils.evaluation_queue_query(syn, query)
+    lst = list(generator)
+    if not lst:
+        raise ValueError('submission id {} not in queue'.format(submissionid))
+    submission_dict = lst[0]
+    submitterid = submission_dict['submitterId']
+    if verbose:
+        print("submitterid: " + submitterid)
+    return submitterid
+
+
+def get_submitters_lead_submission(syn, submitterid, queue,
+                                   cutoff_annotation, verbose=False):
+    """Gets submitter's lead submission
+
+    Args:
+        submitterid: Submitter id
+        queue: Evaluation queue id
+        cutoff_annotation: Boolean cutoff annotation key
+        verbose: Boolean value to print
+
+    Returns:
+        previous_submission.csv or None
+    """
+    query = ("select objectId from evaluation_{} where submitterId == '{}' "
+             "and prediction_file_status == 'SCORED' and {} == 'true' "
+             "order by createdOn DESC".format(queue, submitterid,
+                                              cutoff_annotation))
+
+    generator = utils.evaluation_queue_query(syn, query)
+    lst = list(generator)
+    if lst:
+        sub_dict = lst[0]
+        objectid = sub_dict['objectId']
+        if verbose:
+            print("Dowloading submissionid: " + objectid)
+        sub = syn.getSubmission(objectid, downloadLocation=".")
+        os.rename(sub.filePath, "previous_submission.csv")
+        return "previous_submission.csv"
+    print("Downloading no file")
+    return None
+
+
+def download_current_lead_sub(syn, submissionid, status,
+                              cutoff_annotation, verbose=False):
+    """Download the current leading submission for boot ladder boot method
+
+    Args:
+        syn: Synapse connection
+        submissionid: Submission id
+        status: Submission status
+        cutoff_annotation: Boolean cutoff annotation key
+        verbose: Boolean value to print
+
+    Returns:
+        Path to current leading submission or None
+    """
+    if status == "VALIDATED":
+        current_sub = syn.getSubmission(submissionid, downloadFile=False)
+        queue_num = current_sub['evaluationId']
+        submitterid = get_submitterid_from_submission_id(syn, submissionid,
+                                                         queue_num, verbose)
+        path = get_submitters_lead_submission(syn, submitterid, queue_num,
+                                              cutoff_annotation, verbose)
+        return path
+    return None
