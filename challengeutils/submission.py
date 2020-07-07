@@ -169,15 +169,17 @@ def _check_project_permissions(syn, submission, public, admin):
             if public_error:
                 errors.append(public_error)
 
-        if not public and admin is not None:
+        if admin is not None:
             admin_error = _validate_admin_permissions(syn, submission, admin)
             if admin_error:
                 errors.append(admin_error)
 
     except SynapseHTTPError as e:
         if e.response.status_code == 403:
-            errors.append(
-                "Submission is private; please update its sharing settings.")
+            message = "Submission is private; please update its sharing settings."
+            if not public and admin is not None:
+                message += f" Writeup should be shared with {admin}."
+            errors.append(message)
         else:
             raise e
     return errors
