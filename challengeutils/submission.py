@@ -138,48 +138,59 @@ def _validate_project_id(proj, challenge):
 def _validate_public_permissions(syn, proj):
     """Ensure project is shared with the public."""
 
-    auth_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
-    public_perms = syn.getPermissions(proj.entityId)
-    if ("READ" not in auth_perms or "DOWNLOAD" not in auth_perms) and \
-            "READ" not in public_perms:
-        return ("Your project is not publicly available. Visit "
-                "https://docs.synapse.org/articles/sharing_settings.html for "
-                "more details.")
-    return ""
+    error = "Your project is not publicly available."
+
+    try:
+        # Remove error message if the project is accessible by the public.
+        syn_users_perms = syn.getPermissions(
+            proj.entityId, AUTHENTICATED_USERS)
+        public_perms = syn.getPermissions(proj.entityId)
+        if set(syn_users_perms) == {"READ", "DOWNLOAD"} and \
+                "READ" in public_perms:
+            error = ""
+
+    except SynapseHTTPError as e:
+
+        # Raise exception message if error is not a permissions error.
+        if e.response.status_code != 403:
+            raise e
+
+    return error
 
 
 def _validate_admin_permissions(syn, proj, admin):
     """Ensure project is shared with the given admin."""
 
-    admin_perms = syn.getPermissions(proj.entityId, admin)
-    if "READ" not in admin_perms or "DOWNLOAD" not in admin_perms:
-        return (f"Your private project should be shared with {admin}. Visit "
-                "https://docs.synapse.org/articles/sharing_settings.html for "
-                "more details.")
-    return ""
+    error = ("Project is private; please update its sharing settings."
+             f" Writeup should be shared with {admin}.")
+    try:
+        # Remove error message if admin has read and download permissions.
+        admin_perms = syn.getPermissions(proj.entityId, admin)
+        if set(admin_perms) == {"READ", "DOWNLOAD"}:
+            error = ""
+
+    except SynapseHTTPError as e:
+
+        # Raise exception message if error is not a permissions error.
+        if e.response.status_code != 403:
+            raise e
+
+    return error
 
 
 def _check_project_permissions(syn, submission, public, admin):
     """Check the submission sharing settings."""
 
     errors = []
-    try:
-        if public:
-            public_error = _validate_public_permissions(syn, submission)
-            if public_error:
-                errors.append(public_error)
+    if public:
+        public_error = _validate_public_permissions(syn, submission)
+        if public_error:
+            errors.append(public_error)
 
-        if not public and admin is not None:
-            admin_error = _validate_admin_permissions(syn, submission, admin)
-            if admin_error:
-                errors.append(admin_error)
-
-    except SynapseHTTPError as e:
-        if e.response.status_code == 403:
-            errors.append(
-                "Submission is private; please update its sharing settings.")
-        else:
-            raise e
+    if not public and admin is not None:
+        admin_error = _validate_admin_permissions(syn, submission, admin)
+        if admin_error:
+            errors.append(admin_error)
     return errors
 
 
