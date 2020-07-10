@@ -105,9 +105,10 @@ def annotate_submission(syn, submissionid, annotation_dict,
                private to public and vice versa.
     """
     sub_status = syn.getSubmissionStatus(submissionid)
-    # Don't add any annotations that are None
+    # Don't add any annotations that are None or []
+    not_add = [None, []]
     annotation_dict = {key: annotation_dict[key] for key in annotation_dict
-                       if annotation_dict[key] is not None}
+                       if annotation_dict[key] not in not_add}
     # TODO: Remove once submissionview is fully supported
     sub_status = update_single_submission_status(sub_status, annotation_dict,
                                                  is_private=is_private,
