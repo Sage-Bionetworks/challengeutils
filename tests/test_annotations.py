@@ -14,7 +14,9 @@ syn = mock.create_autospec(synapseclient.Synapse)
 
 def test_annotate_submission():
     """Test annotation"""
-    add_annotations = {'test': 2, 'test2': 2}
+    add_annotations = {'test': 2, 'test2': 2, 'foo': [], 'bar': None}
+    added_annotations = {'test': 2, 'test2': 2}
+
     status = SubmissionStatus(id="5", etag="12")
     expected_status = Mock()
     # must use annotations.update_single_submission_status instead of
@@ -33,12 +35,12 @@ def test_annotate_submission():
         )
         patch_get_submission.assert_called_once_with("1234")
         patch_update.assert_called_once_with(
-            status, add_annotations,
+            status, added_annotations,
             is_private=True,
             force=False
         )
         patch_new_update.assert_called_once_with(
-            status, add_annotations,
+            status, added_annotations,
             status='SCORED'
         )
         patch_syn_store.assert_called_once_with(status)
