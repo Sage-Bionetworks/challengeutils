@@ -66,34 +66,53 @@ def update_submission_status(sub_status: SubmissionStatus,
 
 
 def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  status=None, is_private=True,
-                                  force=False):
-    '''
+                                  **kwargs):
+    """
     ChallengeWorkflowTemplate tool: Annotates submission with annotation
     values from a json file and uses exponential backoff to retry when
-    there are concurrent update issues (HTTP 412).  Must return a object
-    with status_code that has a range between 200-209
+    there are concurrent update issues (HTTP 412).
 
     Args:
         syn: Synapse object
         submissionid: Submission id
         annotation_values: Annotation json file
-        status: A submission status (e.g. RECEIVED, SCORED...)
+        **kwargs: is_private: Set annotations acl to private (default is True)
+                  force: Force change the annotation from
+                         private to public and vice versa.
+                  status: A submission status (e.g. RECEIVED, SCORED...)
+
+    Returns:
+        synapseclient.SubmissionStatus
+
+    """
+    with open(annotation_values) as json_data:
+        annotation_json = json.load(json_data)
+    sub_status = annotate_submission(syn, submissionid, annotation_json,
+                                     **kwargs)
+    return sub_status
+
+
+def annotate_submission(syn, submissionid, annotation_dict,
+                        status=None, is_private=True, force=False):
+    """Annotate submission with annotation values from a dict
+
+    Args:
+        syn: Synapse object
+        submissionid: Submission id
+        annotation_dict: Annotation dict
         is_private: Set annotations acl to private (default is True)
         force: Force change the annotation from
                private to public and vice versa.
-
-    Returns:
-        mocked response object (200)
-    '''
+    """
     sub_status = syn.getSubmissionStatus(submissionid)
-    with open(annotation_values) as json_data:
-        annotation_json = json.load(json_data)
+    # Don't add any annotations that are None or []
+    not_add = [None, []]
+    annotation_dict = {key: annotation_dict[key] for key in annotation_dict
+                       if annotation_dict[key] not in not_add}
     # TODO: Remove once submissionview is fully supported
-    sub_status = update_single_submission_status(sub_status, annotation_json,
+    sub_status = update_single_submission_status(sub_status, annotation_dict,
                                                  is_private=is_private,
                                                  force=force)
-    sub_status = update_submission_status(sub_status, annotation_json,
+    sub_status = update_submission_status(sub_status, annotation_dict,
                                           status=status)
-    sub_status = syn.store(sub_status)
-    return sub_status
+    return syn.store(sub_status)
