@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Submissions &mdash; challengeutils 2.2 documentation</title>
+  <title>Submissions &mdash; challengeutils 3.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,13 +34,9 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Writeups" href="writeups.html" />
+    <link rel="next" title="Discussion Service" href="discussion.html" />
     <link rel="prev" title="Challenge Wiki" href="wiki.html" /> 
 </head>
 
@@ -63,7 +64,7 @@
             
             
               <div class="version">
-                2.2
+                3.0
               </div>
             
           
@@ -80,6 +81,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -91,7 +93,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Submissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="writeups.html">Writeups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="discussion.html">Discussion Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
@@ -116,6 +117,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +156,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Submissions</li>
     
@@ -175,13 +177,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-challengeutils.download_current_lead_submission">
-<span id="submissions"></span><h1>Submissions<a class="headerlink" href="#module-challengeutils.download_current_lead_submission" title="Permalink to this headline">¶</a></h1>
-<p>Download the current leading submission for boot ladder boot method</p>
+  <div class="section" id="module-challengeutils.submission">
+<span id="submissions"></span><h1>Submissions<a class="headerlink" href="#module-challengeutils.submission" title="Permalink to this headline">¶</a></h1>
+<p>Functions that interact with submissions</p>
 <dl class="function">
-<dt id="challengeutils.download_current_lead_submission.download_current_lead_sub">
-<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">download_current_lead_sub</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">status</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/download_current_lead_submission.html#download_current_lead_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.download_current_lead_sub" title="Permalink to this definition">¶</a></dt>
-<dd><p>Downloads current leading submission</p>
+<dt id="challengeutils.submission.append_writeup_to_main_submission">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">append_writeup_to_main_submission</code><span class="sig-paren">(</span><em class="sig-param">row</em>, <em class="sig-param">syn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#append_writeup_to_main_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.append_writeup_to_main_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that appends the write up synapse id and archived
+write up synapse id on the main submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row</strong> – Dictionary row[‘team’], row[‘objectId’], row[‘archived’],
+row[‘entityId’]</p></li>
+<li><p><strong>syn</strong> – synapse object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.archive_project">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">archive_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submission</em>, <em class="sig-param">admin</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#archive_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.archive_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a copy (archive) of the Project submission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- submission ID</strong> (<em>submission</em>) – </p></li>
+<li><p><strong>- user who will own the archived project</strong> (<em>admin</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.attach_writeup">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">attach_writeup</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">writeup_queueid</em>, <em class="sig-param">submission_queueid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#attach_writeup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.attach_writeup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach the write up to the submission queue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>writeup_queueid</strong> – Write up evaluation queue id</p></li>
+<li><p><strong>submission_queueid</strong> – Submission queue id</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.download_current_lead_sub">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">download_current_lead_sub</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">status</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#download_current_lead_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.download_current_lead_sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the current leading submission for boot ladder boot method</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -199,8 +245,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="challengeutils.download_current_lead_submission.get_submitterid_from_submission_id">
-<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">get_submitterid_from_submission_id</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">queue</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/download_current_lead_submission.html#get_submitterid_from_submission_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.get_submitterid_from_submission_id" title="Permalink to this definition">¶</a></dt>
+<dt id="challengeutils.submission.get_submitterid_from_submission_id">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">get_submitterid_from_submission_id</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">queue</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#get_submitterid_from_submission_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.get_submitterid_from_submission_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets submitterid from submission id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -218,8 +264,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="challengeutils.download_current_lead_submission.get_submitters_lead_submission">
-<code class="sig-prename descclassname">challengeutils.download_current_lead_submission.</code><code class="sig-name descname">get_submitters_lead_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submitterid</em>, <em class="sig-param">queue</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/download_current_lead_submission.html#get_submitters_lead_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.download_current_lead_submission.get_submitters_lead_submission" title="Permalink to this definition">¶</a></dt>
+<dt id="challengeutils.submission.get_submitters_lead_submission">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">get_submitters_lead_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submitterid</em>, <em class="sig-param">queue</em>, <em class="sig-param">cutoff_annotation</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#get_submitters_lead_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.get_submitters_lead_submission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets submitter’s lead submission</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -232,6 +278,45 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>previous_submission.csv or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.validate_docker_submission">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">validate_docker_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#validate_docker_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.validate_docker_submission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates Synapse docker repository + sha digest submission
+This function requires users to have a synapse config file using
+synapse username and password</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>submissionid</strong> – Submission id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if valid, False if not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.validate_project">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">validate_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submission</em>, <em class="sig-param">challenge</em>, <em class="sig-param">public=False</em>, <em class="sig-param">admin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#validate_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.validate_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate a Project submission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>- submission ID</strong> (<em>submission</em>) – </p></li>
+<li><p><strong>- Synapse ID of Challenge wiki</strong> (<em>challenge</em>) – </p></li>
+<li><p><strong>- Project should be public</strong><strong> (</strong><strong>default</strong> (<em>public</em>) – False)</p></li>
+<li><p><strong>-</strong> (<em>admin</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>submission_errors (str) - error messages (“” if none found)
+submission_status (str) - “VALIDATED”/”INVALID”</p>
 </dd>
 </dl>
 </dd></dl>
@@ -249,11 +334,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017-2020, Sage Bionetworks
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -264,7 +357,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

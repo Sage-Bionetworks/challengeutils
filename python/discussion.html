@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Discussion Service &mdash; challengeutils 2.2 documentation</title>
+  <title>Discussion Service &mdash; challengeutils 3.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,14 +34,10 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Helpers" href="helpers.html" />
-    <link rel="prev" title="Writeups" href="writeups.html" /> 
+    <link rel="prev" title="Submissions" href="submissions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -63,7 +64,7 @@
             
             
               <div class="version">
-                2.2
+                3.0
               </div>
             
           
@@ -80,6 +81,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -91,7 +93,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="writeups.html">Writeups</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Discussion Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="helpers.html">Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Permissions</a></li>
@@ -116,6 +117,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -154,7 +156,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Discussion Service</li>
     
@@ -180,40 +182,40 @@
 <p>Interact with Synapse discussion API endpoints.</p>
 <dl class="class">
 <dt id="challengeutils.discussion.DiscussionApi">
-<em class="property">class </em><code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">DiscussionApi</code><span class="sig-paren">(</span><em class="sig-param">syn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">DiscussionApi</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Discussion API calls</p>
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.delete_thread">
-<code class="sig-name descname">delete_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.delete_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.delete_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.delete_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.delete_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html">https://rest-docs.synapse.org/rest/DELETE/thread/threadId.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_forum">
-<code class="sig-name descname">get_forum</code><span class="sig-paren">(</span><em class="sig-param">forumid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_forum</code><span class="sig-paren">(</span><em class="sig-param">forumid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Forum<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Forum’s metadata for a given forum ID.
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId.html">https://rest-docs.synapse.org/rest/GET/forum/forumId.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_forum_moderators">
-<code class="sig-name descname">get_forum_moderators</code><span class="sig-paren">(</span><em class="sig-param">forumid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_moderators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_moderators" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_forum_moderators</code><span class="sig-paren">(</span><em class="sig-param">forumid: str</em><span class="sig-paren">)</span> &#x2192; Iterator[int]<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_moderators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_moderators" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get moderators given a forum ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_forum_threadcount">
-<code class="sig-name descname">get_forum_threadcount</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threadcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threadcount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_forum_threadcount</code><span class="sig-paren">(</span><em class="sig-param">forumid: str</em>, <em class="sig-param">query_filter: str = 'EXCLUDE_DELETED'</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threadcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threadcount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Total number of threads given forum ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_forum_threads">
-<code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threads" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">forumid: str</em>, <em class="sig-param">query_filter: str = 'EXCLUDE_DELETED'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Iterator[challengeutils.synapseservices.discussion.Thread]<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_forum_threads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get N number of threads for a given forum ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html">https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html</a></p>
 <dl class="field-list simple">
@@ -233,20 +235,21 @@ Defaults to EXCLUDE_DELETED.</p></li>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_project_forum">
-<code class="sig-name descname">get_project_forum</code><span class="sig-paren">(</span><em class="sig-param">projectid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_project_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_project_forum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_project_forum</code><span class="sig-paren">(</span><em class="sig-param">projectid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Forum<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_project_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_project_forum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Forum’s metadata for a given project ID.
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html">https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_reply">
-<code class="sig-name descname">get_reply</code><span class="sig-paren">(</span><em class="sig-param">replyid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a reply</p>
+<code class="sig-name descname">get_reply</code><span class="sig-paren">(</span><em class="sig-param">replyid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Reply<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a reply
+<a class="reference external" href="https://rest-docs.synapse.org/rest/GET/reply/replyId.html">https://rest-docs.synapse.org/rest/GET/reply/replyId.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_reply_message_url">
-<code class="sig-name descname">get_reply_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_reply_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply_message_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_reply_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_reply_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_reply_message_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>message URL of a thread. The message URL is the URL
 to download the file which contains the thread message.
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html">https://rest-docs.synapse.org/rest/GET/reply/messageUrl.html</a></p>
@@ -254,14 +257,14 @@ to download the file which contains the thread message.
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_thread">
-<code class="sig-name descname">get_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Thread<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a thread and its statistic given its ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId.html">https://rest-docs.synapse.org/rest/GET/thread/threadId.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_thread_message_url">
-<code class="sig-name descname">get_thread_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_message_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_thread_message_url</code><span class="sig-paren">(</span><em class="sig-param">messagekey: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_message_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_message_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>message URL of a thread. The message URL is the URL
 to download the file which contains the thread message.
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html">https://rest-docs.synapse.org/rest/GET/thread/messageUrl.html</a></p>
@@ -269,7 +272,7 @@ to download the file which contains the thread message.
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_thread_replies">
-<code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em>, <em class="sig-param">query_filter: str = 'EXCLUDE_DELETED'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get N number of replies for a given thread ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html">https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html</a></p>
 <dl class="field-list simple">
@@ -289,14 +292,14 @@ Defaults to EXCLUDE_DELETED.</p></li>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_thread_replycount">
-<code class="sig-name descname">get_thread_replycount</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replycount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replycount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_thread_replycount</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em>, <em class="sig-param">query_filter: str = 'EXCLUDE_DELETED'</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_thread_replycount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_thread_replycount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Total number of replies given thread ID
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html">https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities">
-<code class="sig-name descname">get_threadcount_referencing_entities</code><span class="sig-paren">(</span><em class="sig-param">entityid_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_threadcount_referencing_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_threadcount_referencing_entities</code><span class="sig-paren">(</span><em class="sig-param">entityid_list: list</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_threadcount_referencing_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get list of entity and count pairs, with count is the number of
 threads that belongs to projects user can view and references
 the given entity.
@@ -305,7 +308,7 @@ the given entity.
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.get_threads_referencing_entity">
-<code class="sig-name descname">get_threads_referencing_entity</code><span class="sig-paren">(</span><em class="sig-param">entityid</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_threads_referencing_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threads_referencing_entity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_threads_referencing_entity</code><span class="sig-paren">(</span><em class="sig-param">entityid: str</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Iterator[challengeutils.synapseservices.discussion.Thread]<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.get_threads_referencing_entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.get_threads_referencing_entity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get N number of threads that belongs to projects user can
 view and references the given entity
 <a class="reference external" href="https://rest-docs.synapse.org/rest/GET/entity/id/threads.html">https://rest-docs.synapse.org/rest/GET/entity/id/threads.html</a></p>
@@ -324,14 +327,14 @@ view and references the given entity
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.pin_thread">
-<code class="sig-name descname">pin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.pin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.pin_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.pin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.pin_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pin a thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/pin.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.post_reply">
-<code class="sig-name descname">post_reply</code><span class="sig-paren">(</span><em class="sig-param">threadid</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.post_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_reply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">post_reply</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em>, <em class="sig-param">message: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Reply<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.post_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_reply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new thread in a forum
 <a class="reference external" href="https://rest-docs.synapse.org/rest/POST/reply.html">https://rest-docs.synapse.org/rest/POST/reply.html</a></p>
 <dl class="field-list simple">
@@ -349,7 +352,7 @@ view and references the given entity
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.post_thread">
-<code class="sig-name descname">post_thread</code><span class="sig-paren">(</span><em class="sig-param">forumid</em>, <em class="sig-param">title</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.post_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">post_thread</code><span class="sig-paren">(</span><em class="sig-param">forumid: str</em>, <em class="sig-param">title: str</em>, <em class="sig-param">message: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Thread<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.post_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.post_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new thread in a forum
 <a class="reference external" href="https://rest-docs.synapse.org/rest/POST/thread.html">https://rest-docs.synapse.org/rest/POST/thread.html</a></p>
 <dl class="field-list simple">
@@ -368,28 +371,28 @@ view and references the given entity
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.restore_thread">
-<code class="sig-name descname">restore_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.restore_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.restore_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">restore_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.restore_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.restore_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore a deleted thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/restore.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.unpin_thread">
-<code class="sig-name descname">unpin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.unpin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.unpin_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">unpin_thread</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.unpin_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.unpin_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unpin a thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/unpin.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.update_thread_message">
-<code class="sig-name descname">update_thread_message</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.update_thread_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_thread_message</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Thread<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.update_thread_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update message of a thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/message.html</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="challengeutils.discussion.DiscussionApi.update_thread_title">
-<code class="sig-name descname">update_thread_title</code><span class="sig-paren">(</span><em class="sig-param">threadid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.update_thread_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_thread_title</code><span class="sig-paren">(</span><em class="sig-param">threadid: str</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Thread<a class="reference internal" href="../_modules/challengeutils/discussion.html#DiscussionApi.update_thread_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.DiscussionApi.update_thread_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update title of a thread
 <a class="reference external" href="https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html">https://rest-docs.synapse.org/rest/PUT/thread/threadId/title.html</a></p>
 </dd></dl>
@@ -398,13 +401,13 @@ view and references the given entity
 
 <dl class="function">
 <dt id="challengeutils.discussion.copy_forum">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_forum</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project</em>, <em class="sig-param">new_project</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#copy_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_forum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_forum</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, project: Union[synapseclient.entity.Project, str], new_project: Union[synapseclient.entity.Project, str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#copy_forum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_forum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the discussion forum of a project to another project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>syn</strong> – synapse object</p></li>
-<li><p><strong>project</strong> – Synapse Project</p></li>
+<li><p><strong>project</strong> – Synapse Project or its id</p></li>
 <li><p><strong>new_project</strong> – Synapse Project to copy forum to</p></li>
 </ul>
 </dd>
@@ -434,7 +437,7 @@ view and references the given entity
 
 <dl class="function">
 <dt id="challengeutils.discussion.copy_thread">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_thread</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">thread</em>, <em class="sig-param">project</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#copy_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_thread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">copy_thread</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, thread: challengeutils.synapseservices.discussion.Thread, project: Union[synapseclient.entity.Project, str]</em><span class="sig-paren">)</span> &#x2192; challengeutils.synapseservices.discussion.Thread<a class="reference internal" href="../_modules/challengeutils/discussion.html#copy_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.copy_thread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies a discussion thread and its replies to a project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -498,7 +501,7 @@ view and references the given entity
 
 <dl class="function">
 <dt id="challengeutils.discussion.get_forum_participants">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_participants</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">ent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#get_forum_participants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_participants" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_participants</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, ent: Union[synapseclient.entity.Project, str]</em><span class="sig-paren">)</span> &#x2192; List[synapseclient.team.UserProfile]<a class="reference internal" href="../_modules/challengeutils/discussion.html#get_forum_participants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_participants" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all forum participants</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -518,49 +521,52 @@ view and references the given entity
 
 <dl class="function">
 <dt id="challengeutils.discussion.get_forum_threads">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">ent</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_threads" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_forum_threads</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, ent: Union[synapseclient.entity.Project, str], **kwargs</em><span class="sig-paren">)</span> &#x2192; Iterator[challengeutils.synapseservices.discussion.Thread]<a class="reference internal" href="../_modules/challengeutils/discussion.html#get_forum_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_forum_threads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets threads from a forum</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>syn</strong> – synapse object</p></li>
 <li><p><strong>ent</strong> – Synapse Project entity or id</p></li>
-<li><p><strong>query_filter</strong> – filter forum threads returned. Can be NO_FILTER,
-DELETED_ONLY, EXCLUDE_DELETED.
-Defaults to EXCLUDE_DELETED.</p></li>
+<li><p><strong>**kwargs</strong> – query_filter - filter forum threads returned. Can be,
+NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.
+limit - Number of query results
+offset -  Page of query result</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields</dt>
-<dd class="field-even"><p><em>list</em> – Forum threads</p>
+<dd class="field-even"><p>synapseservices.Thread</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="challengeutils.discussion.get_thread_replies">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">thread</em>, <em class="sig-param">query_filter='EXCLUDE_DELETED'</em>, <em class="sig-param">limit=20</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_replies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_replies</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">thread: challengeutils.synapseservices.discussion.Thread</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; Iterator[challengeutils.synapseservices.discussion.Reply]<a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_replies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_replies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets replies of a thread</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>syn</strong> – synapse object</p></li>
 <li><p><strong>thread</strong> – Synapse thread or id</p></li>
-<li><p><strong>query_filter</strong> – filter forum threads returned. Can be NO_FILTER,
-DELETED_ONLY, EXCLUDE_DELETED.
-Defaults to EXCLUDE_DELETED.</p></li>
+<li><p><strong>**kwargs</strong> – query_filter: filter forum threads returned. Can be,
+NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+Defaults to EXCLUDE_DELETED.
+limit - Number of query results
+offset -  Page of query result</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yields</dt>
-<dd class="field-even"><p><em>list</em> – Thread replies</p>
+<dd class="field-even"><p>synapseservices.Reply</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="challengeutils.discussion.get_thread_reply_text">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_reply_text</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_reply_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_reply_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get thread reply text by the messageKey that is returned by
-getting thread replies</p>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_reply_text</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">reply: challengeutils.synapseservices.discussion.Reply</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_reply_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_reply_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get thread reply text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -579,13 +585,13 @@ getting thread replies</p>
 
 <dl class="function">
 <dt id="challengeutils.discussion.get_thread_text">
-<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_text</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">messagekey</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get thread text by the messageKey that is returned by getting thread</p>
+<code class="sig-prename descclassname">challengeutils.discussion.</code><code class="sig-name descname">get_thread_text</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, thread: Union[challengeutils.synapseservices.discussion.Thread, str]</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/challengeutils/discussion.html#get_thread_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.discussion.get_thread_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a thread’s text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>syn</strong> – Synapse object</p></li>
-<li><p><strong>messagekey</strong> – Three part key from DiscussionThreadBundle.messageKey</p></li>
+<li><p><strong>thread</strong> – challengeutils.synapseservices.Thread or its id</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -610,11 +616,19 @@ getting thread replies</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017-2020, Sage Bionetworks
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -625,7 +639,6 @@ getting thread replies</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

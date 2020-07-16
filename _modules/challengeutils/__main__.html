@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>challengeutils.__main__ &mdash; challengeutils 2.2 documentation</title>
+  <title>challengeutils.__main__ &mdash; challengeutils 3.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -61,7 +62,7 @@
             
             
               <div class="version">
-                2.2
+                3.0
               </div>
             
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -89,7 +91,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../python/writeups.html">Writeups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/helpers.html">Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
@@ -114,6 +115,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -152,7 +154,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -183,10 +185,9 @@
 <span class="kn">from</span> <span class="nn">synapseclient.core.retry</span> <span class="kn">import</span> <span class="n">with_retry</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">from_unix_epoch_time</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span>
-               <span class="n">download_current_lead_submission</span> <span class="k">as</span> <span class="n">dl_cur</span><span class="p">,</span>
-               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
-               <span class="n">project_submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">annotations</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span> <span class="n">evaluation_queue</span><span class="p">,</span>
+               <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
+               <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">annotations</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -284,8 +285,8 @@
 
 <span class="sd">    &gt;&gt;&gt; challengeutils attachwriteup writeupid submissionqueueid</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">project_submission</span><span class="o">.</span><span class="n">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">writeupqueue</span><span class="p">,</span>
-                                      <span class="n">args</span><span class="o">.</span><span class="n">submissionqueue</span><span class="p">)</span>
+    <span class="n">submission</span><span class="o">.</span><span class="n">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">writeupqueue</span><span class="p">,</span>
+                              <span class="n">args</span><span class="o">.</span><span class="n">submissionqueue</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="command_validate_project"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_validate_project">[docs]</a><span class="k">def</span> <span class="nf">command_validate_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -297,7 +298,7 @@
 <span class="sd">                                       [--admin bob] \</span>
 <span class="sd">                                       [--output foo.txt]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">project_submission</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">submission</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
         <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">challengewiki</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">public</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">admin</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
@@ -314,7 +315,7 @@
 
 <span class="sd">    &gt;&gt;&gt; challengeutils archive-project 9876543</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">archived</span> <span class="o">=</span> <span class="n">project_submission</span><span class="o">.</span><span class="n">archive_project</span><span class="p">(</span>
+    <span class="n">archived</span> <span class="o">=</span> <span class="n">submission</span><span class="o">.</span><span class="n">archive_project</span><span class="p">(</span>
         <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">admin</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
@@ -374,12 +375,10 @@
 
 
 <span class="k">def</span> <span class="nf">command_dl_cur_lead_sub</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="n">dl_cur</span><span class="o">.</span><span class="n">download_current_lead_sub</span><span class="p">(</span>
-        <span class="n">syn</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">cutoff_annotation</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">submission</span><span class="o">.</span><span class="n">download_current_lead_sub</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cutoff_annotation</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="command_list_evaluations"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">command_list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -455,6 +454,25 @@
                                               <span class="n">quota</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">quota</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="command_validate_docker"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_validate_docker">[docs]</a><span class="k">def</span> <span class="nf">command_validate_docker</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validates Docker image by making sure it exists and is less than one</span>
+<span class="sd">    terabyte</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils validate-docker submissionid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invalid_reasons</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">submission</span><span class="o">.</span><span class="n">validate_docker_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">invalid_reasons</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;VALIDATED&quot;</span> <span class="k">if</span> <span class="n">valid</span> <span class="k">else</span> <span class="s2">&quot;INVALID&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;submission_errors&#39;</span><span class="p">:</span> <span class="n">invalid_reasons</span><span class="p">,</span>
+              <span class="s1">&#39;submission_status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="p">}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="command_list_registered_challenges"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_list_registered_challenges">[docs]</a><span class="k">def</span> <span class="nf">command_list_registered_challenges</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List the challenges a user is registered to. Defaults to the</span>
@@ -492,20 +510,20 @@
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The following commands are available:&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;For additional help: &quot;challengeutils &lt;COMMAND&gt; -h&quot;&#39;</span><span class="p">)</span>
 
-    <span class="n">parser_createChallenge</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;createchallenge&#39;</span><span class="p">,</span>
+    <span class="n">parser_createchallenge</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;create-challenge&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Creates a challenge from a template&#39;</span><span class="p">)</span>
-    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="n">parser_createchallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;challengename&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Challenge name&quot;</span><span class="p">)</span>
-    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="n">parser_createchallenge</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--livesiteid&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Option to specify the live site synapse Id&quot;</span>
               <span class="s2">&quot; there is already a live site&quot;</span><span class="p">))</span>
-    <span class="n">parser_createChallenge</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_createchallenge</span><span class="p">)</span>
+    <span class="n">parser_createchallenge</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_createchallenge</span><span class="p">)</span>
 
     <span class="n">parser_mirrorwiki</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;mirrorwiki&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mirror-wiki&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mirrors (sync) wiki pages by using the wikipage titles between &quot;</span>
              <span class="s2">&quot;two Synapse Entities. This function only works if `entity` and &quot;</span>
              <span class="s2">&quot;`destination`are the same type and both must have wiki pages. &quot;</span>
@@ -568,7 +586,7 @@
     <span class="n">parser_query</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_query</span><span class="p">)</span>
 
     <span class="n">parser_change_status</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;changestatus&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change-status&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Changes the status of a submission id&#39;</span><span class="p">)</span>
     <span class="n">parser_change_status</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
@@ -582,7 +600,7 @@
     <span class="n">parser_change_status</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_change_status</span><span class="p">)</span>
 
     <span class="n">parser_attach_writeup</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;attachwriteup&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;attach-writeup&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Attach the write ups of a challenge to its main challenge queue&#39;</span><span class="p">)</span>
 
     <span class="n">parser_attach_writeup</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -597,7 +615,7 @@
     <span class="n">parser_attach_writeup</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_writeup_attach</span><span class="p">)</span>
 
     <span class="n">parser_set_entity_acl</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;setentityacl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;set-entity-acl&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the permissions of a Synapse Entity&#39;</span><span class="p">)</span>
     <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;entityid&quot;</span><span class="p">,</span>
@@ -617,7 +635,7 @@
     <span class="n">parser_set_entity_acl</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_entity_acl</span><span class="p">)</span>
 
     <span class="n">parser_set_evaluation_acl</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;setevaluationacl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;set-evaluation-acl&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the permissions of a Synapse Evaluation Queue&#39;</span><span class="p">)</span>
 
     <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -639,7 +657,7 @@
     <span class="n">parser_set_evaluation_acl</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_set_evaluation_acl</span><span class="p">)</span>
 
     <span class="n">parser_dl_cur_lead_sub</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;download_current_lead_submission&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;download-current-lead-submission&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Downloads current leading submission for participant&#39;</span><span class="p">)</span>
 
     <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -663,7 +681,7 @@
     <span class="n">parser_dl_cur_lead_sub</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_dl_cur_lead_sub</span><span class="p">)</span>
 
     <span class="n">parser_list_evals</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;listevaluations&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;list-evaluations&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List all evaluation queues of a project&#39;</span><span class="p">)</span>
 
     <span class="n">parser_list_evals</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -674,7 +692,7 @@
     <span class="n">parser_list_evals</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_list_evaluations</span><span class="p">)</span>
 
     <span class="n">parser_download_submission</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;downloadsubmission&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;download-submission&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Download a Synapse submission&#39;</span><span class="p">)</span>
 
     <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -696,7 +714,7 @@
     <span class="n">parser_download_submission</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_download_submission</span><span class="p">)</span>
 
     <span class="n">parser_annotate_sub</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;annotatesubmission&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;annotate-submission&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Annotate a Synapse submission with a json file&#39;</span><span class="p">)</span>
 
     <span class="n">parser_annotate_sub</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -720,7 +738,7 @@
         <span class="n">func</span><span class="o">=</span><span class="n">command_annotate_submission_with_json</span><span class="p">)</span>
 
     <span class="n">parser_send_email</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;sendemail&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;send-email&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Send a Synapse email&#39;</span><span class="p">)</span>
 
     <span class="n">parser_send_email</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -745,7 +763,7 @@
     <span class="n">parser_send_email</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_send_email</span><span class="p">)</span>
 
     <span class="n">parser_kill_docker</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;killdockeroverquota&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;kill-docker-over-quota&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Kill Docker submissions over the quota&#39;</span><span class="p">)</span>
 
     <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -760,7 +778,7 @@
     <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_kill_docker_over_quota</span><span class="p">)</span>
 
     <span class="n">parser_set_quota</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;setevaluationquota&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;set-evaluation-quota&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Sets the quota on an existing evaluation queue. &#39;</span>
              <span class="s1">&#39;This WILL erase any old quota you had previously set if no &#39;</span>
              <span class="s1">&#39;optional parameters are given&#39;</span><span class="p">)</span>
@@ -861,7 +879,6 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse User id or username&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span>
-
     <span class="n">parser_list_challenge</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
         <span class="n">func</span><span class="o">=</span><span class="n">command_list_registered_challenges</span>
     <span class="p">)</span>
@@ -879,15 +896,21 @@
 
     <span class="n">parser_delete_sub</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_delete_submission</span><span class="p">)</span>
 
+    <span class="n">parser_validate_docker</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;validate-docker&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Validate Docker container&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submissionid&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Submission id&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output json results into a file&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_validate_docker</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_validate_docker</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span>
-
-
-<span class="k">def</span> <span class="nf">perform_main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">&#39;func&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span>
 
 
 <span class="k">def</span> <span class="nf">synapse_login</span><span class="p">(</span><span class="n">synapse_config</span><span class="p">):</span>
@@ -902,7 +925,7 @@
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_login</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">synapse_config</span><span class="p">)</span>
-    <span class="n">perform_main</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -919,11 +942,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017-2020, Sage Bionetworks
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -934,7 +965,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

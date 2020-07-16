@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>challengeutils.submission &mdash; challengeutils 3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.submission</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for challengeutils.submission</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions that interact with submissions&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">synapseutils</span>
+<span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="n">AUTHENTICATED_USERS</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
+<span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dockertools</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permissions</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="append_writeup_to_main_submission"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.append_writeup_to_main_submission">[docs]</a><span class="k">def</span> <span class="nf">append_writeup_to_main_submission</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">syn</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Helper function that appends the write up synapse id and archived</span>
+<span class="sd">    write up synapse id on the main submission</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        row: Dictionary row[&#39;team&#39;], row[&#39;objectId&#39;], row[&#39;archived&#39;],</span>
+<span class="sd">             row[&#39;entityId&#39;]</span>
+<span class="sd">        syn: synapse object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;archived&#39;</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NO WRITEUP: &quot;</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;submitterId&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;objectId&#39;</span><span class="p">])</span>
+        <span class="n">add_writeup_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;writeUp&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;entityId&#39;</span><span class="p">],</span> <span class="s1">&#39;archivedWriteUp&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;archived&#39;</span><span class="p">]}</span>
+        <span class="n">add_writeup</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span>
+            <span class="n">add_writeup_dict</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">new_status</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">update_single_submission_status</span><span class="p">(</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">add_writeup</span><span class="p">)</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="attach_writeup"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.attach_writeup">[docs]</a><span class="k">def</span> <span class="nf">attach_writeup</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">writeup_queueid</span><span class="p">,</span> <span class="n">submission_queueid</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Attach the write up to the submission queue</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        writeup_queueid:   Write up evaluation queue id</span>
+<span class="sd">        submission_queueid: Submission queue id</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">writeups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="s2">&quot;select submitterId, entityId, archived from evaluation_</span><span class="si">{}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;where writeup_status == &#39;VALIDATED&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">writeup_queueid</span><span class="p">)))</span>
+    <span class="n">submissions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="s2">&quot;select objectId, submitterId from evaluation_</span><span class="si">{}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;where prediction_file_status == &#39;SCORED&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submission_queueid</span><span class="p">)))</span>
+    <span class="n">writeupsdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">writeups</span><span class="p">)</span>
+    <span class="n">submissionsdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">submissions</span><span class="p">)</span>
+    <span class="n">submissions_with_writeupsdf</span> <span class="o">=</span> \
+        <span class="n">submissionsdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">writeupsdf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;submitterId&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+    <span class="n">submissions_with_writeupsdf</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">append_writeup_to_main_submission</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">syn</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validate_project"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.validate_project">[docs]</a><span class="k">def</span> <span class="nf">validate_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submission</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">admin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate a Project submission.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        submission - submission ID</span>
+<span class="sd">        challenge - Synapse ID of Challenge wiki</span>
+<span class="sd">        public - Project should be public (default: False)</span>
+<span class="sd">        admin - (optional) Project should be shared with this username/ID</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        submission_errors (str) - error messages (&quot;&quot; if none found)</span>
+<span class="sd">        submission_status (str) - &quot;VALIDATED&quot;/&quot;INVALID&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">writeup</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submission</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">type_error</span> <span class="o">=</span> <span class="n">_validate_ent_type</span><span class="p">(</span><span class="n">writeup</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">type_error</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">type_error</span><span class="p">)</span>
+
+    <span class="n">contents_error</span> <span class="o">=</span> <span class="n">_validate_project_id</span><span class="p">(</span><span class="n">writeup</span><span class="p">,</span> <span class="n">challenge</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">contents_error</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">contents_error</span><span class="p">)</span>
+
+    <span class="n">permissions_error</span> <span class="o">=</span> <span class="n">_check_project_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">writeup</span><span class="p">,</span> <span class="n">public</span><span class="p">,</span> <span class="n">admin</span><span class="p">)</span>
+    <span class="n">errors</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">permissions_error</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;INVALID&quot;</span> <span class="k">if</span> <span class="n">errors</span> <span class="k">else</span> <span class="s2">&quot;VALIDATED&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;submission_errors&#39;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">),</span>
+            <span class="s2">&quot;submission_status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="archive_project"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.archive_project">[docs]</a><span class="k">def</span> <span class="nf">archive_project</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submission</span><span class="p">,</span> <span class="n">admin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a copy (archive) of the Project submission.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        submission - submission ID</span>
+<span class="sd">        admin - user who will own the archived project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">writeup</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submission</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">writeup</span><span class="o">.</span><span class="n">entity</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">curr_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="n">new_project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Archived </span><span class="si">{name}</span><span class="s2"> </span><span class="si">{curr_time}</span><span class="s2"> </span><span class="si">{writeup.id}</span><span class="s2"> &quot;</span> <span class="o">+</span>
+                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{writeup.entityId}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_project</span><span class="p">)</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">admin</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+    <span class="n">archived</span> <span class="o">=</span> <span class="n">synapseutils</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">writeup</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">archive</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;archived&quot;</span><span class="p">:</span> <span class="n">archived</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">writeup</span><span class="o">.</span><span class="n">entityId</span><span class="p">)}</span></div>
+
+
+<span class="c1"># TODO: move to utils module</span>
+<span class="k">def</span> <span class="nf">_validate_ent_type</span><span class="p">(</span><span class="n">submission</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check entity type of submission.&quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">entity</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">Project</span><span class="p">):</span>
+            <span class="n">ent_type</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;entity\.(.*?)&#39;&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">entity</span><span class="p">)))</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Submission should be a Synapse project, not a </span><span class="si">{ent_type}</span><span class="s2">.&quot;</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Unknown entity type; please submit a Synapse project.&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_project_id</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">challenge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that submission is not the Challenge site.&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s2">&quot;Submission should not be the Challenge site.&quot;</span> \
+        <span class="k">if</span> <span class="n">proj</span><span class="o">.</span><span class="n">entityId</span> <span class="o">==</span> <span class="n">challenge</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_public_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">proj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ensure project is shared with the public.&quot;&quot;&quot;</span>
+
+    <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Your project is not publicly available.&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Remove error message if the project is accessible by the public.</span>
+        <span class="n">syn_users_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span>
+            <span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">AUTHENTICATED_USERS</span><span class="p">)</span>
+        <span class="n">public_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">syn_users_perms</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">}</span> <span class="ow">and</span> \
+                <span class="s2">&quot;READ&quot;</span> <span class="ow">in</span> <span class="n">public_perms</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+        <span class="c1"># Raise exception message if error is not a permissions error.</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">403</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="k">return</span> <span class="n">error</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_admin_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">proj</span><span class="p">,</span> <span class="n">admin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ensure project is shared with the given admin.&quot;&quot;&quot;</span>
+
+    <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Project is private; please update its sharing settings.&quot;</span>
+             <span class="sa">f</span><span class="s2">&quot; Writeup should be shared with </span><span class="si">{admin}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Remove error message if admin has read and download permissions.</span>
+        <span class="n">admin_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">admin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">admin_perms</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">}:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+        <span class="c1"># Raise exception message if error is not a permissions error.</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">403</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="k">return</span> <span class="n">error</span>
+
+
+<span class="k">def</span> <span class="nf">_check_project_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submission</span><span class="p">,</span> <span class="n">public</span><span class="p">,</span> <span class="n">admin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the submission sharing settings.&quot;&quot;&quot;</span>
+
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">public</span><span class="p">:</span>
+        <span class="n">public_error</span> <span class="o">=</span> <span class="n">_validate_public_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submission</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">public_error</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">public_error</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">public</span> <span class="ow">and</span> <span class="n">admin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">admin_error</span> <span class="o">=</span> <span class="n">_validate_admin_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submission</span><span class="p">,</span> <span class="n">admin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">admin_error</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">admin_error</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">errors</span>
+
+
+<div class="viewcode-block" id="validate_docker_submission"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.validate_docker_submission">[docs]</a><span class="k">def</span> <span class="nf">validate_docker_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validates Synapse docker repository + sha digest submission</span>
+<span class="sd">    This function requires users to have a synapse config file using</span>
+<span class="sd">    synapse username and password</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        submissionid: Submission id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if valid, False if not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Uses synapse config path</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getConfigFile</span><span class="p">(</span><span class="n">syn</span><span class="o">.</span><span class="n">configPath</span><span class="p">)</span>
+    <span class="n">authen</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s2">&quot;authentication&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">authen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">authen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Synapse config file must have username and password&#39;</span><span class="p">)</span>
+
+    <span class="n">docker_sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
+    <span class="n">docker_repository</span> <span class="o">=</span> <span class="n">docker_sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerRepositoryName&quot;</span><span class="p">)</span>
+    <span class="n">docker_digest</span> <span class="o">=</span> <span class="n">docker_sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerDigest&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">docker_repository</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">docker_digest</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Submission is not a Docker submission&#39;</span><span class="p">)</span>
+    <span class="n">docker_repo</span> <span class="o">=</span> <span class="n">docker_repository</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;docker.synapse.org/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">valid</span> <span class="o">=</span> <span class="n">dockertools</span><span class="o">.</span><span class="n">validate_docker</span><span class="p">(</span>
+        <span class="n">docker_repo</span><span class="o">=</span><span class="n">docker_repo</span><span class="p">,</span>
+        <span class="n">docker_digest</span><span class="o">=</span><span class="n">docker_digest</span><span class="p">,</span>
+        <span class="n">index_endpoint</span><span class="o">=</span><span class="n">dockertools</span><span class="o">.</span><span class="n">ENDPOINT_MAPPING</span><span class="p">[</span><span class="s1">&#39;synapse&#39;</span><span class="p">],</span>
+        <span class="n">username</span><span class="o">=</span><span class="n">authen</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">],</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">authen</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">valid</span></div>
+
+
+<div class="viewcode-block" id="get_submitterid_from_submission_id"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.get_submitterid_from_submission_id">[docs]</a><span class="k">def</span> <span class="nf">get_submitterid_from_submission_id</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span>
+                                       <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gets submitterid from submission id</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        queue: Evaluation queue id</span>
+<span class="sd">        verbose: Boolean value to print</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Submitter id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;select submitterId from evaluation_</span><span class="si">{}</span><span class="s2"> &quot;</span>
+             <span class="s2">&quot;where objectId == &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">))</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;submission id </span><span class="si">{}</span><span class="s1"> not in queue&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submissionid</span><span class="p">))</span>
+    <span class="n">submission_dict</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">submitterid</span> <span class="o">=</span> <span class="n">submission_dict</span><span class="p">[</span><span class="s1">&#39;submitterId&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;submitterid: &quot;</span> <span class="o">+</span> <span class="n">submitterid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">submitterid</span></div>
+
+
+<div class="viewcode-block" id="get_submitters_lead_submission"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.get_submitters_lead_submission">[docs]</a><span class="k">def</span> <span class="nf">get_submitters_lead_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span>
+                                   <span class="n">cutoff_annotation</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gets submitter&#39;s lead submission</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        submitterid: Submitter id</span>
+<span class="sd">        queue: Evaluation queue id</span>
+<span class="sd">        cutoff_annotation: Boolean cutoff annotation key</span>
+<span class="sd">        verbose: Boolean value to print</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        previous_submission.csv or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;select objectId from evaluation_</span><span class="si">{}</span><span class="s2"> where submitterId == &#39;</span><span class="si">{}</span><span class="s2">&#39; &quot;</span>
+             <span class="s2">&quot;and prediction_file_status == &#39;SCORED&#39; and </span><span class="si">{}</span><span class="s2"> == &#39;true&#39; &quot;</span>
+             <span class="s2">&quot;order by createdOn DESC&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">,</span>
+                                              <span class="n">cutoff_annotation</span><span class="p">))</span>
+
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">evaluation_queue_query</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">objectid</span> <span class="o">=</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s1">&#39;objectId&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dowloading submissionid: &quot;</span> <span class="o">+</span> <span class="n">objectid</span><span class="p">)</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">objectid</span><span class="p">,</span> <span class="n">downloadLocation</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">filePath</span><span class="p">,</span> <span class="s2">&quot;previous_submission.csv&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;previous_submission.csv&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloading no file&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="download_current_lead_sub"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.download_current_lead_sub">[docs]</a><span class="k">def</span> <span class="nf">download_current_lead_sub</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
+                              <span class="n">cutoff_annotation</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download the current leading submission for boot ladder boot method</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        status: Submission status</span>
+<span class="sd">        cutoff_annotation: Boolean cutoff annotation key</span>
+<span class="sd">        verbose: Boolean value to print</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path to current leading submission or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;VALIDATED&quot;</span><span class="p">:</span>
+        <span class="n">current_sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">downloadFile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">queue_num</span> <span class="o">=</span> <span class="n">current_sub</span><span class="p">[</span><span class="s1">&#39;evaluationId&#39;</span><span class="p">]</span>
+        <span class="n">submitterid</span> <span class="o">=</span> <span class="n">get_submitterid_from_submission_id</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span>
+                                                         <span class="n">queue_num</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">get_submitters_lead_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submitterid</span><span class="p">,</span> <span class="n">queue_num</span><span class="p">,</span>
+                                              <span class="n">cutoff_annotation</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017-2020, Sage Bionetworks
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
