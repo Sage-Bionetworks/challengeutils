@@ -50,7 +50,7 @@ To install from the source:
 
 .. Attention:: 
 
-    ``synapseclient <2.0.0`` is no longer supported, so some features may
+    ``synapseclient < 2.1.0`` is no longer supported, so some features may
     break if you are not on the latest client.
 
 Contributing

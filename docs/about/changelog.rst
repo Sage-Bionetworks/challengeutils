@@ -9,6 +9,22 @@ For older releases, visit the `GitHub releases`_.
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
 
+v3.0.0
+------
+
+.. Important::
+    **Support for synapseclient<2.1.0 is no longer available**; upgrade to the
+    latest version with:
+
+    .. code:: console
+
+        $ pip install synapseclient --upgrade
+
+- Add Synapse `Thread` and `Reply` module
+- Rename command line client functions to have dashes inbetween words (e.g. `challengeutils create-challenge`).  This is a breaking change, but is done to standardize the command line client commands.
+- `validate_project` now returns errors that are `str` type instead of `list`
+
+
 v2.2.0
 ------
 - Added `delete_submission`, `validate_project` and `archive_project` functions

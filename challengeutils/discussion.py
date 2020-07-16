@@ -232,13 +232,15 @@ def get_forum_threads(syn: Synapse, ent: Union[Project, str],
     Args:
         syn: synapse object
         ent: Synapse Project entity or id
-        **kwargs: query_filter: filter forum threads returned. Can be,
-                                NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
-                                Defaults to EXCLUDE_DELETED.
-                  limit, offset
+        **kwargs: query_filter - filter forum threads returned. Can be,
+                  NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+                  Defaults to EXCLUDE_DELETED.
+                  limit - Number of query results
+                  offset -  Page of query result
 
     Yields:
         synapseservices.Thread
+
     """
     api = DiscussionApi(syn)
     synid = id_of(ent)
@@ -247,19 +249,22 @@ def get_forum_threads(syn: Synapse, ent: Union[Project, str],
     return threads
 
 
-def get_thread_replies(syn: Synapse, thread: Thread, **kwargs):
+def get_thread_replies(syn: Synapse, thread: Thread,
+                       **kwargs) -> Iterator[Reply]:
     """Gets replies of a thread
 
     Args:
         syn: synapse object
         thread: Synapse thread or id
         **kwargs: query_filter: filter forum threads returned. Can be,
-                                NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
-                                Defaults to EXCLUDE_DELETED.
-                  limit, offset
+                  NO_FILTER, DELETED_ONLY, EXCLUDE_DELETED.
+                  Defaults to EXCLUDE_DELETED.
+                  limit - Number of query results
+                  offset -  Page of query result
 
     Yields:
-        Thread replies
+        synapseservices.Reply
+
     """
     api = DiscussionApi(syn)
     threadid = id_of(thread)
