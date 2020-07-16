@@ -2,7 +2,7 @@
 Submissions
 ***********
 
-.. automodule:: challengeutils.download_current_lead_submission
+.. automodule:: challengeutils.submission
     :members:
     :undoc-members:
     :show-inheritance:

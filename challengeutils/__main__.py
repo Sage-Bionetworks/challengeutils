@@ -9,10 +9,9 @@ import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
-from . import (createchallenge, challenge,
-               download_current_lead_submission as dl_cur,
-               evaluation_queue, helpers, mirrorwiki, permissions,
-               project_submission, utils, annotations)
+from . import (createchallenge, challenge, evaluation_queue,
+               helpers, mirrorwiki, permissions,
+               submission, utils, annotations)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -110,8 +109,8 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    project_submission.attach_writeup(syn, args.writeupqueue,
-                                      args.submissionqueue)
+    submission.attach_writeup(syn, args.writeupqueue,
+                              args.submissionqueue)
 
 
 def command_validate_project(syn, args):
@@ -123,7 +122,7 @@ def command_validate_project(syn, args):
                                        [--admin bob] \
                                        [--output foo.txt]
     """
-    results = project_submission.validate_project(
+    results = submission.validate_project(
         syn, args.submissionid, args.challengewiki, args.public, args.admin)
 
     if args.output:
@@ -140,7 +139,7 @@ def command_archive_project(syn, args):
 
     >>> challengeutils archive-project 9876543
     """
-    archived = project_submission.archive_project(
+    archived = submission.archive_project(
         syn, args.submissionid, args.admin)
 
     if args.output:
@@ -200,12 +199,10 @@ def command_set_evaluation_quota(syn, args):
 
 
 def command_dl_cur_lead_sub(syn, args):
-    dl_cur.download_current_lead_sub(
-        syn,
-        args.submissionid,
-        args.status,
-        args.cutoff_annotation,
-        verbose=args.verbose)
+    submission.download_current_lead_sub(
+        syn, args.submissionid, args.status, args.cutoff_annotation,
+        verbose=args.verbose
+    )
 
 
 def command_list_evaluations(syn, args):
@@ -281,6 +278,25 @@ def command_kill_docker_over_quota(syn, args):
                                               quota=args.quota)
 
 
+def command_validate_docker(syn, args):
+    """Validates Docker image by making sure it exists and is less than one
+    terabyte
+
+    >>> challengeutils validate-docker submissionid
+    """
+    invalid_reasons = ''
+    try:
+        valid = submission.validate_docker_submission(syn, args.submissionid)
+    except ValueError as err:
+        invalid_reasons = str(err)
+
+    status = "VALIDATED" if valid else "INVALID"
+    result = {'submission_errors': invalid_reasons,
+              'submission_status': status}
+    with open(args.output, 'w') as out:
+        out.write(json.dumps(result))
+
+
 def command_list_registered_challenges(syn, args):
     """
     List the challenges a user is registered to. Defaults to the
@@ -318,20 +334,20 @@ def build_parser():
         description='The following commands are available:',
         help='For additional help: "challengeutils <COMMAND> -h"')
 
-    parser_createChallenge = subparsers.add_parser(
-        'createchallenge',
+    parser_createchallenge = subparsers.add_parser(
+        'create-challenge',
         help='Creates a challenge from a template')
-    parser_createChallenge.add_argument(
+    parser_createchallenge.add_argument(
         "challengename",
         help="Challenge name")
-    parser_createChallenge.add_argument(
+    parser_createchallenge.add_argument(
         "--livesiteid",
         help=("Option to specify the live site synapse Id"
               " there is already a live site"))
-    parser_createChallenge.set_defaults(func=command_createchallenge)
+    parser_createchallenge.set_defaults(func=command_createchallenge)
 
     parser_mirrorwiki = subparsers.add_parser(
-        'mirrorwiki',
+        'mirror-wiki',
         help="Mirrors (sync) wiki pages by using the wikipage titles between "
              "two Synapse Entities. This function only works if `entity` and "
              "`destination`are the same type and both must have wiki pages. "
@@ -394,7 +410,7 @@ def build_parser():
     parser_query.set_defaults(func=command_query)
 
     parser_change_status = subparsers.add_parser(
-        'changestatus',
+        'change-status',
         help='Changes the status of a submission id')
     parser_change_status.add_argument(
         "submissionid",
@@ -408,7 +424,7 @@ def build_parser():
     parser_change_status.set_defaults(func=command_change_status)
 
     parser_attach_writeup = subparsers.add_parser(
-        'attachwriteup',
+        'attach-writeup',
         help='Attach the write ups of a challenge to its main challenge queue')
 
     parser_attach_writeup.add_argument(
@@ -423,7 +439,7 @@ def build_parser():
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     parser_set_entity_acl = subparsers.add_parser(
-        'setentityacl',
+        'set-entity-acl',
         help='Sets the permissions of a Synapse Entity')
     parser_set_entity_acl.add_argument(
         "entityid",
@@ -443,7 +459,7 @@ def build_parser():
     parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
 
     parser_set_evaluation_acl = subparsers.add_parser(
-        'setevaluationacl',
+        'set-evaluation-acl',
         help='Sets the permissions of a Synapse Evaluation Queue')
 
     parser_set_evaluation_acl.add_argument(
@@ -465,7 +481,7 @@ def build_parser():
     parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
 
     parser_dl_cur_lead_sub = subparsers.add_parser(
-        'download_current_lead_submission',
+        'download-current-lead-submission',
         help='Downloads current leading submission for participant')
 
     parser_dl_cur_lead_sub.add_argument(
@@ -489,7 +505,7 @@ def build_parser():
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
     parser_list_evals = subparsers.add_parser(
-        'listevaluations',
+        'list-evaluations',
         help='List all evaluation queues of a project')
 
     parser_list_evals.add_argument(
@@ -500,7 +516,7 @@ def build_parser():
     parser_list_evals.set_defaults(func=command_list_evaluations)
 
     parser_download_submission = subparsers.add_parser(
-        'downloadsubmission',
+        'download-submission',
         help='Download a Synapse submission')
 
     parser_download_submission.add_argument(
@@ -522,7 +538,7 @@ def build_parser():
     parser_download_submission.set_defaults(func=command_download_submission)
 
     parser_annotate_sub = subparsers.add_parser(
-        'annotatesubmission',
+        'annotate-submission',
         help='Annotate a Synapse submission with a json file')
 
     parser_annotate_sub.add_argument(
@@ -546,7 +562,7 @@ def build_parser():
         func=command_annotate_submission_with_json)
 
     parser_send_email = subparsers.add_parser(
-        'sendemail',
+        'send-email',
         help='Send a Synapse email')
 
     parser_send_email.add_argument(
@@ -571,7 +587,7 @@ def build_parser():
     parser_send_email.set_defaults(func=command_send_email)
 
     parser_kill_docker = subparsers.add_parser(
-        'killdockeroverquota',
+        'kill-docker-over-quota',
         help='Kill Docker submissions over the quota')
 
     parser_kill_docker.add_argument(
@@ -586,7 +602,7 @@ def build_parser():
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
 
     parser_set_quota = subparsers.add_parser(
-        'setevaluationquota',
+        'set-evaluation-quota',
         help='Sets the quota on an existing evaluation queue. '
              'This WILL erase any old quota you had previously set if no '
              'optional parameters are given')
@@ -687,7 +703,6 @@ def build_parser():
         help='Synapse User id or username',
         default=None
     )
-
     parser_list_challenge.set_defaults(
         func=command_list_registered_challenges
     )
@@ -705,15 +720,21 @@ def build_parser():
 
     parser_delete_sub.set_defaults(func=command_delete_submission)
 
+    parser_validate_docker = subparsers.add_parser(
+        'validate-docker',
+        help='Validate Docker container'
+    )
+    parser_validate_docker.add_argument(
+        "submissionid",
+        help="Submission id"
+    )
+    parser_validate_docker.add_argument(
+        "-o", "--output", required=True,
+        help="Output json results into a file"
+    )
+    parser_validate_docker.set_defaults(func=command_validate_docker)
+
     return parser
-
-
-def perform_main(syn, args):
-    if 'func' in args:
-        try:
-            args.func(syn, args)
-        except Exception:
-            raise
 
 
 def synapse_login(synapse_config):
@@ -728,7 +749,7 @@ def synapse_login(synapse_config):
 def main():
     args = build_parser().parse_args()
     syn = synapse_login(args.synapse_config)
-    perform_main(syn, args)
+    args.func(syn, args)
 
 
 if __name__ == "__main__":
