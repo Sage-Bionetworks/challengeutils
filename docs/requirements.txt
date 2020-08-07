@@ -1,0 +1,4 @@
+pandas==1.0.1
+synapseclient==2.1.0
+challengeutils
+sphinx_rtd_theme

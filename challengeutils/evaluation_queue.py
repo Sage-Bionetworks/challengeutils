@@ -8,14 +8,10 @@ import os
 import time
 
 import synapseclient
-try:
-    from synapseclient.exceptions import (SynapseHTTPError,
-                                          SynapseAuthenticationError,
-                                          SynapseNoCredentialsError)
-except ModuleNotFoundError:
-    from synapseclient.core.exceptions import (SynapseHTTPError,
-                                               SynapseAuthenticationError,
-                                               SynapseNoCredentialsError)
+from synapseclient import Synapse
+from synapseclient.core.exceptions import (SynapseHTTPError,
+                                            SynapseAuthenticationError,
+                                            SynapseNoCredentialsError)
 
 from .utils import update_single_submission_status
 
@@ -105,7 +101,7 @@ def _create_quota(round_start: str = None, round_end: str = None,
     return quota
 
 
-def set_evaluation_quota(syn: 'Synapse', evalid: int, **kwargs):
+def set_evaluation_quota(syn: Synapse, evalid: int, **kwargs):
     """Sets evaluation submission limit quota.  This WILL erase any old quota
     you had previously set. Note - round_start must be specified with either
     round_end or round_duration and number_of_rounds must be defined for the
