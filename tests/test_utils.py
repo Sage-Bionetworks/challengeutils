@@ -278,7 +278,7 @@ def test_delete_submission():
 
 
 def test_remove_team_member():
-    team  = synapseclient.Team(id=123)
+    team = synapseclient.Team(id=123)
     user = synapseclient.UserProfile(ownerId=2222)
 
     with patch.object(syn, "restDELETE") as patch_rest:
