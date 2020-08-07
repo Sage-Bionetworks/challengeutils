@@ -10,9 +10,10 @@ import time
 import synapseclient
 from synapseclient import Synapse
 from synapseclient.core.exceptions import (SynapseHTTPError,
-                                            SynapseAuthenticationError,
-                                            SynapseNoCredentialsError)
+                                           SynapseAuthenticationError,
+                                           SynapseNoCredentialsError)
 
+from .annotations import update_submission_status
 from .utils import update_single_submission_status
 
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -292,12 +293,14 @@ class QueueEvaluator(metaclass=ABCMeta):
 
         """
         annotations = submission_info.annotations
+        is_valid = submission_info.valid
+        status = self._success_status if is_valid else "INVALID"
+
         sub_status = update_single_submission_status(sub_status,
                                                      annotations,
                                                      is_private=False)
-        is_valid = submission_info.valid
-        sub_status.status = self._success_status if is_valid else "INVALID"
-
+        sub_status = update_submission_status(sub_status, annotations,
+                                              status=status)
         if not self.dry_run:
             sub_status = self.syn.store(sub_status)
         else:
