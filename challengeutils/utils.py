@@ -11,6 +11,7 @@ import synapseclient
 from synapseclient.annotations import (is_submission_status_annotations,
                                        to_submission_status_annotations)
 from synapseclient.core.exceptions import SynapseHTTPError
+from synapseclient.core.utils import id_of
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -517,3 +518,16 @@ def delete_submission(syn, submissionid):
     """
     sub = syn.getSubmission(submissionid, downloadFile=False)
     syn.delete(sub)
+
+
+def remove_team_member(syn, team, user):
+    """Removes team member
+
+    Args:
+        syn: Synapse object
+        team: synaspeclient.Team or its id
+        user: synapseclient.UserProfile or its id
+    """
+    teamid = id_of(team)
+    userid = id_of(user)
+    syn.restDELETE(f"/team/{teamid}/member/{userid}")
