@@ -275,3 +275,14 @@ def test_delete_submission():
         challengeutils.utils.delete_submission(syn, "12345")
         patch_get.assert_called_once_with("12345", downloadFile=False)
         patch_delete.assert_called_once_with(sub)
+
+
+def test_remove_team_member():
+    team = synapseclient.Team(id=123)
+    user = synapseclient.UserProfile(ownerId=2222)
+
+    with patch.object(syn, "restDELETE") as patch_rest:
+        challengeutils.utils.remove_team_member(syn, team, user)
+        patch_rest.assert_called_once_with(
+            "/team/123/member/2222"
+        )
