@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 import synapseclient
 from challengeutils import teams
 
+
 class TestTeam:
     """Test team module functions"""
 
