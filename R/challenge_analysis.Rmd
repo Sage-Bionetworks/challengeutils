@@ -143,5 +143,5 @@ ggplot(data = world) +
   geom_point(data = no_dups,
              aes(x = longitude, y = latitude), size = log(size),
              shape = 16, color = "darkred") + xlab("") + ylab("") +
-  ggtitle("DREAM Participants")
+  ggtitle("2020 DREAM Participants")
 ```
