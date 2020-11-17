@@ -1,0 +1,147 @@
+---
+title: "Challenge Analysis"
+author: "Thomas Yu"
+date: "11/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(synapser)
+library(glue)
+library(ggplot2)
+library(rjson)
+library(rnaturalearth)
+library(rnaturalearthdata)
+synLogin()
+```
+
+## DREAM participation 
+
+```{r}
+challenge_info = synTableQuery(
+  "select challenge, challengeParticipants, challengeYear from syn10163902",
+  includeRowIdAndRowVersion = F
+)
+challenge_infodf = challenge_info$asDataFrame()
+# remove duplicated rows
+challenge_infodf = challenge_infodf[!duplicated(challenge_infodf$challenge), ]
+
+member_counts = sapply(challenge_infodf$challengeParticipants, function(teamid) {
+  count = synRestGET(glue::glue("/teamMembers/count/{teamid}"))
+  count$count
+})
+challenge_infodf$number_registered = member_counts
+order_by_year = order(as.numeric(challenge_infodf$challengeYear))
+challenge_infodf$challengeYear = as.character(challenge_infodf$challengeYear)
+# challenge_infodf$challengeYear = factor(
+#   challenge_infodf$challengeYear,
+#   levels = unique(challenge_infodf$challengeYear)
+# )
+challenge_infodf = arrange(challenge_infodf, number_registered)
+
+challenge_infodf = arrange(challenge_infodf, desc(challengeYear))
+
+challenge_infodf$challenge <- factor(challenge_infodf$challenge,
+                                     levels = challenge_infodf$challenge)
+ggplot(data = challenge_infodf,
+       aes(x = number_registered, y = challenge, fill = challengeYear)) +
+  geom_bar(stat="identity") + theme_minimal() +
+  scale_fill_brewer(palette = "Spectral", name = "Year") +
+  xlab("Number of registered participants") +
+  ylab("Challenges") + ggtitle("DREAM Challenge Participation")
+  
+
+```
+
+## DREAM participation map
+```{r}
+
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+all_locationsdf = data.frame()
+# Obtain the locations per user
+for (teamid in challenge_infodf$challengeParticipants) {
+  location = fromJSON(readLines(
+    glue::glue("https://s3.amazonaws.com/geoloc.sagebase.org/{teamid}.json")
+  ))
+  lat_lang = lapply(location, function(loc) {
+    rep(list(loc$latLng), length(loc$userIds))
+  })
+  lat_langdf = t(data.frame(lat_lang))
+  all_locationsdf = rbind(all_locationsdf, lat_langdf)
+  
+}
+row.names(all_locationsdf) <- NULL
+colnames(all_locationsdf) = c("latitude", "longitude")
+
+# Create string to determine sizes of circles
+all_locationsdf$string = paste(all_locationsdf$latitude, all_locationsdf$longitude)
+
+no_dups = all_locationsdf[!duplicated(all_locationsdf), ]
+no_dups$string = paste(no_dups$latitude, no_dups$longitude)
+# Get sizes of each circle
+size = c()
+for (primarykey in no_dups$string) {
+  size = c(size, sum(all_locationsdf$string == primarykey))
+}
+
+ggplot(data = world) +
+  geom_sf() +
+  geom_point(data = no_dups,
+             aes(x = longitude, y = latitude), size = log(size),
+             shape = 16, color = "darkred") + xlab("") + ylab("") +
+  ggtitle("DREAM Participants")
+```
+
+# 2020 challenges
+
+```{r}
+challenges_2020 = challenge_infodf[challenge_infodf$challengeYear == "2020", ]
+ggplot(data = challenges_2020,
+       aes(x = number_registered, y = challenge)) +
+  geom_bar(stat="identity") + theme_minimal() +
+  xlab("Number of registered participants") +
+  ylab("Challenges") + ggtitle("2020 DREAM Challenge Participation")
+```
+
+
+
+## 2020 DREAM participation map
+```{r}
+
+all_locationsdf = data.frame()
+# Obtain the locations per user
+for (teamid in challenges_2020$challengeParticipants) {
+  location = fromJSON(readLines(
+    glue::glue("https://s3.amazonaws.com/geoloc.sagebase.org/{teamid}.json")
+  ))
+  lat_lang = lapply(location, function(loc) {
+    rep(list(loc$latLng), length(loc$userIds))
+  })
+  lat_langdf = t(data.frame(lat_lang))
+  all_locationsdf = rbind(all_locationsdf, lat_langdf)
+  
+}
+row.names(all_locationsdf) <- NULL
+colnames(all_locationsdf) = c("latitude", "longitude")
+
+# Create string to determine sizes of circles
+all_locationsdf$string = paste(all_locationsdf$latitude, all_locationsdf$longitude)
+
+no_dups = all_locationsdf[!duplicated(all_locationsdf), ]
+no_dups$string = paste(no_dups$latitude, no_dups$longitude)
+# Get sizes of each circle
+size = c()
+for (primarykey in no_dups$string) {
+  size = c(size, sum(all_locationsdf$string == primarykey))
+}
+
+ggplot(data = world) +
+  geom_sf() +
+  geom_point(data = no_dups,
+             aes(x = longitude, y = latitude), size = log(size),
+             shape = 16, color = "darkred") + xlab("") + ylab("") +
+  ggtitle("DREAM Participants")
+```
