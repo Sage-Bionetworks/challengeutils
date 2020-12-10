@@ -81,19 +81,16 @@ class TestTeamDiff:
                                        self.member3, self.member4])
             patch_get.assert_called_once_with(1)
 
-
     def test_team_members_diff(self):
         """Test getting member differences between two teams"""
         assert teams.team_members_diff(self.syn, 1, 2) == set([self.member4,
                                                                self.member3])
-
 
     def test_team_members_intersection(self):
         """Test getting member intersection between two teams"""
         assert teams.team_members_intersection(self.syn, 1, 2) == set(
             [self.member1, self.member2]
         )
-
 
     def test_team_members_union(self):
         """Test getting member union between two teams"""
