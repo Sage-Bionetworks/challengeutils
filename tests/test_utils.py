@@ -119,6 +119,7 @@ def test_topublic_update_single_submission_status():
     expected_status = {'annotations': expected_annot}
     assert new_status == expected_status
 
+
 def test_valid__check_date_range():
     '''
     Test checking valid date range
