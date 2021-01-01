@@ -8,6 +8,21 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v3.1.0
+------
+.. Important::
+    **Support for synapseclient<2.2.0 is no longer available**; upgrade to the
+    latest version with:
+
+    .. code:: console
+
+        $ pip install synapseclient --upgrade
+
+- Remove team member from team
+- Upgrade synapseclient used
+- Retrieve number of members given team name / id.
+- Move functions to team module
+
 
 v3.0.0
 ------
