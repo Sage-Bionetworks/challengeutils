@@ -180,14 +180,6 @@
   <div class="section" id="module-challengeutils.utils">
 <span id="utils"></span><h1>Utils<a class="headerlink" href="#module-challengeutils.utils" title="Permalink to this headline">¶</a></h1>
 <p>Challenge utility functions</p>
-<dl class="class">
-<dt id="challengeutils.utils.NewUserProfile">
-<em class="property">class </em><code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">NewUserProfile</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#NewUserProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.NewUserProfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">synapseclient.team.UserProfile</span></code></p>
-<p>Create new user profile that makes Userprofiles hashable
-SYNPY-879</p>
-</dd></dl>
-
 <dl class="function">
 <dt id="challengeutils.utils.change_all_submission_status">
 <code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">change_all_submission_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">submission_status='SCORED'</em>, <em class="sig-param">change_to_status='VALIDATED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#change_all_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.change_all_submission_status" title="Permalink to this definition">¶</a></dt>
@@ -336,60 +328,6 @@ example: 2019-01-01 23:59</p></li>
 <li><p><strong>syn</strong> – Synapse object</p></li>
 <li><p><strong>project</strong> – Synapse id/entity of project</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.utils.team_members_diff">
-<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_diff</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#team_members_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the diff between teama and teamb</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> – Synapse object</p></li>
-<li><p><strong>a</strong> – Synapse Team id or name</p></li>
-<li><p><strong>b</strong> – Synapse Team id or name</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Set of synapse user profiles in teama but not in teamb</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.utils.team_members_intersection">
-<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_intersection</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#team_members_intersection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_intersection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the intersection between teama and teamb</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> – Synapse object</p></li>
-<li><p><strong>a</strong> – Synapse Team id or name</p></li>
-<li><p><strong>b</strong> – Synapse Team id or name</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Set of synapse user profiles that belong in both teams</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.utils.team_members_union">
-<code class="sig-prename descclassname">challengeutils.utils.</code><code class="sig-name descname">team_members_union</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/utils.html#team_members_union"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.utils.team_members_union" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the union between teama and teamb</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> – Synapse object</p></li>
-<li><p><strong>a</strong> – Synapse Team id or name</p></li>
-<li><p><strong>b</strong> – Synapse Team id or name</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Set of a combination of synapse user profiles from both teams</p>
 </dd>
 </dl>
 </dd></dl>

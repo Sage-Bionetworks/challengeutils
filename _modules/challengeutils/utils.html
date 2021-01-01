@@ -187,6 +187,7 @@
 <span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_submission_status_annotations</span><span class="p">,</span>
                                        <span class="n">to_submission_status_annotations</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+<span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -459,85 +460,6 @@
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">submission_bundle</span><span class="p">:</span>
         <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">change_to_status</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="NewUserProfile"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.NewUserProfile">[docs]</a><span class="k">class</span> <span class="nc">NewUserProfile</span><span class="p">(</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">UserProfile</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Create new user profile that makes Userprofiles hashable</span>
-<span class="sd">    SYNPY-879</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;ownerId&#39;</span><span class="p">])</span></div>
-
-
-<span class="k">def</span> <span class="nf">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Helper function to return a set of usernames</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        team: Synapse team id, name or object</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set of synapse user profiles in team</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">members</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeamMembers</span><span class="p">(</span><span class="n">team</span><span class="p">)</span>
-    <span class="n">members_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">NewUserProfile</span><span class="p">(</span><span class="o">**</span><span class="n">member</span><span class="p">[</span><span class="s1">&#39;member&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">members_set</span>
-
-
-<div class="viewcode-block" id="team_members_diff"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_diff">[docs]</a><span class="k">def</span> <span class="nf">team_members_diff</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Calculates the diff between teama and teamb</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        a: Synapse Team id or name</span>
-<span class="sd">        b: Synapse Team id or name</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set of synapse user profiles in teama but not in teamb</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
-    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">members_not_in_teamb</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">members_not_in_teamb</span></div>
-
-
-<div class="viewcode-block" id="team_members_intersection"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_intersection">[docs]</a><span class="k">def</span> <span class="nf">team_members_intersection</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Calculates the intersection between teama and teamb</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        a: Synapse Team id or name</span>
-<span class="sd">        b: Synapse Team id or name</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set of synapse user profiles that belong in both teams</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
-    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">intersect_members</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">intersect_members</span></div>
-
-
-<div class="viewcode-block" id="team_members_union"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.team_members_union">[docs]</a><span class="k">def</span> <span class="nf">team_members_union</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Calculates the union between teama and teamb</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        syn: Synapse object</span>
-<span class="sd">        a: Synapse Team id or name</span>
-<span class="sd">        b: Synapse Team id or name</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Set of a combination of synapse user profiles from both teams</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">uniq_teama_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
-    <span class="n">uniq_teamb_members</span> <span class="o">=</span> <span class="n">_get_team_set</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">union_members</span> <span class="o">=</span> <span class="n">uniq_teama_members</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">uniq_teamb_members</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">union_members</span></div>
 
 
 <span class="k">def</span> <span class="nf">_check_date_range</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
