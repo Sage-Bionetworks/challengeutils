@@ -22,8 +22,8 @@ setup(name='challengeutils',
       license='Apache',
       packages=find_packages(),
       zip_safe=False,
-      python_requires='>=3.5',
+      python_requires='>=3.6, <3.9',
       scripts=['bin/runqueue.py'],
       entry_points={'console_scripts': ['challengeutils = challengeutils.__main__:main']},
       install_requires=['pandas>=1.0.0',
-                        'synapseclient>=1.9.4'])
+                        'synapseclient>=2.2.0'])

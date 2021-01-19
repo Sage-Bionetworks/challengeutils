@@ -3,10 +3,10 @@ Test scoring harness functions
 '''
 # pylint: disable=redefined-outer-name
 import copy
-import mock
-from mock import patch
-import pytest
+from unittest import mock
+from unittest.mock import patch
 
+import pytest
 import synapseclient
 
 from scoring_harness import messages
@@ -22,7 +22,7 @@ SUBMISSION = synapseclient.Submission(name="foo", entityId="syn123",
                                       evaluationId=2, versionNumber=1,
                                       id="syn222", filePath="foo",
                                       userId="222")
-SUBMISSION_STATUS = synapseclient.SubmissionStatus(status="RECEIVED")
+SUBMISSION_STATUS = synapseclient.SubmissionStatus(status="RECEIVED", id="111", etag="222")
 EVALUATION = synapseclient.Evaluation(name="foo", id="222",
                                       contentSource=CHALLENGE_SYNID)
 SYN_USERPROFILE = synapseclient.UserProfile(ownerId="111", userName="foo")

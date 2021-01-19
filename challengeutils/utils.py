@@ -8,22 +8,15 @@ import sys
 import urllib
 
 import synapseclient
-from synapseclient.annotations import to_submission_status_annotations
-from synapseclient.annotations import is_submission_status_annotations
-try:
-    from synapseclient.core.exceptions import SynapseHTTPError
-    from synapseclient.core.utils import id_of
-except ModuleNotFoundError:
-    # For synapseclient < v2.0
-    from synapseclient.exceptions import SynapseHTTPError
-    from synapseclient.utils import id_of
-
-from synapseservices.challenge import Challenge
+from synapseclient.annotations import (is_submission_status_annotations,
+                                       to_submission_status_annotations)
+from synapseclient.core.exceptions import SynapseHTTPError
+from synapseclient.core.utils import id_of
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+# TODO: Deprecate once fully using submissionviews
 def _switch_annotation_permission(add_annotations,
                                   existing_annotations,
                                   force=False):
@@ -58,7 +51,7 @@ def _switch_annotation_permission(add_annotations,
             "force=True".format(", ".join(change_keys)))
     return existing_annotations
 
-
+# TODO: Deprecate once fully using submissionviews
 def _submission_annotations_to_dict(annotations, is_private=True):
     '''
     Convert private / public submission status objects to dictionary
@@ -77,7 +70,7 @@ def _submission_annotations_to_dict(annotations, is_private=True):
                        annotation['isPrivate'] == is_private}
     return annotation_dict
 
-
+# TODO: Deprecate once fully using submissionviews
 def update_single_submission_status(status, add_annotations, is_private=True,
                                     force=False):
     """
@@ -150,6 +143,7 @@ def update_single_submission_status(status, add_annotations, is_private=True,
     return status
 
 
+# TODO: Deprecate once fully using submissionviews
 def evaluation_queue_query(syn, uri, limit=20, offset=0):
     """
     This is to query the evaluation queue service.
@@ -184,47 +178,6 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
             yield result
 
 
-def get_challenge(syn, entity):
-    """Get the Challenge associated with a Project.
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
-
-    Args:
-        entity: An Entity or Synapse ID of a Project.
-
-    Returns:
-        Challenge object
-    """
-    synid = id_of(entity)
-    challenge = syn.restGET("/entity/%s/challenge" % synid)
-    challenge_obj = Challenge(**challenge)
-    return challenge_obj
-
-
-def create_challenge(syn, entity, team):
-    """Creates Challenge associated with a Project
-
-    See the definition of a Challenge object here:
-    https://docs.synapse.org/rest/org/sagebionetworks/repo/model/Challenge.html
-
-    Args:
-        syn: Synapse connection
-        entity: An Entity or Synapse ID of a Project.
-        team: A Team or Team ID.
-
-    Returns:
-        Challenge object
-    """
-    synid = id_of(entity)
-    teamid = id_of(team)
-    challenge_object = {'participantTeamId': teamid,
-                        'projectId': synid}
-    challenge = syn.restPOST('/challenge', json.dumps(challenge_object))
-    challenge_obj = Challenge(**challenge)
-    return challenge_obj
-
-
 def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
     '''
     Helper function to locate the existing annotation
@@ -246,7 +199,7 @@ def _change_annotation_acl(annotations, key, annotation_type, is_private=True):
             check[0]['isPrivate'] = is_private
     return annotations
 
-
+# TODO: Deprecate once fully using submissionviews
 def change_submission_annotation_acl(status, annotations, is_private=False):
     """
     Function to change the acl of a list of known annotation keys
@@ -271,7 +224,7 @@ def change_submission_annotation_acl(status, annotations, is_private=False):
     status.annotations = submission_annotations
     return status
 
-
+# TODO: Deprecate once fully using submissionviews
 def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
                                           status='SCORED', is_private=False):
     """
@@ -293,66 +246,6 @@ def update_all_submissions_annotation_acl(syn, evaluationid, annotations,
         syn.store(new_status)
 
 
-def invite_member_to_team(syn, team, user=None, email=None, message=None):
-    """
-    Invite members to a team
-
-    Args:
-        syn: Synapse object
-        team: Synapse Team id or name
-        user: Synapse username or profile id
-        email: Email of user, do not specify both email and user,
-               but must specify one
-        message: Message for people getting invited to the team
-    """
-    teamid = syn.getTeam(team)['id']
-    is_member = False
-    invite = {'teamId': str(teamid)}
-
-    if email is None:
-        userid = syn.getUserProfile(user)['ownerId']
-        request = \
-            "/team/{teamId}/member/{individualId}/membershipStatus".format(
-                teamId=str(teamid),
-                individualId=str(userid))
-        membership_status = syn.restGET(request)
-        is_member = membership_status['isMember']
-        invite['inviteeId'] = str(userid)
-    else:
-        invite['inviteeEmail'] = email
-
-    if message is not None:
-        invite['message'] = message
-
-    if not is_member:
-        invite = syn.restPOST("/membershipInvitation", body=json.dumps(invite))
-        return invite
-
-    return None
-
-
-def register_team(syn, entity, team):
-    '''
-    Registers team to challenge
-
-    Args:
-        syn: Synapse object
-        entity: An Entity or Synapse ID to lookup
-        team: Team name or team Id
-
-    Returns:
-        Team id
-    '''
-
-    challengeid = get_challenge(syn, entity)['id']
-    teamid = syn.getTeam(team)['id']
-    challenge_object = {'challengeId': challengeid, 'teamId': teamid}
-    registered_team = syn.restPOST(
-        '/challenge/%s/challengeTeam' % challengeid,
-        json.dumps(challenge_object))
-    return registered_team['teamId']
-
-
 def change_submission_status(syn, submissionid, status='RECEIVED'):
     '''
     Function to change a submission status
@@ -370,7 +263,7 @@ def change_submission_status(syn, submissionid, status='RECEIVED'):
     sub_status = syn.store(sub_status)
     return sub_status
 
-
+# TODO: Can possibly deprecate once using submissionview
 def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
                                  change_to_status='VALIDATED'):
     '''
@@ -391,85 +284,6 @@ def change_all_submission_status(syn, evaluationid, submission_status='SCORED',
     for _, status in submission_bundle:
         status.status = change_to_status
         syn.store(status)
-
-
-class NewUserProfile(synapseclient.team.UserProfile):
-    '''
-    Create new user profile that makes Userprofiles hashable
-    SYNPY-879
-    '''
-    def __hash__(self):
-        return int(self['ownerId'])
-
-
-def _get_team_set(syn, team):
-    '''
-    Helper function to return a set of usernames
-
-    Args:
-        syn: Synapse object
-        team: Synapse team id, name or object
-
-    Returns:
-        Set of synapse user profiles in team
-    '''
-    members = syn.getTeamMembers(team)
-    members_set = set(NewUserProfile(**member['member']) for member in members)
-    return members_set
-
-
-def team_members_diff(syn, a, b):
-    '''
-    Calculates the diff between teama and teamb
-
-    Args:
-        syn: Synapse object
-        a: Synapse Team id or name
-        b: Synapse Team id or name
-
-    Returns:
-        Set of synapse user profiles in teama but not in teamb
-    '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
-    members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
-    return members_not_in_teamb
-
-
-def team_members_intersection(syn, a, b):
-    '''
-    Calculates the intersection between teama and teamb
-
-    Args:
-        syn: Synapse object
-        a: Synapse Team id or name
-        b: Synapse Team id or name
-
-    Returns:
-        Set of synapse user profiles that belong in both teams
-    '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
-    intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
-    return intersect_members
-
-
-def team_members_union(syn, a, b):
-    '''
-    Calculates the union between teama and teamb
-
-    Args:
-        syn: Synapse object
-        a: Synapse Team id or name
-        b: Synapse Team id or name
-
-    Returns:
-        Set of a combination of synapse user profiles from both teams
-    '''
-    uniq_teama_members = _get_team_set(syn, a)
-    uniq_teamb_members = _get_team_set(syn, b)
-    union_members = uniq_teama_members.union(uniq_teamb_members)
-    return union_members
 
 
 def _check_date_range(date_str, start_datetime, end_datetime):
@@ -595,41 +409,6 @@ def download_submission(syn, submissionid, download_location=None):
     return result
 
 
-class mock_response:
-    """Mocked status code to return"""
-    status_code = 200
-
-
-def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  is_private=True,
-                                  force=False):
-    '''
-    ChallengeWorkflowTemplate tool: Annotates submission with annotation
-    values from a json file and uses exponential backoff to retry when
-    there are concurrent update issues (HTTP 412).  Must return a object
-    with status_code that has a range between 200-209
-
-    Args:
-        syn: Synapse object
-        submissionid: Submission id
-        annotation_values: Annotation json file
-        is_private: Set annotations acl to private (default is True)
-        force: Force change the annotation from
-               private to public and vice versa.
-
-    Returns:
-        mocked response object (200)
-    '''
-    status = syn.getSubmissionStatus(submissionid)
-    with open(annotation_values) as json_data:
-        annotation_json = json.load(json_data)
-    status = update_single_submission_status(status, annotation_json,
-                                             is_private=is_private,
-                                             force=force)
-    status = syn.store(status)
-    return mock_response
-
-
 def _get_submitter_name(syn, submitterid):
     """Get the Synapse team name or the username given a submitterid
 
@@ -648,3 +427,15 @@ def _get_submitter_name(syn, submitterid):
         team = syn.getTeam(submitterid)
         submitter_name = team['name']
     return submitter_name
+
+
+def delete_submission(syn, submissionid):
+    """Deletes a submission
+
+    Args:
+        syn: Synapse object
+        submissionid: Id of a submission
+
+    """
+    sub = syn.getSubmission(submissionid, downloadFile=False)
+    syn.delete(sub)
