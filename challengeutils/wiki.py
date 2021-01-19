@@ -25,7 +25,7 @@ def download_wiki(syn: Synapse, project: str,
         Dict of wiki configuration
 
     """
-    projectid = synapseclient.utils.id_of(project)
+    projectid = synapseclient.core.utils.id_of(project)
     wiki_headers = syn.getWikiHeaders(projectid)
     for wiki_header in wiki_headers:
         wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
@@ -39,17 +39,17 @@ def download_wiki(syn: Synapse, project: str,
                                      f"{title}.md")
         with open(markdown_path, 'w') as md_file:
             md_file.write(wiki['markdown'])
-        wiki_header['markdown_path'] = markdown_path
+        wiki_header['markdown_path'] = os.path.abspath(markdown_path)
     with open(config_path, 'w') as config:
         json.dump(wiki_headers, config, indent=4)
     return wiki_headers
 
 
-def validate_config(wiki_config: str):
+def _validate_config(wiki_config: dict):
     """Validates wiki configuration
 
     Args:
-        wiki_config: Wiki configuration path
+        wiki_config: Wiki configuration dict
 
     Raises:
         ValueError:
@@ -86,17 +86,31 @@ def validate_config(wiki_config: str):
                              "`id`s in the config.")
 
 
-def sync_wiki(syn: Synapse, projectid: str,
-              markdown_location: str = "./",
-              config_path: str = "wiki_config.json") -> dict:
+def validate_config(config_path: str):
+    """Validates wiki configuration
+
+    Args:
+        config_path: Wiki configuration path
+
+    Raises:
+        ValueError:
+            `markdown_path` is specified but cannot be located
+            There are more than one `title` that is ''
+            `id` is not specified and `markdown_path`/`parentId`/`title`
+            is missing or `parentId` not one of the `id`s.
+
+    """
+    with open(config_path, "r") as config:
+        wiki_config = json.load(config)
+    _validate_config(wiki_config)
+
+
+def sync_wiki(syn: Synapse, projectid: str, config_path: str) -> dict:
     """Syncs Wiki from configuration
 
     Args:
         syn: Synapse connection
         project: synapseclient.Project or its id
-        markdown_location: Location to download markdown files into
-                           Defaults to location of where code is being
-                           executed.
         config_path: Wiki configuration path that can be used to update
                      the wikis
 
@@ -107,15 +121,15 @@ def sync_wiki(syn: Synapse, projectid: str,
     with open(config_path, "r") as config:
         wiki_config = json.load(config)
 
-    validate_config(wiki_config)
+    _validate_config(wiki_config)
 
     for wiki_header in wiki_config:
         # no markdown path, nothing to update
         if not wiki_header.get('markdown_path'):
             print("Markdown not specified")
             continue
-        with open(wiki_header['markdown_path'], 'r') as md:
-            markdown = md.read()
+        with open(wiki_header['markdown_path'], 'r') as md_f:
+            markdown = md_f.read()
         if wiki_header.get('id') is not None:
             wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
             # Don't store if the wiki pages are the same

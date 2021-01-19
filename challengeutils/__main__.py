@@ -9,9 +9,9 @@ import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
-from . import (createchallenge, challenge, evaluation_queue,
-               helpers, mirrorwiki, permissions,
-               submission, utils, annotations)
+from . import (annotations, createchallenge, challenge,
+               evaluation_queue, helpers, mirrorwiki, permissions,
+               submission, utils, wiki)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -314,6 +314,23 @@ def command_delete_submission(syn, args):
     >>> challengeutils delete-submission 12345
     """
     utils.delete_submission(syn, args.submissionid)
+
+
+def command_download_wiki(syn, args):
+    """Command line interface to download wiki into local markdown files"""
+    wiki.download_wiki(syn, args.projectid,
+                       markdown_location=args.markdown_location,
+                       config_path=args.config_path)
+
+
+def command_validate_wiki(syn, args):
+    """Command line interface to validate wiki configuration"""
+    wiki.validate_config(args.config_path)
+
+
+def command_sync_wiki(syn, args):
+    """Command line interface to sync wiki updates"""
+    wiki.sync_wiki(syn, args.projectid, config_path=args.config_path)
 
 
 def build_parser():
@@ -733,6 +750,48 @@ def build_parser():
         help="Output json results into a file"
     )
     parser_validate_docker.set_defaults(func=command_validate_docker)
+
+    parser_download_wiki = subparsers.add_parser(
+        'download-wiki',
+        help='Download a Synapse wiki')
+
+    parser_download_wiki.add_argument(
+        "projectid", type=str,
+        help='Synapse id of Project'
+    )
+    parser_download_wiki.add_argument(
+        "--markdown_location", type=str, default="./",
+        help='Path to download markdown files to'
+    )
+    parser_download_wiki.add_argument(
+        "--config_path", type=str, default="wiki_config.json",
+        help='Wiki configuration path.'
+    )
+    parser_download_wiki.set_defaults(func=command_download_wiki)
+
+    parser_validate_wiki = subparsers.add_parser(
+        'validate-wiki-config',
+        help='Validate a wiki configuration')
+
+    parser_validate_wiki.add_argument(
+        "config_path", type=str,
+        help='Wiki configuration path.'
+    )
+    parser_validate_wiki.set_defaults(func=command_validate_wiki)
+
+    parser_sync_wiki = subparsers.add_parser(
+        'sync-wiki',
+        help='Syncs a Synapse wiki'
+    )
+    parser_sync_wiki.add_argument(
+        "projectid", type=str,
+        help='Synapse id of Project'
+    )
+    parser_sync_wiki.add_argument(
+        "config_path", type=str,
+        help='Wiki configuration path.'
+    )
+    parser_sync_wiki.set_defaults(func=command_sync_wiki)
 
     return parser
 
