@@ -283,7 +283,8 @@ def test__get_certified_passing_record(userid):
     """Test correct rest call"""
     response = {"test": 5}
     with patch.object(syn, "restGET", return_value=response) as patch_get:
-        record = challengeutils.utils._get_certified_passing_record(syn, userid)
+        record = challengeutils.utils._get_certified_passing_record(syn,
+                                                                    userid)
         patch_get.assert_called_once_with(
             f"/user/{userid}/certifiedUserPassingRecord"
         )
@@ -297,7 +298,8 @@ def test_get_certification_status(response):
          patch.object(challengeutils.utils,
                       "_get_certified_passing_record",
                       return_value={'passed': response}) as patch_get_cert:
-        is_certified = challengeutils.utils.get_certification_status(syn, "test")
+        is_certified = challengeutils.utils.get_certification_status(syn,
+                                                                     "test")
         patch_get_user.assert_called_once_with("test")
         patch_get_cert.assert_called_once_with(syn, "foobar")
         assert is_certified is response
