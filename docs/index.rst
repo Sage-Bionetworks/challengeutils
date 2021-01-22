@@ -9,6 +9,7 @@
    python/discussion
    python/helpers
    python/permissions
+   python/teams
    python/utils
 
 .. toctree::
