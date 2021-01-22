@@ -2,16 +2,15 @@
 Challenge utility functions
 """
 import datetime
-import json
 import logging
 import sys
+from typing import Union
 import urllib
 
-import synapseclient
+from synapseclient import Synapse
 from synapseclient.annotations import (is_submission_status_annotations,
                                        to_submission_status_annotations)
 from synapseclient.core.exceptions import SynapseHTTPError
-from synapseclient.core.utils import id_of
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -439,3 +438,37 @@ def delete_submission(syn, submissionid):
     """
     sub = syn.getSubmission(submissionid, downloadFile=False)
     syn.delete(sub)
+
+
+def _get_certified_passing_record(syn: Synapse, userid: int) -> dict:
+    """Retrieve the Passing Record on the User Certification test for the given
+    user.
+
+    Args:
+        syn: Synapse object
+        user: Synapse username or id
+
+    Returns:
+        Synapse Passing Record
+        https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/quiz/PassingRecord.html
+    """
+    request = syn.restGET(f"/user/{userid}/certifiedUserPassingRecord")
+    return request
+
+
+def get_certification_status(syn: Synapse, user: Union[str, int]) -> bool:
+    """Determines whether a Synapse user is a certified user.
+
+    Args:
+        syn: Synapse object
+        user: Synapse username or id
+
+    Returns:
+        True if certified.
+    """
+    # Check if userid or username exists
+    syn_user = syn.getUserProfile(user)
+    # Get passing record
+    certification_status = _get_certified_passing_record(syn,
+                                                         syn_user['ownerId'])
+    return certification_status['passed']
