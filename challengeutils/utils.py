@@ -452,8 +452,8 @@ def _get_certified_passing_record(syn: Synapse, userid: int) -> dict:
         Synapse Passing Record
         https://rest-docs.synapse.org/rest/org/sagebionetworks/repo/model/quiz/PassingRecord.html
     """
-    request = syn.restGET(f"/user/{userid}/certifiedUserPassingRecord")
-    return request
+    response = syn.restGET(f"/user/{userid}/certifiedUserPassingRecord")
+    return response
 
 
 def get_certification_status(syn: Synapse, user: Union[str, int]) -> bool:

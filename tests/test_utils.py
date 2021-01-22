@@ -276,3 +276,28 @@ def test_delete_submission():
         challengeutils.utils.delete_submission(syn, "12345")
         patch_get.assert_called_once_with("12345", downloadFile=False)
         patch_delete.assert_called_once_with(sub)
+
+
+@pytest.mark.parametrize("userid", [999, 1456])
+def test__get_certified_passing_record(userid):
+    """Test correct rest call"""
+    response = {"test": 5}
+    with patch.object(syn, "restGET", return_value=response) as patch_get:
+        record = challengeutils.utils._get_certified_passing_record(syn, userid)
+        patch_get.assert_called_once_with(
+            f"/user/{userid}/certifiedUserPassingRecord"
+        )
+        assert record == response
+
+
+@pytest.mark.parametrize("response", [True, False])
+def test_get_certification_status(response):
+    with patch.object(syn, "getUserProfile",
+                      return_value={"ownerId": "foobar"}) as patch_get_user,\
+         patch.object(challengeutils.utils,
+                      "_get_certified_passing_record",
+                      return_value={'passed': response}) as patch_get_cert:
+        is_certified = challengeutils.utils.get_certification_status(syn, "test")
+        patch_get_user.assert_called_once_with("test")
+        patch_get_cert.assert_called_once_with(syn, "foobar")
+        assert is_certified is response
