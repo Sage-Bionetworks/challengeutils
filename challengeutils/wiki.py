@@ -126,7 +126,7 @@ def sync_wiki(syn: Synapse, projectid: str, config_path: str) -> dict:
     for wiki_header in wiki_config:
         # no markdown path, nothing to update
         if not wiki_header.get('markdown_path'):
-            print("Markdown not specified")
+            print(f"Markdown not specified: {wiki_header['title']}")
             continue
         with open(wiki_header['markdown_path'], 'r') as md_f:
             markdown = md_f.read()
@@ -134,13 +134,13 @@ def sync_wiki(syn: Synapse, projectid: str, config_path: str) -> dict:
             wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
             # Don't store if the wiki pages are the same
             if wiki.markdown == markdown:
-                print("no updates")
+                print(f"no updates: {wiki_header['title']}")
                 continue
         else:
             wiki = synapseclient.Wiki(owner=projectid,
                                       title=wiki_header['title'],
                                       parentWikiId=wiki_header['parentId'])
-
+        print(f"Wiki added/updated: {wiki_header['title']}")
         wiki.markdown = markdown
         syn.store(wiki)
 
