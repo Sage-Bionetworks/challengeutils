@@ -7,7 +7,8 @@ import synapseclient
 from synapseclient import Synapse
 
 
-def pull_wiki(syn: Synapse, project: str, workdir: str = "./") -> dict:
+def pull_wiki(syn: Synapse, project: str,
+              workdir: str = "./") -> typing.List[dict]:
     """Downloads each wikipage's content into a markdown file and
     stores a configuration file
 
@@ -19,7 +20,16 @@ def pull_wiki(syn: Synapse, project: str, workdir: str = "./") -> dict:
                  executed.
 
     Returns:
-        Dict of wiki configuration
+        Wiki Configuration
+        [
+            {
+                "id": "111",
+                "title": "title",
+                "parentId": "33333",
+                "markdown_path": "markdown.md"
+            },
+            {...}
+        ]
 
     """
     projectid = synapseclient.core.utils.id_of(project)
@@ -65,11 +75,23 @@ def read_wiki_config(workdir: str) -> typing.List[dict]:
     return wiki_config
 
 
-def validate_config(workdir: str):
+def validate_config(workdir: str) -> typing.List[dict]:
     """Validates wiki configuration
 
     Args:
-        wiki_config: Wiki configuration dict
+        workdir: Workfing directory with markdown and wiki_config.json
+
+    Returns:
+        Wiki Configuration
+        [
+            {
+                "id": "111",
+                "title": "title",
+                "parentId": "33333",
+                "markdown_path": "markdown.md"
+            },
+            {...}
+        ]
 
     Raises:
         ValueError:
