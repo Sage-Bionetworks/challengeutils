@@ -615,7 +615,8 @@ pull-wiki
 Description
 ^^^^^^^^^^^
 
-Download Synapse wiki pages into local markdown and wiki_config.json
+Download each wiki page of a synapse project and saves a json configuration
+(wiki_config.json).
 
 Positional
 ^^^^^^^^^^
@@ -649,7 +650,8 @@ push-wiki
 Description
 ^^^^^^^^^^^
 
-Push local markdown and wiki_config.json into Synapse.
+Updates Synapse wiki by uploading markdown files linked together by a wiki_config.json.
+The markdown and wiki_config.json can be obtained by the `pull-wiki` command.
 
 Positional
 ^^^^^^^^^^
