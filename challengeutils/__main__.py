@@ -316,11 +316,9 @@ def command_delete_submission(syn, args):
     utils.delete_submission(syn, args.submissionid)
 
 
-def command_download_wiki(syn, args):
+def command_pull_wiki(syn, args):
     """Command line interface to download wiki into local markdown files"""
-    wiki.download_wiki(syn, args.projectid,
-                       markdown_location=args.markdown_location,
-                       config_path=args.config_path)
+    wiki.pull_wiki(syn, args.projectid, workdir=args.workdir)
 
 
 def command_validate_wiki(syn, args):
@@ -328,9 +326,9 @@ def command_validate_wiki(syn, args):
     wiki.validate_config(args.config_path)
 
 
-def command_sync_wiki(syn, args):
+def command_push_wiki(syn, args):
     """Command line interface to sync wiki updates"""
-    wiki.sync_wiki(syn, args.projectid, config_path=args.config_path)
+    wiki.push_wiki(syn, args.projectid, workdir=args.workdir)
 
 
 def build_parser():
@@ -751,23 +749,19 @@ def build_parser():
     )
     parser_validate_docker.set_defaults(func=command_validate_docker)
 
-    parser_download_wiki = subparsers.add_parser(
-        'download-wiki',
-        help='Download a Synapse wiki')
-
-    parser_download_wiki.add_argument(
+    parser_pull_wiki = subparsers.add_parser(
+        'pull-wiki', help='Download a Synapse wiki'
+    )
+    parser_pull_wiki.add_argument(
         "projectid", type=str,
         help='Synapse id of Project'
     )
-    parser_download_wiki.add_argument(
-        "--markdown_location", type=str, default="./",
-        help='Path to download markdown files to'
+    parser_pull_wiki.add_argument(
+        "--workdir", type=str, default="./",
+        help='Path to download markdown files and wiki_config.json.'
+             'Defaults to location of where code is being executed.'
     )
-    parser_download_wiki.add_argument(
-        "--config_path", type=str, default="wiki_config.json",
-        help='Wiki configuration path.'
-    )
-    parser_download_wiki.set_defaults(func=command_download_wiki)
+    parser_pull_wiki.set_defaults(func=command_pull_wiki)
 
     parser_validate_wiki = subparsers.add_parser(
         'validate-wiki-config',
@@ -779,19 +773,20 @@ def build_parser():
     )
     parser_validate_wiki.set_defaults(func=command_validate_wiki)
 
-    parser_sync_wiki = subparsers.add_parser(
-        'sync-wiki',
+    parser_push_wiki = subparsers.add_parser(
+        'push-wiki',
         help='Syncs a Synapse wiki'
     )
-    parser_sync_wiki.add_argument(
+    parser_push_wiki.add_argument(
         "projectid", type=str,
         help='Synapse id of Project'
     )
-    parser_sync_wiki.add_argument(
-        "config_path", type=str,
-        help='Wiki configuration path.'
+    parser_push_wiki.add_argument(
+        "--workdir", type=str, default="./",
+        help='Path of markdown files and wiki_config.json.'
+             'Defaults to location of where code is being executed.'
     )
-    parser_sync_wiki.set_defaults(func=command_sync_wiki)
+    parser_push_wiki.set_defaults(func=command_push_wiki)
 
     return parser
 

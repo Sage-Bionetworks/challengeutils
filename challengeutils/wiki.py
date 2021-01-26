@@ -6,20 +6,16 @@ import synapseclient
 from synapseclient import Synapse
 
 
-def download_wiki(syn: Synapse, project: str,
-                  markdown_location: str = "./",
-                  config_path: str = "wiki_config.json") -> dict:
+def pull_wiki(syn: Synapse, project: str, workdir: str = "./") -> dict:
     """Downloads each wikipage's content into a markdown file and
     stores a configuration file
 
     Args:
         syn: Synapse connection
         project: synapseclient.Project or its id
-        markdown_location: Location to download markdown files into
-                           Defaults to location of where code is being
-                           executed.
-        config_path: Wiki configuration path that can be used to update
-                     the wikis
+        workdir: Location to download markdown files and wiki_config.json
+                 into. Defaults to location of where code is being
+                 executed.
 
     Returns:
         Dict of wiki configuration
@@ -35,11 +31,13 @@ def download_wiki(syn: Synapse, project: str,
         # Home page title is always blank
         if title == '':
             title = 'home'
-        markdown_path = os.path.join(markdown_location,
+        # Don't add the ./ if markdown location isn't specified
+        markdown_path = os.path.join(workdir,
                                      f"{title}.md")
         with open(markdown_path, 'w') as md_file:
             md_file.write(wiki['markdown'])
-        wiki_header['markdown_path'] = os.path.abspath(markdown_path)
+        wiki_header['markdown_path'] = f"{title}.md"
+    config_path = os.path.join(workdir, "wiki_config.json")
     with open(config_path, 'w') as config:
         json.dump(wiki_headers, config, indent=4)
     return wiki_headers
@@ -105,30 +103,33 @@ def validate_config(config_path: str):
     _validate_config(wiki_config)
 
 
-def sync_wiki(syn: Synapse, projectid: str, config_path: str) -> dict:
+def push_wiki(syn: Synapse, projectid: str, workdir: str = "./") -> dict:
     """Syncs Wiki from configuration
 
     Args:
         syn: Synapse connection
         project: synapseclient.Project or its id
-        config_path: Wiki configuration path that can be used to update
-                     the wikis
+        workdir: Location to download markdown files and wiki_config.json
+                 into. Defaults to location of where code is being
+                 executed.
 
     Returns:
         Dict of wiki configuration
 
     """
+    config_path = os.path.join(workdir, "wiki_config.json")
     with open(config_path, "r") as config:
         wiki_config = json.load(config)
 
     _validate_config(wiki_config)
-
     for wiki_header in wiki_config:
         # no markdown path, nothing to update
+        markdown_path = wiki_header.get('markdown_path')
         if not wiki_header.get('markdown_path'):
             print(f"Markdown not specified: {wiki_header['title']}")
             continue
-        with open(wiki_header['markdown_path'], 'r') as md_f:
+        markdown_path = os.path.join(workdir, markdown_path)
+        with open(markdown_path, 'r') as md_f:
             markdown = md_f.read()
         if wiki_header.get('id') is not None:
             wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
