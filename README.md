@@ -7,7 +7,6 @@ Automation | Status
 -----------|-------
 [![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg)](https://hub.docker.com/r/sagebionetworks/challengeutils/) | ![Docker Build](https://img.shields.io/docker/build/sagebionetworks/challengeutils.svg)
 pypi | [![Get challengeutils from PyPI](https://img.shields.io/pypi/v/challengeutils.svg)](https://pypi.python.org/pypi/challengeutils)
-travis | [![Build Status master branch](https://travis-ci.org/Sage-Bionetworks/challengeutils.svg?branch=master)](https://travis-ci.org/Sage-Bionetworks/challengeutils)
 
 
 ## Documentation
