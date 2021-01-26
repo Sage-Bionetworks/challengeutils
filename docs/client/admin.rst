@@ -651,7 +651,7 @@ Description
 ^^^^^^^^^^^
 
 Updates Synapse wiki by uploading markdown files linked together by a wiki_config.json.
-The markdown and wiki_config.json can be obtained by the `pull-wiki` command.
+The markdown and wiki_config.json can be obtained by the ``pull-wiki`` command.
 
 Positional
 ^^^^^^^^^^
