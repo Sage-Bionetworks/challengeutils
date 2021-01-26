@@ -126,7 +126,8 @@ def validate_config(workdir: str) -> typing.List[dict]:
     return wiki_config
 
 
-def push_wiki(syn: Synapse, projectid: str, workdir: str = "./") -> dict:
+def push_wiki(syn: Synapse, projectid: str,
+              workdir: str = "./") -> typing.List[dict]:
     """Syncs Wiki from configuration
 
     Args:
@@ -137,7 +138,16 @@ def push_wiki(syn: Synapse, projectid: str, workdir: str = "./") -> dict:
                  executed.
 
     Returns:
-        Dict of wiki configuration
+        Wiki Configuration
+        [
+            {
+                "id": "111",
+                "title": "title",
+                "parentId": "33333",
+                "markdown_path": "markdown.md"
+            },
+            {...}
+        ]
 
     """
     wiki_config = validate_config(workdir)
