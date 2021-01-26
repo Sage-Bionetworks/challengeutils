@@ -1,6 +1,7 @@
+"""Test wiki module"""
 import tempfile
 from unittest import mock
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import synapseclient
 
@@ -8,6 +9,7 @@ import challengeutils.wiki
 
 
 class TestWiki:
+    """Test wiki"""
 
     def setup_method(self):
         """Method called once per method"""
@@ -42,6 +44,7 @@ class TestWiki:
             assert config == self.wiki_config
 
     def test_pull_wiki(self):
+        """Testing pulling of wiki"""
         wiki_headers = [
             {
                 "id": "2",
@@ -69,3 +72,46 @@ class TestWiki:
             assert header == expected_header
             patch_get_headers.assert_called_once_with("syn1234")
             patch_get_wiki.assert_called_once_with("syn1234", subpageId="2")
+
+
+    def test_push_wiki(self):
+        """Testing push wiki"""
+        wiki_obj = synapseclient.Wiki(title="Echoes", owner="syn22",
+                                      markdown="test", id="44")
+        self.wiki_config.append(
+            {
+                'title': 'Time',
+                'parentId': '1',
+                'markdown_path': self.file2.name
+            }
+        )
+
+        expected_header = [
+            {
+                'id': '44',
+                'title': 'Wish You Were Here',
+                'markdown_path': self.file1.name
+            },
+            {
+                'id': '2',
+                'title': 'Echoes',
+                'parentId': '1',
+                'markdown_path': self.file2.name
+            },
+            {
+                'title': 'Time',
+                'parentId': '1',
+                'markdown_path': self.file2.name,
+                'id': '44'
+            }
+        ]
+        with patch.object(challengeutils.wiki, "read_wiki_config",
+                          return_value=self.wiki_config) as patch_read,\
+             patch.object(self.syn, "store",
+                          return_value=wiki_obj) as patch_store:
+            header = challengeutils.wiki.push_wiki(
+                self.syn, "syn1234", workdir=tempfile.gettempdir()
+            )
+            assert header == expected_header
+            patch_read.assert_called_once_with(tempfile.gettempdir())
+            assert patch_store.call_count == 2
