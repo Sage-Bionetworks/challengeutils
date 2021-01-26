@@ -73,7 +73,6 @@ class TestWiki:
             patch_get_headers.assert_called_once_with("syn1234")
             patch_get_wiki.assert_called_once_with("syn1234", subpageId="2")
 
-
     def test_push_wiki(self):
         """Testing push wiki"""
         wiki_obj = synapseclient.Wiki(title="Echoes", owner="syn22",
