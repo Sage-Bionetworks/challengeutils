@@ -99,6 +99,7 @@ def validate_config(workdir: str) -> typing.List[dict]:
             There are duplicated wiki ids.
             `id` is not specified and (`markdown_path`/`parentId`/`title`
             is missing or `parentId` not one of the `id`s.)
+            `id` cannot be the same as `parentId`.
 
     """
     wiki_config = read_wiki_config(workdir)
@@ -115,6 +116,9 @@ def validate_config(workdir: str) -> typing.List[dict]:
         if markdown_path is not None and not os.path.exists(
                 os.path.join(workdir, markdown_path)):
             raise ValueError(f"{markdown_path} does not exist")
+        # id must not be the same as parentid
+        if wikiid == parentid:
+            raise ValueError("`id` cannot be the same as `parentId`.")
         if (wikiid is None and
             (markdown_path is None or parentid not in ids
              or title == '')):
