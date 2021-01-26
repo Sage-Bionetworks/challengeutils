@@ -18,3 +18,12 @@ Updating
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+Synapse Wiki Tools
+------------------
+
+.. automodule:: challengeutils.wiki
+    :members:
+    :undoc-members:
+    :show-inheritance:
