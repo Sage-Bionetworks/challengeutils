@@ -750,7 +750,8 @@ def build_parser():
     parser_validate_docker.set_defaults(func=command_validate_docker)
 
     parser_pull_wiki = subparsers.add_parser(
-        'pull-wiki', help='Download a Synapse wiki'
+        'pull-wiki',
+        help='Download a Synapse wiki into markdown and wiki_config.json'
     )
     parser_pull_wiki.add_argument(
         "projectid", type=str,
@@ -775,7 +776,7 @@ def build_parser():
 
     parser_push_wiki = subparsers.add_parser(
         'push-wiki',
-        help='Syncs a Synapse wiki'
+        help='Push a Synapse wiki'
     )
     parser_push_wiki.add_argument(
         "projectid", type=str,

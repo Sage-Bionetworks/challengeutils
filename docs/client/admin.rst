@@ -599,3 +599,71 @@ Optional
 .. cmdoption:: -o, --output
 
     Output the results into a json file
+
+
+-------
+
+Pull a Synapse Project's Wiki
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+pull-wiki
+    projectid [--workdir]
+
+Description
+^^^^^^^^^^^
+
+Download Synapse wiki pages into local markdown and wiki_config.json
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils pull-wiki
+
+.. cmdoption:: projectid
+
+    Synapse project ID e.g. ``syn123455``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: --workdir
+
+    Path to download markdown files and wiki_config.json
+    Defaults to location of where code is being executed
+
+
+-------
+
+Push a Synapse Project's Wiki
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+push-wiki
+    projectid [--workdir]
+
+Description
+^^^^^^^^^^^
+
+Push local markdown and wiki_config.json into Synapse.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils push-wiki
+
+.. cmdoption:: projectid
+
+    Synapse project ID e.g. ``syn123455``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: --workdir
+
+    Path to markdown files and wiki_config.json
+    Defaults to location of where code is being executed
