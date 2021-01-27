@@ -42,6 +42,7 @@ def pull_wiki(syn: Synapse, project: str,
         # Home page title is always blank
         if title == '':
             title = '_homepage_'
+            wiki_header['title'] = title
         markdown_path = os.path.join(workdir, f"{title}.md")
         with open(markdown_path, 'w') as md_file:
             md_file.write(wiki['markdown'])
@@ -123,6 +124,7 @@ def validate_config(workdir: str) -> typing.List[dict]:
         # Title must be specified
         if title is None:
             raise ValueError("Must have title")
+        title = str(title).strip()
 
         # Make id and parentid strings and strip white spaces if values
         # are specified
@@ -134,8 +136,8 @@ def validate_config(workdir: str) -> typing.List[dict]:
             wiki_header['parentId'] = parentid
 
         # id and parentid must not be empty strings
-        if wikiid == '' or parentid == '':
-            raise ValueError('`id` and `parentId` must not be '
+        if wikiid == '' or parentid == '' or title == '':
+            raise ValueError('`id`, `parentId`, and `title` must not be '
                              'empty strings if specified')
         # Markdown file must exist if specified
         if markdown_path is not None and not os.path.exists(
@@ -149,12 +151,6 @@ def validate_config(workdir: str) -> typing.List[dict]:
         if parentid is not None and parentid not in ids:
             raise ValueError("`parentId` must be one of the "
                              "`id`s in the config")
-
-        if (wikiid is None and
-            (markdown_path is None or str(title).strip() == '')):
-            raise ValueError("If `id` is not specified, then `markdown_path` "
-                             "and `parentId`, and `title` must be specified. "
-                             "`title` must also not be blank.")
     return wiki_config
 
 

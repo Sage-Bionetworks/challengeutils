@@ -51,19 +51,21 @@ class TestWiki:
              "Must have unique ids."),
             ({"parentId": " "}, "Must have title"),
             ({"parentId": " ", "title": "foo"},
-             "`id` and `parentId` must not be empty strings*"),
+             "`id`, `parentId`, and `title` must not be empty strings*"),
             ({"id": " ", "title": "foo", "parentId": "2"},
-             "`id` and `parentId` must not be empty strings*"),
+             "`id`, `parentId`, and `title` must not be empty strings*"),
+            ({"id": "5", "title": " ", "parentId": "2"},
+             "`id`, `parentId`, and `title` must not be empty strings*"),
             ({"markdown_path": "test.md", "title": "foo", "parentId": "2"},
              "test.md does not exist"),
             ({"id": "4", "parentId": "4", "title": "foo"},
              "`id` and `parentId` can't be equal"),
             ({"id": "5", "parentId": "4", "title": "foo"},
              "`parentId` must be one of the*"),
-            ({"parentId": "2", "title": 'test'},
-             "If `id` is not specified*"),
-            ({"markdown_path": "", "title": ' ', "parentId": "2"},
-             "If `id` is not specified*")
+            # ({"parentId": "2", "title": 'test'},
+            #  "If `id` is not specified*"),
+            # ({"markdown_path": "", "title": ' ', "parentId": "2"},
+            #  "If `id` is not specified*")
         ]
     )
     def test_validate_config_invalid(self, append_dict, error_message):
