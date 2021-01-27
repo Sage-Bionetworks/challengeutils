@@ -47,7 +47,8 @@ class TestWiki:
     @pytest.mark.parametrize("append_dict,error_message",
         [
             ({}, "Must only have one config where `parentId` is blank"),
-            ({"id": "1", "title": "foo", "parentId": "2"}, "Must have unique ids."),
+            ({"id": "1", "title": "foo", "parentId": "2"},
+             "Must have unique ids."),
             ({"parentId": " "}, "Must have title"),
             ({"parentId": " ", "title": "foo"},
              "`id` and `parentId` must not be empty strings*"),
