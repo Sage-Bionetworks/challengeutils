@@ -103,30 +103,56 @@ def validate_config(workdir: str) -> typing.List[dict]:
 
     """
     wiki_config = read_wiki_config(workdir)
-    ids = [wiki_header['id'] for wiki_header in wiki_config
+    ids = [str(wiki_header['id']) for wiki_header in wiki_config
            if wiki_header.get('id') is not None]
     if len(set(ids)) != len(ids):
         raise ValueError("Must have unique ids.")
+
+    # Must have one home page where `parentId` is blank
+    home_page = [wiki_header.get('parentId') is None
+                 for wiki_header in wiki_config]
+    if sum(home_page) != 1:
+        raise ValueError("Must only have one config "
+                         "where `parentId` is blank")
     for wiki_header in wiki_config:
+        # Configuration must not be empty
         markdown_path = wiki_header.get('markdown_path')
         wikiid = wiki_header.get('id')
         parentid = wiki_header.get('parentId')
-        title = wiki_header.get('title', '')
+        title = wiki_header.get('title')
+        # Title must be specified
+        if title is None:
+            raise ValueError("Must have title")
+
+        # Make id and parentid strings and strip white spaces if values
+        # are specified
+        if wikiid is not None:
+            wikiid = str(wikiid).strip()
+        if parentid is not None:
+            parentid = str(parentid).strip()
+
+        # id and parentid must not be empty strings
+        if wikiid == '' or parentid == '':
+            raise ValueError('`id` and `parentId` must not be '
+                             'empty strings if specified')
         # Markdown file must exist if specified
         if markdown_path is not None and not os.path.exists(
                 os.path.join(workdir, markdown_path)):
             raise ValueError(f"{markdown_path} does not exist")
-        # id must not be the same as parentid
-        if wikiid == parentid:
-            raise ValueError("`id` cannot be the same as `parentId`.")
+        # id must not be the same as parentid, but if both aren't specified,
+        # This error shouldn't be raised
+        if wikiid is not None and parentid is not None and wikiid == parentid:
+            raise ValueError("`id` and `parentId` can't be equal.")
+        # If parentid is specified, it has to be in one of the `ids`
+        if parentid is not None and parentid not in ids:
+            raise ValueError("`parentId` must be one of the "
+                             "`id`s in the config")
+
         if (wikiid is None and
-            (markdown_path is None or parentid not in ids
-             or title == '')):
+            (markdown_path is None or str(title).strip() == '')):
             raise ValueError("If `id` is not specified, then `markdown_path` "
                              "and `parentId`, and `title` must be specified. "
-                             "`title` must also not be blank."
-                             "`parentId` must be one of the "
-                             "`id`s in the config.")
+                             "`title` must also not be blank.")
     return wiki_config
 
 

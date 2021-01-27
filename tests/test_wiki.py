@@ -3,6 +3,7 @@ import tempfile
 from unittest import mock
 from unittest.mock import patch
 
+import pytest
 import synapseclient
 
 import challengeutils.wiki
@@ -38,6 +39,40 @@ class TestWiki:
     def test_validate_config(self):
         """Test validation config"""
         with patch.object(challengeutils.wiki, "read_wiki_config",
+                          return_value=self.wiki_config) as patch_read:
+            config = challengeutils.wiki.validate_config("./")
+            patch_read.assert_called_once_with("./")
+            assert config == self.wiki_config
+
+    @pytest.mark.parametrize("append_dict,error_message",
+        [
+            ({}, "Must only have one config where `parentId` is blank"),
+            ({"id": "1", "title": "foo", "parentId": "2"}, "Must have unique ids."),
+            ({"parentId": " "}, "Must have title"),
+            ({"parentId": " ", "title": "foo"},
+             "`id` and `parentId` must not be empty strings*"),
+            ({"id": " ", "title": "foo", "parentId": "2"},
+             "`id` and `parentId` must not be empty strings*"),
+            ({"markdown_path": "test.md", "title": "foo", "parentId": "2"},
+             "test.md does not exist"),
+            ({"id": "4", "parentId": "4", "title": "foo"},
+             "`id` and `parentId` can't be equal"),
+            ({"id": "5", "parentId": "4", "title": "foo"},
+             "`parentId` must be one of the*"),
+            ({"parentId": "2", "title": 'test'},
+             "If `id` is not specified*"),
+            ({"markdown_path": "", "title": ' ', "parentId": "2"},
+             "If `id` is not specified*")
+        ]
+    )
+    def test_validate_config_invalid(self, append_dict, error_message):
+        """Test validation config empty configuration"""
+        if append_dict.get("title") in ["apendtemp", ' ']:
+            append_dict['markdown_path'] = self.file1.name
+        self.wiki_config.append(append_dict)
+        print(self.wiki_config)
+        with pytest.raises(ValueError, match=error_message),\
+             patch.object(challengeutils.wiki, "read_wiki_config",
                           return_value=self.wiki_config) as patch_read:
             config = challengeutils.wiki.validate_config("./")
             patch_read.assert_called_once_with("./")
