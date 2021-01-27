@@ -1,4 +1,4 @@
-"""Download and sync wiki tools"""
+"""Pull and push wiki tools"""
 import json
 import os
 import typing
@@ -26,7 +26,7 @@ def pull_wiki(syn: Synapse, project: str,
                 "id": "111",
                 "title": "title",
                 "parentId": "33333",
-                "markdown_path": "markdown.md"
+                "markdown_path": "home.md"
             },
             {...}
         ]
@@ -62,7 +62,7 @@ def read_wiki_config(workdir: str) -> typing.List[dict]:
                 "id": "111",
                 "title": "title",
                 "parentId": "33333",
-                "markdown_path": "markdown.md"
+                "markdown_path": "home.md"
             },
             {...}
         ]
@@ -88,7 +88,7 @@ def validate_config(workdir: str) -> typing.List[dict]:
                 "id": "111",
                 "title": "title",
                 "parentId": "33333",
-                "markdown_path": "markdown.md"
+                "markdown_path": "home.md"
             },
             {...}
         ]
@@ -132,7 +132,7 @@ def validate_config(workdir: str) -> typing.List[dict]:
 
 def push_wiki(syn: Synapse, projectid: str,
               workdir: str = "./") -> typing.List[dict]:
-    """Syncs Wiki from configuration
+    """Pushes Wiki from configuration
 
     Args:
         syn: Synapse connection
@@ -148,7 +148,7 @@ def push_wiki(syn: Synapse, projectid: str,
                 "id": "111",
                 "title": "title",
                 "parentId": "33333",
-                "markdown_path": "markdown.md"
+                "markdown_path": "home.md"
             },
             {...}
         ]

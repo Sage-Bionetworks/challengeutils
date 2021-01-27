@@ -319,7 +319,7 @@ def command_delete_submission(syn, args):
 def command_pull_wiki(syn, args):
     """Command line interface to download wiki into local markdown files
 
-    >>> challengeutils pull-wiki syn12345 --workdir ./
+    >>> challengeutils pull-wiki syn12345 --workdir .
     """
     wiki_headers = wiki.pull_wiki(syn, args.projectid, workdir=args.workdir)
     config_path = os.path.join(args.workdir, "wiki_config.json")
@@ -330,13 +330,13 @@ def command_pull_wiki(syn, args):
 def command_validate_wiki_config(syn, args):
     """Command line interface to validate wiki configuration
 
-    >>> challengeutils validate-wiki-config ./
+    >>> challengeutils validate-wiki-config .
     """
     wiki.validate_config(args.workdir)
 
 
 def command_push_wiki(syn, args):
-    """Command line interface to sync wiki updates
+    """Command line interface to upload wiki updates
 
     >>> challengeutils push-wiki syn12345 --workdir ./
     """
@@ -773,7 +773,7 @@ def build_parser():
         help='Synapse id of Project'
     )
     parser_pull_wiki.add_argument(
-        "--workdir", type=str, default="./",
+        "--workdir", type=str, default=".",
         help='Path to download markdown files and wiki_config.json.'
              'Defaults to location of where code is being executed.'
     )
@@ -799,7 +799,7 @@ def build_parser():
         help='Synapse id of Project'
     )
     parser_push_wiki.add_argument(
-        "--workdir", type=str, default="./",
+        "--workdir", type=str, default=".",
         help='Path of markdown files and wiki_config.json.'
              'Defaults to location of where code is being executed.'
     )
