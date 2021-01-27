@@ -128,8 +128,10 @@ def validate_config(workdir: str) -> typing.List[dict]:
         # are specified
         if wikiid is not None:
             wikiid = str(wikiid).strip()
+            wiki_header['id'] = wikiid
         if parentid is not None:
             parentid = str(parentid).strip()
+            wiki_header['parentId'] = parentid
 
         # id and parentid must not be empty strings
         if wikiid == '' or parentid == '':

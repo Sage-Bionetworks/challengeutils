@@ -24,9 +24,9 @@ class TestWiki:
                 "markdown_path": self.file1.name
             },
             {
-                "id": "2",
+                "id": 2,
                 "title": "Echoes",
-                "parentId": "1",
+                "parentId": 1,
                 "markdown_path": self.file2.name
             }
         ]
