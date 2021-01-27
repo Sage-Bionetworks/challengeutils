@@ -615,8 +615,8 @@ pull-wiki
 Description
 ^^^^^^^^^^^
 
-Download each wiki page of a synapse project and saves a json configuration
-(wiki_config.json).
+Download each wiki page of a synapse project as individual .md files
+and saves a json configuration (wiki_config.json).
 
 Positional
 ^^^^^^^^^^
