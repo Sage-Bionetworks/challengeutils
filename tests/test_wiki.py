@@ -61,11 +61,7 @@ class TestWiki:
             ({"id": "4", "parentId": "4", "title": "foo"},
              "`id` and `parentId` can't be equal"),
             ({"id": "5", "parentId": "4", "title": "foo"},
-             "`parentId` must be one of the*"),
-            # ({"parentId": "2", "title": 'test'},
-            #  "If `id` is not specified*"),
-            # ({"markdown_path": "", "title": ' ', "parentId": "2"},
-            #  "If `id` is not specified*")
+             "`parentId` must be one of the*")
         ]
     )
     def test_validate_config_invalid(self, append_dict, error_message):
