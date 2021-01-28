@@ -140,7 +140,7 @@ def validate_config(workdir: str) -> typing.List[dict]:
             raise ValueError('`id`, `parentId`, and `title` must not be '
                              'empty strings if specified')
         # Markdown file must exist if specified
-        if markdown_path is not None and not os.path.exists(
+        if markdown_path is not None and not os.path.isfile(
                 os.path.join(workdir, markdown_path)):
             raise ValueError(f"{markdown_path} does not exist")
         # id must not be the same as parentid, but if both aren't specified,
