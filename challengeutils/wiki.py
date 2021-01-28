@@ -24,9 +24,8 @@ def pull_wiki(syn: Synapse, project: str,
         [
             {
                 "id": "111",
-                "title": "title",
-                "parentId": "33333",
-                "markdown_path": "home.md"
+                "title": "_homepage_",
+                "markdown_path": "_homepage_.md"
             },
             {...}
         ]
