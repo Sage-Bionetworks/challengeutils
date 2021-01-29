@@ -44,6 +44,8 @@ def pull_wiki(syn: Synapse, project: str,
         if clean_title == '':
             clean_title = 'homepage'
             wiki_header['title'] = clean_title
+        # The wiki id is added to the markdown path because wiki ids are
+        # unique, but wiki titles don't have to be
         markdown_path = os.path.join(workdir, f"{wiki.id}-{clean_title}.md")
         with open(markdown_path, 'w') as md_file:
             md_file.write(wiki['markdown'])
