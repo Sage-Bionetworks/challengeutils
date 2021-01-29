@@ -82,20 +82,20 @@ class TestWiki:
         wiki_headers = [
             {
                 "id": "2",
-                "title": "Echoes",
+                "title": "EchoesTest",
                 "parentId": "1"
             }
         ]
         expected_header = [
             {
                 "id": "2",
-                "title": "Echoes",
+                "title": "EchoesTest",
                 "parentId": "1",
-                "markdown_path": "Echoes.md"
+                "markdown_path": "2-EchoesTest.md"
             }
         ]
-        wiki = synapseclient.Wiki(title="Echoes", owner="syn22",
-                                  markdown="test")
+        wiki = synapseclient.Wiki(title="Echoes Test", owner="syn22",
+                                  markdown="test", id="2")
         with patch.object(self.syn, "getWikiHeaders",
                           return_value=wiki_headers) as patch_get_headers,\
              patch.object(self.syn, "getWiki",

@@ -36,16 +36,18 @@ def pull_wiki(syn: Synapse, project: str,
     for wiki_header in wiki_headers:
         wiki = syn.getWiki(projectid, subpageId=wiki_header['id'])
         # Convert all special characters to underscore
-        title = ''.join(letter for letter in wiki['title']
-                        if letter.isalnum())
+        # This way markdown paths don't have special characters
+        # and json file can be written without encoding
+        clean_title = ''.join(letter for letter in wiki['title']
+                              if letter.isalnum())
         # Home page title is always blank
-        if title == '':
-            title = '_homepage_'
-            wiki_header['title'] = title
-        markdown_path = os.path.join(workdir, f"{title}.md")
+        if clean_title == '':
+            clean_title = 'homepage'
+            wiki_header['title'] = clean_title
+        markdown_path = os.path.join(workdir, f"{wiki.id}-{clean_title}.md")
         with open(markdown_path, 'w') as md_file:
             md_file.write(wiki['markdown'])
-        wiki_header['markdown_path'] = f"{title}.md"
+        wiki_header['markdown_path'] = f"{wiki.id}-{clean_title}.md"
     return wiki_headers
 
 
