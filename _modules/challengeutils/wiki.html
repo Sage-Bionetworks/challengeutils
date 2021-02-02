@@ -202,15 +202,16 @@
 <span class="sd">                 executed.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Wiki Configuration</span>
-<span class="sd">        [</span>
-<span class="sd">            {</span>
-<span class="sd">                &quot;id&quot;: &quot;111&quot;,</span>
-<span class="sd">                &quot;title&quot;: &quot;homepage&quot;,</span>
-<span class="sd">                &quot;markdown_path&quot;: &quot;111-homepage.md&quot;</span>
-<span class="sd">            },</span>
-<span class="sd">            {...}</span>
-<span class="sd">        ]</span>
+<span class="sd">        Wiki Configuration::</span>
+
+<span class="sd">            [</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;id&quot;: &quot;111&quot;,</span>
+<span class="sd">                    &quot;title&quot;: &quot;homepage&quot;,</span>
+<span class="sd">                    &quot;markdown_path&quot;: &quot;111-homepage.md&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                {...}</span>
+<span class="sd">            ]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">projectid</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">id_of</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
@@ -242,16 +243,17 @@
 <span class="sd">        workdir: Working directory</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Wiki Configuration</span>
-<span class="sd">        [</span>
-<span class="sd">            {</span>
-<span class="sd">                &quot;id&quot;: &quot;111&quot;,</span>
-<span class="sd">                &quot;title&quot;: &quot;title&quot;,</span>
-<span class="sd">                &quot;parentId&quot;: &quot;33333&quot;,</span>
-<span class="sd">                &quot;markdown_path&quot;: &quot;home.md&quot;</span>
-<span class="sd">            },</span>
-<span class="sd">            {...}</span>
-<span class="sd">        ]</span>
+<span class="sd">        Wiki Configuration::</span>
+
+<span class="sd">            [</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;id&quot;: &quot;111&quot;,</span>
+<span class="sd">                    &quot;title&quot;: &quot;title&quot;,</span>
+<span class="sd">                    &quot;parentId&quot;: &quot;33333&quot;,</span>
+<span class="sd">                    &quot;markdown_path&quot;: &quot;home.md&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                {...}</span>
+<span class="sd">            ]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;wiki_config.json&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
@@ -268,16 +270,17 @@
 <span class="sd">        workdir: Workfing directory with markdown and wiki_config.json</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Wiki Configuration</span>
-<span class="sd">        [</span>
-<span class="sd">            {</span>
-<span class="sd">                &quot;id&quot;: &quot;111&quot;,</span>
-<span class="sd">                &quot;title&quot;: &quot;title&quot;,</span>
-<span class="sd">                &quot;parentId&quot;: &quot;33333&quot;,</span>
-<span class="sd">                &quot;markdown_path&quot;: &quot;home.md&quot;</span>
-<span class="sd">            },</span>
-<span class="sd">            {...}</span>
-<span class="sd">        ]</span>
+<span class="sd">        Wiki Configuration::</span>
+
+<span class="sd">            [</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;id&quot;: &quot;111&quot;,</span>
+<span class="sd">                    &quot;title&quot;: &quot;title&quot;,</span>
+<span class="sd">                    &quot;parentId&quot;: &quot;33333&quot;,</span>
+<span class="sd">                    &quot;markdown_path&quot;: &quot;home.md&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                {...}</span>
+<span class="sd">            ]</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError:</span>
