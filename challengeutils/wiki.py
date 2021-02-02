@@ -20,15 +20,16 @@ def pull_wiki(syn: Synapse, project: str,
                  executed.
 
     Returns:
-        Wiki Configuration
-        [
-            {
-                "id": "111",
-                "title": "homepage",
-                "markdown_path": "111-homepage.md"
-            },
-            {...}
-        ]
+        Wiki Configuration::
+
+            [
+                {
+                    "id": "111",
+                    "title": "homepage",
+                    "markdown_path": "111-homepage.md"
+                },
+                {...}
+            ]
 
     """
     projectid = synapseclient.core.utils.id_of(project)
@@ -60,16 +61,17 @@ def read_wiki_config(workdir: str) -> typing.List[dict]:
         workdir: Working directory
 
     Returns:
-        Wiki Configuration
-        [
-            {
-                "id": "111",
-                "title": "title",
-                "parentId": "33333",
-                "markdown_path": "home.md"
-            },
-            {...}
-        ]
+        Wiki Configuration::
+
+            [
+                {
+                    "id": "111",
+                    "title": "title",
+                    "parentId": "33333",
+                    "markdown_path": "home.md"
+                },
+                {...}
+            ]
     """
     config_path = os.path.join(workdir, "wiki_config.json")
     if not os.path.exists(config_path):
@@ -86,16 +88,17 @@ def validate_config(workdir: str) -> typing.List[dict]:
         workdir: Workfing directory with markdown and wiki_config.json
 
     Returns:
-        Wiki Configuration
-        [
-            {
-                "id": "111",
-                "title": "title",
-                "parentId": "33333",
-                "markdown_path": "home.md"
-            },
-            {...}
-        ]
+        Wiki Configuration::
+
+            [
+                {
+                    "id": "111",
+                    "title": "title",
+                    "parentId": "33333",
+                    "markdown_path": "home.md"
+                },
+                {...}
+            ]
 
     Raises:
         ValueError:
