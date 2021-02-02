@@ -53,7 +53,7 @@ jobs:
         coveralls --service=github
 
   finish-coveralls:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     container: python:3-slim
     steps:
