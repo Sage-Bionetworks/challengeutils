@@ -53,7 +53,7 @@ jobs:
         COVERALLS_PARALLEL: true
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        coverage run --source=challengeutils -m pytest tests/
+        coverage run --source=challengeutils --omit=__main__.py -m pytest tests/
         coveralls --service=github
 
   finish-coveralls:
