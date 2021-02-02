@@ -330,7 +330,7 @@ def command_pull_wiki(syn, args):
 def command_push_wiki(syn, args):
     """Command line interface to upload wiki updates
 
-    >>> challengeutils push-wiki syn12345 --workdir ./
+    >>> challengeutils push-wiki syn12345 --workdir .
     """
     wiki_headers = wiki.push_wiki(syn, args.projectid, workdir=args.workdir)
     config_path = os.path.join(args.workdir, "wiki_config.json")
