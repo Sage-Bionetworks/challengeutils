@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Challenge Wiki &mdash; challengeutils 3.0 documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -94,6 +97,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Challenge Wiki</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.createchallenge">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.mirrorwiki">Updating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.wiki">Synapse Wiki Tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
@@ -157,6 +161,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -168,7 +174,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/python/wiki.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -362,6 +368,141 @@ is False.</p></li>
 </dd></dl>
 
 </div>
+<div class="section" id="module-challengeutils.wiki">
+<span id="synapse-wiki-tools"></span><h2>Synapse Wiki Tools<a class="headerlink" href="#module-challengeutils.wiki" title="Permalink to this headline">¶</a></h2>
+<p>Pull and push wiki tools</p>
+<dl class="function">
+<dt id="challengeutils.wiki.pull_wiki">
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">pull_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">project: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#pull_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.pull_wiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads each wikipage’s content into a markdown file and
+stores a configuration file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>project</strong> – synapseclient.Project or its id</p></li>
+<li><p><strong>workdir</strong> – Location to download markdown files and wiki_config.json
+into. Defaults to location of where code is being
+executed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Wiki Configuration
+[</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“id”: “111”,
+“title”: “homepage”,
+“markdown_path”: “111-homepage.md”</p>
+</dd>
+</dl>
+<p>},
+{…}</p>
+</div></blockquote>
+<p>]</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.wiki.push_wiki">
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">push_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">projectid: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#push_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.push_wiki" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pushes Wiki from configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>project</strong> – synapseclient.Project or its id</p></li>
+<li><p><strong>workdir</strong> – Location to download markdown files and wiki_config.json.
+Defaults to location of where code is being
+executed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Wiki Configuration
+[</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“id”: “111”,
+“title”: “title”,
+“parentId”: “33333”,
+“markdown_path”: “home.md”</p>
+</dd>
+</dl>
+<p>},
+{…}</p>
+</div></blockquote>
+<p>]</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.wiki.read_wiki_config">
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">read_wiki_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#read_wiki_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.read_wiki_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read wiki config file from working directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workdir</strong> – Working directory</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Wiki Configuration
+[</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“id”: “111”,
+“title”: “title”,
+“parentId”: “33333”,
+“markdown_path”: “home.md”</p>
+</dd>
+</dl>
+<p>},
+{…}</p>
+</div></blockquote>
+<p>]</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.wiki.validate_config">
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">validate_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#validate_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.validate_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates wiki configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workdir</strong> – Workfing directory with markdown and wiki_config.json</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Wiki Configuration
+[</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“id”: “111”,
+“title”: “title”,
+“parentId”: “33333”,
+“markdown_path”: “home.md”</p>
+</dd>
+</dl>
+<p>},
+{…}</p>
+</div></blockquote>
+<p>]</p>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – <cite>markdown_path</cite> is specified but cannot be located.
+    There are duplicated wiki ids.
+    <cite>id</cite> is not specified and (<cite>markdown_path</cite>/<cite>parentId</cite>/<cite>title</cite>
+    is missing or <cite>parentId</cite> not one of the <cite>id`s.)
+    `id</cite> cannot be the same as <cite>parentId</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -369,28 +510,25 @@ is False.</p></li>
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2017-2020, Sage Bionetworks
+        &#169; Copyright 2017-2020, Sage Bionetworks.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

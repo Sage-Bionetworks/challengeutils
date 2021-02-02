@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>challengeutils.__main__ &mdash; challengeutils 3.0 documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -151,6 +154,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -186,9 +191,9 @@
 <span class="kn">from</span> <span class="nn">synapseclient.core.retry</span> <span class="kn">import</span> <span class="n">with_retry</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">from_unix_epoch_time</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span> <span class="n">evaluation_queue</span><span class="p">,</span>
-               <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
-               <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">annotations</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span>
+               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
+               <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">wiki</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -491,6 +496,28 @@
 <span class="sd">    &gt;&gt;&gt; challengeutils delete-submission 12345</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">delete_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submissionid</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="command_pull_wiki"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_pull_wiki">[docs]</a><span class="k">def</span> <span class="nf">command_pull_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Command line interface to download wiki into local markdown files</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils pull-wiki syn12345 --workdir .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wiki_headers</span> <span class="o">=</span> <span class="n">wiki</span><span class="o">.</span><span class="n">pull_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">projectid</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;wiki_config.json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">wiki_headers</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="command_push_wiki"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_push_wiki">[docs]</a><span class="k">def</span> <span class="nf">command_push_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Command line interface to upload wiki updates</span>
+
+<span class="sd">    &gt;&gt;&gt; challengeutils push-wiki syn12345 --workdir .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wiki_headers</span> <span class="o">=</span> <span class="n">wiki</span><span class="o">.</span><span class="n">push_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">projectid</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;wiki_config.json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">wiki_headers</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">build_parser</span><span class="p">():</span>
@@ -911,6 +938,36 @@
     <span class="p">)</span>
     <span class="n">parser_validate_docker</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_validate_docker</span><span class="p">)</span>
 
+    <span class="n">parser_pull_wiki</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;pull-wiki&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Download a Synapse wiki into markdown and wiki_config.json&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_pull_wiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;projectid&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse id of Project&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_pull_wiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--workdir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to download markdown files and wiki_config.json.&#39;</span>
+             <span class="s1">&#39;Defaults to location of where code is being executed.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_pull_wiki</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_pull_wiki</span><span class="p">)</span>
+
+    <span class="n">parser_push_wiki</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;push-wiki&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Push a Synapse wiki&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_push_wiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;projectid&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse id of Project&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_push_wiki</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--workdir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path of markdown files and wiki_config.json.&#39;</span>
+             <span class="s1">&#39;Defaults to location of where code is being executed.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">parser_push_wiki</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_push_wiki</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span>
 
 
@@ -937,28 +994,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2017-2020, Sage Bionetworks
+        &#169; Copyright 2017-2020, Sage Bionetworks.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

@@ -599,3 +599,75 @@ Optional
 .. cmdoption:: -o, --output
 
     Output the results into a json file
+
+
+-------
+
+Pull a Synapse Project's Wiki
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+pull-wiki
+    projectid [--workdir]
+
+Description
+^^^^^^^^^^^
+
+Download each wiki page of a synapse project as individual .md files
+and saves a json configuration (wiki_config.json).
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils pull-wiki
+
+.. cmdoption:: projectid
+
+    Synapse project ID e.g. ``syn123455``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: --workdir
+
+    Path to download markdown files and wiki_config.json
+    Defaults to location of where code is being executed
+
+
+-------
+
+Push a Synapse Project's Wiki
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+push-wiki
+    projectid [--workdir]
+
+Description
+^^^^^^^^^^^
+
+Updates Synapse wiki by uploading markdown files linked together by a wiki_config.json.
+The markdown and wiki_config.json can be obtained by the ``pull-wiki`` command.  The
+wiki_config.json is validated prior to any updates, if there are any valiation errors,
+your wiki pages will not be updated.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils push-wiki
+
+.. cmdoption:: projectid
+
+    Synapse project ID e.g. ``syn123455``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: --workdir
+
+    Path to markdown files and wiki_config.json
+    Defaults to location of where code is being executed
