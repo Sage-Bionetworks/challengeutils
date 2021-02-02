@@ -8,6 +8,12 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v3.2.0
+------
+
+- Added push and pull Synapse wiki feature
+
+
 v3.1.0
 ------
 .. Important::
