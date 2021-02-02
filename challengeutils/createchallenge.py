@@ -256,7 +256,7 @@ def main(syn, challenge_name, live_site=None):
                    id. (Default is None)
 
     Returns:
-        dict:
+        dict::
 
             {
                 "live_projectid": projectid,
