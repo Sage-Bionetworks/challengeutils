@@ -169,16 +169,17 @@ def push_wiki(syn: Synapse, projectid: str,
                  executed.
 
     Returns:
-        Wiki Configuration
-        [
-            {
-                "id": "111",
-                "title": "title",
-                "parentId": "33333",
-                "markdown_path": "home.md"
-            },
-            {...}
-        ]
+        Wiki Configuration::
+
+            [
+                {
+                    "id": "111",
+                    "title": "title",
+                    "parentId": "33333",
+                    "markdown_path": "home.md"
+                },
+                {...}
+            ]
 
     """
     wiki_config = validate_config(workdir)
