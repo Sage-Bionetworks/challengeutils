@@ -145,7 +145,7 @@ def _validate_public_permissions(syn, proj):
         syn_users_perms = syn.getPermissions(
             proj.entityId, AUTHENTICATED_USERS)
         public_perms = syn.getPermissions(proj.entityId)
-        if set(syn_users_perms) == {"READ", "DOWNLOAD"} and \
+        if ("READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms) and \
                 "READ" in public_perms:
             error = ""
 
@@ -166,7 +166,7 @@ def _validate_admin_permissions(syn, proj, admin):
     try:
         # Remove error message if admin has read and download permissions.
         admin_perms = syn.getPermissions(proj.entityId, admin)
-        if set(admin_perms) == {"READ", "DOWNLOAD"}:
+        if "READ" in admin_perms and "DOWNLOAD" in admin_perms:
             error = ""
 
     except SynapseHTTPError as e:
