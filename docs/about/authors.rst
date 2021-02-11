@@ -12,8 +12,8 @@ efforts of:
 and everyone else on our `contributors list`_. Thank you all! |beers|
 
 .. _Thomas Yu: https://github.com/thomasyu888
-.. _Xindi Guo: https://github.com/xindiguo
 .. _Verena Chung: https://github.com/vpchung
+.. _Xindi Guo: https://github.com/xindiguo
 .. _contributors list: https://github.com/Sage-Bionetworks/challengeutils/graphs/contributors
 .. |beers| image:: ../static/beers.png
     :scale: 10

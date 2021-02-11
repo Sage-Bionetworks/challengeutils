@@ -3,7 +3,11 @@
 
 name: build
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -21,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest pytest-cov
+        pip install flake8 pytest coveralls
         pip install .
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
@@ -32,11 +36,34 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest tests/ --doctest-modules --cov=challengeutils --cov-report=html
-    - name: Upload pytest test results
-      uses: actions/upload-artifact@master
-      with:
-        name: pytest-results-${{ matrix.python-version }}
-        path: htmlcov
-      # Use always() to always run this step to publish test results when there are test failures
-      if: ${{ always() }}
+        pytest tests
+    # - name: Upload pytest test results
+    #   uses: actions/upload-artifact@master
+    #   with:
+    #     name: pytest-results-${{ matrix.python-version }}
+    #     path: htmlcov
+    #   # Use always() to always run this step to publish test results when there are test failures
+    #   if: ${{ always() }}
+    - name: Prepare environment for coveralls
+      run: |
+        echo "PYTHON_ENV=$(echo py${{ matrix.python-version }} | tr -d .)" >> $GITHUB_ENV
+    - name: Coveralls Parallel
+      env:
+        COVERALLS_FLAG_NAME: ${{ env.PYTHON_ENV }}
+        COVERALLS_PARALLEL: true
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coverage run --source=challengeutils --omit=challengeutils/__main__.py -m pytest tests/
+        coveralls --service=github
+
+  finish-coveralls:
+    needs: build
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+    - name: Finish Coveralls Parallel
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --finish

@@ -10,8 +10,8 @@ challengeutils
     :target: https://pypi.python.org/pypi/challengeutils
     :alt: PyPI version
 
-.. image:: https://img.shields.io/travis/Sage-Bionetworks/challengeutils?logo=travis-ci&logoColor=white
-    :target: https://travis-ci.org/Sage-Bionetworks/challengeutils
+.. image:: https://github.com/Sage-Bionetworks/challengeutils/workflows/build/badge.svg
+    :target: https://github.com/Sage-Bionetworks/challengeutils/actions?query=workflow%3Abuild
     :alt: Build status
 
 .. image:: https://img.shields.io/github/stars/Sage-Bionetworks/challengeutils?style=social
@@ -50,7 +50,7 @@ To install from the source:
 
 .. Attention:: 
 
-    ``synapseclient < 2.1.0`` is no longer supported, so some features may
+    ``synapseclient < 2.2.0`` is no longer supported, so some features may
     break if you are not on the latest client.
 
 Contributing
