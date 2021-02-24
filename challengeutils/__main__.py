@@ -9,9 +9,9 @@ import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
-from . import (createchallenge, challenge, evaluation_queue,
-               helpers, mirrorwiki, permissions,
-               submission, utils, annotations)
+from . import (annotations, createchallenge, challenge,
+               evaluation_queue, helpers, mirrorwiki, permissions,
+               submission, utils, wiki)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -314,6 +314,28 @@ def command_delete_submission(syn, args):
     >>> challengeutils delete-submission 12345
     """
     utils.delete_submission(syn, args.submissionid)
+
+
+def command_pull_wiki(syn, args):
+    """Command line interface to download wiki into local markdown files
+
+    >>> challengeutils pull-wiki syn12345 --workdir .
+    """
+    wiki_headers = wiki.pull_wiki(syn, args.projectid, workdir=args.workdir)
+    config_path = os.path.join(args.workdir, "wiki_config.json")
+    with open(config_path, 'w') as config:
+        json.dump(wiki_headers, config, indent=4)
+
+
+def command_push_wiki(syn, args):
+    """Command line interface to upload wiki updates
+
+    >>> challengeutils push-wiki syn12345 --workdir .
+    """
+    wiki_headers = wiki.push_wiki(syn, args.projectid, workdir=args.workdir)
+    config_path = os.path.join(args.workdir, "wiki_config.json")
+    with open(config_path, 'w') as config:
+        json.dump(wiki_headers, config, indent=4)
 
 
 def build_parser():
@@ -733,6 +755,36 @@ def build_parser():
         help="Output json results into a file"
     )
     parser_validate_docker.set_defaults(func=command_validate_docker)
+
+    parser_pull_wiki = subparsers.add_parser(
+        'pull-wiki',
+        help='Download a Synapse wiki into markdown and wiki_config.json'
+    )
+    parser_pull_wiki.add_argument(
+        "projectid", type=str,
+        help='Synapse id of Project'
+    )
+    parser_pull_wiki.add_argument(
+        "--workdir", type=str, default=".",
+        help='Path to download markdown files and wiki_config.json.'
+             'Defaults to location of where code is being executed.'
+    )
+    parser_pull_wiki.set_defaults(func=command_pull_wiki)
+
+    parser_push_wiki = subparsers.add_parser(
+        'push-wiki',
+        help='Push a Synapse wiki'
+    )
+    parser_push_wiki.add_argument(
+        "projectid", type=str,
+        help='Synapse id of Project'
+    )
+    parser_push_wiki.add_argument(
+        "--workdir", type=str, default=".",
+        help='Path of markdown files and wiki_config.json.'
+             'Defaults to location of where code is being executed.'
+    )
+    parser_push_wiki.set_defaults(func=command_push_wiki)
 
     return parser
 
