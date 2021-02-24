@@ -256,3 +256,122 @@ def test_invalid_download_current_lead_sub():
         SYN, SUBMISSIONID, "INVALID", "key", verbose=False
     )
     assert dl_file is None
+
+
+class TestStopDockerSubmission():
+    def setup_method(self):
+        self.last_updated_time = 1000000
+        self.start_time = 10000
+        self.docker_sub_annotation = {
+            submission.WORKFLOW_LAST_UPDATED_KEY: self.last_updated_time,
+            submission.WORKFLOW_START_KEY: self.start_time,
+            'objectId':"12345"
+        }
+        self.fileview_id = 111
+
+    def test_noneintquota(self):
+        '''
+        ValueError is raised when none integer quota is passed in
+        '''
+        with pytest.raises(ValueError, match=r'quota must be an integer'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota="foo")
+
+    @pytest.mark.parametrize("quota", [0, -1])
+    def test_greaterthan0quota(self, quota):
+        '''
+        ValueError is raised when quota of 0 or less is passed
+        '''
+        with pytest.raises(ValueError, match=r'quota must be larger than 0'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota=quota)
+
+    # def test_noquota(self):
+    #     '''
+    #     Time remaining annotation should not be added
+    #     if no quota is set, the default is sys.maxsize.
+    #     '''
+    #     with patch.object(utils, "evaluation_queue_query",
+    #                       return_value=[self.docker_sub_annotation]) as patch_query,\
+    #         patch.object(SYN, "getSubmissionStatus") as patch_getstatus,\
+    #         patch.object(utils,
+    #                     "update_single_submission_status") as patch_update,\
+    #         patch.object(SYN, "store") as patch_synstore:
+    #         submission.stop_submission_over_quota(SYN, self.evaluation_id)
+    #         query = (f"select * from evaluation_{self.evaluation_id} where "
+    #                  "status == 'EVALUATION_IN_PROGRESS'")
+    #         patch_query.assert_called_once_with(SYN, query)
+    #         patch_getstatus.assert_not_called()
+    #         patch_update.assert_not_called()
+    #         patch_synstore.assert_not_called()
+
+    # def test_notdocker(self):
+    #     '''
+    #     Time remaining annotation should not be added
+    #     if a submission is not validated/scored by the workflowhook
+    #     the submission will not have the right annotations,
+    #     '''
+    #     with patch.object(utils, "evaluation_queue_query",
+    #                     return_value=[{}]) as patch_query,\
+    #         patch.object(SYN,
+    #                     "getSubmissionStatus") as patch_getstatus,\
+    #         patch.object(utils,
+    #                     "update_single_submission_status") as patch_update,\
+    #         patch.object(SYN, "store") as patch_synstore:
+    #         submission.stop_submission_over_quota(SYN, self.evaluation_id)
+    #         query = (f"select * from evaluation_{self.evaluation_id} where "
+    #                  "status == 'EVALUATION_IN_PROGRESS'")
+    #         patch_query.assert_called_once_with(SYN, query)
+    #         patch_getstatus.assert_not_called()
+    #         patch_update.assert_not_called()
+    #         patch_synstore.assert_not_called()
+
+    # def test_underquota(self):
+    #     '''
+    #     Time remaining annotation should not be added
+    #     if the model is not over quota
+    #     '''
+    #     with patch.object(utils, "evaluation_queue_query",
+    #                     return_value=[self.docker_sub_annotation]) as patch_query,\
+    #         patch.object(SYN,
+    #                      "getSubmissionStatus") as patch_getstatus,\
+    #         patch.object(utils,
+    #                     "update_single_submission_status") as patch_update,\
+    #         patch.object(SYN, "store") as patch_synstore:
+    #         # Set quota thats greater than the runtime
+    #         quota = self.last_updated_time - self.start_time + 9000
+    #         submission.stop_submission_over_quota(SYN, self.evaluation_id,
+    #                                               quota=quota)
+    #         query = (f"select * from evaluation_{self.evaluation_id} where "
+    #                  "status == 'EVALUATION_IN_PROGRESS'")
+    #         patch_query.assert_called_once_with(SYN, query)
+    #         patch_getstatus.assert_not_called()
+    #         patch_update.assert_not_called()
+    #         patch_synstore.assert_not_called()
+
+    # def test_overquota(self):
+    #     '''
+    #     Time remaining annotation should not be added
+    #     if the model is over the quota
+    #     '''
+    #     sub_status = {"annotations": []}
+    #     quota_over_annotations = {submission.TIME_REMAINING_KEY: 0}
+    #     with patch.object(utils, "evaluation_queue_query",
+    #                       return_value=[self.docker_sub_annotation]) as patch_query,\
+    #         patch.object(SYN, "getSubmissionStatus",
+    #                     return_value=sub_status) as patch_getstatus,\
+    #         patch.object(utils, "update_single_submission_status",
+    #                     return_value=sub_status) as patch_update,\
+    #         patch.object(SYN, "store") as patch_synstore:
+    #         # Set quota thats lower than the runtime
+    #         quota = self.last_updated_time - self.start_time - 9000
+    #         submission.stop_submission_over_quota(SYN, self.evaluation_id,
+    #                                               quota=quota)
+    #         query = (f"select * from evaluation_{self.evaluation_id} where "
+    #                  "status == 'EVALUATION_IN_PROGRESS'")
+    #         patch_query.assert_called_once_with(SYN, query)
+    #         objectid = self.docker_sub_annotation['objectId']
+    #         patch_getstatus.assert_called_once_with(objectid)
+    #         patch_update.assert_called_once_with(sub_status,
+    #                                              quota_over_annotations)
+    #         patch_synstore.assert_called_once_with(sub_status)
