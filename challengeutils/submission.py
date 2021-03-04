@@ -345,8 +345,9 @@ def stop_submission_over_quota(
 
     try:
         view_query = syn.tableQuery(
-            f"select {WORKFLOW_LAST_UPDATED_KEY}, {WORKFLOW_START_KEY}, id "
-            f"from {id_of(submission_view)}"
+            f"select {WORKFLOW_LAST_UPDATED_KEY}, {WORKFLOW_START_KEY}, id, "
+            f"status from {id_of(submission_view)} where "
+            "status = 'EVALUATION_IN_PROGRESS'"
         )
     except SynapseHTTPError as http_error:
         raise ValueError(
