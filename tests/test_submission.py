@@ -288,6 +288,16 @@ class TestStopDockerSubmission():
             submission.stop_submission_over_quota(SYN, self.fileview_id,
                                                   quota=quota)
 
+    def test_queryfail(self):
+        '''
+        ValueError is raised tableQuery fails
+        '''
+        with patch.object(SYN, "tableQuery",
+                          side_effect=SynapseHTTPError),\
+             pytest.raises(ValueError,
+                           match=r'Submission view must have columns:*'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id)
+
     def test_noquota(self):
         '''
         Time remaining annotation should not be added
@@ -307,7 +317,6 @@ class TestStopDockerSubmission():
             )
             patch_query.assert_called_once_with(query)
             patch_store.assert_not_called()
-
 
     def test_notstartedsubmission(self):
         '''
