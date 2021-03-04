@@ -1,2 +1,2 @@
-pandas
+pandas==1.2.3
 synapseclient==2.3.0
