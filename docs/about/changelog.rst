@@ -19,7 +19,7 @@ v4.0.0
         $ pip install synapseclient --upgrade
 
 .. Important::
-    **Support for Python 3.6 is no longer available will be dropped in the later
+    **Support for Python 3.6 is will be dropped in the later
     half of this year.
 
 - Support `Python` 3.9
