@@ -185,22 +185,18 @@ def test_dryrun_store_submission_status(processor):
 
 def test_valid_interact_with_submission(processor):
     """No error with interaction function"""
-    with patch.object(
-        SYN, "getSubmission", return_value=BUNDLE
-    ) as patch_get_bundles, patch.object(
+    with patch.object(SYN, "getSubmission", return_value=BUNDLE), patch.object(
         processor, "interaction_func", return_value=SUB_INFO
-    ) as patch_interact:
+    ):
         submission_info = processor.interact_with_submission(SUBMISSION)
         assert submission_info == SUB_INFO
 
 
 def test_invalid_interact_with_submission(processor):
     """Raise error with interaction function"""
-    with patch.object(
-        SYN, "getSubmission", return_value=BUNDLE
-    ) as patch_get_bundles, patch.object(
+    with patch.object(SYN, "getSubmission", return_value=BUNDLE), patch.object(
         processor, "interaction_func", side_effect=ValueError("test")
-    ) as patch_interact:
+    ):
         submission_info = processor.interact_with_submission(SUBMISSION)
         assert not submission_info["valid"]
         assert isinstance(submission_info["error"], ValueError)

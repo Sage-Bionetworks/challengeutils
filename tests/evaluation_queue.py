@@ -108,7 +108,7 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
     )
     # only required columns with trailing comma
     with open(f"{TEST_SUBMISSION_PATH}/onlyIndexCols.{filetype}") as f:
-        result = "\n".join(["%s," % l for l in f.read().split("\n")])
+        result = "\n".join(["%s," % line for line in f.read().split("\n")])
         with open(
             "{}/onlyIndexColsWithTrailingComma.{}".format(
                 TEST_SUBMISSION_PATH, filetype
@@ -138,7 +138,8 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
         index=True,
         sep=delimiter,
     )
-    # one, two, and five columns of random floats, ints, strings with/without NAs
+    # one, two, and five columns of random floats, ints, strings
+    # with/without NAs
     for i, t, na in product([1, 2, 5], [float, int, str], [True, False]):
         cases = {float: "float", int: "int", str: "str"}
         if t == int or t == float:

@@ -124,7 +124,8 @@ class Lock:
 
 #         args = parser.parse_args()
 
-#         # get a subset of the dictionary containing just the arguments of func
+#         # get a subset of the dictionary containing just the arguments of
+# func
 #         arg_spec = inspect.getargspec(args.func)
 
 #         args_for_func = {k: getattr(args, k) for k in arg_spec.args}
