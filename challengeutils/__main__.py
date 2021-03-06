@@ -9,9 +9,18 @@ import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
-from . import (annotations, createchallenge, challenge,
-               evaluation_queue, helpers, mirrorwiki, permissions,
-               submission, utils, wiki)
+from . import (
+    annotations,
+    createchallenge,
+    challenge,
+    evaluation_queue,
+    helpers,
+    mirrorwiki,
+    permissions,
+    submission,
+    utils,
+    wiki,
+)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -31,8 +40,13 @@ def command_mirrorwiki(syn, args):
 
     >>> challengeutils mirrorwiki syn12345 syn23456
     """
-    mirrorwiki.mirror(syn, args.entityid, args.destinationid,
-                      force=args.force, dryrun=args.dryrun)
+    mirrorwiki.mirror(
+        syn,
+        args.entityid,
+        args.destinationid,
+        force=args.force,
+        dryrun=args.dryrun,
+    )
 
 
 def command_createchallenge(syn, args):
@@ -43,23 +57,28 @@ def command_createchallenge(syn, args):
 
     >>> challengeutils createchallenge "Challenge Name Here"
     """
-    challenge_components = createchallenge.main(syn, args.challengename,
-                                                args.livesiteid)
+    challenge_components = createchallenge.main(
+        syn, args.challengename, args.livesiteid
+    )
     # component: project or team
     # componentid: project id or teamid
     urls = {}
     for component, componentid in challenge_components.items():
         if component.endswith("projectid"):
-            urls[component] = f"https://www.synapse.org/#!Synapse:{componentid}"
+            urls[
+                component
+            ] = f"https://www.synapse.org/#!Synapse:{componentid}"
         elif component.endswith("teamid"):
             urls[component] = f"https://www.synapse.org/#!Team:{componentid}"
-    urls['name'] = args.challengename
-    text = ("{name} (Production site): {live_projectid}",
-            "{name} (Staging site): {staging_projectid}",
-            "{name} (Admin team): {admin_teamid}",
-            "{name} (Participant team): {organizer_teamid}",
-            "{name} (Organizer team): {participant_teamid}",
-            "{name} (Pre-registrant team): {preregistrantrant_teamid}")
+    urls["name"] = args.challengename
+    text = (
+        "{name} (Production site): {live_projectid}",
+        "{name} (Staging site): {staging_projectid}",
+        "{name} (Admin team): {admin_teamid}",
+        "{name} (Participant team): {organizer_teamid}",
+        "{name} (Organizer team): {participant_teamid}",
+        "{name} (Pre-registrant team): {preregistrantrant_teamid}",
+    )
     print("\n" + "\n".join(text).format(**urls))
     return challenge_components
 
@@ -73,19 +92,28 @@ def command_query(syn, args):
 
     >>> challengeutils query "select objectId, status from evaluation_12345"
     """
-    querydf = pd.DataFrame(list(utils.evaluation_queue_query(
-        syn, args.uri, args.limit, args.offset)))
+    querydf = pd.DataFrame(
+        list(
+            utils.evaluation_queue_query(
+                syn, args.uri, args.limit, args.offset
+            )
+        )
+    )
     if args.render:
         # Check if submitterId column exists
-        if querydf.get('submitterId') is not None:
-            submitter_names = [utils._get_submitter_name(syn, submitterid)
-                               for submitterid in querydf['submitterId']]
-            querydf['submitterName'] = submitter_names
+        if querydf.get("submitterId") is not None:
+            submitter_names = [
+                utils._get_submitter_name(syn, submitterid)
+                for submitterid in querydf["submitterId"]
+            ]
+            querydf["submitterName"] = submitter_names
         # Check if createdOn column exists
-        if querydf.get('createdOn') is not None:
-            createdons = [from_unix_epoch_time(createdon)
-                          for createdon in querydf['createdOn']]
-            querydf['createdOn'] = createdons
+        if querydf.get("createdOn") is not None:
+            createdons = [
+                from_unix_epoch_time(createdon)
+                for createdon in querydf["createdOn"]
+            ]
+            querydf["createdOn"] = createdons
     if args.outputfile is not None:
         querydf.to_csv(args.outputfile, index=False)
     else:
@@ -109,8 +137,7 @@ def command_writeup_attach(syn, args):
 
     >>> challengeutils attachwriteup writeupid submissionqueueid
     """
-    submission.attach_writeup(syn, args.writeupqueue,
-                              args.submissionqueue)
+    submission.attach_writeup(syn, args.writeupqueue, args.submissionqueue)
 
 
 def command_validate_project(syn, args):
@@ -123,7 +150,8 @@ def command_validate_project(syn, args):
                                        [--output foo.txt]
     """
     results = submission.validate_project(
-        syn, args.submissionid, args.challengewiki, args.public, args.admin)
+        syn, args.submissionid, args.challengewiki, args.public, args.admin
+    )
 
     if args.output:
         with open(args.output, "w") as out:
@@ -139,8 +167,7 @@ def command_archive_project(syn, args):
 
     >>> challengeutils archive-project 9876543
     """
-    archived = submission.archive_project(
-        syn, args.submissionid, args.admin)
+    archived = submission.archive_project(syn, args.submissionid, args.admin)
 
     if args.output:
         with open(args.output, "w") as out:
@@ -158,9 +185,12 @@ def command_set_entity_acl(syn, args):
 
     >>> challengeutils setentityacl syn123545 user_or_team view
     """
-    permissions.set_entity_permissions(syn, args.entityid,
-                                       principalid=args.principalid,
-                                       permission_level=args.permission_level)
+    permissions.set_entity_permissions(
+        syn,
+        args.entityid,
+        principalid=args.principalid,
+        permission_level=args.permission_level,
+    )
 
 
 def command_set_evaluation_acl(syn, args):
@@ -171,9 +201,12 @@ def command_set_evaluation_acl(syn, args):
 
     >>> challengeutils setevaluationacl 12345 user_or_team score
     """
-    permissions.set_evaluation_permissions(syn, args.evaluationid,
-                                           principalid=args.principalid,
-                                           permission_level=args.permission_level)  # noqa pylint: disable=line-too-long
+    permissions.set_evaluation_permissions(
+        syn,
+        args.evaluationid,
+        principalid=args.principalid,
+        permission_level=args.permission_level,
+    )  # noqa pylint: disable=line-too-long
 
 
 def command_set_evaluation_quota(syn, args):
@@ -190,18 +223,26 @@ def command_set_evaluation_quota(syn, args):
                                           --sub_limit 3
 
     """
-    print(evaluation_queue.set_evaluation_quota(syn, args.evaluationid,
-                                                round_start=args.round_start,
-                                                round_end=args.round_end,
-                                                number_of_rounds=args.num_rounds,  # noqa pylint: disable=line-too-long
-                                                submission_limit=args.sub_limit,  # noqa pylint: disable=line-too-long
-                                                round_duration=args.round_duration))  # noqa pylint: disable=line-too-long
+    print(
+        evaluation_queue.set_evaluation_quota(
+            syn,
+            args.evaluationid,
+            round_start=args.round_start,
+            round_end=args.round_end,
+            number_of_rounds=args.num_rounds,  # noqa pylint: disable=line-too-long
+            submission_limit=args.sub_limit,  # noqa pylint: disable=line-too-long
+            round_duration=args.round_duration,
+        )
+    )  # noqa pylint: disable=line-too-long
 
 
 def command_dl_cur_lead_sub(syn, args):
     submission.download_current_lead_sub(
-        syn, args.submissionid, args.status, args.cutoff_annotation,
-        verbose=args.verbose
+        syn,
+        args.submissionid,
+        args.status,
+        args.cutoff_annotation,
+        verbose=args.verbose,
     )
 
 
@@ -218,14 +259,15 @@ def command_download_submission(syn, args):
 
     >>> challengeutils downloadsubmission submissionid
     """
-    submission_dict = utils.download_submission(syn, args.submissionid,
-                                                download_location=args.download_location)  # noqa pylint: disable=line-too-long
+    submission_dict = utils.download_submission(
+        syn, args.submissionid, download_location=args.download_location
+    )  # noqa pylint: disable=line-too-long
     if args.output:
-        filepath = submission_dict['file_path']
+        filepath = submission_dict["file_path"]
         if filepath is not None:
-            os.rename(filepath, 'submission-' + args.submissionid)
-            filepath = 'submission-' + args.submissionid
-        submission_dict['file_path'] = 'submission-' + args.submissionid
+            os.rename(filepath, "submission-" + args.submissionid)
+            filepath = "submission-" + args.submissionid
+        submission_dict["file_path"] = "submission-" + args.submissionid
         with open(args.output, "w") as sub_out:
             json.dump(submission_dict, sub_out)
         logger.info(args.output)
@@ -244,15 +286,16 @@ def command_annotate_submission_with_json(syn, args):
     is_private = not args.to_public
     with_retry(
         lambda: annotations.annotate_submission_with_json(
-            syn, args.submissionid,
+            syn,
+            args.submissionid,
             args.annotation_values,
             is_private=is_private,
-            force=args.force
+            force=args.force,
         ),
         wait=3,
         retries=10,
         retry_status_codes=[412, 429, 500, 502, 503, 504],
-        verbose=True
+        verbose=True,
     )
 
 
@@ -261,9 +304,9 @@ def command_send_email(syn, args):
     # Must escape the backslash and replace all \n with
     # html breaks
     message = args.message.replace("\\n", "<br>")
-    syn.sendMessage(userIds=args.userids,
-                    messageSubject=args.subject,
-                    messageBody=message)
+    syn.sendMessage(
+        userIds=args.userids, messageSubject=args.subject, messageBody=message
+    )
 
 
 def command_kill_docker_over_quota(syn, args):
@@ -274,8 +317,9 @@ def command_kill_docker_over_quota(syn, args):
 
     >>> challengeutils killdockeroverquota evaluationid quota
     """
-    helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
-                                              quota=args.quota)
+    helpers.kill_docker_submission_over_quota(
+        syn, args.evaluationid, quota=args.quota
+    )
 
 
 def command_validate_docker(syn, args):
@@ -284,16 +328,18 @@ def command_validate_docker(syn, args):
 
     >>> challengeutils validate-docker submissionid
     """
-    invalid_reasons = ''
+    invalid_reasons = ""
     try:
         valid = submission.validate_docker_submission(syn, args.submissionid)
     except ValueError as err:
         invalid_reasons = str(err)
 
     status = "VALIDATED" if valid else "INVALID"
-    result = {'submission_errors': invalid_reasons,
-              'submission_status': status}
-    with open(args.output, 'w') as out:
+    result = {
+        "submission_errors": invalid_reasons,
+        "submission_status": status,
+    }
+    with open(args.output, "w") as out:
         out.write(json.dumps(result))
 
 
@@ -323,7 +369,7 @@ def command_pull_wiki(syn, args):
     """
     wiki_headers = wiki.pull_wiki(syn, args.projectid, workdir=args.workdir)
     config_path = os.path.join(args.workdir, "wiki_config.json")
-    with open(config_path, 'w') as config:
+    with open(config_path, "w") as config:
         json.dump(wiki_headers, config, indent=4)
 
 
@@ -334,339 +380,360 @@ def command_push_wiki(syn, args):
     """
     wiki_headers = wiki.push_wiki(syn, args.projectid, workdir=args.workdir)
     config_path = os.path.join(args.workdir, "wiki_config.json")
-    with open(config_path, 'w') as config:
+    with open(config_path, "w") as config:
         json.dump(wiki_headers, config, indent=4)
 
 
 def build_parser():
     """Builds the argument parser and returns the result."""
-    parser = argparse.ArgumentParser(
-        description='Challenge utility functions')
+    parser = argparse.ArgumentParser(description="Challenge utility functions")
 
     parser.add_argument(
-        "-c", "--synapse_config",
+        "-c",
+        "--synapse_config",
         default=synapseclient.client.CONFIG_FILE,
-        help="credentials file")
+        help="credentials file",
+    )
 
-    parser.add_argument('-v', '--version', action='version',
-                        version='challengeutils {}'.format(__version__))
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="challengeutils {}".format(__version__),
+    )
 
     subparsers = parser.add_subparsers(
-        title='commands',
-        description='The following commands are available:',
-        help='For additional help: "challengeutils <COMMAND> -h"')
+        title="commands",
+        description="The following commands are available:",
+        help='For additional help: "challengeutils <COMMAND> -h"',
+    )
 
     parser_createchallenge = subparsers.add_parser(
-        'create-challenge',
-        help='Creates a challenge from a template')
-    parser_createchallenge.add_argument(
-        "challengename",
-        help="Challenge name")
+        "create-challenge", help="Creates a challenge from a template"
+    )
+    parser_createchallenge.add_argument("challengename", help="Challenge name")
     parser_createchallenge.add_argument(
         "--livesiteid",
-        help=("Option to specify the live site synapse Id"
-              " there is already a live site"))
+        help=(
+            "Option to specify the live site synapse Id"
+            " there is already a live site"
+        ),
+    )
     parser_createchallenge.set_defaults(func=command_createchallenge)
 
     parser_mirrorwiki = subparsers.add_parser(
-        'mirror-wiki',
+        "mirror-wiki",
         help="Mirrors (sync) wiki pages by using the wikipage titles between "
-             "two Synapse Entities. This function only works if `entity` and "
-             "`destination`are the same type and both must have wiki pages. "
-             "Only wiki pages with the same titles will be copied from "
-             "`entity` to `destination` - if there is a wiki page that you "
-             "want to add, you will have to create a wiki page first in the "
-             "`destination` with the same name."
+        "two Synapse Entities. This function only works if `entity` and "
+        "`destination`are the same type and both must have wiki pages. "
+        "Only wiki pages with the same titles will be copied from "
+        "`entity` to `destination` - if there is a wiki page that you "
+        "want to add, you will have to create a wiki page first in the "
+        "`destination` with the same name.",
     )
 
     parser_mirrorwiki.add_argument(
         "entityid",
         type=str,
-        help="Synapse Id of the project's wiki changes you have staged"
+        help="Synapse Id of the project's wiki changes you have staged",
     )
     parser_mirrorwiki.add_argument(
         "destinationid",
         type=str,
         help="Synapse Id of project whose wiki you want to update "
-             "with the entityid"
+        "with the entityid",
     )
     parser_mirrorwiki.add_argument(
-        "-f", "--force",
-        action='store_true',
-        help='Update the wikipages even if they are the same'
+        "-f",
+        "--force",
+        action="store_true",
+        help="Update the wikipages even if they are the same",
     )
     parser_mirrorwiki.add_argument(
         "--dryrun",
-        action='store_true',
-        help="Show the pages that have changed but don't update."
+        action="store_true",
+        help="Show the pages that have changed but don't update.",
     )
     parser_mirrorwiki.set_defaults(func=command_mirrorwiki)
 
     parser_query = subparsers.add_parser(
-        'query',
-        help='Queries on a evaluation queue')
+        "query", help="Queries on a evaluation queue"
+    )
     parser_query.add_argument(
         "uri",
         type=str,
-        help="Synapse ID of the project's wiki you want to copy")
+        help="Synapse ID of the project's wiki you want to copy",
+    )
     parser_query.add_argument(
         "--outputfile",
         type=str,
         help="File that you want your query results to be written to."
-             "If not specified, it is written as stdout.",
-        default=None)
+        "If not specified, it is written as stdout.",
+        default=None,
+    )
     parser_query.add_argument(
         "--render",
-        action='store_true',
-        help="Renders submitterId and createdOn values in leaderboard")
+        action="store_true",
+        help="Renders submitterId and createdOn values in leaderboard",
+    )
     parser_query.add_argument(
         "--limit",
         type=int,
-        help='How many records should be returned per request',
-        default=20)
+        help="How many records should be returned per request",
+        default=20,
+    )
     parser_query.add_argument(
         "--offset",
         type=int,
         default=0,
-        help='At what record offset from the first should iteration start')
+        help="At what record offset from the first should iteration start",
+    )
     parser_query.set_defaults(func=command_query)
 
     parser_change_status = subparsers.add_parser(
-        'change-status',
-        help='Changes the status of a submission id')
+        "change-status", help="Changes the status of a submission id"
+    )
     parser_change_status.add_argument(
-        "submissionid",
-        type=str,
-        help="Synapse submission Id")
+        "submissionid", type=str, help="Synapse submission Id"
+    )
     parser_change_status.add_argument(
-        "status",
-        type=str,
-        help='Status to change submission to')
+        "status", type=str, help="Status to change submission to"
+    )
 
     parser_change_status.set_defaults(func=command_change_status)
 
     parser_attach_writeup = subparsers.add_parser(
-        'attach-writeup',
-        help='Attach the write ups of a challenge to its main challenge queue')
+        "attach-writeup",
+        help="Attach the write ups of a challenge to its main challenge queue",
+    )
 
     parser_attach_writeup.add_argument(
         "writeupqueue",
         type=str,
-        help='Write up submission queue evaluation id')
+        help="Write up submission queue evaluation id",
+    )
 
     parser_attach_writeup.add_argument(
         "submissionqueue",
         type=str,
-        help='Challenge submission queue evaluation id')
+        help="Challenge submission queue evaluation id",
+    )
     parser_attach_writeup.set_defaults(func=command_writeup_attach)
 
     parser_set_entity_acl = subparsers.add_parser(
-        'set-entity-acl',
-        help='Sets the permissions of a Synapse Entity')
+        "set-entity-acl", help="Sets the permissions of a Synapse Entity"
+    )
     parser_set_entity_acl.add_argument(
-        "entityid",
-        type=str,
-        help='Entity Synapse id')
+        "entityid", type=str, help="Entity Synapse id"
+    )
     parser_set_entity_acl.add_argument(
-        "principalid",
-        type=str,
-        help='Synapse user or Team name/id')
+        "principalid", type=str, help="Synapse user or Team name/id"
+    )
     parser_set_entity_acl.add_argument(
         "permission_level",
         type=str,
-        help='Permissions',
+        help="Permissions",
         choices=[
-            'view', 'download', 'edit', 'edit_and_delete', 'admin', 'remove'])
+            "view",
+            "download",
+            "edit",
+            "edit_and_delete",
+            "admin",
+            "remove",
+        ],
+    )
 
     parser_set_entity_acl.set_defaults(func=command_set_entity_acl)
 
     parser_set_evaluation_acl = subparsers.add_parser(
-        'set-evaluation-acl',
-        help='Sets the permissions of a Synapse Evaluation Queue')
+        "set-evaluation-acl",
+        help="Sets the permissions of a Synapse Evaluation Queue",
+    )
 
     parser_set_evaluation_acl.add_argument(
-        "evaluationid",
-        type=str,
-        help='Synapse Evaluation Queue id')
+        "evaluationid", type=str, help="Synapse Evaluation Queue id"
+    )
 
     parser_set_evaluation_acl.add_argument(
-        "principalid",
-        type=str,
-        help='Synapse user or Team name/id')
+        "principalid", type=str, help="Synapse user or Team name/id"
+    )
 
     parser_set_evaluation_acl.add_argument(
         "permission_level",
         type=str,
-        help='Permissions',
-        choices=['view', 'submit', 'score', 'admin', 'remove'])
+        help="Permissions",
+        choices=["view", "submit", "score", "admin", "remove"],
+    )
 
     parser_set_evaluation_acl.set_defaults(func=command_set_evaluation_acl)
 
     parser_dl_cur_lead_sub = subparsers.add_parser(
-        'download-current-lead-submission',
-        help='Downloads current leading submission for participant')
+        "download-current-lead-submission",
+        help="Downloads current leading submission for participant",
+    )
 
     parser_dl_cur_lead_sub.add_argument(
-        "-i", "--submissionid",
+        "-i",
+        "--submissionid",
         required=True,
-        help="Int, or str(int) for submissionid, of current submission.")
+        help="Int, or str(int) for submissionid, of current submission.",
+    )
 
     parser_dl_cur_lead_sub.add_argument(
-        "-s", "--status",
-        required=True,
-        help="Submission status")
+        "-s", "--status", required=True, help="Submission status"
+    )
 
     parser_dl_cur_lead_sub.add_argument(
-        "-a", "--cutoff_annotation",
-        default="met_cutoff")
+        "-a", "--cutoff_annotation", default="met_cutoff"
+    )
 
     parser_dl_cur_lead_sub.add_argument(
-        "-v", "--verbose",
-        action='store_false')
+        "-v", "--verbose", action="store_false"
+    )
 
     parser_dl_cur_lead_sub.set_defaults(func=command_dl_cur_lead_sub)
 
     parser_list_evals = subparsers.add_parser(
-        'list-evaluations',
-        help='List all evaluation queues of a project')
+        "list-evaluations", help="List all evaluation queues of a project"
+    )
 
     parser_list_evals.add_argument(
-        "projectid",
-        type=str,
-        help='Synapse id of project')
+        "projectid", type=str, help="Synapse id of project"
+    )
 
     parser_list_evals.set_defaults(func=command_list_evaluations)
 
     parser_download_submission = subparsers.add_parser(
-        'download-submission',
-        help='Download a Synapse submission')
+        "download-submission", help="Download a Synapse submission"
+    )
 
     parser_download_submission.add_argument(
-        "submissionid",
-        type=str,
-        help='Synapse id of submission')
+        "submissionid", type=str, help="Synapse id of submission"
+    )
 
     parser_download_submission.add_argument(
         "--download_location",
         type=str,
-        help='Specify download location. Defaults to current working dir',
-        default=".")
+        help="Specify download location. Defaults to current working dir",
+        default=".",
+    )
 
     parser_download_submission.add_argument(
-        "--output",
-        type=str,
-        help='Output json results into a file')
+        "--output", type=str, help="Output json results into a file"
+    )
 
     parser_download_submission.set_defaults(func=command_download_submission)
 
     parser_annotate_sub = subparsers.add_parser(
-        'annotate-submission',
-        help='Annotate a Synapse submission with a json file')
+        "annotate-submission",
+        help="Annotate a Synapse submission with a json file",
+    )
 
-    parser_annotate_sub.add_argument(
-        "submissionid",
-        help="Submission ID")
+    parser_annotate_sub.add_argument("submissionid", help="Submission ID")
     parser_annotate_sub.add_argument(
         "annotation_values",
-        help="JSON file of annotations with key:value pair")
+        help="JSON file of annotations with key:value pair",
+    )
     parser_annotate_sub.add_argument(
-        "-p", "--to_public",
+        "-p",
+        "--to_public",
         help="Annotations are by default private except to queue "
-             "administrator(s), so change them to be public",
-        action='store_true')
+        "administrator(s), so change them to be public",
+        action="store_true",
+    )
     parser_annotate_sub.add_argument(
-        "-f", "--force",
+        "-f",
+        "--force",
         help="Ability to update annotations if the key has "
-             "different ACLs, warning will occur if this parameter "
-             "isn't specified and the same key has different ACLs",
-        action='store_true')
+        "different ACLs, warning will occur if this parameter "
+        "isn't specified and the same key has different ACLs",
+        action="store_true",
+    )
     parser_annotate_sub.set_defaults(
-        func=command_annotate_submission_with_json)
+        func=command_annotate_submission_with_json
+    )
 
     parser_send_email = subparsers.add_parser(
-        'send-email',
-        help='Send a Synapse email')
+        "send-email", help="Send a Synapse email"
+    )
 
     parser_send_email.add_argument(
         "--userids",
         type=str,
-        help='List of user ids',
+        help="List of user ids",
         nargs="+",
-        required=True)
+        required=True,
+    )
 
     parser_send_email.add_argument(
-        "--subject",
-        type=str,
-        help='Email message subject',
-        required=True)
+        "--subject", type=str, help="Email message subject", required=True
+    )
 
     parser_send_email.add_argument(
-        "--message",
-        type=str,
-        help='Email message body',
-        required=True)
+        "--message", type=str, help="Email message body", required=True
+    )
 
     parser_send_email.set_defaults(func=command_send_email)
 
     parser_kill_docker = subparsers.add_parser(
-        'kill-docker-over-quota',
-        help='Kill Docker submissions over the quota')
+        "kill-docker-over-quota", help="Kill Docker submissions over the quota"
+    )
 
     parser_kill_docker.add_argument(
-        "evaluationid",
-        type=str,
-        help='Synapse evaluation queue id')
+        "evaluationid", type=str, help="Synapse evaluation queue id"
+    )
 
     parser_kill_docker.add_argument(
         "quota",
         type=int,
-        help="Time quota submission has to run in milliseconds")
+        help="Time quota submission has to run in milliseconds",
+    )
     parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
 
     parser_set_quota = subparsers.add_parser(
-        'set-evaluation-quota',
-        help='Sets the quota on an existing evaluation queue. '
-             'This WILL erase any old quota you had previously set if no '
-             'optional parameters are given')
+        "set-evaluation-quota",
+        help="Sets the quota on an existing evaluation queue. "
+        "This WILL erase any old quota you had previously set if no "
+        "optional parameters are given",
+    )
 
     parser_set_quota.add_argument(
-        "evaluationid",
-        type=str,
-        help='Synapse evaluation queue id')
+        "evaluationid", type=str, help="Synapse evaluation queue id"
+    )
     parser_set_quota.add_argument(
         "--round_start",
         type=str,
-        help='Start of round (local military time) in YEAR-MM-DDTHH:MM:SS '
-             'format (ie. 2020-02-21T17:00:00)')
+        help="Start of round (local military time) in YEAR-MM-DDTHH:MM:SS "
+        "format (ie. 2020-02-21T17:00:00)",
+    )
 
     group = parser_set_quota.add_mutually_exclusive_group(required=False)
 
     group.add_argument(
         "--round_end",
         type=str,
-        help='End of round (local military time) in YEAR-MM-DDTHH:MM:SS '
-             'format (ie. 2020-02-21T17:00:00)')
+        help="End of round (local military time) in YEAR-MM-DDTHH:MM:SS "
+        "format (ie. 2020-02-21T17:00:00)",
+    )
 
     group.add_argument(
-        "--round_duration",
-        type=int,
-        help='Round duration in milliseconds')
+        "--round_duration", type=int, help="Round duration in milliseconds"
+    )
 
     parser_set_quota.add_argument(
         "--num_rounds",
         type=int,
-        help='Number of rounds (must set for time related quota to work)')
+        help="Number of rounds (must set for time related quota to work)",
+    )
 
     parser_set_quota.add_argument(
-        "--sub_limit",
-        type=int,
-        help='Number of submissions allowed per team')
+        "--sub_limit", type=int, help="Number of submissions allowed per team"
+    )
 
     parser_set_quota.set_defaults(func=command_set_evaluation_quota)
 
     parser_validate_project = subparsers.add_parser(
-        'validate-project',
-        help="Validate a Project submission"
+        "validate-project", help="Validate a Project submission"
     )
     parser_validate_project.add_argument(
         "submissionid",
@@ -679,110 +746,92 @@ def build_parser():
         help="Synapse ID of Challenge wiki",
     )
     parser_validate_project.add_argument(
-        "-p", "--public",
+        "-p",
+        "--public",
         help="Check that the Project is shared with the public",
-        action="store_true"
+        action="store_true",
     )
     parser_validate_project.add_argument(
-        "-a", "--admin",
+        "-a",
+        "--admin",
         help="Check that the Project is shared with this admin username",
     )
     parser_validate_project.add_argument(
-        "-o", "--output",
-        type=str,
-        help='Output json results into a file')
+        "-o", "--output", type=str, help="Output json results into a file"
+    )
     parser_validate_project.set_defaults(func=command_validate_project)
 
     parser_archive_project = subparsers.add_parser(
-        'archive-project',
-        help="Archive a Project (by copying)"
+        "archive-project", help="Archive a Project (by copying)"
     )
     parser_archive_project.add_argument(
-        "submissionid",
-        type=int,
-        help="Submission ID"
+        "submissionid", type=int, help="Submission ID"
     )
-    parser_archive_project.add_argument(
-        "admin",
-        help="Admin username/ID"
-    )
+    parser_archive_project.add_argument("admin", help="Admin username/ID")
 
     parser_archive_project.add_argument(
-        "-o", "--output",
-        type=str,
-        help='Output json results into a file')
+        "-o", "--output", type=str, help="Output json results into a file"
+    )
     parser_archive_project.set_defaults(func=command_archive_project)
 
     parser_list_challenge = subparsers.add_parser(
-        'list-registered-challenges',
+        "list-registered-challenges",
         help="List the challenges a user is registered to. Defaults to the"
-             "logged in synapse user is userid isn't specified."
+        "logged in synapse user is userid isn't specified.",
     )
 
     parser_list_challenge.add_argument(
-        "--userid",
-        type=str,
-        help='Synapse User id or username',
-        default=None
+        "--userid", type=str, help="Synapse User id or username", default=None
     )
-    parser_list_challenge.set_defaults(
-        func=command_list_registered_challenges
-    )
+    parser_list_challenge.set_defaults(func=command_list_registered_challenges)
 
     parser_delete_sub = subparsers.add_parser(
-        'delete-submission',
-        help='Deletes a submission'
+        "delete-submission", help="Deletes a submission"
     )
 
     parser_delete_sub.add_argument(
-        "submissionid",
-        type=str,
-        help="Synapse submission Id"
+        "submissionid", type=str, help="Synapse submission Id"
     )
 
     parser_delete_sub.set_defaults(func=command_delete_submission)
 
     parser_validate_docker = subparsers.add_parser(
-        'validate-docker',
-        help='Validate Docker container'
+        "validate-docker", help="Validate Docker container"
     )
+    parser_validate_docker.add_argument("submissionid", help="Submission id")
     parser_validate_docker.add_argument(
-        "submissionid",
-        help="Submission id"
-    )
-    parser_validate_docker.add_argument(
-        "-o", "--output", required=True,
-        help="Output json results into a file"
+        "-o", "--output", required=True, help="Output json results into a file"
     )
     parser_validate_docker.set_defaults(func=command_validate_docker)
 
     parser_pull_wiki = subparsers.add_parser(
-        'pull-wiki',
-        help='Download a Synapse wiki into markdown and wiki_config.json'
+        "pull-wiki",
+        help="Download a Synapse wiki into markdown and wiki_config.json",
     )
     parser_pull_wiki.add_argument(
-        "projectid", type=str,
-        help='Synapse id of Project'
+        "projectid", type=str, help="Synapse id of Project"
     )
     parser_pull_wiki.add_argument(
-        "--workdir", type=str, default=".",
-        help='Path to download markdown files and wiki_config.json.'
-             'Defaults to location of where code is being executed.'
+        "--workdir",
+        type=str,
+        default=".",
+        help="Path to download markdown files and wiki_config.json."
+        "Defaults to location of where code is being executed.",
     )
     parser_pull_wiki.set_defaults(func=command_pull_wiki)
 
     parser_push_wiki = subparsers.add_parser(
-        'push-wiki',
-        help='Push a Synapse wiki'
+        "push-wiki", help="Push a Synapse wiki"
     )
     parser_push_wiki.add_argument(
-        "projectid", type=str,
-        help='Synapse id of Project'
+        "projectid", type=str, help="Synapse id of Project"
     )
     parser_push_wiki.add_argument(
-        "--workdir", type=str, default=".",
-        help='Path of markdown files and wiki_config.json.'
-             'Defaults to location of where code is being executed.'
+        "--workdir",
+        type=str,
+        default=".",
+        help="Path of markdown files and wiki_config.json. "
+        "Defaults to location of where code is being executed.",
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
 
@@ -795,7 +844,7 @@ def synapse_login(synapse_config):
     except Exception:
         syn = synapseclient.Synapse(configPath=synapse_config)
         syn.login(silent=True)
-    return(syn)
+    return syn
 
 
 def main():

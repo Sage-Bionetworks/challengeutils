@@ -32,9 +32,12 @@ logger.setLevel(logging.INFO)
 PREVIEW_FILE_HANDLE = "org.sagebionetworks.repo.model.file.PreviewFileHandle"
 
 
-def _replace_wiki_text(markdown: str, wiki_mapping: dict,
-                       entity: Union[File, Folder, Project],
-                       destination: Union[File, Folder, Project]) -> str:
+def _replace_wiki_text(
+    markdown: str,
+    wiki_mapping: dict,
+    entity: Union[File, Folder, Project],
+    destination: Union[File, Folder, Project],
+) -> str:
     """Remap wiki text with correct synapse links
 
     Args:
@@ -74,35 +77,43 @@ def _copy_attachments(syn: Synapse, entity_wiki: Wiki) -> list:
 
     """
     # All attachments must be updated
-    if entity_wiki['attachmentFileHandleIds']:
+    if entity_wiki["attachmentFileHandleIds"]:
         attachments = [
-            syn._getFileHandleDownload(filehandleid,
-                                       entity_wiki.id,
-                                       objectType='WikiAttachment')
-            for filehandleid in entity_wiki['attachmentFileHandleIds']
+            syn._getFileHandleDownload(
+                filehandleid, entity_wiki.id, objectType="WikiAttachment"
+            )
+            for filehandleid in entity_wiki["attachmentFileHandleIds"]
         ]
         # Remove preview attachments
         no_previews = [
-            attachment['fileHandle'] for attachment in attachments
-            if attachment['fileHandle']['concreteType'] != PREVIEW_FILE_HANDLE
+            attachment["fileHandle"]
+            for attachment in attachments
+            if attachment["fileHandle"]["concreteType"] != PREVIEW_FILE_HANDLE
         ]
-        content_types = [attachment['contentType']
-                         for attachment in no_previews]
-        file_names = [attachment['fileName'] for attachment in no_previews]
+        content_types = [
+            attachment["contentType"] for attachment in no_previews
+        ]
+        file_names = [attachment["fileName"] for attachment in no_previews]
         copied_filehandles = synapseutils.copyFileHandles(
-            syn, no_previews, ["WikiAttachment"]*len(no_previews),
-            [entity_wiki.id]*len(no_previews),
-            content_types, file_names
+            syn,
+            no_previews,
+            ["WikiAttachment"] * len(no_previews),
+            [entity_wiki.id] * len(no_previews),
+            content_types,
+            file_names,
         )
-        new_attachments = [filehandle['newFileHandle']['id']
-                           for filehandle in copied_filehandles]
+        new_attachments = [
+            filehandle["newFileHandle"]["id"]
+            for filehandle in copied_filehandles
+        ]
     else:
         new_attachments = []
     return new_attachments
 
 
-def _get_headers(syn: Synapse,
-                 entity: Union[File, Folder, Project]) -> List[dict]:
+def _get_headers(
+    syn: Synapse, entity: Union[File, Folder, Project]
+) -> List[dict]:
     """Get wiki headers.
 
     Args:
@@ -117,18 +128,24 @@ def _get_headers(syn: Synapse,
     try:
         wiki_headers = syn.getWikiHeaders(entity)
     except SynapseHTTPError:
-        raise ValueError(f"{entity.name} has no Wiki. Mirroring wikis "
-                         "require that both `entity` and `destination` "
-                         "have the same wiki structure. If you want to copy "
-                         "a wiki page from `entity` to `destination`, you may "
-                         "want to use `synapseutils.copyWiki`")
+        raise ValueError(
+            f"{entity.name} has no Wiki. Mirroring wikis "
+            "require that both `entity` and `destination` "
+            "have the same wiki structure. If you want to copy "
+            "a wiki page from `entity` to `destination`, you may "
+            "want to use `synapseutils.copyWiki`"
+        )
     return wiki_headers
 
 
-def _update_wiki(syn: Synapse, entity_wiki_pages: Dict[str, Wiki],
-                 destination_wiki_pages: Dict[str, Wiki],
-                 force: bool = False, dryrun: bool = False,
-                 **kwargs) -> Dict[str, Wiki]:
+def _update_wiki(
+    syn: Synapse,
+    entity_wiki_pages: Dict[str, Wiki],
+    destination_wiki_pages: Dict[str, Wiki],
+    force: bool = False,
+    dryrun: bool = False,
+    **kwargs,
+) -> Dict[str, Wiki]:
     """Updates wiki pages.
 
     Args:
@@ -150,8 +167,7 @@ def _update_wiki(syn: Synapse, entity_wiki_pages: Dict[str, Wiki],
         # Generate new markdown text
         entity_wiki = entity_wiki_pages[title]
         destination_wiki = destination_wiki_pages[title]
-        markdown = _replace_wiki_text(markdown=entity_wiki.markdown,
-                                      **kwargs)
+        markdown = _replace_wiki_text(markdown=entity_wiki.markdown, **kwargs)
 
         if destination_wiki.markdown == markdown and not force:
             logger.info(f"No page updates: {title}")
@@ -164,19 +180,18 @@ def _update_wiki(syn: Synapse, entity_wiki_pages: Dict[str, Wiki],
         # someone could name attachments with the same name
         new_attachments = _copy_attachments(syn, entity_wiki)
 
-        destination_wiki.update(
-            {'attachmentFileHandleIds': new_attachments}
-        )
+        destination_wiki.update({"attachmentFileHandleIds": new_attachments})
         if not dryrun:
             destination_wiki = syn.store(destination_wiki)
 
     return mirrored_wiki
 
 
-def _get_wikipages_and_mapping(syn: Synapse,
-                               entity: Union[File, Folder, Project],
-                               destination: Union[File, Folder, Project]
-                               ) -> dict:
+def _get_wikipages_and_mapping(
+    syn: Synapse,
+    entity: Union[File, Folder, Project],
+    destination: Union[File, Folder, Project],
+) -> dict:
     """Get entity/destination pages and mapping of wiki pages
 
     Args:
@@ -197,31 +212,39 @@ def _get_wikipages_and_mapping(syn: Synapse,
 
     entity_wiki_pages = {}
     for wiki in entity_wiki:
-        entity_wiki = syn.getWiki(entity, wiki['id'])
-        entity_wiki_pages[wiki['title']] = entity_wiki
+        entity_wiki = syn.getWiki(entity, wiki["id"])
+        entity_wiki_pages[wiki["title"]] = entity_wiki
 
     # Mapping dictionary containing wiki page mapping between
     # entity and destination
     wiki_mapping = {}
     destination_wiki_pages = {}
     for wiki in destination_wiki:
-        destination_wiki = syn.getWiki(destination, wiki['id'])
-        destination_wiki_pages[wiki['title']] = destination_wiki
+        destination_wiki = syn.getWiki(destination, wiki["id"])
+        destination_wiki_pages[wiki["title"]] = destination_wiki
         # Only map wiki pages that exist in `entity` (source)
-        if entity_wiki_pages.get(wiki['title']) is not None:
-            wiki_mapping[entity_wiki_pages[wiki['title']].id] = wiki['id']
+        if entity_wiki_pages.get(wiki["title"]) is not None:
+            wiki_mapping[entity_wiki_pages[wiki["title"]].id] = wiki["id"]
         else:
-            logger.info("Title exists at destination but not in "
-                        f"entity: {wiki['title']}")
+            logger.info(
+                "Title exists at destination but not in "
+                f"entity: {wiki['title']}"
+            )
 
-    return {'entity_wiki_pages': entity_wiki_pages,
-            'destination_wiki_pages': destination_wiki_pages,
-            'wiki_mapping': wiki_mapping}
+    return {
+        "entity_wiki_pages": entity_wiki_pages,
+        "destination_wiki_pages": destination_wiki_pages,
+        "wiki_mapping": wiki_mapping,
+    }
 
 
-def mirror(syn: Synapse, entity: Union[File, Folder, Project],
-           destination: Union[File, Folder, Project], force: bool = False,
-           dryrun: bool = False):
+def mirror(
+    syn: Synapse,
+    entity: Union[File, Folder, Project],
+    destination: Union[File, Folder, Project],
+    force: bool = False,
+    dryrun: bool = False,
+):
     """Mirrors (sync) wiki pages by using the wikipage titles between two
     Synapse Entities.  This function only works if `entity` and `destination`
     are the same type and both must have wiki pages.  Only wiki pages with the
@@ -242,16 +265,20 @@ def mirror(syn: Synapse, entity: Union[File, Folder, Project],
     entity = syn.get(entity, downloadFile=False)
     destination = syn.get(destination, downloadFile=False)
     if type(entity) is not type(destination):
-        raise ValueError("Can only mirror wiki pages between similar "
-                         "entity types")
+        raise ValueError(
+            "Can only mirror wiki pages between similar " "entity types"
+        )
 
     # Get entity/destination pages and mapping of wiki pages
-    pages_and_mappings = _get_wikipages_and_mapping(syn, entity,
-                                                    destination)
+    pages_and_mappings = _get_wikipages_and_mapping(syn, entity, destination)
 
     if dryrun:
         logger.info("Your wiki pages will not be mirrored. `dryrun` is True")
-    _update_wiki(syn, **pages_and_mappings,
-                 force=force, dryrun=dryrun,
-                 entity=entity,
-                 destination=destination)
+    _update_wiki(
+        syn,
+        **pages_and_mappings,
+        force=force,
+        dryrun=dryrun,
+        entity=entity,
+        destination=destination,
+    )

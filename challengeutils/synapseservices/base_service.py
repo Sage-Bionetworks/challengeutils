@@ -6,7 +6,7 @@ from typing import Generic, Union
 
 import six
 
-T = typing.TypeVar('T')
+T = typing.TypeVar("T")
 
 
 def _deserialize(data: Union[dict, list, str], klass):
@@ -81,6 +81,7 @@ def deserialize_date(string: str) -> datetime.date:
     """
     try:
         from dateutil.parser import parse
+
         return parse(string).date()
     except ImportError:
         return string
@@ -98,6 +99,7 @@ def deserialize_datetime(string: str) -> datetime.datetime:
     """
     try:
         from dateutil.parser import parse
+
         return parse(string)
     except ImportError:
         return string
@@ -120,9 +122,11 @@ def deserialize_model(data: Union[dict, list], klass):
         return data
 
     for attr, attr_type in six.iteritems(instance.openapi_types):
-        if data is not None \
-                and instance.attribute_map[attr] in data \
-                and isinstance(data, (list, dict)):
+        if (
+            data is not None
+            and instance.attribute_map[attr] in data
+            and isinstance(data, (list, dict))
+        ):
             value = data[instance.attribute_map[attr]]
             setattr(instance, attr, _deserialize(value, attr_type))
 
@@ -140,8 +144,7 @@ def _deserialize_list(data: list, boxed_type) -> list:
         deserialized list
 
     """
-    return [_deserialize(sub_data, boxed_type)
-            for sub_data in data]
+    return [_deserialize(sub_data, boxed_type) for sub_data in data]
 
 
 def _deserialize_dict(data: dict, boxed_type) -> dict:
@@ -155,8 +158,7 @@ def _deserialize_dict(data: dict, boxed_type) -> dict:
         deserialized dict
 
     """
-    return {k: _deserialize(v, boxed_type)
-            for k, v in six.iteritems(data)}
+    return {k: _deserialize(v, boxed_type) for k, v in six.iteritems(data)}
 
 
 class Service:
@@ -191,18 +193,23 @@ class Service:
         for attr, _ in six.iteritems(self.openapi_types):
             value = getattr(self, attr)
             if isinstance(value, list):
-                result[attr] = list(map(
-                    lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
-                    value
-                ))
+                result[attr] = list(
+                    map(
+                        lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
+                        value,
+                    )
+                )
             elif hasattr(value, "to_dict"):
                 result[attr] = value.to_dict()
             elif isinstance(value, dict):
-                result[attr] = dict(map(
-                    lambda item: (item[0], item[1].to_dict())
-                    if hasattr(item[1], "to_dict") else item,
-                    value.items()
-                ))
+                result[attr] = dict(
+                    map(
+                        lambda item: (item[0], item[1].to_dict())
+                        if hasattr(item[1], "to_dict")
+                        else item,
+                        value.items(),
+                    )
+                )
             else:
                 result[attr] = value
 
