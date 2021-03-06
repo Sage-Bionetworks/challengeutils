@@ -53,7 +53,7 @@ class DockerRepository:
         auth_mapping = {
             head.split("=")[0]: head.split("=")[1] for head in auth_headers
         }
-        return "{0}?service={1}&scope={2}".format(
+        return "{}?service={}&scope={}".format(
             auth_mapping["Bearer realm"],
             auth_mapping["service"],
             auth_mapping["scope"],

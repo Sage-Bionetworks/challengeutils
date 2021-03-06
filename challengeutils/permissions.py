@@ -68,7 +68,7 @@ def _set_permissions(syn, syn_obj, principalid, permission_level):
 
     if permission_level not in permission_level_mapping.keys():
         raise ValueError(
-            "permission_level must be one of these: {0}".format(
+            "permission_level must be one of these: {}".format(
                 ", ".join(permission_level_mapping.keys())
             )
         )

@@ -63,7 +63,7 @@ def _get_team_set(syn, team):
         Set of synapse user profiles in team
     """
     members = syn.getTeamMembers(team)
-    members_set = set(NewUserProfile(**member["member"]) for member in members)
+    members_set = {NewUserProfile(**member["member"]) for member in members}
     return members_set
 
 

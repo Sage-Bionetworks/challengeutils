@@ -377,9 +377,9 @@ def _get_contributors(syn, evaluationid, status, start_datetime, end_datetime):
     contributors = set()
     for sub, _ in bundles:
         if _check_date_range(sub.createdOn, start_datetime, end_datetime):
-            principalids = set(
+            principalids = {
                 contributor["principalId"] for contributor in sub.contributors
-            )
+            }
             contributors.update(principalids)
     return contributors
 
