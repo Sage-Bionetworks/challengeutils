@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>challengeutils.submission &mdash; challengeutils 3.2 documentation</title>
+  <title>challengeutils.submission &mdash; challengeutils 4.0 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                3.2
+                4.0
               </div>
             
           
@@ -183,17 +183,26 @@
 <span></span><span class="sd">&quot;&quot;&quot;Functions that interact with submissions&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">synapseutils</span>
-<span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="n">AUTHENTICATED_USERS</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AUTHENTICATED_USERS</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Synapse</span><span class="p">,</span>
+                           <span class="n">SubmissionViewSchema</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="n">to_submission_status_annotations</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
+<span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dockertools</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">permissions</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="n">WORKFLOW_LAST_UPDATED_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated&quot;</span>
+<span class="n">WORKFLOW_START_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted&quot;</span>
+<span class="n">TIME_REMAINING_KEY</span> <span class="o">=</span> <span class="s2">&quot;orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining&quot;</span>
 
 
 <div class="viewcode-block" id="append_writeup_to_main_submission"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.append_writeup_to_main_submission">[docs]</a><span class="k">def</span> <span class="nf">append_writeup_to_main_submission</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">syn</span><span class="p">):</span>
@@ -327,7 +336,7 @@
         <span class="n">syn_users_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span>
             <span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">AUTHENTICATED_USERS</span><span class="p">)</span>
         <span class="n">public_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">syn_users_perms</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">}</span> <span class="ow">and</span> \
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;READ&quot;</span> <span class="ow">in</span> <span class="n">syn_users_perms</span> <span class="ow">and</span> <span class="s2">&quot;DOWNLOAD&quot;</span> <span class="ow">in</span> <span class="n">syn_users_perms</span><span class="p">)</span> <span class="ow">and</span> \
                 <span class="s2">&quot;READ&quot;</span> <span class="ow">in</span> <span class="n">public_perms</span><span class="p">:</span>
             <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
@@ -348,7 +357,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Remove error message if admin has read and download permissions.</span>
         <span class="n">admin_perms</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getPermissions</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">entityId</span><span class="p">,</span> <span class="n">admin</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">admin_perms</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">}:</span>
+        <span class="k">if</span> <span class="s2">&quot;READ&quot;</span> <span class="ow">in</span> <span class="n">admin_perms</span> <span class="ow">and</span> <span class="s2">&quot;DOWNLOAD&quot;</span> <span class="ow">in</span> <span class="n">admin_perms</span><span class="p">:</span>
             <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="k">except</span> <span class="n">SynapseHTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -492,6 +501,51 @@
                                               <span class="n">cutoff_annotation</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">path</span>
     <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="stop_submission_over_quota"><a class="viewcode-back" href="../../python/submissions.html#challengeutils.submission.stop_submission_over_quota">[docs]</a><span class="k">def</span> <span class="nf">stop_submission_over_quota</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
+        <span class="n">submission_view</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SubmissionViewSchema</span><span class="p">],</span>
+        <span class="n">quota</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+    <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stops any submission that has exceeded the run time quota by using</span>
+<span class="sd">    submission views.  A submission view must first exist.</span>
+<span class="sd">    Rerunning submissions will require setting TimeRemaining annotation</span>
+<span class="sd">    to a positive integer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse connection</span>
+<span class="sd">        submission_view: Submission View or its Synapse Id.</span>
+<span class="sd">        quota: Quota in milliseconds. Default is sys.maxsize.</span>
+<span class="sd">               One hour is 3600000.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quota</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quota must be an integer&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">quota</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quota must be larger than 0&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">view_query</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">tableQuery</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;select </span><span class="si">{WORKFLOW_LAST_UPDATED_KEY}</span><span class="s2">, </span><span class="si">{WORKFLOW_START_KEY}</span><span class="s2">, id, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;status from {id_of(submission_view)} where &quot;</span>
+            <span class="s2">&quot;status = &#39;EVALUATION_IN_PROGRESS&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">SynapseHTTPError</span> <span class="k">as</span> <span class="n">http_error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Submission view must have columns: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{WORKFLOW_LAST_UPDATED_KEY}</span><span class="s2">, </span><span class="si">{WORKFLOW_START_KEY}</span><span class="s2">, id&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">http_error</span>
+
+    <span class="n">view_querydf</span> <span class="o">=</span> <span class="n">view_query</span><span class="o">.</span><span class="n">asDataFrame</span><span class="p">()</span>
+    <span class="n">runtime</span> <span class="o">=</span> <span class="p">(</span><span class="n">view_querydf</span><span class="p">[</span><span class="n">WORKFLOW_LAST_UPDATED_KEY</span><span class="p">]</span> <span class="o">-</span>
+               <span class="n">view_querydf</span><span class="p">[</span><span class="n">WORKFLOW_START_KEY</span><span class="p">])</span>
+    <span class="n">submissions_over_quota_idx</span> <span class="o">=</span> <span class="n">runtime</span> <span class="o">&gt;</span> <span class="n">quota</span>
+    <span class="n">over_quotadf</span> <span class="o">=</span> <span class="n">view_querydf</span><span class="p">[</span><span class="n">submissions_over_quota_idx</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">over_quotadf</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">add_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">TIME_REMAINING_KEY</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="n">annotations</span><span class="o">.</span><span class="n">annotate_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">add_annotations</span><span class="p">,</span>
+                                        <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

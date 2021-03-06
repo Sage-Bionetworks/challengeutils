@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Helpers &mdash; challengeutils 3.2 documentation</title>
+  <title>Helpers &mdash; challengeutils 4.0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                3.2
+                4.0
               </div>
             
           
@@ -183,83 +183,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-challengeutils.helpers">
-<span id="helpers"></span><h1>Helpers<a class="headerlink" href="#module-challengeutils.helpers" title="Permalink to this headline">¶</a></h1>
-<p>Challenge helper functions</p>
-<dl class="function">
-<dt id="challengeutils.helpers.archive_writeup">
-<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">archive_writeup</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluation</em>, <em class="sig-param">stat='VALIDATED'</em>, <em class="sig-param">reArchive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/helpers.html#archive_writeup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.archive_writeup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Archive the submissions for the given evaluation queue and
-store them in the destination synapse folder.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>evaluation</strong> – a synapse evaluation queue or its ID</p></li>
-<li><p><strong>query</strong> – a query that will return the desired submissions.
-At least the ID must be returned. Defaults to:
-‘select * from evaluation_[EVAL_ID] where status==”SCORED”’</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.helpers.create_team_wikis">
-<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">create_team_wikis</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em>, <em class="sig-param">templateid</em>, <em class="sig-param">tracker_table_synid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/helpers.html#create_team_wikis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.create_team_wikis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that creates wiki pages from a template by looking at teams that
-are registered for a challenge.  The teams that have a wiki made for them
-Are stored into a trackerTable that has columns wikiSynId, and teamId</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>synId</strong> – Synapse id of challenge project</p></li>
-<li><p><strong>templateId</strong> – Synapse id of the template</p></li>
-<li><p><strong>trackerTableSynId</strong> – Synapse id of Table that tracks if wiki pages
-have been made per team</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.helpers.kill_docker_submission_over_quota">
-<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">kill_docker_submission_over_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluation_id</em>, <em class="sig-param">quota=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/helpers.html#kill_docker_submission_over_quota"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.kill_docker_submission_over_quota" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kills any docker container that exceeds the run time quota
-Rerunning submissions will require setting TimeRemaining annotation
-to a positive integer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> (<em>obj</em>) – Synapse object</p></li>
-<li><p><strong>evaluation_id</strong> (<em>int</em>) – Synapse evaluation queue id</p></li>
-<li><p><strong>quota</strong> (<em>int</em>) – Quota in milliseconds. Default is sys.maxsize.
-One hour is 3600000.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="challengeutils.helpers.rename_submission_files">
-<code class="sig-prename descclassname">challengeutils.helpers.</code><code class="sig-name descname">rename_submission_files</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">evaluationid</em>, <em class="sig-param">download_location='./'</em>, <em class="sig-param">status='SCORED'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/helpers.html#rename_submission_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.helpers.rename_submission_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function renames the submission files of an evaluation queue.
-For many challenges we require participants to submit files that are
-named one thing such as prediction.csv. This function renames them to</p>
-<blockquote>
-<div><p>submitter_date_filename</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>syn</strong> – synapse object</p></li>
-<li><p><strong>evaluationid</strong> – Id of Evaluation queue</p></li>
-<li><p><strong>download_location</strong> – location to download files to (Default is ./)</p></li>
-<li><p><strong>status</strong> – The submissions to download (Default is SCORED)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+  <div class="section" id="helpers">
+<h1>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

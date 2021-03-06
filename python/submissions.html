@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Submissions &mdash; challengeutils 3.2 documentation</title>
+  <title>Submissions &mdash; challengeutils 4.0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                3.2
+                4.0
               </div>
             
           
@@ -284,6 +284,25 @@ row[‘entityId’]</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>previous_submission.csv or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="challengeutils.submission.stop_submission_over_quota">
+<code class="sig-prename descclassname">challengeutils.submission.</code><code class="sig-name descname">stop_submission_over_quota</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, submission_view: Union[str, synapseclient.table.SubmissionViewSchema], quota: int = 9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/submission.html#stop_submission_over_quota"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.submission.stop_submission_over_quota" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops any submission that has exceeded the run time quota by using
+submission views.  A submission view must first exist.
+Rerunning submissions will require setting TimeRemaining annotation
+to a positive integer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn</strong> – Synapse connection</p></li>
+<li><p><strong>submission_view</strong> – Submission View or its Synapse Id.</p></li>
+<li><p><strong>quota</strong> – Quota in milliseconds. Default is sys.maxsize.
+One hour is 3600000.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
