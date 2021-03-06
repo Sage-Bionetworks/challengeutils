@@ -32,8 +32,8 @@ setup(
                       'synapseclient>=2.3.0'],
     project_urls={
         "Documentation": "https://sage-bionetworks.github.io/challengeutils/",
-        "Source Code": "https://github.com/Sage-Bionetworks/synapsePythonClient",
-        "Bug Tracker": "https://github.com/Sage-Bionetworks/synapsePythonClient/issues",
+        "Source Code": "https://github.com/Sage-Bionetworks/challengeutils",
+        "Bug Tracker": "https://github.com/Sage-Bionetworks/challengeutils/issues",
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
