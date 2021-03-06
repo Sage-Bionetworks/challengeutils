@@ -49,7 +49,7 @@ Here's how to run the test suite:
 pytest -vs tests/
 ```
 
-Tests are also run automatically by Travis on any pull request and are required to pass before merging.
+Tests are also run automatically by Github Actions on any pull request and are required to pass before merging.
 
 
 ### Documentation
