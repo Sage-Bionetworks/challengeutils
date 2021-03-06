@@ -85,18 +85,14 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
         )
     )
     # a single blank space
-    with open(
-        "{}/blankSpace.{}".format(TEST_SUBMISSION_PATH, filetype), "w"
-    ) as f:
+    with open(f"{TEST_SUBMISSION_PATH}/blankSpace.{filetype}", "w") as f:
         f.write(" ")
     # random binary file
-    with open(
-        "{}/randomBinary.{}".format(TEST_SUBMISSION_PATH, filetype), "wb"
-    ) as f:
+    with open(f"{TEST_SUBMISSION_PATH}/randomBinary.{filetype}", "wb") as f:
         f.write(os.urandom(1024))
     # only required columns
     pd.DataFrame({}, index=sample_index).to_csv(
-        "{}/onlyIndexCols.{}".format(TEST_SUBMISSION_PATH, filetype),
+        f"{TEST_SUBMISSION_PATH}/onlyIndexCols.{filetype}",
         index=True,
         sep=delimiter,
     )
@@ -110,9 +106,7 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
         sep=delimiter,
     )
     # only required columns with trailing comma
-    with open(
-        "{}/onlyIndexCols.{}".format(TEST_SUBMISSION_PATH, filetype), "r"
-    ) as f:
+    with open(f"{TEST_SUBMISSION_PATH}/onlyIndexCols.{filetype}") as f:
         result = "\n".join(["%s," % l for l in f.read().split("\n")])
         with open(
             "{}/onlyIndexColsWithTrailingComma.{}".format(
@@ -122,26 +116,24 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
         ) as output:
             output.write(result)
     # wrong delimiter
-    sample.to_csv(
-        "{}/wrongDelimiter.{}".format(TEST_SUBMISSION_PATH, filetype), sep=" "
-    )
+    sample.to_csv(f"{TEST_SUBMISSION_PATH}/wrongDelimiter.{filetype}", sep=" ")
     # duplicated indices
     sample.append(sample.iloc[0]).to_csv(
-        "{}/duplicateIndices.{}".format(TEST_SUBMISSION_PATH, filetype),
+        f"{TEST_SUBMISSION_PATH}/duplicateIndices.{filetype}",
         sep=delimiter,
     )
     # infinite values
     sample_copy = sample.copy()
     sample_copy.iloc[0, 0] = float("inf")
     sample_copy.to_csv(
-        "{}/infiniteValue.{}".format(TEST_SUBMISSION_PATH, filetype),
+        f"{TEST_SUBMISSION_PATH}/infiniteValue.{filetype}",
         index=True,
         sep=delimiter,
     )
     # a REALLY BIG (but less than infinite) value
     sample_copy.iloc[0, 0] = 2e64
     sample_copy.to_csv(
-        "{}/reallyBigValue.{}".format(TEST_SUBMISSION_PATH, filetype),
+        f"{TEST_SUBMISSION_PATH}/reallyBigValue.{filetype}",
         index=True,
         sep=delimiter,
     )
@@ -150,7 +142,7 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
         cases = {float: "float", int: "int", str: "str"}
         if t == int or t == float:
             raw_df = {
-                "col{}".format(j): list(
+                f"col{j}": list(
                     map(
                         t,
                         np.random.randint(10, size=len(sample_index))
@@ -161,7 +153,7 @@ def writeSubmissions(sampleSubmission, indexCols=None, filetype="csv"):
             }
         elif t == str:
             raw_df = {
-                "col{}".format(j): list(
+                f"col{j}": list(
                     map(chr, np.random.randint(41, 123, len(sample_index)))
                 )
                 for j in range(i)
@@ -204,10 +196,8 @@ def storeSubmissions(syn, evaluationQueue, synProject=None, filetype="csv"):
         )
         synProject = sc.Project(project_name)
         synProject = syn.store(synProject).id
-        logger.info("Synapse project created at {}".format(synProject))
-    for submission in glob.glob(
-        "{}/*.{}".format(TEST_SUBMISSION_PATH, filetype)
-    ):
+        logger.info(f"Synapse project created at {synProject}")
+    for submission in glob.glob(f"{TEST_SUBMISSION_PATH}/*.{filetype}"):
         logger.info(
             "Storing {} to {} and submitting to {}".format(
                 submission, synProject, evaluationQueue

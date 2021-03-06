@@ -72,7 +72,7 @@ def test__get_project_forum():
         forum = api.get_project_forum(PROJECTID)
         assert forum == FORUM_OBJ
         patch_syn_restget.assert_called_once_with(
-            "/project/{}/forum".format(PROJECTID)
+            f"/project/{PROJECTID}/forum"
         )
 
 
@@ -247,7 +247,7 @@ def test__copy_thread():
     """Tests copying of threads"""
     profile = synapseclient.UserProfile(ownerId="test", userName="foobar")
     thread_text = str(uuid.uuid1())
-    on_behalf_of = "On behalf of @{user}\n\n".format(user=profile.userName)
+    on_behalf_of = f"On behalf of @{profile.userName}\n\n"
     new_thread_text = on_behalf_of + thread_text
 
     with mock.patch.object(
@@ -285,7 +285,7 @@ def test_copy_reply():
     """Tests copying of replies"""
     profile = synapseclient.UserProfile(ownerId="test", userName="foobar")
     reply_text = str(uuid.uuid1())
-    on_behalf_of = "On behalf of @{user}\n\n".format(user=profile.userName)
+    on_behalf_of = f"On behalf of @{profile.userName}\n\n"
     new_reply_text = on_behalf_of + reply_text
 
     with mock.patch.object(

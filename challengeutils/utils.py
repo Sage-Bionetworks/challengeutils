@@ -185,9 +185,7 @@ def evaluation_queue_query(syn, uri, limit=20, offset=0):
     while prev_num_results > 0:
         rest_uri = (
             "/evaluation/submission/query?query="
-            + urllib.parse.quote_plus(
-                "{} limit {} offset {}".format(uri, limit, offset)
-            )
+            + urllib.parse.quote_plus(f"{uri} limit {limit} offset {offset}")
         )
         page = syn.restGET(rest_uri)
         # results = page['results'] if 'results' in page else page['children']

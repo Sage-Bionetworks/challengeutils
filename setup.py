@@ -8,7 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "challengeutils", "__version__.py")) as f:
     exec(f.read(), about)
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 setup(

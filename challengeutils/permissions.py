@@ -136,5 +136,5 @@ def get_user_entity_permissions(syn, entity):
         UserEntityPermissions
     """
     synid = id_of(entity)
-    permissions = syn.restGET("/entity/{}/permissions".format(synid))
+    permissions = syn.restGET(f"/entity/{synid}/permissions")
     return permissions

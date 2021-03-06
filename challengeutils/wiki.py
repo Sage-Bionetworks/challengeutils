@@ -78,7 +78,7 @@ def read_wiki_config(workdir: str) -> typing.List[dict]:
     config_path = os.path.join(workdir, "wiki_config.json")
     if not os.path.exists(config_path):
         raise ValueError("wiki_config.json must exist at specified workdir")
-    with open(config_path, "r") as config:
+    with open(config_path) as config:
         wiki_config = json.load(config)
     return wiki_config
 
@@ -205,7 +205,7 @@ def push_wiki(
             print(f"Markdown not specified: {wiki_header['title']}")
             continue
         markdown_path = os.path.join(workdir, markdown_path)
-        with open(markdown_path, "r") as md_f:
+        with open(markdown_path) as md_f:
             markdown = md_f.read()
         # Create new wiki page if id isn't specified
         if wiki_header.get("id") is not None:

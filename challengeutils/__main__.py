@@ -399,7 +399,7 @@ def build_parser():
         "-v",
         "--version",
         action="version",
-        version="challengeutils {}".format(__version__),
+        version=f"challengeutils {__version__}",
     )
 
     subparsers = parser.add_subparsers(
