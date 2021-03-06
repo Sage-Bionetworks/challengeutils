@@ -2,18 +2,15 @@
 Challenge utility functions
 """
 import datetime
-import json
 import logging
 import sys
 import urllib
 
-import synapseclient
 from synapseclient.annotations import (
     is_submission_status_annotations,
     to_submission_status_annotations,
 )
 from synapseclient.core.exceptions import SynapseHTTPError
-from synapseclient.core.utils import id_of
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

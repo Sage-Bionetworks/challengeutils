@@ -116,9 +116,7 @@ def test__check_project_permissions_errorcode(public, admin, output):
     are given, then `public` error message should take precedence.
     """
     mocked_403 = SynapseHTTPError("foo", response=Mock(status_code=403))
-    with patch.object(
-        SYN, "getPermissions", side_effect=mocked_403
-    ) as patch_perms:
+    with patch.object(SYN, "getPermissions", side_effect=mocked_403):
         errors = submission._check_project_permissions(
             SYN, PROJ, public=public, admin=admin
         )
@@ -272,9 +270,7 @@ def test_download_current_lead_sub():
     sub = synapseclient.Submission(
         evaluationId="2", entityId="2", versionNumber="3"
     )
-    with patch.object(
-        SYN, "getSubmission", return_value=sub
-    ) as patch_getsub, patch.object(
+    with patch.object(SYN, "getSubmission", return_value=sub), patch.object(
         submission, "get_submitterid_from_submission_id", return_value="2"
     ) as patch_getsubmitter, patch.object(
         submission, "get_submitters_lead_submission", return_value="path"
@@ -302,7 +298,7 @@ class TestStopDockerSubmission:
         self.submission_viewdf = pd.DataFrame(
             [
                 {
-                    submission.WORKFLOW_LAST_UPDATED_KEY: self.last_updated_time,
+                    submission.WORKFLOW_LAST_UPDATED_KEY: self.last_updated_time,  # noqa: E501
                     submission.WORKFLOW_START_KEY: self.start_time,
                     "id": "12345",
                 }

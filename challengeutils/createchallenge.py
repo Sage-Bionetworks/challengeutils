@@ -21,7 +21,7 @@ import synapseclient
 import synapseutils
 from synapseclient.core.exceptions import SynapseHTTPError
 
-from . import challenge, permissions, utils
+from . import challenge, permissions
 
 logger = logging.getLogger(__name__)
 

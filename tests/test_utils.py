@@ -1,10 +1,7 @@
 """
 Test challengeutils.utils functions
 """
-import json
 import re
-import tempfile
-import uuid
 from unittest import mock
 from unittest.mock import Mock, patch
 
@@ -146,7 +143,6 @@ def test_invalid__check_date_range():
     Test checking invalid date range
     """
     date_str = "2019-05-26T23:59:59.062Z"
-    datetime1 = "2019-05-06 1:00"
     datetime2 = "2019-06-01 1:00"
     result = challengeutils.utils._check_date_range(date_str, datetime2, None)
     assert not result
@@ -182,7 +178,7 @@ def test_get_contributors():
     ids = [123]
     with patch.object(
         challengeutils.utils, "_get_contributors", return_value=contributors
-    ) as patch_syn_get_bundles:
+    ):
         all_contributors = challengeutils.utils.get_contributors(
             syn, ids, "SCORED"
         )
