@@ -5,11 +5,12 @@ import unittest.mock as mock
 from unittest.mock import Mock, patch
 import uuid
 
+import pandas as pd
 import pytest
 import synapseclient
 from synapseclient.core.exceptions import SynapseHTTPError
 
-from challengeutils import dockertools, submission, utils
+from challengeutils import annotations, dockertools, submission, utils
 
 SYN = mock.create_autospec(synapseclient.Synapse)
 SYN.configPath = None
@@ -256,3 +257,134 @@ def test_invalid_download_current_lead_sub():
         SYN, SUBMISSIONID, "INVALID", "key", verbose=False
     )
     assert dl_file is None
+
+
+class TestStopDockerSubmission():
+    def setup_method(self):
+        self.last_updated_time = 1000000
+        self.start_time = 10000
+        self.submission_viewdf = pd.DataFrame([{
+            submission.WORKFLOW_LAST_UPDATED_KEY: self.last_updated_time,
+            submission.WORKFLOW_START_KEY: self.start_time,
+            'id': "12345"
+        }])
+        self.mock_tablequery = Mock()
+        self.fileview_id = 111
+
+    def test_noneintquota(self):
+        '''
+        ValueError is raised when none integer quota is passed in
+        '''
+        with pytest.raises(ValueError, match=r'quota must be an integer'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota="foo")
+
+    @pytest.mark.parametrize("quota", [0, -1])
+    def test_greaterthan0quota(self, quota):
+        '''
+        ValueError is raised when quota of 0 or less is passed
+        '''
+        with pytest.raises(ValueError, match=r'quota must be larger than 0'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota=quota)
+
+    def test_queryfail(self):
+        '''
+        ValueError is raised tableQuery fails
+        '''
+        with patch.object(SYN, "tableQuery",
+                          side_effect=SynapseHTTPError),\
+             pytest.raises(ValueError,
+                           match=r'Submission view must have columns:*'):
+            submission.stop_submission_over_quota(SYN, self.fileview_id)
+
+    def test_noquota(self):
+        '''
+        Time remaining annotation should not be added
+        if no quota is set, the default is sys.maxsize.
+        '''
+        with patch.object(SYN, "tableQuery",
+                          return_value=self.mock_tablequery) as patch_query,\
+             patch.object(self.mock_tablequery, "asDataFrame",
+                          return_value=self.submission_viewdf),\
+             patch.object(annotations, "annotate_submission") as patch_store:
+            submission.stop_submission_over_quota(SYN, self.fileview_id)
+            query = (
+                f"select {submission.WORKFLOW_LAST_UPDATED_KEY}, "
+                f"{submission.WORKFLOW_START_KEY}, id, "
+                f"status from {self.fileview_id} where "
+                "status = 'EVALUATION_IN_PROGRESS'"
+            )
+            patch_query.assert_called_once_with(query)
+            patch_store.assert_not_called()
+
+    def test_notstartedsubmission(self):
+        '''
+        Time remaining annotation should not be added
+        if a submission is not validated/scored by the workflowhook
+        the submission will not have the right annotations,
+        '''
+        self.submission_viewdf.loc[
+            0, submission.WORKFLOW_LAST_UPDATED_KEY
+        ] = float('nan')
+        with patch.object(SYN, "tableQuery",
+                          return_value=self.mock_tablequery) as patch_query,\
+             patch.object(self.mock_tablequery, "asDataFrame",
+                          return_value=self.submission_viewdf),\
+             patch.object(annotations, "annotate_submission") as patch_store:
+            submission.stop_submission_over_quota(SYN, self.fileview_id)
+            query = (
+                f"select {submission.WORKFLOW_LAST_UPDATED_KEY}, "
+                f"{submission.WORKFLOW_START_KEY}, id, "
+                f"status from {self.fileview_id} where "
+                "status = 'EVALUATION_IN_PROGRESS'"
+            )
+            patch_query.assert_called_once_with(query)
+            patch_store.assert_not_called()
+
+    def test_underquota(self):
+        '''
+        Time remaining annotation should not be added
+        if the model is not over quota
+        '''
+        with patch.object(SYN, "tableQuery",
+                          return_value=self.mock_tablequery) as patch_query,\
+             patch.object(self.mock_tablequery, "asDataFrame",
+                          return_value=self.submission_viewdf),\
+             patch.object(annotations, "annotate_submission") as patch_store:
+            quota = self.last_updated_time - self.start_time + 9000
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota=quota)
+            query = (
+                f"select {submission.WORKFLOW_LAST_UPDATED_KEY}, "
+                f"{submission.WORKFLOW_START_KEY}, id, "
+                f"status from {self.fileview_id} where "
+                "status = 'EVALUATION_IN_PROGRESS'"
+            )
+            patch_query.assert_called_once_with(query)
+            patch_store.assert_not_called()
+
+    def test_overquota(self):
+        '''
+        Time remaining annotation should not be added
+        if the model is over the quota
+        '''
+        with patch.object(SYN, "tableQuery",
+                          return_value=self.mock_tablequery) as patch_query,\
+             patch.object(self.mock_tablequery, "asDataFrame",
+                          return_value=self.submission_viewdf),\
+             patch.object(annotations, "annotate_submission") as patch_store:
+            quota = self.last_updated_time - self.start_time - 9000
+            submission.stop_submission_over_quota(SYN, self.fileview_id,
+                                                  quota=quota)
+            query = (
+                f"select {submission.WORKFLOW_LAST_UPDATED_KEY}, "
+                f"{submission.WORKFLOW_START_KEY}, id, "
+                f"status from {self.fileview_id} where "
+                "status = 'EVALUATION_IN_PROGRESS'"
+            )
+            patch_query.assert_called_once_with(query)
+            patch_store.assert_called_once_with(
+                SYN, "12345", {submission.TIME_REMAINING_KEY: 0},
+                is_private=False, force=True
+            )

@@ -1,17 +1,26 @@
 """Functions that interact with submissions"""
 import os
 import re
+import sys
 import time
+from typing import Union
 
 import pandas as pd
 import synapseutils
-from synapseclient import AUTHENTICATED_USERS, entity, Project
+from synapseclient import (AUTHENTICATED_USERS, entity, Project, Synapse,
+                           SubmissionViewSchema)
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
+from synapseclient.core.utils import id_of
 
 from . import dockertools
 from . import permissions
 from . import utils
+from . import annotations
+
+WORKFLOW_LAST_UPDATED_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"
+WORKFLOW_START_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted"
+TIME_REMAINING_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining"
 
 
 def append_writeup_to_main_submission(row, syn):
@@ -145,7 +154,7 @@ def _validate_public_permissions(syn, proj):
         syn_users_perms = syn.getPermissions(
             proj.entityId, AUTHENTICATED_USERS)
         public_perms = syn.getPermissions(proj.entityId)
-        if set(syn_users_perms) == {"READ", "DOWNLOAD"} and \
+        if ("READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms) and \
                 "READ" in public_perms:
             error = ""
 
@@ -166,7 +175,7 @@ def _validate_admin_permissions(syn, proj, admin):
     try:
         # Remove error message if admin has read and download permissions.
         admin_perms = syn.getPermissions(proj.entityId, admin)
-        if set(admin_perms) == {"READ", "DOWNLOAD"}:
+        if "READ" in admin_perms and "DOWNLOAD" in admin_perms:
             error = ""
 
     except SynapseHTTPError as e:
@@ -310,3 +319,48 @@ def download_current_lead_sub(syn, submissionid, status,
                                               cutoff_annotation, verbose)
         return path
     return None
+
+
+def stop_submission_over_quota(
+        syn: Synapse,
+        submission_view: Union[str, SubmissionViewSchema],
+        quota: int = sys.maxsize
+    ):
+    """Stops any submission that has exceeded the run time quota by using
+    submission views.  A submission view must first exist.
+    Rerunning submissions will require setting TimeRemaining annotation
+    to a positive integer.
+
+    Args:
+        syn: Synapse connection
+        submission_view: Submission View or its Synapse Id.
+        quota: Quota in milliseconds. Default is sys.maxsize.
+               One hour is 3600000.
+
+    """
+    if not isinstance(quota, int):
+        raise ValueError("quota must be an integer")
+    if quota <= 0:
+        raise ValueError("quota must be larger than 0")
+
+    try:
+        view_query = syn.tableQuery(
+            f"select {WORKFLOW_LAST_UPDATED_KEY}, {WORKFLOW_START_KEY}, id, "
+            f"status from {id_of(submission_view)} where "
+            "status = 'EVALUATION_IN_PROGRESS'"
+        )
+    except SynapseHTTPError as http_error:
+        raise ValueError(
+            "Submission view must have columns: "
+            f"{WORKFLOW_LAST_UPDATED_KEY}, {WORKFLOW_START_KEY}, id"
+        ) from http_error
+
+    view_querydf = view_query.asDataFrame()
+    runtime = (view_querydf[WORKFLOW_LAST_UPDATED_KEY] -
+               view_querydf[WORKFLOW_START_KEY])
+    submissions_over_quota_idx = runtime > quota
+    over_quotadf = view_querydf[submissions_over_quota_idx]
+    for index, row in over_quotadf.iterrows():
+        add_annotations = {TIME_REMAINING_KEY: 0}
+        annotations.annotate_submission(syn, row['id'], add_annotations,
+                                        is_private=False, force=True)
