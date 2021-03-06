@@ -6,8 +6,10 @@ import logging
 from datetime import timedelta
 
 import synapseclient
-from synapseclient.exceptions import SynapseAuthenticationError
-from synapseclient.exceptions import SynapseNoCredentialsError
+from synapseclient.exceptions import (
+    SynapseAuthenticationError,
+    SynapseNoCredentialsError,
+)
 
 from scoring_harness import lock
 

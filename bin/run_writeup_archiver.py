@@ -1,7 +1,7 @@
-import signal
-import time
 import os
+import signal
 import subprocess
+import time
 
 
 class GracefulKiller:

@@ -1,8 +1,8 @@
 """Tests evaluation queue helpers"""
 import random
+import uuid
 from unittest import mock
 from unittest.mock import patch
-import uuid
 
 import pytest
 import synapseclient

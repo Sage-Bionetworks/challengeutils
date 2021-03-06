@@ -9,7 +9,7 @@ import synapseclient
 from synapseclient import Project, Synapse, UserProfile
 from synapseclient.core.utils import id_of
 
-from .synapseservices.discussion import Forum, Thread, Reply
+from .synapseservices.discussion import Forum, Reply, Thread
 
 QUERY_LIMIT = 1000
 

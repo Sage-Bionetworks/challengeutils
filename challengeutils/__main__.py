@@ -11,8 +11,8 @@ from synapseclient.core.utils import from_unix_epoch_time
 
 from . import (
     annotations,
-    createchallenge,
     challenge,
+    createchallenge,
     evaluation_queue,
     helpers,
     mirrorwiki,

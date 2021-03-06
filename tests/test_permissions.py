@@ -1,5 +1,5 @@
 """Test permissions"""
-from unittest.mock import patch, create_autospec
+from unittest.mock import create_autospec, patch
 
 import pytest
 import synapseclient

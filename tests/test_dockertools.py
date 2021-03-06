@@ -1,14 +1,14 @@
 """Tests challengeutils.dockertool functions"""
 # pylint: disable=line-too-long
-from unittest.mock import Mock, patch
 import uuid
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
 import synapseclient
 
 from challengeutils import dockertools
-from challengeutils.dockertools import DockerRepository, ENDPOINT_MAPPING
+from challengeutils.dockertools import ENDPOINT_MAPPING, DockerRepository
 
 SYN = synapseclient.Synapse()
 

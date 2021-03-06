@@ -5,11 +5,11 @@ Deprecate many of these functions once synapseclient==2.1.0
 import json
 import typing
 
-from synapseclient import SubmissionStatus, Annotations
+from synapseclient import Annotations, SubmissionStatus
 from synapseclient.annotations import (
+    from_synapse_annotations,
     is_synapse_annotations,
     to_synapse_annotations,
-    from_synapse_annotations,
 )
 
 from .utils import update_single_submission_status

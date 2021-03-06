@@ -2,16 +2,16 @@
 Test challengeutils.discussion functions
 """
 import json
+import uuid
 from unittest import mock
 from unittest.mock import patch
-import uuid
 
 import requests
 import synapseclient
 
 from challengeutils import discussion
 from challengeutils.discussion import DiscussionApi
-from challengeutils.synapseservices.discussion import Forum, Thread, Reply
+from challengeutils.synapseservices.discussion import Forum, Reply, Thread
 
 syn = mock.create_autospec(synapseclient.Synapse)
 api = DiscussionApi(syn)

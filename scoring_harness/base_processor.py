@@ -1,7 +1,8 @@
 """This is the baseclass for what happens to a submission"""
-from abc import ABCMeta, abstractmethod
 import logging
 import os
+from abc import ABCMeta, abstractmethod
+
 from challengeutils.utils import update_single_submission_status
 
 logging.basicConfig(format="%(asctime)s %(message)s")

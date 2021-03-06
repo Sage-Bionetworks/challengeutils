@@ -1,8 +1,8 @@
 """This is the baseclass for what happens to a submission"""
 import logging
-from .base_processor import EvaluationQueueProcessor
-from .base_processor import _get_submission_submitter
+
 from . import messages
+from .base_processor import EvaluationQueueProcessor, _get_submission_submitter
 
 logging.basicConfig(format="%(asctime)s %(message)s")
 LOGGER = logging.getLogger(__name__)

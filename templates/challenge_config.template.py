@@ -1,13 +1,13 @@
 """Challenge configuration"""
 import time
 
-from synapseclient import Submission, Project, AUTHENTICATED_USERS
-from synapseclient.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient import AUTHENTICATED_USERS, Project, Submission
+from synapseclient.exceptions import SynapseHTTPError
 
 from challengeutils import permissions
-from scoring_harness.queue_validator import EvaluationQueueValidator
 from scoring_harness.queue_scorer import EvaluationQueueScorer
+from scoring_harness.queue_validator import EvaluationQueueValidator
 
 
 class Validate(EvaluationQueueValidator):

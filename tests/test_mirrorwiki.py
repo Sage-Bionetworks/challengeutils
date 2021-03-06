@@ -3,9 +3,9 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
-from synapseclient import Project, Wiki, Synapse
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient import Project, Synapse, Wiki
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from challengeutils import mirrorwiki
 

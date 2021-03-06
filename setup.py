@@ -1,6 +1,7 @@
 """Setup"""
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 # figure out the version
 about = {}

@@ -1,12 +1,12 @@
 """Test create challenge"""
+import uuid
 from unittest import mock
 from unittest.mock import patch
-import uuid
 
 import pytest
 import synapseclient
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from challengeutils import challenge, createchallenge, permissions, utils
 from challengeutils.synapseservices.challenge import Challenge

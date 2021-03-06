@@ -19,11 +19,11 @@ Example::
 """
 import logging
 import re
-from typing import Union, List, Dict
+from typing import Dict, List, Union
 
-from synapseclient import File, Folder, Project, Wiki, Synapse
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient import File, Folder, Project, Synapse, Wiki
+from synapseclient.core.exceptions import SynapseHTTPError
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

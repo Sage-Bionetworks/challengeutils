@@ -1,6 +1,6 @@
 """Synapse Challenge Services"""
 import json
-from typing import Union, Iterator
+from typing import Iterator, Union
 
 from synapseclient import Project, Synapse, Team
 from synapseclient.core.utils import id_of

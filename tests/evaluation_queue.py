@@ -1,11 +1,12 @@
-import synapseclient as sc
+import argparse
+import glob
+import logging
+import os
+from itertools import product
+
 import numpy as np
 import pandas as pd
-import os
-import glob
-import argparse
-from itertools import product
-import logging
+import synapseclient as sc
 
 # logging config
 logging.basicConfig(format="%(asctime)s %(message)s")

@@ -4,9 +4,9 @@ Test challengeutils.utils functions
 import json
 import re
 import tempfile
+import uuid
 from unittest import mock
 from unittest.mock import Mock, patch
-import uuid
 
 import pytest
 import synapseclient

@@ -1,14 +1,14 @@
 """Tests challenge services"""
 import json
+import uuid
 from unittest import mock
 from unittest.mock import Mock, patch
-import uuid
 
 import synapseclient
 
 from challengeutils import challenge
-from challengeutils.synapseservices.challenge import Challenge
 from challengeutils.challenge import ChallengeApi
+from challengeutils.synapseservices.challenge import Challenge
 
 
 class TestChallengeApi:

@@ -9,19 +9,16 @@ import pandas as pd
 import synapseutils
 from synapseclient import (
     AUTHENTICATED_USERS,
-    entity,
     Project,
-    Synapse,
     SubmissionViewSchema,
+    Synapse,
+    entity,
 )
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
 from synapseclient.core.utils import id_of
 
-from . import dockertools
-from . import permissions
-from . import utils
-from . import annotations
+from . import annotations, dockertools, permissions, utils
 
 WORKFLOW_LAST_UPDATED_KEY = (
     "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"

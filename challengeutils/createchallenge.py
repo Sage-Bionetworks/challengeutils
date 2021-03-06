@@ -18,8 +18,8 @@ import logging
 import sys
 
 import synapseclient
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from . import challenge, permissions, utils
 
