@@ -272,9 +272,9 @@ def command_stop_submission_over_quota(syn, args):
     be terminated by the orchestrator. Usually applies to submissions
     that have been running for longer than the alloted time.
 
-    >>> challengeutils stop-submission-over-quota evaluationid quota
+    >>> challengeutils stop-submission-over-quota submission_viewid quota
     """
-    submission.stop_submission_over_quota(syn, args.evaluationid,
+    submission.stop_submission_over_quota(syn, args.submission_viewid,
                                           quota=args.quota)
 
 
@@ -613,9 +613,9 @@ def build_parser():
         help='Stop Docker submissions over the quota')
 
     parser_stop_submission.add_argument(
-        "evaluationid",
+        "submission_viewid",
         type=str,
-        help='Synapse evaluation queue id')
+        help='Synapse Submission View Id')
 
     parser_stop_submission.add_argument(
         "quota",
