@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'challengeutils'
-copyright = '2017-2020, Sage Bionetworks'
+copyright = '2017-2021, Sage Bionetworks'
 author = 'Thomas Yu'
 
 # The short X.Y version
