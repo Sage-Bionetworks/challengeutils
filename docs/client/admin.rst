@@ -401,7 +401,7 @@ Stop a Docker submission
 Synopsis
 ^^^^^^^^
 
-kill-docker-over-quota
+stop-submission-over-quota
     eval_id time_quota
 
 Description
@@ -413,7 +413,7 @@ runtime longer than the alloted time).
 Positional
 ^^^^^^^^^^
 
-.. program:: challengeutils kill-docker-over-quota
+.. program:: challengeutils stop-submission-over-quota
 
 .. cmdoption:: eval_id
 
