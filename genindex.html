@@ -96,10 +96,12 @@
 <li class="toctree-l1"><a class="reference internal" href="python/wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python/submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python/discussion.html">Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python/annotations.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python/permissions.html">Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python/teams.html">Teams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python/dockertools.html">Docker Tools</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Command-Line Client</span></p>
 <ul>
@@ -411,8 +413,12 @@
         <li><a href="client/admin.html#cmdoption-challengeutils-archive-project-arg-admin">challengeutils-archive-project command line option</a>
 </li>
       </ul></li>
+      <li><a href="python/annotations.html#challengeutils.annotations.annotate_submission">annotate_submission() (in module challengeutils.annotations)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python/annotations.html#challengeutils.annotations.annotate_submission_with_json">annotate_submission_with_json() (in module challengeutils.annotations)</a>
+</li>
       <li><a href="python/submissions.html#challengeutils.submission.append_writeup_to_main_submission">append_writeup_to_main_submission() (in module challengeutils.submission)</a>
 </li>
       <li><a href="python/submissions.html#challengeutils.submission.archive_project">archive_project() (in module challengeutils.submission)</a>
@@ -492,15 +498,6 @@
 </li>
       </ul></li>
       <li>
-    challengeutils-kill-docker-over-quota command line option
-
-      <ul>
-        <li><a href="client/admin.html#cmdoption-challengeutils-kill-docker-over-quota-arg-eval-id">eval_id</a>
-</li>
-        <li><a href="client/admin.html#cmdoption-challengeutils-kill-docker-over-quota-arg-time-quota">time_quota</a>
-</li>
-      </ul></li>
-      <li>
     challengeutils-list-evaluations command line option
 
       <ul>
@@ -560,8 +557,6 @@
         <li><a href="client/admin.html#cmdoption-challengeutils-query-render">--render</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     challengeutils-set-entity-acl command line option
 
@@ -592,6 +587,17 @@
         <li><a href="client/admin.html#cmdoption-challengeutils-set-evaluation-quota-arg-permission-level">permission_level</a>
 </li>
         <li><a href="client/admin.html#cmdoption-challengeutils-set-evaluation-quota-arg-user-or-team">user_or_team</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    challengeutils-stop-submission-over-quota command line option
+
+      <ul>
+        <li><a href="client/admin.html#cmdoption-challengeutils-stop-submission-over-quota-arg-eval-id">eval_id</a>
+</li>
+        <li><a href="client/admin.html#cmdoption-challengeutils-stop-submission-over-quota-arg-time-quota">time_quota</a>
 </li>
       </ul></li>
       <li>
@@ -626,9 +632,17 @@
         <li><a href="client/admin.html#cmdoption-challengeutils-validate-project-arg-submissionid">submissionid</a>
 </li>
       </ul></li>
+      <li><a href="client/source.html#module-challengeutils.__main__">challengeutils.__main__ (module)</a>
+</li>
+      <li><a href="python/annotations.html#module-challengeutils.annotations">challengeutils.annotations (module)</a>
+</li>
       <li><a href="python/wiki.html#module-challengeutils.createchallenge">challengeutils.createchallenge (module)</a>
 </li>
       <li><a href="python/discussion.html#module-challengeutils.discussion">challengeutils.discussion (module)</a>
+</li>
+      <li><a href="python/dockertools.html#module-challengeutils.dockertools">challengeutils.dockertools (module)</a>
+</li>
+      <li><a href="python/evaluation_queues.html#module-challengeutils.evaluation_queue">challengeutils.evaluation_queue (module)</a>
 </li>
       <li><a href="python/wiki.html#module-challengeutils.mirrorwiki">challengeutils.mirrorwiki (module)</a>
 </li>
@@ -655,7 +669,13 @@
 </li>
       <li><a href="python/utils.html#challengeutils.utils.change_submission_status">change_submission_status() (in module challengeutils.utils)</a>
 </li>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.check_docker_exists">check_docker_exists() (in module challengeutils.dockertools)</a>
+</li>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.check_docker_size">check_docker_size() (in module challengeutils.dockertools)</a>
+</li>
       <li><a href="python/wiki.html#challengeutils.createchallenge.check_existing_and_delete_wiki">check_existing_and_delete_wiki() (in module challengeutils.createchallenge)</a>
+</li>
+      <li><a href="client/source.html#challengeutils.__main__.command_list_registered_challenges">command_list_registered_challenges() (in module challengeutils.__main__)</a>
 </li>
       <li><a href="python/discussion.html#challengeutils.discussion.copy_forum">copy_forum() (in module challengeutils.discussion)</a>
 </li>
@@ -696,6 +716,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi">DiscussionApi (class in challengeutils.discussion)</a>
 </li>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.DockerRepository">DockerRepository (class in challengeutils.dockertools)</a>
+</li>
       <li><a href="python/submissions.html#challengeutils.submission.download_current_lead_sub">download_current_lead_sub() (in module challengeutils.submission)</a>
 </li>
       <li><a href="python/utils.html#challengeutils.utils.download_submission">download_submission() (in module challengeutils.utils)</a>
@@ -717,9 +739,9 @@
     eval_id
 
       <ul>
-        <li><a href="client/admin.html#cmdoption-challengeutils-kill-docker-over-quota-arg-eval-id">challengeutils-kill-docker-over-quota command line option</a>
-</li>
         <li><a href="client/admin.html#cmdoption-challengeutils-set-evaluation-quota-arg-eval-id">challengeutils-set-evaluation-quota command line option</a>, <a href="client/admin.html#id15">[1]</a>
+</li>
+        <li><a href="client/admin.html#cmdoption-challengeutils-stop-submission-over-quota-arg-eval-id">challengeutils-stop-submission-over-quota command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -732,6 +754,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.DockerRepository.get">get() (challengeutils.dockertools.DockerRepository method)</a>
+</li>
       <li><a href="python/utils.html#challengeutils.utils.get_contributors">get_contributors() (in module challengeutils.utils)</a>
 </li>
       <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum">get_forum() (challengeutils.discussion.DiscussionApi method)</a>
@@ -754,10 +778,12 @@
 </li>
       <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi.get_reply_message_url">get_reply_message_url() (challengeutils.discussion.DiscussionApi method)</a>
 </li>
-      <li><a href="python/submissions.html#challengeutils.submission.get_submitterid_from_submission_id">get_submitterid_from_submission_id() (in module challengeutils.submission)</a>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.DockerRepository.get_request_url">get_request_url() (challengeutils.dockertools.DockerRepository method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python/submissions.html#challengeutils.submission.get_submitterid_from_submission_id">get_submitterid_from_submission_id() (in module challengeutils.submission)</a>
+</li>
       <li><a href="python/submissions.html#challengeutils.submission.get_submitters_lead_submission">get_submitters_lead_submission() (in module challengeutils.submission)</a>
 </li>
       <li><a href="python/teams.html#challengeutils.teams.get_team_count">get_team_count() (in module challengeutils.teams)</a>
@@ -892,6 +918,8 @@
 </li>
       <li><a href="python/permissions.html#challengeutils.permissions.set_evaluation_permissions">set_evaluation_permissions() (in module challengeutils.permissions)</a>
 </li>
+      <li><a href="python/evaluation_queues.html#challengeutils.evaluation_queue.set_evaluation_quota">set_evaluation_quota() (in module challengeutils.evaluation_queue)</a>
+</li>
       <li>
     source_id
 
@@ -934,6 +962,8 @@
         <li><a href="client/admin.html#cmdoption-challengeutils-validate-project-arg-submissionid">challengeutils-validate-project command line option</a>
 </li>
       </ul></li>
+      <li><a href="python/evaluation_queues.html#challengeutils.evaluation_queue.SubmissionQuota">SubmissionQuota (class in challengeutils.evaluation_queue)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -952,7 +982,7 @@
     time_quota
 
       <ul>
-        <li><a href="client/admin.html#cmdoption-challengeutils-kill-docker-over-quota-arg-time-quota">challengeutils-kill-docker-over-quota command line option</a>
+        <li><a href="client/admin.html#cmdoption-challengeutils-stop-submission-over-quota-arg-time-quota">challengeutils-stop-submission-over-quota command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -967,10 +997,12 @@
 </li>
       <li><a href="python/utils.html#challengeutils.utils.update_single_submission_status">update_single_submission_status() (in module challengeutils.utils)</a>
 </li>
-      <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi.update_thread_message">update_thread_message() (challengeutils.discussion.DiscussionApi method)</a>
+      <li><a href="python/annotations.html#challengeutils.annotations.update_submission_status">update_submission_status() (in module challengeutils.annotations)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi.update_thread_message">update_thread_message() (challengeutils.discussion.DiscussionApi method)</a>
+</li>
       <li><a href="python/discussion.html#challengeutils.discussion.DiscussionApi.update_thread_title">update_thread_title() (challengeutils.discussion.DiscussionApi method)</a>
 </li>
       <li>
@@ -989,6 +1021,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python/wiki.html#challengeutils.wiki.validate_config">validate_config() (in module challengeutils.wiki)</a>
+</li>
+      <li><a href="python/dockertools.html#challengeutils.dockertools.validate_docker">validate_docker() (in module challengeutils.dockertools)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

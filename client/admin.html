@@ -97,10 +97,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../python/wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/discussion.html">Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/annotations.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/permissions.html">Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/teams.html">Teams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/dockertools.html">Docker Tools</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Command-Line Client</span></p>
 <ul class="current">
@@ -703,7 +705,7 @@ is viewable by the queue administrator(s) only)</p>
 <div class="section" id="id31">
 <h3>Synopsis<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
-<dt>kill-docker-over-quota</dt><dd><p>eval_id time_quota</p>
+<dt>stop-submission-over-quota</dt><dd><p>eval_id time_quota</p>
 </dd>
 </dl>
 </div>
@@ -715,14 +717,14 @@ runtime longer than the alloted time).</p>
 <div class="section" id="id33">
 <h3>Positional<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <dl class="cmdoption">
-<dt id="cmdoption-challengeutils-kill-docker-over-quota-arg-eval-id">
-<code class="sig-name descname">eval_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-kill-docker-over-quota-arg-eval-id" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-challengeutils-stop-submission-over-quota-arg-eval-id">
+<code class="sig-name descname">eval_id</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-stop-submission-over-quota-arg-eval-id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluation ID on Synapse, e.g. <code class="docutils literal notranslate"><span class="pre">9876543</span></code></p>
 </dd></dl>
 
 <dl class="cmdoption">
-<dt id="cmdoption-challengeutils-kill-docker-over-quota-arg-time-quota">
-<code class="sig-name descname">time_quota</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-kill-docker-over-quota-arg-time-quota" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-challengeutils-stop-submission-over-quota-arg-time-quota">
+<code class="sig-name descname">time_quota</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-challengeutils-stop-submission-over-quota-arg-time-quota" title="Permalink to this definition">¶</a></dt>
 <dd><p>Time quota in milliseconds allowed for a submission</p>
 </dd></dl>
 

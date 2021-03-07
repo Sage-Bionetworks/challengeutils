@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>challengeutils.dockertools &mdash; challengeutils 4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/annotations.html">Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/teams.html">Teams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/dockertools.html">Docker Tools</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.dockertools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for challengeutils.dockertools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Validate Docker Repository&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="n">ENDPOINT_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dockerhub&quot;</span><span class="p">:</span> <span class="s2">&quot;https://registry.hub.docker.com&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;synapse&quot;</span><span class="p">:</span> <span class="s2">&quot;https://docker.synapse.org&quot;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="DockerRepository"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.DockerRepository">[docs]</a><span class="k">class</span> <span class="nc">DockerRepository</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Forms request url and gets the docker respository</span>
+<span class="sd">    with requests packages</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docker_repo</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">docker_digest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">index_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            docker_repo: Docker repository without tags or sha</span>
+<span class="sd">            docker_digest: Docker repository sha digest</span>
+<span class="sd">            index_endpoint: Docker registry endpoint.</span>
+<span class="sd">                            Dockerhub - https://registry.hub.docker.com</span>
+<span class="sd">                            Synapse - https://docker.synapse.org</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docker_repo</span> <span class="o">=</span> <span class="n">docker_repo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docker_digest</span> <span class="o">=</span> <span class="n">docker_digest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_endpoint</span> <span class="o">=</span> <span class="n">index_endpoint</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;str representation of docker repository&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.docker_repo}</span><span class="s2">@</span><span class="si">{self.docker_digest}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="DockerRepository.get_request_url"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.DockerRepository.get_request_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_request_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets request URL&quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;v2&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">docker_repo</span><span class="p">,</span> <span class="s1">&#39;manifests&#39;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">docker_digest</span><span class="p">])</span>
+        <span class="n">docker_request_url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_endpoint</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docker_request_url</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_bearer_token_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets bearer token URL&quot;&quot;&quot;</span>
+        <span class="n">initial_request</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_request_url</span><span class="p">())</span>
+        <span class="n">www_auth</span> <span class="o">=</span> <span class="n">initial_request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Www-Authenticate&#39;</span><span class="p">]</span>
+        <span class="n">auth_headers</span> <span class="o">=</span> <span class="n">www_auth</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="c1"># Creates a mapping of the authentication headers to its values</span>
+        <span class="n">auth_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">auth_headers</span><span class="p">}</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">?service=</span><span class="si">{1}</span><span class="s2">&amp;scope=</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">auth_mapping</span><span class="p">[</span><span class="s1">&#39;Bearer realm&#39;</span><span class="p">],</span>
+                                                  <span class="n">auth_mapping</span><span class="p">[</span><span class="s1">&#39;service&#39;</span><span class="p">],</span>
+                                                  <span class="n">auth_mapping</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_get_bearer_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets Docker bearer token</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user: Synapse username</span>
+<span class="sd">            password: Synapse password</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bearer token</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bearer_token_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bearer_token_url</span><span class="p">()</span>
+        <span class="n">auth_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{username}</span><span class="s1">:</span><span class="si">{password}</span><span class="s1">&#39;</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">auth_string</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Basic </span><span class="si">{auth}</span><span class="s1">&#39;</span><span class="p">}</span>
+        <span class="n">bearer_token_request</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bearer_token_url</span><span class="p">,</span>
+                                            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bearer_token_request</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">bearer_token_request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">bearer_token_request</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DockerRepository.get"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.DockerRepository.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets docker repository response</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: username: Docker registry username</span>
+<span class="sd">                      password: Docker registry password</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Docker response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bearer_token</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_request_url</span><span class="p">(),</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">token</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">resp</span></div></div>
+
+
+<div class="viewcode-block" id="check_docker_exists"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.check_docker_exists">[docs]</a><span class="k">def</span> <span class="nf">check_docker_exists</span><span class="p">(</span><span class="n">docker_resp</span><span class="p">:</span> <span class="s1">&#39;Response&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if Docker image + sha exists</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        docker_resp: Docker response</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If docker image and sha doesn&#39;t exist</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">docker_resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Docker image and sha digest must exist.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_docker_size"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.check_docker_size">[docs]</a><span class="k">def</span> <span class="nf">check_docker_size</span><span class="p">(</span><span class="n">docker_resp</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks Docker container is less than specified size</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        docker_resp: Docker response</span>
+<span class="sd">        size: Size in GB</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Docker container is over specified size</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">docker_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">layer</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">docker_resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;layers&#39;</span><span class="p">]])</span>
+    <span class="k">if</span> <span class="n">docker_size</span><span class="o">/</span><span class="mf">1000000000.0</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Docker image must be less than a terabyte.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validate_docker"><a class="viewcode-back" href="../../python/dockertools.html#challengeutils.dockertools.validate_docker">[docs]</a><span class="k">def</span> <span class="nf">validate_docker</span><span class="p">(</span><span class="n">docker_repo</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">docker_digest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validates a Docker Respository</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        docker_repo: Docker repository without tags or sha</span>
+<span class="sd">        docker_digest: Docker repository sha digest</span>
+<span class="sd">        index_endpoint: Docker registry endpoint.</span>
+<span class="sd">                        Dockerhub - https://registry.hub.docker.com</span>
+<span class="sd">                        Synapse - https://docker.synapse.org</span>
+<span class="sd">        username: Docker registry username</span>
+<span class="sd">        password: Docker registry password</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if valid, False if not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">docker_cls</span> <span class="o">=</span> <span class="n">DockerRepository</span><span class="p">(</span><span class="n">docker_repo</span><span class="o">=</span><span class="n">docker_repo</span><span class="p">,</span>
+                                  <span class="n">docker_digest</span><span class="o">=</span><span class="n">docker_digest</span><span class="p">,</span>
+                                  <span class="n">index_endpoint</span><span class="o">=</span><span class="n">index_endpoint</span><span class="p">)</span>
+    <span class="n">docker_resp</span> <span class="o">=</span> <span class="n">docker_cls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                                 <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+    <span class="n">check_docker_exists</span><span class="p">(</span><span class="n">docker_resp</span><span class="p">)</span>
+    <span class="n">check_docker_size</span><span class="p">(</span><span class="n">docker_resp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2017-2020, Sage Bionetworks.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

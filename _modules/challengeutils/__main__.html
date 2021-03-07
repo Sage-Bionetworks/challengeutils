@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>challengeutils.__main__ &mdash; challengeutils 3.2 documentation</title>
+  <title>challengeutils.__main__ &mdash; challengeutils 4.0 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                3.2
+                4.0
               </div>
             
           
@@ -95,10 +95,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/annotations.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/teams.html">Teams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/dockertools.html">Docker Tools</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Command-Line Client</span></p>
 <ul>
@@ -192,7 +194,7 @@
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">from_unix_epoch_time</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span>
-               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">helpers</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
+               <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
                <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">wiki</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
@@ -448,16 +450,16 @@
                     <span class="n">messageBody</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="command_kill_docker_over_quota"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_kill_docker_over_quota">[docs]</a><span class="k">def</span> <span class="nf">command_kill_docker_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="command_stop_submission_over_quota"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_stop_submission_over_quota">[docs]</a><span class="k">def</span> <span class="nf">command_stop_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets an annotation on Synapse Docker submissions such that it will</span>
 <span class="sd">    be terminated by the orchestrator. Usually applies to submissions</span>
 <span class="sd">    that have been running for longer than the alloted time.</span>
 
-<span class="sd">    &gt;&gt;&gt; challengeutils killdockeroverquota evaluationid quota</span>
+<span class="sd">    &gt;&gt;&gt; challengeutils stop-submission-over-quota submission_viewid quota</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">helpers</span><span class="o">.</span><span class="n">kill_docker_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">evaluationid</span><span class="p">,</span>
-                                              <span class="n">quota</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">quota</span><span class="p">)</span></div>
+    <span class="n">submission</span><span class="o">.</span><span class="n">stop_submission_over_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">submission_viewid</span><span class="p">,</span>
+                                          <span class="n">quota</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">quota</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="command_validate_docker"><a class="viewcode-back" href="../../client/source.html#challengeutils.__main__.command_validate_docker">[docs]</a><span class="k">def</span> <span class="nf">command_validate_docker</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
@@ -790,20 +792,22 @@
 
     <span class="n">parser_send_email</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_send_email</span><span class="p">)</span>
 
-    <span class="n">parser_kill_docker</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;kill-docker-over-quota&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Kill Docker submissions over the quota&#39;</span><span class="p">)</span>
+    <span class="n">parser_stop_submission</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">&#39;stop-submission-over-quota&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Stop Docker submissions over the quota&#39;</span><span class="p">)</span>
 
-    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;evaluationid&quot;</span><span class="p">,</span>
+    <span class="n">parser_stop_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;submission_viewid&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse evaluation queue id&#39;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Synapse Submission View Id&#39;</span><span class="p">)</span>
 
-    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="n">parser_stop_submission</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;quota&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Time quota submission has to run in milliseconds&quot;</span><span class="p">)</span>
-    <span class="n">parser_kill_docker</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">command_kill_docker_over_quota</span><span class="p">)</span>
+    <span class="n">parser_stop_submission</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
+        <span class="n">func</span><span class="o">=</span><span class="n">command_stop_submission_over_quota</span>
+    <span class="p">)</span>
 
     <span class="n">parser_set_quota</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;set-evaluation-quota&#39;</span><span class="p">,</span>

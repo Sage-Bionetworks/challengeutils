@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>challengeutils.annotations &mdash; challengeutils 4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/annotations.html">Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/teams.html">Teams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/dockertools.html">Docker Tools</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.annotations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for challengeutils.annotations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Updating submission annotations</span>
+<span class="sd">Deprecate many of these functions once synapseclient==2.1.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="n">SubmissionStatus</span><span class="p">,</span> <span class="n">Annotations</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_synapse_annotations</span><span class="p">,</span>
+                                       <span class="n">to_synapse_annotations</span><span class="p">,</span>
+                                       <span class="n">from_synapse_annotations</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">update_single_submission_status</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_to_annotation_cls</span><span class="p">(</span>
+        <span class="n">sub_status</span><span class="p">:</span> <span class="n">SubmissionStatus</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Annotations</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Annotations</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert synapse style annotation or dict to synapseclient.Annotation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sub_status:  A synapseclient.SubmissionStatus</span>
+<span class="sd">        values:  A synapseclient.Annotations or dict</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A synapseclient.Annotations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Annotations</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">values</span>
+    <span class="k">if</span> <span class="n">is_synapse_annotations</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">from_synapse_annotations</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">Annotations</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">sub_status</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                             <span class="n">etag</span><span class="o">=</span><span class="n">sub_status</span><span class="o">.</span><span class="n">etag</span><span class="p">,</span>
+                             <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">values</span>
+
+
+<div class="viewcode-block" id="update_submission_status"><a class="viewcode-back" href="../../python/annotations.html#challengeutils.annotations.update_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_submission_status</span><span class="p">(</span><span class="n">sub_status</span><span class="p">:</span> <span class="n">SubmissionStatus</span><span class="p">,</span>
+                             <span class="n">values</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Annotations</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
+                             <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubmissionStatus</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Updates submission status and annotations</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sub_status:  A synapseclient.SubmissionStatus</span>
+<span class="sd">        values:  A synapseclient.Annotations or dict</span>
+<span class="sd">        status: A submission status (e.g. RECEIVED, SCORED...)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A updated synapseclient.SubmissionStatus</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sub_status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+    <span class="n">existing</span> <span class="o">=</span> <span class="n">sub_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;submissionAnnotations&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="c1"># Convert to synapseclient.Annotation class</span>
+    <span class="n">existing_annotations</span> <span class="o">=</span> <span class="n">_convert_to_annotation_cls</span><span class="p">(</span><span class="n">sub_status</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span>
+    <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">_convert_to_annotation_cls</span><span class="p">(</span><span class="n">sub_status</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+    <span class="c1"># Can use dict.update to update annotations</span>
+    <span class="n">existing_annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_annotations</span><span class="p">)</span>
+    <span class="c1"># Must turn synapseclient.Annotation into a synapse style annotations</span>
+    <span class="n">syn_annotations</span> <span class="o">=</span> <span class="n">to_synapse_annotations</span><span class="p">(</span><span class="n">existing_annotations</span><span class="p">)</span>
+    <span class="n">sub_status</span><span class="o">.</span><span class="n">submissionAnnotations</span> <span class="o">=</span> <span class="n">syn_annotations</span>
+    <span class="k">return</span> <span class="n">sub_status</span></div>
+
+
+<div class="viewcode-block" id="annotate_submission_with_json"><a class="viewcode-back" href="../../python/annotations.html#challengeutils.annotations.annotate_submission_with_json">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission_with_json</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_values</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ChallengeWorkflowTemplate tool: Annotates submission with annotation</span>
+<span class="sd">    values from a json file and uses exponential backoff to retry when</span>
+<span class="sd">    there are concurrent update issues (HTTP 412).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        annotation_values: Annotation json file</span>
+<span class="sd">        **kwargs: is_private: Set annotations acl to private (default is True)</span>
+<span class="sd">                  force: Force change the annotation from</span>
+<span class="sd">                         private to public and vice versa.</span>
+<span class="sd">                  status: A submission status (e.g. RECEIVED, SCORED...)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        synapseclient.SubmissionStatus</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">annotation_values</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
+        <span class="n">annotation_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">annotate_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_json</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sub_status</span></div>
+
+
+<div class="viewcode-block" id="annotate_submission"><a class="viewcode-back" href="../../python/annotations.html#challengeutils.annotations.annotate_submission">[docs]</a><span class="k">def</span> <span class="nf">annotate_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">annotation_dict</span><span class="p">,</span>
+                        <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Annotate submission with annotation values from a dict</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        submissionid: Submission id</span>
+<span class="sd">        annotation_dict: Annotation dict</span>
+<span class="sd">        is_private: Set annotations acl to private (default is True)</span>
+<span class="sd">        force: Force change the annotation from</span>
+<span class="sd">               private to public and vice versa.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
+    <span class="c1"># Don&#39;t add any annotations that are None or []</span>
+    <span class="n">not_add</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">[]]</span>
+    <span class="n">annotation_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">annotation_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">annotation_dict</span>
+                       <span class="k">if</span> <span class="n">annotation_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">not_add</span><span class="p">}</span>
+    <span class="c1"># TODO: Remove once submissionview is fully supported</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">update_single_submission_status</span><span class="p">(</span><span class="n">sub_status</span><span class="p">,</span> <span class="n">annotation_dict</span><span class="p">,</span>
+                                                 <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">,</span>
+                                                 <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+    <span class="n">sub_status</span> <span class="o">=</span> <span class="n">update_submission_status</span><span class="p">(</span><span class="n">sub_status</span><span class="p">,</span> <span class="n">annotation_dict</span><span class="p">,</span>
+                                          <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">sub_status</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2017-2020, Sage Bionetworks.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

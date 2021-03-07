@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>challengeutils.evaluation_queue &mdash; challengeutils 4.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Python Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/discussion.html">Discussion Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/annotations.html">Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/permissions.html">Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/teams.html">Teams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/dockertools.html">Docker Tools</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command-Line Client</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client/participant.html">Participant Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/admin.html">Admin Built-in Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client/source.html">Source</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Demos &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo/challenge.html">General Challenge Workflow</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">challengeutils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>challengeutils.evaluation_queue</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for challengeutils.evaluation_queue</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Evaluation Queue helper functions&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="n">Synapse</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_date_to_epoch</span><span class="p">(</span><span class="n">date_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts local time dates in YEAR-MM-DDTHH:MM:SS format</span>
+<span class="sd">    (ie. 2020-02-21T23:53:27) to UTC epochtime in milliseconds and</span>
+<span class="sd">    timestring</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        date_string: Local time date in YEAR-MM-DDTHH:MM:SS format</span>
+<span class="sd">                     (ie. 2020-02-21T23:53:27)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: {&quot;time_string&quot;: UTC time in YEAR-MM-DDTHH:MM:SS format</span>
+<span class="sd">               &quot;epochtime_ms&quot;: UTC epoch time}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">local_time_struct</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_string</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">epochtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">local_time_struct</span><span class="p">)</span>
+    <span class="n">utc_time_struct</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">gmtime</span><span class="p">(</span><span class="n">epochtime</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;time_string&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.000Z&quot;</span><span class="p">,</span>
+                                         <span class="n">utc_time_struct</span><span class="p">),</span>
+            <span class="s2">&quot;epochtime_ms&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">epochtime</span><span class="o">*</span><span class="mi">1000</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="SubmissionQuota"><a class="viewcode-back" href="../../python/evaluation_queues.html#challengeutils.evaluation_queue.SubmissionQuota">[docs]</a><span class="k">class</span> <span class="nc">SubmissionQuota</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A SubmissionQuota object</span>
+<span class="sd">    https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionQuota.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firstRoundStart</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">roundDurationMillis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">numberOfRounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">submissionLimit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firstRoundStart</span> <span class="o">=</span> <span class="n">firstRoundStart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roundDurationMillis</span> <span class="o">=</span> <span class="n">roundDurationMillis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numberOfRounds</span> <span class="o">=</span> <span class="n">numberOfRounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submissionLimit</span> <span class="o">=</span> <span class="n">submissionLimit</span></div>
+
+
+<span class="k">def</span> <span class="nf">_create_quota</span><span class="p">(</span><span class="n">round_start</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">round_end</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">number_of_rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">round_duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">submission_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubmissionQuota</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Creates the SubmissionQuota object</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        round_start: Start of round (local time) in YEAR-MM-DDTHH:MM:SS</span>
+<span class="sd">                     format (ie. 2020-02-21T17:00:00)</span>
+<span class="sd">        round_end: End of round (local time) in YEAR-MM-DDTHH:MM:SS format</span>
+<span class="sd">                   (ie. 2020-02-21T19:00:00)</span>
+<span class="sd">        number_of_rounds: Number of rounds</span>
+<span class="sd">        round_duration: Round duration in milliseconds</span>
+<span class="sd">        submission_limit: Number of submissions allowed per team</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SubmissionQuota object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">round_end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">round_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only specify round_end or round_duration&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">round_end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">round_start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If round_end is specified, &quot;</span>
+                         <span class="s2">&quot;round_start must also be specified&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">round_start</span><span class="p">:</span>
+        <span class="n">round_start_info</span> <span class="o">=</span> <span class="n">_convert_date_to_epoch</span><span class="p">(</span><span class="n">round_start</span><span class="p">)</span>
+        <span class="n">round_start_utc</span> <span class="o">=</span> <span class="n">round_start_info</span><span class="p">[</span><span class="s1">&#39;epochtime_ms&#39;</span><span class="p">]</span>
+        <span class="c1"># Must set the time in UTC time, but must pass in local time</span>
+        <span class="c1"># into function</span>
+        <span class="n">round_start</span> <span class="o">=</span> <span class="n">round_start_info</span><span class="p">[</span><span class="s1">&#39;time_string&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">round_end</span><span class="p">:</span>
+        <span class="n">round_end_info</span> <span class="o">=</span> <span class="n">_convert_date_to_epoch</span><span class="p">(</span><span class="n">round_end</span><span class="p">)</span>
+        <span class="n">round_duration</span> <span class="o">=</span> <span class="n">round_end_info</span><span class="p">[</span><span class="s1">&#39;epochtime_ms&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">round_start_utc</span>
+
+    <span class="k">if</span> <span class="n">round_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">round_duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Specified round_duration must be &gt;= 0, or &quot;</span>
+                         <span class="s2">&quot;round_end must be &gt; round_start&quot;</span><span class="p">)</span>
+
+    <span class="n">quota</span> <span class="o">=</span> <span class="n">SubmissionQuota</span><span class="p">(</span><span class="n">firstRoundStart</span><span class="o">=</span><span class="n">round_start</span><span class="p">,</span>
+                            <span class="n">numberOfRounds</span><span class="o">=</span><span class="n">number_of_rounds</span><span class="p">,</span>
+                            <span class="n">roundDurationMillis</span><span class="o">=</span><span class="n">round_duration</span><span class="p">,</span>
+                            <span class="n">submissionLimit</span><span class="o">=</span><span class="n">submission_limit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">quota</span>
+
+
+<div class="viewcode-block" id="set_evaluation_quota"><a class="viewcode-back" href="../../python/evaluation_queues.html#challengeutils.evaluation_queue.set_evaluation_quota">[docs]</a><span class="k">def</span> <span class="nf">set_evaluation_quota</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">evalid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets evaluation submission limit quota.  This WILL erase any old quota</span>
+<span class="sd">    you had previously set. Note - round_start must be specified with either</span>
+<span class="sd">    round_end or round_duration and number_of_rounds must be defined for the</span>
+<span class="sd">    time limits to work.  submission_limit will work without number_of_rounds.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        syn: Synapse object</span>
+<span class="sd">        evalid: Evaluation id</span>
+<span class="sd">        **kwargs:</span>
+<span class="sd">            round_start: Start of round (local time) in YEAR-MM-DDTHH:MM:SS</span>
+<span class="sd">                         format (ie. 2020-02-21T17:00:00)</span>
+<span class="sd">            round_end: End of round (local time) in YEAR-MM-DDTHH:MM:SS format</span>
+<span class="sd">                       (ie. 2020-02-21T19:00:00)</span>
+<span class="sd">            number_of_rounds: Number of rounds</span>
+<span class="sd">            round_duration: Round duration in milliseconds</span>
+<span class="sd">            submission_limit: Number of submissions allowed per team</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A synapseclient.Evaluation</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; set_evaluation_quota(syn, 12345,</span>
+<span class="sd">                                 round_start=&quot;2020-02-21T17:00:00&quot;,</span>
+<span class="sd">                                 round_end=&quot;2020-02-23T17:00:00&quot;,</span>
+<span class="sd">                                 number_of_rounds=1,</span>
+<span class="sd">                                 submission_limit=3)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">quota</span> <span class="o">=</span> <span class="n">_create_quota</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">evaluation</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getEvaluation</span><span class="p">(</span><span class="n">evalid</span><span class="p">)</span>
+    <span class="n">evaluation</span><span class="o">.</span><span class="n">quota</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">quota</span><span class="p">)</span>
+    <span class="n">evaluation</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">evaluation</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">evaluation</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2017-2020, Sage Bionetworks.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -97,10 +97,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../python/wiki.html">Challenge Wiki</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/discussion.html">Discussion Service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../python/helpers.html">Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/annotations.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/permissions.html">Permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/teams.html">Teams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python/utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/evaluation_queues.html">Evaluation Queues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python/dockertools.html">Docker Tools</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Command-Line Client</span></p>
 <ul>
@@ -115,7 +117,7 @@
 <p class="caption"><span class="caption-text">About</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#v4-0-0">v4.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v4-0-1">v4.0.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v3-2-0">v3.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v3-1-0">v3.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v3-0-0">v3.0.0</a></li>
@@ -201,8 +203,8 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <p>This changelog is used to track all major changes to <strong>challengeutils</strong>.</p>
 <p>For older releases, visit the <a class="reference external" href="https://github.com/Sage-Bionetworks/challengeutils/releases">GitHub releases</a>.</p>
-<div class="section" id="v4-0-0">
-<h2>v4.0.0<a class="headerlink" href="#v4-0-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v4-0-1">
+<h2>v4.0.1<a class="headerlink" href="#v4-0-1" title="Permalink to this headline">¶</a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><strong>Support for synapseclient&lt;2.3.0 is no longer available</strong>; upgrade to the
@@ -220,6 +222,7 @@ half of this year.</p>
 <li><p>Support <cite>Python</cite> 3.9</p></li>
 <li><p>Deprecate <cite>helpers.py</cite> and create <cite>stop_submissions_over_quota</cite> function</p></li>
 <li><p>Fix conditionals when validating permissions for project submissions</p></li>
+<li><p>Stopping submissions over a quota now uses submission views instead of evaluation queues.</p></li>
 </ul>
 </div>
 <div class="section" id="v3-2-0">
