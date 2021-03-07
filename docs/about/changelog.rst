@@ -8,7 +8,7 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
-v4.0.0
+v4.0.1
 ------
 .. Important::
     **Support for synapseclient<2.3.0 is no longer available**; upgrade to the
@@ -25,7 +25,7 @@ v4.0.0
 - Support `Python` 3.9
 - Deprecate `helpers.py` and create `stop_submissions_over_quota` function
 - Fix conditionals when validating permissions for project submissions
-
+- Stopping submissions over a quota now uses submission views instead of evaluation queues.
 
 v3.2.0
 ------

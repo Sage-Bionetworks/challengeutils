@@ -10,7 +10,7 @@ from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
 
 from . import (annotations, createchallenge, challenge,
-               evaluation_queue, helpers, mirrorwiki, permissions,
+               evaluation_queue, mirrorwiki, permissions,
                submission, utils, wiki)
 from .__version__ import __version__
 
@@ -266,16 +266,16 @@ def command_send_email(syn, args):
                     messageBody=message)
 
 
-def command_kill_docker_over_quota(syn, args):
+def command_stop_submission_over_quota(syn, args):
     """
     Sets an annotation on Synapse Docker submissions such that it will
     be terminated by the orchestrator. Usually applies to submissions
     that have been running for longer than the alloted time.
 
-    >>> challengeutils killdockeroverquota evaluationid quota
+    >>> challengeutils stop-submission-over-quota submission_viewid quota
     """
-    helpers.kill_docker_submission_over_quota(syn, args.evaluationid,
-                                              quota=args.quota)
+    submission.stop_submission_over_quota(syn, args.submission_viewid,
+                                          quota=args.quota)
 
 
 def command_validate_docker(syn, args):
@@ -608,20 +608,22 @@ def build_parser():
 
     parser_send_email.set_defaults(func=command_send_email)
 
-    parser_kill_docker = subparsers.add_parser(
-        'kill-docker-over-quota',
-        help='Kill Docker submissions over the quota')
+    parser_stop_submission = subparsers.add_parser(
+        'stop-submission-over-quota',
+        help='Stop Docker submissions over the quota')
 
-    parser_kill_docker.add_argument(
-        "evaluationid",
+    parser_stop_submission.add_argument(
+        "submission_viewid",
         type=str,
-        help='Synapse evaluation queue id')
+        help='Synapse Submission View Id')
 
-    parser_kill_docker.add_argument(
+    parser_stop_submission.add_argument(
         "quota",
         type=int,
         help="Time quota submission has to run in milliseconds")
-    parser_kill_docker.set_defaults(func=command_kill_docker_over_quota)
+    parser_stop_submission.set_defaults(
+        func=command_stop_submission_over_quota
+    )
 
     parser_set_quota = subparsers.add_parser(
         'set-evaluation-quota',
