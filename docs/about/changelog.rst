@@ -8,7 +8,7 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
-v4.0.0
+v4.0.1
 ------
 .. Important::
     **Support for synapseclient<2.3.0 is no longer available**; upgrade to the
