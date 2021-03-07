@@ -7,10 +7,12 @@
    python/wiki
    python/submissions
    python/discussion
-   python/helpers
+   python/annotations
    python/permissions
    python/teams
    python/utils
+   python/evaluation_queues
+   python/dockertools
 
 .. toctree::
    :caption: Command-Line Client
