@@ -84,15 +84,6 @@ v2.1.0
 
 v2.0.1
 ------
-- Added `CONTRIBUTING.md`
-- Revised `README.md`
-- Added `CODE_OF_CONDUCT.md`
-- Update `version`
-
-
-v2.0.0
-------
-
 .. Important::
     **Support for synapseclient<2.0.0 is no longer available**; upgrade to the
     latest version with:
@@ -101,11 +92,15 @@ v2.0.0
 
         $ pip install synapseclient --upgrade
 
+- Added `CONTRIBUTING.md`
+- Revised `README.md`
+- Added `CODE_OF_CONDUCT.md`
+- Update `version`
 - Refine ``challenge`` services
 - Update library dependency, e.g. using ``unittest.mock`` instead of ``mock``
 - Fix queue query CLI errors
 - Fix ``mirrorwiki`` error
-- **Release is 2.0.0.dev0 on pypi**
+
 
 v1.6.0
 ------
@@ -124,12 +119,7 @@ v1.5.2
 v1.5.1
 ------
 
-Versioning fix.
-
-v1.5.0
-------
-
+- Versioning fix
 - Add auto-generated documentation
 - Fix CLI command for annotating submission
 - Add ``setevaluationquota`` command
-- **Release is 1.5.0.dev0 on pypi**
