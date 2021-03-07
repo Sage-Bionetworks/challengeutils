@@ -25,7 +25,7 @@ v4.0.1
 - Support `Python` 3.9
 - Deprecate `helpers.py` and create `stop_submissions_over_quota` function
 - Fix conditionals when validating permissions for project submissions
-
+- Stopping submissions over a quota now uses submission views instead of evaluation queues.
 
 v3.2.0
 ------
