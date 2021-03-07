@@ -621,7 +621,9 @@ def build_parser():
         "quota",
         type=int,
         help="Time quota submission has to run in milliseconds")
-    parser_stop_submission.set_defaults(func=command_kill_docker_over_quota)
+    parser_stop_submission.set_defaults(
+        func=command_stop_submission_over_quota
+    )
 
     parser_set_quota = subparsers.add_parser(
         'set-evaluation-quota',
