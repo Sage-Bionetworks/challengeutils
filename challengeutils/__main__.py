@@ -8,10 +8,14 @@ import pandas as pd
 import synapseclient
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
+from synapseclient.core.exceptions import (
+    SynapseNoCredentialsError,
+    SynapseAuthenticationError,
+)
 
 from . import (annotations, createchallenge, challenge,
                evaluation_queue, mirrorwiki, permissions,
-               submission, utils, wiki)
+               submission, utils, wiki,)
 from .__version__ import __version__
 
 logging.basicConfig(level=logging.INFO)
@@ -791,13 +795,29 @@ def build_parser():
     return parser
 
 
-def synapse_login(synapse_config):
+def synapse_login(synapse_config=synapseclient.client.CONFIG_FILE):
+    """Login to Synapse
+
+    Args:
+        synapse_config: Path to synapse configuration file.
+                        Defaults to ~/.synapseConfig
+
+    Returns:
+        Synapse connection
+    """
     try:
-        syn = synapseclient.login(silent=True)
-    except Exception:
         syn = synapseclient.Synapse(configPath=synapse_config)
         syn.login(silent=True)
-    return(syn)
+    except (SynapseNoCredentialsError, SynapseAuthenticationError):
+        raise ValueError(
+            "Login error: please make sure you have correctly "
+            "configured your client.  Instructions here: "
+            "https://help.synapse.org/docs/Client-Configuration.1985446156.html. "
+            "You can also create a Synapse Personal Access Token and set it "
+            "as an environmental variable: "
+            "SYNAPSE_AUTH_TOKEN='<my_personal_access_token>'"
+        )
+    return syn
 
 
 def main():
