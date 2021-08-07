@@ -819,6 +819,7 @@ def synapse_login(synapse_config=synapseclient.client.CONFIG_FILE):
         )
     return syn
 
+
 def main():
     args = build_parser().parse_args()
     syn = synapse_login(args.synapse_config)
