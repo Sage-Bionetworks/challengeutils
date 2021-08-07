@@ -29,7 +29,7 @@ setup(
         'console_scripts': ['challengeutils = challengeutils.__main__:main']
     },
     install_requires=['pandas>=1.1.5',
-                      'synapseclient>=2.3.0'],
+                      'synapseclient>=2.4.0'],
     project_urls={
         "Documentation": "https://sage-bionetworks.github.io/challengeutils/",
         "Source Code": "https://github.com/Sage-Bionetworks/challengeutils",
