@@ -8,6 +8,23 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v4.1.0
+------
+.. Important::
+    **Support for synapseclient<2.4.0 is no longer available**; upgrade to the
+    latest version with:
+
+    .. code:: console
+
+        $ pip install synapseclient --upgrade
+
+.. Important::
+    **Support for Python 3.6 is will be dropped in the later
+    half of this year.
+
+- Fix `challengeutils` cli bug
+- Update `synapse_login` to support Synapse PAT env variable.
+
 v4.0.1
 ------
 .. Important::
