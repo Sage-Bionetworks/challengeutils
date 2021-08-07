@@ -192,10 +192,14 @@
 <span class="kn">import</span> <span class="nn">synapseclient</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.retry</span> <span class="kn">import</span> <span class="n">with_retry</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">from_unix_epoch_time</span>
+<span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SynapseNoCredentialsError</span><span class="p">,</span>
+    <span class="n">SynapseAuthenticationError</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">createchallenge</span><span class="p">,</span> <span class="n">challenge</span><span class="p">,</span>
                <span class="n">evaluation_queue</span><span class="p">,</span> <span class="n">mirrorwiki</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span>
-               <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">wiki</span><span class="p">)</span>
+               <span class="n">submission</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">wiki</span><span class="p">,)</span>
 <span class="kn">from</span> <span class="nn">.__version__</span> <span class="kn">import</span> <span class="n">__version__</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -975,19 +979,40 @@
     <span class="k">return</span> <span class="n">parser</span>
 
 
-<span class="k">def</span> <span class="nf">synapse_login</span><span class="p">(</span><span class="n">synapse_config</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">synapse_login</span><span class="p">(</span><span class="n">synapse_config</span><span class="o">=</span><span class="n">synapseclient</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">CONFIG_FILE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Login to Synapse</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        synapse_config: Path to synapse configuration file.</span>
+<span class="sd">                        Defaults to ~/.synapseConfig</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Synapse connection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Synapse</span><span class="p">(</span><span class="n">configPath</span><span class="o">=</span><span class="n">synapse_config</span><span class="p">)</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">SynapseNoCredentialsError</span><span class="p">,</span> <span class="n">SynapseAuthenticationError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Login error: please make sure you have correctly &quot;</span>
+            <span class="s2">&quot;configured your client.  Instructions here: &quot;</span>
+            <span class="s2">&quot;https://help.synapse.org/docs/Client-Configuration.1985446156.html. &quot;</span>
+            <span class="s2">&quot;You can also create a Synapse Personal Access Token and set it &quot;</span>
+            <span class="s2">&quot;as an environmental variable: &quot;</span>
+            <span class="s2">&quot;SYNAPSE_AUTH_TOKEN=&#39;&lt;my_personal_access_token&gt;&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">syn</span>
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_login</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">synapse_config</span><span class="p">)</span>
-    <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
