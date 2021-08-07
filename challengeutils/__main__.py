@@ -795,7 +795,6 @@ def build_parser():
     return parser
 
 
-
 def synapse_login(synapse_config=synapseclient.client.CONFIG_FILE):
     """Login to Synapse
 
