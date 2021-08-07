@@ -801,9 +801,14 @@ def synapse_login(synapse_config):
 
 
 def main():
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     syn = synapse_login(args.synapse_config)
-    args.func(syn, args)
+    try:
+        args.func(syn, args)
+    except AttributeError:
+        parser.print_help()
+        parser.exit()
 
 
 if __name__ == "__main__":
