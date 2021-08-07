@@ -1,4 +1,4 @@
 pandas==1.1.5
-synapseclient==2.3.0
+synapseclient==2.4.0
 challengeutils
 sphinx_rtd_theme
