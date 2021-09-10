@@ -293,6 +293,7 @@ def command_validate_docker(syn, args):
         valid = submission.validate_docker_submission(syn, args.submissionid)
     except ValueError as err:
         invalid_reasons = str(err)
+        valid = False
 
     status = "VALIDATED" if valid else "INVALID"
     result = {'submission_errors': invalid_reasons,
