@@ -5,16 +5,18 @@ import urllib.parse
 import requests
 from requests import Response
 
-ENDPOINT_MAPPING = {"dockerhub": "https://registry.hub.docker.com",
-                    "synapse": "https://docker.synapse.org"}
+ENDPOINT_MAPPING = {
+    "dockerhub": "https://registry.hub.docker.com",
+    "synapse": "https://docker.synapse.org",
+}
 
 
 class DockerRepository:
     """Forms request url and gets the docker respository
     with requests packages
     """
-    def __init__(self, docker_repo: str, docker_digest: str,
-                 index_endpoint: str):
+
+    def __init__(self, docker_repo: str, docker_digest: str, index_endpoint: str):
         """
         Args:
             docker_repo: Docker repository without tags or sha
@@ -34,22 +36,20 @@ class DockerRepository:
 
     def get_request_url(self):
         """Gets request URL"""
-        url = "/".join(['v2', self.docker_repo, 'manifests',
-                        self.docker_digest])
+        url = "/".join(["v2", self.docker_repo, "manifests", self.docker_digest])
         docker_request_url = urllib.parse.urljoin(self.index_endpoint, url)
         return docker_request_url
 
     def _get_bearer_token_url(self):
         """Gets bearer token URL"""
         initial_request = requests.get(self.get_request_url())
-        www_auth = initial_request.headers['Www-Authenticate']
-        auth_headers = www_auth.replace('"', '').split(",")
+        www_auth = initial_request.headers["Www-Authenticate"]
+        auth_headers = www_auth.replace('"', "").split(",")
         # Creates a mapping of the authentication headers to its values
-        auth_mapping = {head.split("=")[0]: head.split("=")[1]
-                        for head in auth_headers}
-        return "{0}?service={1}&scope={2}".format(auth_mapping['Bearer realm'],
-                                                  auth_mapping['service'],
-                                                  auth_mapping['scope'])
+        auth_mapping = {head.split("=")[0]: head.split("=")[1] for head in auth_headers}
+        return "{0}?service={1}&scope={2}".format(
+            auth_mapping["Bearer realm"], auth_mapping["service"], auth_mapping["scope"]
+        )
 
     def _get_bearer_token(self, username: str = None, password: str = None):
         """Gets Docker bearer token
@@ -63,14 +63,13 @@ class DockerRepository:
 
         """
         bearer_token_url = self._get_bearer_token_url()
-        auth_string = f'{username}:{password}'
+        auth_string = f"{username}:{password}"
         auth = base64.b64encode(auth_string.encode()).decode()
-        headers = {'Authorization': f'Basic {auth}'}
-        bearer_token_request = requests.get(bearer_token_url,
-                                            headers=headers)
+        headers = {"Authorization": f"Basic {auth}"}
+        bearer_token_request = requests.get(bearer_token_url, headers=headers)
         if bearer_token_request.status_code != 200:
-            raise ValueError(bearer_token_request.json().get('details'))
-        return bearer_token_request.json()['token']
+            raise ValueError(bearer_token_request.json().get("details"))
+        return bearer_token_request.json()["token"]
 
     def get(self, **kwargs):
         """Gets docker repository response
@@ -83,12 +82,13 @@ class DockerRepository:
             Docker response
         """
         token = self._get_bearer_token(**kwargs)
-        resp = requests.get(self.get_request_url(),
-                            headers={'Authorization': 'Bearer %s' % token})
+        resp = requests.get(
+            self.get_request_url(), headers={"Authorization": "Bearer %s" % token}
+        )
         return resp
 
 
-def check_docker_exists(docker_resp: 'Response'):
+def check_docker_exists(docker_resp: "Response"):
     """Check if Docker image + sha exists
 
     Args:
@@ -113,14 +113,18 @@ def check_docker_size(docker_resp: Response, size: int = 1000):
         ValueError: Docker container is over specified size
 
     """
-    docker_size = sum([layer['size']
-                       for layer in docker_resp.json()['layers']])
-    if docker_size/1000000000.0 >= size:
+    docker_size = sum([layer["size"] for layer in docker_resp.json()["layers"]])
+    if docker_size / 1000000000.0 >= size:
         raise ValueError("Docker image must be less than a terabyte.")
 
 
-def validate_docker(docker_repo: str, docker_digest: str, index_endpoint: str,
-                    username: str = None, password: str = None):
+def validate_docker(
+    docker_repo: str,
+    docker_digest: str,
+    index_endpoint: str,
+    username: str = None,
+    password: str = None,
+):
     """Validates a Docker Respository
 
     Args:
@@ -135,11 +139,12 @@ def validate_docker(docker_repo: str, docker_digest: str, index_endpoint: str,
     Returns:
         True if valid, False if not
     """
-    docker_cls = DockerRepository(docker_repo=docker_repo,
-                                  docker_digest=docker_digest,
-                                  index_endpoint=index_endpoint)
-    docker_resp = docker_cls.get(username=username,
-                                 password=password)
+    docker_cls = DockerRepository(
+        docker_repo=docker_repo,
+        docker_digest=docker_digest,
+        index_endpoint=index_endpoint,
+    )
+    docker_resp = docker_cls.get(username=username, password=password)
     check_docker_exists(docker_resp)
     check_docker_size(docker_resp)
     return True

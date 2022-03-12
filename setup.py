@@ -9,6 +9,4 @@ with open(os.path.join(here, "challengeutils", "__version__.py")) as f:
     exec(f.read(), about)
 # HACK: this must be kept because __init__ imports the discussion
 # modules which import requests which has to be installed first.
-setup(
-    version=about["__version__"]
-)
+setup(version=about["__version__"])

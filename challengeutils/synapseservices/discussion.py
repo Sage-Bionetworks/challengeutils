@@ -4,24 +4,16 @@ from .base_service import Service, deserialize_model
 class Forum(Service):
     def __init__(self, id=None, projectId=None, etag=None):
 
-        self.openapi_types = {
-            'id': str,
-            'projectid': str,
-            'etag': str
-        }
+        self.openapi_types = {"id": str, "projectid": str, "etag": str}
 
-        self.attribute_map = {
-            'id': 'id',
-            'projectid': 'projectId',
-            'etag': 'etag'
-        }
+        self.attribute_map = {"id": "id", "projectid": "projectId", "etag": "etag"}
 
         self._id = id
         self._projectid = projectId
         self._etag = etag
 
     @classmethod
-    def from_dict(cls, dikt) -> 'Forum':
+    def from_dict(cls, dikt) -> "Forum":
         """Returns the dict as a model"""
         return deserialize_model(dikt, cls)
 
@@ -42,7 +34,9 @@ class Forum(Service):
     @projectid.setter
     def projectid(self, value):
         if value is None:
-            raise ValueError("Invalid value for `projectid`, must not be `None`")  # noqa: E501
+            raise ValueError(
+                "Invalid value for `projectid`, must not be `None`"
+            )  # noqa: E501
 
         self._projectid = value
 
@@ -58,51 +52,61 @@ class Forum(Service):
 
 class Thread(Service):
     def __init__(
-            self, id: str = None, forumId: str = None, projectId: str = None,
-            title: str = None, createdOn: str = None, createdBy: str = None,
-            modifiedOn: str = None, etag: str = None, messageKey: str = None,
-            numberOfViews: int = None, numberOfReplies: int = None,
-            lastActivity: str = None, activeAuthors: list = None,
-            isEdited: bool = False, isDeleted: bool = False,
-            isPinned: bool = False
-        ):
+        self,
+        id: str = None,
+        forumId: str = None,
+        projectId: str = None,
+        title: str = None,
+        createdOn: str = None,
+        createdBy: str = None,
+        modifiedOn: str = None,
+        etag: str = None,
+        messageKey: str = None,
+        numberOfViews: int = None,
+        numberOfReplies: int = None,
+        lastActivity: str = None,
+        activeAuthors: list = None,
+        isEdited: bool = False,
+        isDeleted: bool = False,
+        isPinned: bool = False,
+    ):
 
         self.openapi_types = {
-            'id': str,
-            'forumid': str,
-            'projectid': str,
-            'title': str,
-            'createdon': str,
-            'createdby': str,
-            'modifiedon': str,
-            'etag': str,
-            'messagekey': str,
-            'number_of_views': int,
-            'number_of_replies': int,
-            'last_activity': str,
-            'active_authors': list,
-            'is_edited': bool,
-            'is_deleted': bool,
-            'is_pinned': bool
+            "id": str,
+            "forumid": str,
+            "projectid": str,
+            "title": str,
+            "createdon": str,
+            "createdby": str,
+            "modifiedon": str,
+            "etag": str,
+            "messagekey": str,
+            "number_of_views": int,
+            "number_of_replies": int,
+            "last_activity": str,
+            "active_authors": list,
+            "is_edited": bool,
+            "is_deleted": bool,
+            "is_pinned": bool,
         }
 
         self.attribute_map = {
-            'id': 'id',
-            'forumid': 'forumId',
-            'projectid': 'projectId',
-            'title': 'title',
-            'createdon': 'createdOn',
-            'createdby': 'createdBy',
-            'modifiedon': 'modifiedOn',
-            'etag': 'etag',
-            'messagekey': 'messageKey',
-            'number_of_views': 'numberOfViews',
-            'number_of_replies': 'numberOfReplies',
-            'last_activity': 'lastActivity',
-            'active_authors': 'activeAuthors',
-            'is_edited': 'isEdited',
-            'is_deleted': 'isDeleted',
-            'is_pinned': 'isPinned'
+            "id": "id",
+            "forumid": "forumId",
+            "projectid": "projectId",
+            "title": "title",
+            "createdon": "createdOn",
+            "createdby": "createdBy",
+            "modifiedon": "modifiedOn",
+            "etag": "etag",
+            "messagekey": "messageKey",
+            "number_of_views": "numberOfViews",
+            "number_of_replies": "numberOfReplies",
+            "last_activity": "lastActivity",
+            "active_authors": "activeAuthors",
+            "is_edited": "isEdited",
+            "is_deleted": "isDeleted",
+            "is_pinned": "isPinned",
         }
 
         self._id = id
@@ -123,7 +127,7 @@ class Thread(Service):
         self._is_pinned = isPinned
 
     @classmethod
-    def from_dict(cls, dikt) -> 'Thread':
+    def from_dict(cls, dikt) -> "Thread":
         """Returns the dict as a model"""
         return deserialize_model(dikt, cls)
 
@@ -153,7 +157,9 @@ class Thread(Service):
     @projectid.setter
     def projectid(self, value):
         if value is None:
-            raise ValueError("Invalid value for `projectid`, must not be `None`")  # noqa: E501
+            raise ValueError(
+                "Invalid value for `projectid`, must not be `None`"
+            )  # noqa: E501
 
         self._projectid = value
 
@@ -277,39 +283,46 @@ class Thread(Service):
 
 class Reply(Service):
     def __init__(
-            self, id: str = None, threadId: str = None, forumId: str = None,
-            projectId: str = None, createdOn: str = None,
-            createdBy: str = None, modifiedOn: str = None, etag: str = None,
-            messageKey: str = None, isEdited: bool = False,
-            isDeleted: bool = False
-        ):
+        self,
+        id: str = None,
+        threadId: str = None,
+        forumId: str = None,
+        projectId: str = None,
+        createdOn: str = None,
+        createdBy: str = None,
+        modifiedOn: str = None,
+        etag: str = None,
+        messageKey: str = None,
+        isEdited: bool = False,
+        isDeleted: bool = False,
+    ):
 
         self.openapi_types = {
-            'id': str,
-            'threadid': str,
-            'forumid': str,
-            'projectid': str,
-            'createdon': str,
-            'createdby': str,
-            'modifiedon': str,
-            'etag': str,
-            'messagekey': str,
-            'is_edited': bool,
-            'is_deleted': bool,
+            "id": str,
+            "threadid": str,
+            "forumid": str,
+            "projectid": str,
+            "createdon": str,
+            "createdby": str,
+            "modifiedon": str,
+            "etag": str,
+            "messagekey": str,
+            "is_edited": bool,
+            "is_deleted": bool,
         }
 
         self.attribute_map = {
-            'id': 'id',
-            'threadid': 'threadId',
-            'forumid': 'forumId',
-            'projectid': 'projectId',
-            'createdon': 'createdOn',
-            'createdby': 'createdBy',
-            'modifiedon': 'modifiedOn',
-            'etag': 'etag',
-            'messagekey': 'messageKey',
-            'is_edited': 'isEdited',
-            'is_deleted': 'isDeleted',
+            "id": "id",
+            "threadid": "threadId",
+            "forumid": "forumId",
+            "projectid": "projectId",
+            "createdon": "createdOn",
+            "createdby": "createdBy",
+            "modifiedon": "modifiedOn",
+            "etag": "etag",
+            "messagekey": "messageKey",
+            "is_edited": "isEdited",
+            "is_deleted": "isDeleted",
         }
 
         self._id = id
@@ -325,7 +338,7 @@ class Reply(Service):
         self._is_deleted = isDeleted
 
     @classmethod
-    def from_dict(cls, dikt) -> 'Thread':
+    def from_dict(cls, dikt) -> "Thread":
         """Returns the dict as a model"""
         return deserialize_model(dikt, cls)
 
@@ -364,7 +377,9 @@ class Reply(Service):
     @projectid.setter
     def projectid(self, value):
         if value is None:
-            raise ValueError("Invalid value for `projectid`, must not be `None`")  # noqa: E501
+            raise ValueError(
+                "Invalid value for `projectid`, must not be `None`"
+            )  # noqa: E501
 
         self._projectid = value
 

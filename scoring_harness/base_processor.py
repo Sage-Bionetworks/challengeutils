@@ -4,7 +4,7 @@ import logging
 import os
 from challengeutils.utils import update_single_submission_status
 
-logging.basicConfig(format='%(asctime)s %(message)s')
+logging.basicConfig(format="%(asctime)s %(message)s")
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
@@ -24,7 +24,7 @@ def _remove_cached_submission(submission_file):
 
 def get_admin(syn, admin):
     """Set admin user id to be person running the evaluation queue helper"""
-    admin = admin if admin is not None else [syn.getUserProfile()['ownerId']]
+    admin = admin if admin is not None else [syn.getUserProfile()["ownerId"]]
     return admin
 
 
@@ -32,12 +32,11 @@ def _get_submission_submitter(syn, submission):
     """Get submitter id and name from a submission object"""
     submitterid = submission.get("teamId")
     if submitterid is not None:
-        submitter_name = syn.getTeam(submitterid)['name']
+        submitter_name = syn.getTeam(submitterid)["name"]
     else:
         submitterid = submission.userId
-        submitter_name = syn.getUserProfile(submitterid)['userName']
-    return {'submitterid': submitterid,
-            'submitter_name': submitter_name}
+        submitter_name = syn.getUserProfile(submitterid)["userName"]
+    return {"submitterid": submitterid, "submitter_name": submitter_name}
 
 
 class EvaluationQueueProcessor(metaclass=ABCMeta):
@@ -51,14 +50,23 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
         dry_run: Do not update Synapse. Default is False.
         remove_cache: Removes submission file from cache. Default is False.
     """
+
     # Status of submissions to process
     _status = "RECEIVED"
     # Successful submissions will be placed in this status
     _success_status = None
 
-    def __init__(self, syn, evaluation, admin_user_ids=None, dry_run=False,
-                 remove_cache=False, send_messages=False,
-                 notifications=True, **kwargs):
+    def __init__(
+        self,
+        syn,
+        evaluation,
+        admin_user_ids=None,
+        dry_run=False,
+        remove_cache=False,
+        send_messages=False,
+        notifications=True,
+        **kwargs,
+    ):
         """Init EvaluationQueueProcessor
 
         Args:
@@ -92,10 +100,10 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
         - Notify submitter or admin about submission status
         """
         LOGGER.info("-" * 20)
-        LOGGER.info(f"Evaluating {self.evaluation.name} "
-                    f"({self.evaluation.id})")
-        submission_bundles = self.syn.getSubmissionBundles(self.evaluation,
-                                                           status=self._status)
+        LOGGER.info(f"Evaluating {self.evaluation.name} " f"({self.evaluation.id})")
+        submission_bundles = self.syn.getSubmissionBundles(
+            self.evaluation, status=self._status
+        )
         for submission, sub_status in submission_bundles:
             LOGGER.info(f"Interacting with submission: {submission.id}")
             # refetch the submission so that we get the file path
@@ -136,15 +144,15 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
         # raise NotImplementedError
         submission = self.syn.getSubmission(submission)
         try:
-            interaction_status = self.interaction_func(submission,
-                                                       **self.kwargs)
-            is_valid = interaction_status['valid']
-            annotations = interaction_status['annotations']
+            interaction_status = self.interaction_func(submission, **self.kwargs)
+            is_valid = interaction_status["valid"]
+            annotations = interaction_status["annotations"]
             validation_error = None
-            validation_message = interaction_status['message']
+            validation_message = interaction_status["message"]
         except Exception as ex1:
-            LOGGER.error("Exception during validation: "
-                         f"{type(ex1)} {ex1} {str(ex1)}")
+            LOGGER.error(
+                "Exception during validation: " f"{type(ex1)} {ex1} {str(ex1)}"
+            )
             # ex1 only happens in this scope in python3,
             # so must store validation_error as a variable
             is_valid = False
@@ -153,10 +161,12 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
             validation_error = ex1
             validation_message = str(ex1)
 
-        submission_info = {'valid': is_valid,
-                           'error': validation_error,
-                           'annotations': annotations,
-                           'message': validation_message}
+        submission_info = {
+            "valid": is_valid,
+            "error": validation_error,
+            "annotations": annotations,
+            "message": validation_message,
+        }
         return submission_info
 
     def store_submission_status(self, sub_status, submission_info):
@@ -166,11 +176,11 @@ class EvaluationQueueProcessor(metaclass=ABCMeta):
             sub_status: Synapse Submission Status
             submission_info: dict returned by interact_with_submission
         """
-        annotations = submission_info['annotations']
-        sub_status = update_single_submission_status(sub_status,
-                                                     annotations,
-                                                     is_private=False)
-        is_valid = submission_info['valid']
+        annotations = submission_info["annotations"]
+        sub_status = update_single_submission_status(
+            sub_status, annotations, is_private=False
+        )
+        is_valid = submission_info["valid"]
         sub_status.status = self._success_status if is_valid else "INVALID"
 
         if not self.dry_run:

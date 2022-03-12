@@ -7,8 +7,13 @@ from typing import Union
 
 import pandas as pd
 import synapseutils
-from synapseclient import (AUTHENTICATED_USERS, entity, Project, Synapse,
-                           SubmissionViewSchema)
+from synapseclient import (
+    AUTHENTICATED_USERS,
+    entity,
+    Project,
+    Synapse,
+    SubmissionViewSchema,
+)
 from synapseclient.annotations import to_submission_status_annotations
 from synapseclient.core.exceptions import SynapseHTTPError
 from synapseclient.core.utils import id_of
@@ -18,13 +23,15 @@ from . import permissions
 from . import utils
 from . import annotations
 
-WORKFLOW_LAST_UPDATED_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"
+WORKFLOW_LAST_UPDATED_KEY = (
+    "orgSagebionetworksSynapseWorkflowOrchestratorWorkflowLastUpdated"
+)
 WORKFLOW_START_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorExecutionStarted"
 TIME_REMAINING_KEY = "orgSagebionetworksSynapseWorkflowOrchestratorTimeRemaining"
 
 
 def append_writeup_to_main_submission(row, syn):
-    '''
+    """
     Helper function that appends the write up synapse id and archived
     write up synapse id on the main submission
 
@@ -32,42 +39,52 @@ def append_writeup_to_main_submission(row, syn):
         row: Dictionary row['team'], row['objectId'], row['archived'],
              row['entityId']
         syn: synapse object
-    '''
-    if pd.isnull(row['archived']):
-        print("NO WRITEUP: " + row['submitterId'])
+    """
+    if pd.isnull(row["archived"]):
+        print("NO WRITEUP: " + row["submitterId"])
     else:
-        status = syn.getSubmissionStatus(row['objectId'])
+        status = syn.getSubmissionStatus(row["objectId"])
         add_writeup_dict = {
-            'writeUp': row['entityId'], 'archivedWriteUp': row['archived']}
+            "writeUp": row["entityId"],
+            "archivedWriteUp": row["archived"],
+        }
         add_writeup = to_submission_status_annotations(
-            add_writeup_dict, is_private=False)
-        new_status = utils.update_single_submission_status(
-            status, add_writeup)
+            add_writeup_dict, is_private=False
+        )
+        new_status = utils.update_single_submission_status(status, add_writeup)
         syn.store(new_status)
 
 
 def attach_writeup(syn, writeup_queueid, submission_queueid):
-    '''
+    """
     Attach the write up to the submission queue
 
     Args:
         writeup_queueid:   Write up evaluation queue id
         submission_queueid: Submission queue id
-    '''
-    writeups = list(utils.evaluation_queue_query(
-        syn,
-        "select submitterId, entityId, archived from evaluation_{} "
-        "where writeup_status == 'VALIDATED'".format(writeup_queueid)))
-    submissions = list(utils.evaluation_queue_query(
-        syn,
-        "select objectId, submitterId from evaluation_{} "
-        "where prediction_file_status == 'SCORED'".format(submission_queueid)))
+    """
+    writeups = list(
+        utils.evaluation_queue_query(
+            syn,
+            "select submitterId, entityId, archived from evaluation_{} "
+            "where writeup_status == 'VALIDATED'".format(writeup_queueid),
+        )
+    )
+    submissions = list(
+        utils.evaluation_queue_query(
+            syn,
+            "select objectId, submitterId from evaluation_{} "
+            "where prediction_file_status == 'SCORED'".format(submission_queueid),
+        )
+    )
     writeupsdf = pd.DataFrame(writeups)
     submissionsdf = pd.DataFrame(submissions)
-    submissions_with_writeupsdf = \
-        submissionsdf.merge(writeupsdf, on="submitterId", how="left")
+    submissions_with_writeupsdf = submissionsdf.merge(
+        writeupsdf, on="submitterId", how="left"
+    )
     submissions_with_writeupsdf.apply(
-        lambda row: append_writeup_to_main_submission(row, syn), axis=1)
+        lambda row: append_writeup_to_main_submission(row, syn), axis=1
+    )
 
 
 def validate_project(syn, submission, challenge, public=False, admin=None):
@@ -99,8 +116,7 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
     errors.extend(permissions_error)
 
     status = "INVALID" if errors else "VALIDATED"
-    return {'submission_errors': "\n".join(errors),
-            "submission_status": status}
+    return {"submission_errors": "\n".join(errors), "submission_status": status}
 
 
 def archive_project(syn, submission, admin):
@@ -114,8 +130,9 @@ def archive_project(syn, submission, admin):
     writeup = syn.getSubmission(submission)
     name = writeup.entity.name.replace("&", "+").replace("'", "")
     curr_time = int(round(time.time() * 1000))
-    new_project = Project(f"Archived {name} {curr_time} {writeup.id} " +
-                          f"{writeup.entityId}")
+    new_project = Project(
+        f"Archived {name} {curr_time} {writeup.id} " + f"{writeup.entityId}"
+    )
     archive = syn.store(new_project)
     permissions.set_entity_permissions(syn, archive, admin, "admin")
     archived = synapseutils.copy(syn, writeup.entityId, archive.id)
@@ -128,8 +145,9 @@ def _validate_ent_type(submission):
 
     try:
         if not isinstance(submission.entity, entity.Project):
-            ent_type = re.search(
-                r"entity\.(.*?)'", str(type(submission.entity))).group(1)
+            ent_type = re.search(r"entity\.(.*?)'", str(type(submission.entity))).group(
+                1
+            )
             return f"Submission should be a Synapse project, not a {ent_type}."
     except AttributeError:
         return "Unknown entity type; please submit a Synapse project."
@@ -140,8 +158,11 @@ def _validate_ent_type(submission):
 def _validate_project_id(proj, challenge):
     """Check that submission is not the Challenge site."""
 
-    return "Submission should not be the Challenge site." \
-        if proj.entityId == challenge else ""
+    return (
+        "Submission should not be the Challenge site."
+        if proj.entityId == challenge
+        else ""
+    )
 
 
 def _validate_public_permissions(syn, proj):
@@ -151,11 +172,11 @@ def _validate_public_permissions(syn, proj):
 
     try:
         # Remove error message if the project is accessible by the public.
-        syn_users_perms = syn.getPermissions(
-            proj.entityId, AUTHENTICATED_USERS)
+        syn_users_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
         public_perms = syn.getPermissions(proj.entityId)
-        if ("READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms) and \
-                "READ" in public_perms:
+        if (
+            "READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms
+        ) and "READ" in public_perms:
             error = ""
 
     except SynapseHTTPError as e:
@@ -170,8 +191,10 @@ def _validate_public_permissions(syn, proj):
 def _validate_admin_permissions(syn, proj, admin):
     """Ensure project is shared with the given admin."""
 
-    error = ("Project is private; please update its sharing settings."
-             f" Writeup should be shared with {admin}.")
+    error = (
+        "Project is private; please update its sharing settings."
+        f" Writeup should be shared with {admin}."
+    )
     try:
         # Remove error message if admin has read and download permissions.
         admin_perms = syn.getPermissions(proj.entityId, admin)
@@ -219,27 +242,26 @@ def validate_docker_submission(syn, submissionid):
     config = syn.getConfigFile(syn.configPath)
     authen = dict(config.items("authentication"))
     if authen.get("username") is None or authen.get("password") is None:
-        raise ValueError('Synapse config file must have username and password')
+        raise ValueError("Synapse config file must have username and password")
 
     docker_sub = syn.getSubmission(submissionid)
     docker_repository = docker_sub.get("dockerRepositoryName")
     docker_digest = docker_sub.get("dockerDigest")
     if docker_repository is None or docker_digest is None:
-        raise ValueError('Submission is not a Docker submission')
+        raise ValueError("Submission is not a Docker submission")
     docker_repo = docker_repository.replace("docker.synapse.org/", "")
 
     valid = dockertools.validate_docker(
         docker_repo=docker_repo,
         docker_digest=docker_digest,
-        index_endpoint=dockertools.ENDPOINT_MAPPING['synapse'],
-        username=authen['username'],
-        password=authen['password']
+        index_endpoint=dockertools.ENDPOINT_MAPPING["synapse"],
+        username=authen["username"],
+        password=authen["password"],
     )
     return valid
 
 
-def get_submitterid_from_submission_id(syn, submissionid, queue,
-                                       verbose=False):
+def get_submitterid_from_submission_id(syn, submissionid, queue, verbose=False):
     """Gets submitterid from submission id
 
     Args:
@@ -251,21 +273,23 @@ def get_submitterid_from_submission_id(syn, submissionid, queue,
     Returns:
         Submitter id
     """
-    query = ("select submitterId from evaluation_{} "
-             "where objectId == '{}'".format(queue, submissionid))
+    query = "select submitterId from evaluation_{} " "where objectId == '{}'".format(
+        queue, submissionid
+    )
     generator = utils.evaluation_queue_query(syn, query)
     lst = list(generator)
     if not lst:
-        raise ValueError('submission id {} not in queue'.format(submissionid))
+        raise ValueError("submission id {} not in queue".format(submissionid))
     submission_dict = lst[0]
-    submitterid = submission_dict['submitterId']
+    submitterid = submission_dict["submitterId"]
     if verbose:
         print("submitterid: " + submitterid)
     return submitterid
 
 
-def get_submitters_lead_submission(syn, submitterid, queue,
-                                   cutoff_annotation, verbose=False):
+def get_submitters_lead_submission(
+    syn, submitterid, queue, cutoff_annotation, verbose=False
+):
     """Gets submitter's lead submission
 
     Args:
@@ -277,16 +301,17 @@ def get_submitters_lead_submission(syn, submitterid, queue,
     Returns:
         previous_submission.csv or None
     """
-    query = ("select objectId from evaluation_{} where submitterId == '{}' "
-             "and prediction_file_status == 'SCORED' and {} == 'true' "
-             "order by createdOn DESC".format(queue, submitterid,
-                                              cutoff_annotation))
+    query = (
+        "select objectId from evaluation_{} where submitterId == '{}' "
+        "and prediction_file_status == 'SCORED' and {} == 'true' "
+        "order by createdOn DESC".format(queue, submitterid, cutoff_annotation)
+    )
 
     generator = utils.evaluation_queue_query(syn, query)
     lst = list(generator)
     if lst:
         sub_dict = lst[0]
-        objectid = sub_dict['objectId']
+        objectid = sub_dict["objectId"]
         if verbose:
             print("Dowloading submissionid: " + objectid)
         sub = syn.getSubmission(objectid, downloadLocation=".")
@@ -296,8 +321,9 @@ def get_submitters_lead_submission(syn, submitterid, queue,
     return None
 
 
-def download_current_lead_sub(syn, submissionid, status,
-                              cutoff_annotation, verbose=False):
+def download_current_lead_sub(
+    syn, submissionid, status, cutoff_annotation, verbose=False
+):
     """Download the current leading submission for boot ladder boot method
 
     Args:
@@ -312,20 +338,22 @@ def download_current_lead_sub(syn, submissionid, status,
     """
     if status == "VALIDATED":
         current_sub = syn.getSubmission(submissionid, downloadFile=False)
-        queue_num = current_sub['evaluationId']
-        submitterid = get_submitterid_from_submission_id(syn, submissionid,
-                                                         queue_num, verbose)
-        path = get_submitters_lead_submission(syn, submitterid, queue_num,
-                                              cutoff_annotation, verbose)
+        queue_num = current_sub["evaluationId"]
+        submitterid = get_submitterid_from_submission_id(
+            syn, submissionid, queue_num, verbose
+        )
+        path = get_submitters_lead_submission(
+            syn, submitterid, queue_num, cutoff_annotation, verbose
+        )
         return path
     return None
 
 
 def stop_submission_over_quota(
-        syn: Synapse,
-        submission_view: Union[str, SubmissionViewSchema],
-        quota: int = sys.maxsize
-    ):
+    syn: Synapse,
+    submission_view: Union[str, SubmissionViewSchema],
+    quota: int = sys.maxsize,
+):
     """Stops any submission that has exceeded the run time quota by using
     submission views.  A submission view must first exist.
     Rerunning submissions will require setting TimeRemaining annotation
@@ -356,11 +384,11 @@ def stop_submission_over_quota(
         ) from http_error
 
     view_querydf = view_query.asDataFrame()
-    runtime = (view_querydf[WORKFLOW_LAST_UPDATED_KEY] -
-               view_querydf[WORKFLOW_START_KEY])
+    runtime = view_querydf[WORKFLOW_LAST_UPDATED_KEY] - view_querydf[WORKFLOW_START_KEY]
     submissions_over_quota_idx = runtime > quota
     over_quotadf = view_querydf[submissions_over_quota_idx]
     for index, row in over_quotadf.iterrows():
         add_annotations = {TIME_REMAINING_KEY: 0}
-        annotations.annotate_submission(syn, row['id'], add_annotations,
-                                        is_private=False, force=True)
+        annotations.annotate_submission(
+            syn, row["id"], add_annotations, is_private=False, force=True
+        )
