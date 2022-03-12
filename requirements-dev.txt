@@ -4,3 +4,4 @@ pandas
 pytest
 sphinx_rtd_theme
 Sphinx
+black
