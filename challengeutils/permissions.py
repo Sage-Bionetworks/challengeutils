@@ -4,27 +4,47 @@ import synapseclient
 from synapseclient.core.utils import id_of
 
 VIEW = ["READ"]
-SUBMIT = ['READ', 'SUBMIT']
-DOWNLOAD = ['READ', 'DOWNLOAD']
-EDIT = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE']
-EDIT_AND_DELETE = ['DOWNLOAD', 'UPDATE', 'READ', 'CREATE', 'DELETE']
-SCORE = ['READ', 'UPDATE_SUBMISSION', 'READ_PRIVATE_SUBMISSION']
-ADMIN_EVALS = ['DELETE_SUBMISSION', 'DELETE', 'SUBMIT', 'UPDATE',
-               'CREATE', 'READ', 'UPDATE_SUBMISSION',
-               'READ_PRIVATE_SUBMISSION', 'CHANGE_PERMISSIONS']
-ADMIN = ['DELETE', 'CHANGE_SETTINGS', 'MODERATE', 'CREATE', 'READ',
-         'DOWNLOAD', 'UPDATE', 'CHANGE_PERMISSIONS']
-EVALUATION_PERMS_MAPPINGS = {'view': VIEW,
-                             'submit': SUBMIT,
-                             'score': SCORE,
-                             'admin': ADMIN_EVALS,
-                             'remove': []}
-ENTITY_PERMS_MAPPINGS = {'view': VIEW,
-                         'download': DOWNLOAD,
-                         'edit': EDIT,
-                         'edit_and_delete': EDIT_AND_DELETE,
-                         'admin': ADMIN,
-                         'remove': []}
+SUBMIT = ["READ", "SUBMIT"]
+DOWNLOAD = ["READ", "DOWNLOAD"]
+EDIT = ["DOWNLOAD", "UPDATE", "READ", "CREATE"]
+EDIT_AND_DELETE = ["DOWNLOAD", "UPDATE", "READ", "CREATE", "DELETE"]
+SCORE = ["READ", "UPDATE_SUBMISSION", "READ_PRIVATE_SUBMISSION"]
+ADMIN_EVALS = [
+    "DELETE_SUBMISSION",
+    "DELETE",
+    "SUBMIT",
+    "UPDATE",
+    "CREATE",
+    "READ",
+    "UPDATE_SUBMISSION",
+    "READ_PRIVATE_SUBMISSION",
+    "CHANGE_PERMISSIONS",
+]
+ADMIN = [
+    "DELETE",
+    "CHANGE_SETTINGS",
+    "MODERATE",
+    "CREATE",
+    "READ",
+    "DOWNLOAD",
+    "UPDATE",
+    "CHANGE_PERMISSIONS",
+]
+EVALUATION_PERMS_MAPPINGS = {
+    "view": VIEW,
+    "submit": SUBMIT,
+    "score": SCORE,
+    "admin": ADMIN_EVALS,
+    "remove": [],
+}
+ENTITY_PERMS_MAPPINGS = {
+    "view": VIEW,
+    "download": DOWNLOAD,
+    "edit": EDIT,
+    "edit_and_delete": EDIT_AND_DELETE,
+    "admin": ADMIN,
+    "remove": [],
+}
 
 
 def _set_permissions(syn, syn_obj, principalid, permission_level):
@@ -47,15 +67,20 @@ def _set_permissions(syn, syn_obj, principalid, permission_level):
         permission_level_mapping = ENTITY_PERMS_MAPPINGS
 
     if permission_level not in permission_level_mapping.keys():
-        raise ValueError("permission_level must be one of these: {0}".format(
-            ', '.join(permission_level_mapping.keys())))
+        raise ValueError(
+            "permission_level must be one of these: {0}".format(
+                ", ".join(permission_level_mapping.keys())
+            )
+        )
 
-    syn.setPermissions(syn_obj, principalId=principalid,
-                       accessType=permission_level_mapping[permission_level])
+    syn.setPermissions(
+        syn_obj,
+        principalId=principalid,
+        accessType=permission_level_mapping[permission_level],
+    )
 
 
-def set_evaluation_permissions(syn, evaluation, principalid,
-                               permission_level="view"):
+def set_evaluation_permissions(syn, evaluation, principalid, permission_level="view"):
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)
@@ -75,8 +100,7 @@ def set_evaluation_permissions(syn, evaluation, principalid,
     _set_permissions(syn, evaluation, principalid, permission_level)
 
 
-def set_entity_permissions(syn, entity, principalid,
-                           permission_level="download"):
+def set_entity_permissions(syn, entity, principalid, permission_level="download"):
     """
     Convenience function to set ACL on an entity for a user or team based on
     permission levels (view, download...)
