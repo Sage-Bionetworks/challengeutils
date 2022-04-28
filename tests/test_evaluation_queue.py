@@ -63,9 +63,9 @@ def test_negativeduration_submissionquota():
                                     "epochtime_ms": first},
                                    {"time_string": "doo",
                                     "epochtime_ms": second}]),\
-         pytest.raises(ValueError,
-                       match="Specified round_duration must be >= 0, or "
-                             "round_end must be > round_start"):
+        pytest.raises(ValueError,
+                      match="Specified round_duration must be >= 0, or "
+                      "round_end must be > round_start"):
         evaluation_queue._create_quota(round_start="2020-02-21T15:00:00",
                                        round_end="2020-02-21T17:00:00")
 
@@ -89,9 +89,20 @@ def test_run_set_evaluation_quota():
 
     with patch.object(SYN, "getEvaluation",
                       return_value=test_eval) as patch_geteval,\
-         patch.object(SYN, "store", return_value=final_eval) as patch_store:
+            patch.object(SYN, "store", return_value=final_eval) as patch_store:
         queue = evaluation_queue.set_evaluation_quota(SYN, evalid,
                                                       submission_limit=sub)
         assert queue == final_eval
         patch_store.assert_called_once_with(final_eval)
         patch_geteval.assert_called_once_with(evalid)
+
+
+def test_transfer_queue():
+    old_project_id = "syn123"
+    new_project_id = "syn456"
+    eval_id = str(uuid.uuid1())
+
+    test_eval = synapseclient.Evaluation(name="test", contentSource=old_project_id)
+    with patch.object(SYN, "getEvaluation", return_value=test_eval) as patch_geteval:
+        evaluation_queue.transfer_evaluation(SYN, eval_id, new_project_id)
+        assert test_eval.contentSource == new_project_id
