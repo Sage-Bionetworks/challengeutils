@@ -134,3 +134,11 @@ def set_evaluation_quota(syn: Synapse, evalid: int, **kwargs):
     evaluation.quota = vars(quota)
     evaluation = syn.store(evaluation)
     return evaluation
+
+
+def transfer_evaluation(syn: Synapse, eval_id: int, new_project_id: str):
+    """Transfer Evaluation queue from one Project to another."""
+    evaluation = syn.getEvaluation(eval_id)
+    evaluation.contentSource = new_project_id
+    evaluation = syn.store(evaluation)
+    return evaluation

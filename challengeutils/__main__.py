@@ -372,6 +372,13 @@ def command_push_wiki(syn, args):
         json.dump(wiki_headers, config, indent=4)
 
 
+def command_transfer_queue(syn, args):
+    print(
+            evaluation_queue.transfer_evaluation(
+            syn, args.eval_id, args.new_project_id)
+    )
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(description="Challenge utility functions")
@@ -777,6 +784,17 @@ def build_parser():
         "Defaults to location of where code is being executed.",
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
+
+    parser_transfer_queue = subparsers.add_parent("transfer-queue",
+                                                  help="Transfer Evaluation to another Challenge project")
+    parser_transfer_queue.add_argument(
+        "eval_id", type=int,
+        help="Evaluation ID (7-digit ID)"
+    )
+    parser_transfer_queue.add_argument(
+        "new_project_id", type=str,
+        help="Destination project ID, e.g. syn12345678")
+    parser_transfer_queue.set_defaults(func=command_transfer_queue)
 
     return parser
 
