@@ -228,6 +228,35 @@ Positional
 
 -------
 
+Transfer an evaluation queue
+-------------------------
+
+Synopsis
+^^^^^^^^
+
+transfer-queue
+    eval_id new_project_id
+
+Description
+^^^^^^^^^^^
+
+Transfers an Evaluation queue from one Challenge project to another.
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils transfer-queue
+
+.. cmdoption:: eval_id
+
+    Evaluation ID on Synapse, e.g. ``9876543``
+
+.. cmdoption:: project_id
+
+    Destination project ID on Synapse, e.g. ``syn12345678``
+
+-------
+
 
 Query an evaluation
 -------------------
