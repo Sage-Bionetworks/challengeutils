@@ -374,7 +374,7 @@ def command_push_wiki(syn, args):
 
 def command_transfer_queue(syn, args):
     print(
-            evaluation_queue.transfer_evaluation(
+        evaluation_queue.transfer_evaluation(
             syn, args.eval_id, args.new_project_id)
     )
 
@@ -785,8 +785,9 @@ def build_parser():
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
 
-    parser_transfer_queue = subparsers.add_parent("transfer-queue",
-                                                  help="Transfer Evaluation to another Challenge project")
+    parser_transfer_queue = subparsers.add_parent(
+        "transfer-queue",
+        help="Transfer Evaluation to another Challenge project")
     parser_transfer_queue.add_argument(
         "eval_id", type=int,
         help="Evaluation ID (7-digit ID)"
