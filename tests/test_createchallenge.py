@@ -220,7 +220,7 @@ def test_livesitenone_main():
     admin_permission_call = mock.call(SYN, proj, team_map['team_admin_id'],
                                       permission_level="admin")
     org_permission_call = mock.call(SYN, proj, team_map['team_org_id'],
-                                    permission_level="download")
+                                    permission_level="moderate")
     org_permission_edit = mock.call(SYN, proj, team_map['team_org_id'],
                                     permission_level="edit")
     with patch.object(createchallenge, "_create_teams",
