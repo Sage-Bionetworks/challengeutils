@@ -378,8 +378,9 @@ def command_add_mod_flair(syn, args):
 
     >>> challengeutils add-mod-flair <project_id> <user_id/team_id>
     """
-    permissions.set_entity_permissions(syn, args.project_id,
-                                       args.id, permission_level="moderate")
+    permissions.set_entity_permissions(
+        syn, args.project_id, args.id, permission_level="moderate"
+    )
 
 
 def build_parser():
@@ -789,12 +790,12 @@ def build_parser():
     parser_push_wiki.set_defaults(func=command_push_wiki)
 
     parser_add_moderator_flair = subparsers.add_parser(
-        "add-mod-flair",
-        help="Adds the 'Moderator' flair to a user/team")
-    parser_add_moderator_flair.add_argument("project_id", type=str,
-                                            help="Synapse Project ID")
-    parser_add_moderator_flair.add_argument("id", type=int,
-                                            help="User ID or Team ID")
+        "add-mod-flair", help="Adds the 'Moderator' flair to a user/team"
+    )
+    parser_add_moderator_flair.add_argument(
+        "project_id", type=str, help="Synapse Project ID"
+    )
+    parser_add_moderator_flair.add_argument("id", type=int, help="User ID or Team ID")
     parser_add_moderator_flair.set_defaults(func=command_add_mod_flair)
 
     return parser
