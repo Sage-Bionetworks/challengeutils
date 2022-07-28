@@ -280,7 +280,7 @@ def main(syn, challenge_name, live_site=None):
             syn, project_live, teams["team_admin_id"], permission_level="admin"
         )
         permissions.set_entity_permissions(
-            syn, project_live, teams["team_org_id"], permission_level="download"
+            syn, project_live, teams["team_org_id"], permission_level="moderate"
         )
         _create_live_wiki(syn, project_live, teams["team_prereg_id"])
     else:
