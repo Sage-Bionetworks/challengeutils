@@ -372,6 +372,16 @@ def command_push_wiki(syn, args):
         json.dump(wiki_headers, config, indent=4)
 
 
+def command_add_mod_flair(syn, args):
+    """
+    Give a user or team the 'Moderator' flair on a project's Discussion Board.
+
+    >>> challengeutils add-mod-flair <project_id> <user_id/team_id>
+    """
+    permissions.set_entity_permissions(syn, args.project_id,
+                                       args.id, permission_level="moderate")
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(description="Challenge utility functions")
@@ -777,6 +787,15 @@ def build_parser():
         "Defaults to location of where code is being executed.",
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
+
+    parser_add_moderator_flair = subparsers.add_parser(
+        "add-mod-flair",
+        help="Adds the 'Moderator' flair to a user/team")
+    parser_add_moderator_flair.add_argument("project_id", type=str,
+                                            help="Synapse Project ID")
+    parser_add_moderator_flair.add_argument("id", type=int,
+                                            help="User ID or Team ID")
+    parser_add_moderator_flair.set_defaults(func=command_add_mod_flair)
 
     return parser
 
