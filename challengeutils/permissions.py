@@ -6,6 +6,7 @@ from synapseclient.core.utils import id_of
 VIEW = ["READ"]
 SUBMIT = ["READ", "SUBMIT"]
 DOWNLOAD = ["READ", "DOWNLOAD"]
+MODERATE = ["READ", "DOWNLOAD", "MODERATE"]
 EDIT = ["DOWNLOAD", "UPDATE", "READ", "CREATE"]
 EDIT_AND_DELETE = ["DOWNLOAD", "UPDATE", "READ", "CREATE", "DELETE"]
 SCORE = ["READ", "UPDATE_SUBMISSION", "READ_PRIVATE_SUBMISSION"]
@@ -40,6 +41,7 @@ EVALUATION_PERMS_MAPPINGS = {
 ENTITY_PERMS_MAPPINGS = {
     "view": VIEW,
     "download": DOWNLOAD,
+    "moderate": MODERATE,
     "edit": EDIT,
     "edit_and_delete": EDIT_AND_DELETE,
     "admin": ADMIN,
