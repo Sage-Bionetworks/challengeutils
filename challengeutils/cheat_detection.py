@@ -11,7 +11,7 @@ import json
 
 class CheatDetection:
 
-    def __init__(self, syn: Synapse, evaluation_id):
+    def __init__(self, syn: Synapse, evaluation_id: int):
         self.syn = syn
 
         self.count = 0
@@ -22,9 +22,40 @@ class CheatDetection:
 
         self.evaluation = evaluation_id
 
+        #self.rounds = self.__get_evaluation_rounds(self.evaluation)
+
+
+
+    def __get_evaluation_rounds(self, evaluation_id: int):
+
+        url = f"/evaluation/{evaluation_id}/round/list"
+
+        nextPageToken = ''
+        EvaluationRoundListRequest = {"nextPageToken":nextPageToken}
+        round_list = self.syn.restPOST(url, body=json.dumps(EvaluationRoundListRequest))
+
+        return round_list
+
+        
+        
 
     ## create a link between two users
     def link_users(self, users: tuple, reason: str, abbr_reason: str, score: float):
+        """
+        Creates a new link between two users and associates a numerical score to the link and a reason for the link.
+        Adds the new link to the linked_users dictionary in the CheatDetection object.  
+
+        Args:
+            users (tuple): A tuple of two users who should be linked. The 
+            reason (str): Description of the reason for linking the two users
+            abbr_reason (str): Short title for the type of reason linking the two users.
+            score (float): Numerical float value associated with the measure. The 
+                magnitude of the score will depend on what it is measuring
+
+        Returns:
+            N/A, nothing is returned from this function. The linked_users dictionary is updated directly.
+        """
+        users = sorted(users)
         
         temp_df = pd.DataFrame([[users[0], users[1], reason, abbr_reason, score]], columns=["User 1", "User 2", "Reasons", "Abbr Reason", "Scores"])
 
@@ -34,6 +65,15 @@ class CheatDetection:
     ## 1. Collect submissions from the evaluation queue
     ## 2. Identify users who may be in cahoots by sharing files
     def collect_submissions(self):
+        """
+        Collects all the ACCEPTED submissions in the evaluation queue under investigation and pulls all the relevant information from each submission
+        and puts it into the accepted_submissions pandas dataframe.
+        In addition, for each submission, if the users who created, modified, or submitted the file that was submitted to the queue are different,
+        the two users are linked in the linked_users dictionary.
+
+        Returns:
+            N/A, nothing is returned from this function. The accepted_submissions dictionary and the linked_users object is updated directly.
+        """
         for submission in self.syn.getSubmissions(self.evaluation, status='ACCEPTED'):
 
             self.count += 1
@@ -78,27 +118,29 @@ class CheatDetection:
                     
                     ## Link differentiating users
                     if submitting_user != user_created:
-                        sorted_users = sorted([submitting_username, file_creation_users])
-                        users = tuple(sorted_users)
+                        users = tuple([submitting_username, file_creation_users])
 
                         self.link_users(users, "file creator and submitter are different", "Different Users", 1.0)
 
 
-                    elif submitting_user != user_modified:
-                        sorted_users = sorted([submitting_username, file_modified_users])
-                        users = tuple(sorted_users)
+                    if submitting_user != user_modified:
+                        users = tuple([submitting_username, file_modified_users])
 
                         self.link_users(users, "file modifier and submitter are different", "Different Users", 1.0)
                     
 
-                    elif user_created != user_modified:
-                        sorted_users = sorted([user_created, file_modified_users])
-                        users = tuple(sorted_users)
+                    if user_created != user_modified:
+                        users = tuple([user_created, file_modified_users])
 
                         self.link_users(users, "file creator and file modifier are different", "Different Users", 1.0)
             
 
     def filename_similarity(self):
+        """
+        Calculates the Jaro distance between the names of each submitted filename for each of the user pairs in the accepted submissions.
+        Each user pair is found by looking at all the different users who submitted something on the same day.
+        Function acts on the linked_users object
+        """
 
         submitted_files = pd.DataFrame(self.accepted_submissions)[["username", "createdOn", "filename"]].drop_duplicates()
         submitted_files = submitted_files.merge(submitted_files, how="inner", on="createdOn")
@@ -113,11 +155,14 @@ class CheatDetection:
         submitted_files = submitted_files[submitted_files['similarity'] > 0.7]
 
         ## Add user linkes to linked user dictionary
-        submitted_files.apply(lambda row: self.link_users(users=tuple(sorted([row["username_x"], row["username_y"]])), reason=f"Filename similarity: {row['filename_x']}, {row['filename_y']}", abbr_reason="Filename Similarity", score=row["similarity"]  ) , axis=1)
+        submitted_files.apply(lambda row: self.link_users(users=tuple([row["username_x"], row["username_y"]]), reason=f"Filename similarity: {row['filename_x']}, {row['filename_y']}", abbr_reason="Filename Similarity", score=row["similarity"]  ) , axis=1)
 
 
 
     def user_submission_pairwise_comparison(self):
+        """
+        Calculates the number of times two users submit to the challenge on the same and filters out the combined counts that fall under the submission limit.
+        """
         
         ## Collecte all valid submissions from the evaluation queue
         number_of_accepted_submissions = pd.DataFrame(self.accepted_submissions)
@@ -129,7 +174,7 @@ class CheatDetection:
         combined_accepted_submissions = number_of_accepted_submissions.merge(number_of_accepted_submissions, on="createdOn")
         
         ## Create unique username pair key
-        combined_accepted_submissions["usernames"] = combined_accepted_submissions.apply(lambda row: tuple(sorted([row["username_x"], row["username_y"]])), axis=1)
+        combined_accepted_submissions["usernames"] = combined_accepted_submissions.apply(lambda row: tuple([row["username_x"], row["username_y"]]), axis=1)
         
         ## Calculate the number of combined submissions the user pair submitted in a single day
         combined_accepted_submissions["combined_counts"] = combined_accepted_submissions["count_x"] + combined_accepted_submissions["count_y"]
@@ -152,6 +197,10 @@ class CheatDetection:
     
 
     def filter_cooccurrences(self):
+        """
+        User pairs that are only linked due to submission co-occcurrence and no other reason are removed from the suspect list.
+        Function acts on the linked_users object
+        """
         
         ## Select pairs that are linked by co-occurrence
         cooccurrance_reasons = self.linked_users[self.linked_users["Reasons"]=="Submission Co-occurrence"]
@@ -167,7 +216,9 @@ class CheatDetection:
 
 
     def report(self):
-        
+        """
+        Generates a report from the linked_users object and prints out the report along with an explanation for interpreting the report.
+        """
         #print (self.linked_users)
 
         diff_users = self.linked_users[self.linked_users["Abbr Reason"]=="Different Users"].pivot_table(index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=sum).reset_index()
@@ -190,14 +241,14 @@ class CheatDetection:
         print ("\t\tthe report have at least one day of submission co-occurrences where the total")
         print ("\t\tsubmissions are greater than the daily limit and they have at least one other")
         print ("\t\tlinking activity.")
-        
+
         print ("Different Users: \t\tCounts the number of times the two users created, submitted, or modified the same file.")
         print ("Filename Similarity: \t\tShows the maximum Jaro similarity of possible shared submitted files.")
         print ("Submission Co-occurrence: \tCounts the number of times the two users submitted on the same day more than 2 submissions combined.")
         print (tabulate(report, headers='keys', tablefmt='psql', showindex=False))
     
     
-    ## return the results 
+    ## Run the cheat detection functions
     def cheat_detection(self):
 
         print ("Finding users in cahoots...")
@@ -209,6 +260,9 @@ class CheatDetection:
         print ("Calculating submission cooccurrences...")
         self.user_submission_pairwise_comparison()
 
+        ## ADD NEW TESTS HERE
+        ## New tests that are created should be run prior to the report
+
         print ("Generating report...")
         self.report()
 
@@ -216,7 +270,6 @@ class CheatDetection:
 if __name__ == "__main__":
 
     syn = Synapse()
-    #syn.login("brats-bot", "4bqU6X0Mxs7YR5hbr9K^")
     syn.login()
 
     QUEUE = 9614925

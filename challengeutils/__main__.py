@@ -17,6 +17,7 @@ from . import (
     annotations,
     createchallenge,
     challenge,
+    cheat_detection,
     evaluation_queue,
     mirrorwiki,
     permissions,
@@ -381,6 +382,17 @@ def command_add_mod_flair(syn, args):
     permissions.set_entity_permissions(
         syn, args.project_id, args.id, permission_level="moderate"
     )
+
+
+def run_cheat_detection(syn, args):
+    """
+    Scan an evaluation queue for possible collaborators who are trying to exceed the submission limit.
+
+    >>> challengeutils cheat-detection <evaluation_id>
+    """
+
+    cd = cheat_detection.CheatDetection(syn=syn, evaluation_id=args.evaluation_id)
+    cd.cheat_detection()
 
 
 def build_parser():
@@ -788,6 +800,15 @@ def build_parser():
         "Defaults to location of where code is being executed.",
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
+
+
+    ## ============ Cheat Detection Parser ============
+    parser_cheat_detection = subparsers.add_parser("cheat-detection", help="Scan an evaluation queue for possible cheating")
+    parser_cheat_detection.add_argument("evaluationid", type=str, help="Synapse id of Evaluation Queue")
+
+    parser_cheat_detection.set_defaults(func=run_cheat_detection)
+    ## ============ End Cheat Detection Parser ============
+
 
     parser_add_moderator_flair = subparsers.add_parser(
         "add-mod-flair", help="Adds the 'Moderator' flair to a user/team"
