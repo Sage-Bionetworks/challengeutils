@@ -11,6 +11,7 @@ from challengeutils import cheat_detection
 
 SYN = synapseclient.Synapse()
 
+
 class TestCheatDetection:
     def setup(self):
         """Setup test"""
@@ -29,9 +30,11 @@ Accepted Submissions: 0
 Potentially Linked Users: 0
         """
     
+
     def test_evaluation_id(self):
         "Test that the evaluation id is valid"
-        eval = self.syn.getEvaluation()
+        assert self.cheat_detection_obj.evaluation=="123456"
+
 
     def test_representation(self):
         "Tests the representation of the CheatDetection Object"

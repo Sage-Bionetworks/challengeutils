@@ -1,6 +1,7 @@
 
 ## calculations
 import pandas as pd 
+import numpy as np
 from tabulate import tabulate
 from synapseclient import Synapse
 import jellyfish as j
@@ -22,7 +23,7 @@ class CheatDetection:
 
         self.evaluation = evaluation_id
 
-        self.rounds = self.get_evaluation_rounds(self.evaluation)
+        #self.rounds = self.get_evaluation_rounds()
     
 
 
@@ -64,16 +65,30 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
 
     ## Collect round information from the evaluation id
-    def get_evaluation_rounds(self, evaluation_id: int):
-        """Collect the rounds from the evaluation under investigation"""
+    def get_evaluation_rounds(self):
+        """Collect the timing and limits for the rounds from the evaluation under investigation"""
 
-        url = f"/evaluation/{evaluation_id}/round/list"
-
+        ## evaluation information
+        url = f"/evaluation/{self.evaluation}/round/list"
         EvaluationRoundListRequest = json.dumps({"nextPageToken": None})
 
+        ## Collection evaluation
         round_list = self.syn.restPOST(url, body=EvaluationRoundListRequest)["page"]
+
+        ## Gather round information
+        rounds = []
+        for round in round_list:
+            temp = {}
+            temp["roundStart"] = round["roundStart"]
+            temp["roundEnd"]   = round["roundEnd"]
+            temp["limit"]      = round["limits"][0]["maximumSubmissions"]
+            rounds.append(temp)
         
-        return round_list
+        rounds = pd.DataFrame(rounds)
+        rounds["roundStart"] = pd.to_datetime(rounds["roundStart"])
+        rounds["roundEnd"] = pd.to_datetime(rounds["roundEnd"])
+
+        return rounds
 
         
         
@@ -213,7 +228,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         combined_accepted_submissions = number_of_accepted_submissions.merge(number_of_accepted_submissions, on="createdOn")
         
         ## Create unique username pair key
-        combined_accepted_submissions["usernames"] = combined_accepted_submissions.apply(lambda row: tuple([row["username_x"], row["username_y"]]), axis=1)
+        combined_accepted_submissions["usernames"] = combined_accepted_submissions.apply(lambda row: tuple(sorted([row["username_x"], row["username_y"]])), axis=1)
         
         ## Calculate the number of combined submissions the user pair submitted in a single day
         combined_accepted_submissions["combined_counts"] = combined_accepted_submissions["count_x"] + combined_accepted_submissions["count_y"]
@@ -221,8 +236,15 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         ## Filter out rows where the usernames are the same
         combined_accepted_submissions = combined_accepted_submissions[combined_accepted_submissions["username_x"]!=combined_accepted_submissions["username_y"]]
 
+        ## Identify round submission limits
+        ## Currently only can handle DAILY submission limit
+        ## TODO: Add handlers for MONTHLY submission limits
+        evaluation_rounds = self.get_evaluation_rounds()
+        combined_accepted_submissions = combined_accepted_submissions.merge(evaluation_rounds, how="cross")
+        combined_accepted_submissions = combined_accepted_submissions[(combined_accepted_submissions["createdOn"]>=combined_accepted_submissions["roundStart"]) & (combined_accepted_submissions["createdOn"]<=combined_accepted_submissions["roundEnd"])]
+
         ## Filter out pairs where the combined submissions are not more than the daily limit
-        combined_accepted_submissions = combined_accepted_submissions[combined_accepted_submissions["combined_counts"] > 2]
+        combined_accepted_submissions = combined_accepted_submissions[combined_accepted_submissions["combined_counts"] > combined_accepted_submissions["limit"]]
         combined_accepted_submissions["combined_counts"] = 1
 
         ## Sum together the co-occurrence pairs
@@ -347,7 +369,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                     "Group": f"Group {group}",
                     "Users": cluster
                 })
-                average_score = pd.np.mean(score_temp.merge(users, left_on="Users", right_on="User 1", how="inner")["Score Totals"])
+                average_score = np.mean(score_temp.merge(users, left_on="Users", right_on="User 1", how="inner")["Score Totals"])
 
                 ## Put each cluster's information into a pandas row
                 temp = pd.DataFrame([{
