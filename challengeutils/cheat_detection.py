@@ -2,38 +2,77 @@
 ## calculations
 import pandas as pd 
 from tabulate import tabulate
-from synapseclient import Project, Synapse, Team
+from synapseclient import Synapse
 import jellyfish as j
 from scipy.spatial.distance import pdist as p
 import json
-
+import copy
 
 
 class CheatDetection:
 
     def __init__(self, syn: Synapse, evaluation_id: int):
         self.syn = syn
-
-        self.count = 0
         
         self.linked_users = pd.DataFrame()
+
+        self.user_clusters = pd.DataFrame()
 
         self.accepted_submissions = []
 
         self.evaluation = evaluation_id
 
-        #self.rounds = self.__get_evaluation_rounds(self.evaluation)
+        self.rounds = self.get_evaluation_rounds(self.evaluation)
+    
+
+
+    def __str__(self):
+        """String representation"""
+
+        output = f"""
+Evaluation ID: {self.evaluation}
+Accepted Submissions: {len(self.accepted_submissions)}
+Potentially Linked Users: {self.get_number_of_linked_users()}
+        """
+
+        return output
 
 
 
-    def __get_evaluation_rounds(self, evaluation_id: int):
+    def __repr__(self):
+        """Repr() representation"""
+
+        rep = f"CheatDetection({self.syn}, {self.evaluation})"
+
+        return rep
+    
+
+
+    def get_number_of_linked_users(self):
+        """Returns the unique users from the linked users dictionary"""
+
+        if len(self.linked_users) > 0:
+
+            col_1 = set(self.linked_users["User 1"])
+            col_2 = set(self.linked_users["User 2"])
+            combined = col_1.union(col_2)
+
+            return len(combined)
+        else:
+            return 0
+
+
+
+    ## Collect round information from the evaluation id
+    def get_evaluation_rounds(self, evaluation_id: int):
+        """Collect the rounds from the evaluation under investigation"""
 
         url = f"/evaluation/{evaluation_id}/round/list"
 
-        nextPageToken = ''
-        EvaluationRoundListRequest = {"nextPageToken":nextPageToken}
-        round_list = self.syn.restPOST(url, body=json.dumps(EvaluationRoundListRequest))
+        EvaluationRoundListRequest = json.dumps({"nextPageToken": None})
 
+        round_list = self.syn.restPOST(url, body=EvaluationRoundListRequest)["page"]
+        
         return round_list
 
         
@@ -62,6 +101,7 @@ class CheatDetection:
         self.linked_users = pd.concat([self.linked_users, temp_df])
 
 
+
     ## 1. Collect submissions from the evaluation queue
     ## 2. Identify users who may be in cahoots by sharing files
     def collect_submissions(self):
@@ -75,8 +115,6 @@ class CheatDetection:
             N/A, nothing is returned from this function. The accepted_submissions dictionary and the linked_users object is updated directly.
         """
         for submission in self.syn.getSubmissions(self.evaluation, status='ACCEPTED'):
-
-            self.count += 1
 
             ## submission user information
             submitting_user = submission["userId"]
@@ -133,7 +171,8 @@ class CheatDetection:
                         users = tuple([user_created, file_modified_users])
 
                         self.link_users(users, "file creator and file modifier are different", "Different Users", 1.0)
-            
+    
+
 
     def filename_similarity(self):
         """
@@ -196,6 +235,7 @@ class CheatDetection:
         self.filter_cooccurrences()
     
 
+
     def filter_cooccurrences(self):
         """
         User pairs that are only linked due to submission co-occcurrence and no other reason are removed from the suspect list.
@@ -215,23 +255,125 @@ class CheatDetection:
         self.linked_users = self.linked_users.merge(df, on=["User 1", "User 2"], how="inner")
 
 
-    def report(self):
-        """
-        Generates a report from the linked_users object and prints out the report along with an explanation for interpreting the report.
-        """
-        #print (self.linked_users)
 
+    def collect_user_interaction_summary(self):
+        """
+        Collect interaction reports from the previously run tests
+        """
+
+        ## Collect users that submitted or modified the same model
         diff_users = self.linked_users[self.linked_users["Abbr Reason"]=="Different Users"].pivot_table(index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=sum).reset_index()
 
+        ## Collect users that both submitted similarly named files
         file_sim = self.linked_users[self.linked_users["Abbr Reason"]=="Filename Similarity"].pivot_table(index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=max).reset_index()
         
+        ## Collect users that both submitted on the same day for more than than the daily limit
         sub_coocc = self.linked_users[self.linked_users["Abbr Reason"]=="Submission Co-occurrence"].pivot_table(index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=sum).reset_index()
         
+        ## Merge the different user pairs
         report = self.linked_users[["User 1", "User 2"]].merge(diff_users, on=["User 1", "User 2"], how="left")
         report = report.merge(file_sim, on=["User 1", "User 2"], how="left")
         report = report.merge(sub_coocc, on=["User 1", "User 2"], how="left").fillna(0.0).drop_duplicates()
 
+        ## Calculate score totals
         report["Score Totals"] = report.apply(lambda row: row["Different Users"] + row["Filename Similarity"] + row["Submission Co-occurrence"], axis=1)
+
+        return report
+
+
+    def user_cluster_detection(self, max_iterations=30):
+
+        ## TODO: There are more efficient and less open ended algorithms for identify open and closed clusters in networks. One of them should be implemented here.
+
+        """
+        Identifies possible clusters of users that could be coordinating to skirt the daily submission limit.
+
+        Args:
+            max_iterations (int): The number of times the function should try to iterively build clusters
+
+        Returns:
+            N/A, nothing is returned from this function. The user_clusters dictionary is updated directly.
+        """
+        
+        ## collect user interation summary table
+        users = self.collect_user_interaction_summary()
+        
+        ## collect all unique users in the 
+        unique_users = set(users["User 1"]).union(set(users["User 2"]))
+
+        clusters = {u: [u] for u in unique_users}
+
+        old_clusters = {}
+        count = 1
+        
+        ## iteratively build possible clusters
+        while old_clusters != clusters:
+
+            old_clusters = copy.deepcopy(clusters)
+
+            for index,row in users.iterrows():
+                
+                user_1 = row["User 1"]
+                user_2 = row["User 2"]
+                #score = row["Score Totals"]
+
+                clusters[user_1].append(user_2)
+                clusters[user_2].append(user_1)
+
+                if user_2 in clusters[user_1]:
+                    clusters[user_1] += clusters[user_2]
+                
+                if user_1 in clusters[user_2]:
+                    clusters[user_2] += clusters[user_1]
+
+                clusters[user_1] = sorted(list(set(clusters[user_1])))
+                clusters[user_2] = sorted(list(set(clusters[user_2])))
+
+            count += 1
+            if count > max_iterations:
+                print (f"User cluster identification incomplete after {max_iterations} iterations")
+                break
+
+        
+        ## build cluster reports and add clusters to user_clusters
+        group = 1
+        visit_clusters = []
+
+        for cluster in clusters.values():
+            if cluster not in visit_clusters:
+                
+                ## Calculate the average user pair scores for the cluster
+                score_temp = pd.DataFrame({
+                    "Group": f"Group {group}",
+                    "Users": cluster
+                })
+                average_score = pd.np.mean(score_temp.merge(users, left_on="Users", right_on="User 1", how="inner")["Score Totals"])
+
+                ## Put each cluster's information into a pandas row
+                temp = pd.DataFrame([{
+                    "Group": f"Group {group}",
+                    "Clusters": ", ".join(cluster),
+                    "Average Score": average_score
+                }])
+
+                self.user_clusters = pd.concat([self.user_clusters, temp])
+
+                ## track the visited clusters
+                visit_clusters.append(cluster)
+                
+                group += 1
+
+        ## Set group as index and order by the average score
+        self.user_clusters = self.user_clusters.set_index("Group").sort_values("Average Score", ascending=False)
+
+
+
+    ## Build and print report
+    def report(self):
+        """
+        Generates a report from the linked_users object and prints out the report along with an explanation for interpreting the report.
+        """
+        report = self.collect_user_interaction_summary()
 
         report = report.sort_values("Score Totals", ascending=False)
         print ("\n\n")
@@ -246,10 +388,18 @@ class CheatDetection:
         print ("Filename Similarity: \t\tShows the maximum Jaro similarity of possible shared submitted files.")
         print ("Submission Co-occurrence: \tCounts the number of times the two users submitted on the same day more than 2 submissions combined.")
         print (tabulate(report, headers='keys', tablefmt='psql', showindex=False))
-    
-    
+
+        print ("\n")
+        print ("---------------------------------------- CLUSTER ANALYSIS ----------------------------------------")
+        print (tabulate(self.user_clusters, headers="firstrow", tablefmt="fancy_grid"))
+
+
+
     ## Run the cheat detection functions
     def cheat_detection(self):
+        """
+        Run all the different cheat detection tests and print out the user pairs and cluster reports.
+        """
 
         print ("Finding users in cahoots...")
         self.collect_submissions()
@@ -260,11 +410,15 @@ class CheatDetection:
         print ("Calculating submission cooccurrences...")
         self.user_submission_pairwise_comparison()
 
+        print ("Identifying user clusters...")
+        self.user_cluster_detection()
+
         ## ADD NEW TESTS HERE
         ## New tests that are created should be run prior to the report
 
         print ("Generating report...")
         self.report()
+
 
 
 if __name__ == "__main__":
@@ -275,4 +429,6 @@ if __name__ == "__main__":
     QUEUE = 9614925
 
     cd = CheatDetection(syn=syn, evaluation_id=QUEUE)
+
+    
     cd.cheat_detection()
