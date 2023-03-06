@@ -1,24 +1,24 @@
 """Tests challengeutils.cheat-detection functions"""
 # pylint: disable=line-too-long
-from unittest.mock import Mock, patch
-import uuid
+from unittest import mock 
 
-import pytest
-import requests
 import synapseclient
 
 from challengeutils import cheat_detection
 
-SYN = synapseclient.Synapse()
 
 
 class TestCheatDetection:
     def setup(self):
         """Setup test"""
+
+        self.syn = mock.create_autospec(synapseclient.Synapse)
+
+        self.evaluation_id = "123456"
         
         self.cheat_detection_obj = cheat_detection.CheatDetection(
-            syn=SYN,
-            evaluation_id="123456"
+            syn=self.syn,
+            evaluation_id=self.evaluation_id
         )
         
 
