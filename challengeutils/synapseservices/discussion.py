@@ -3,7 +3,6 @@ from .base_service import Service, deserialize_model
 
 class Forum(Service):
     def __init__(self, id=None, projectId=None, etag=None):
-
         self.openapi_types = {"id": str, "projectid": str, "etag": str}
 
         self.attribute_map = {"id": "id", "projectid": "projectId", "etag": "etag"}
@@ -70,7 +69,6 @@ class Thread(Service):
         isDeleted: bool = False,
         isPinned: bool = False,
     ):
-
         self.openapi_types = {
             "id": str,
             "forumid": str,
@@ -296,7 +294,6 @@ class Reply(Service):
         isEdited: bool = False,
         isDeleted: bool = False,
     ):
-
         self.openapi_types = {
             "id": str,
             "threadid": str,
