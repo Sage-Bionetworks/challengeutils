@@ -180,7 +180,6 @@ def _validate_public_permissions(syn, proj):
             error = ""
 
     except SynapseHTTPError as e:
-
         # Raise exception message if error is not a permissions error.
         if e.response.status_code != 403:
             raise e
@@ -202,7 +201,6 @@ def _validate_admin_permissions(syn, proj, admin):
             error = ""
 
     except SynapseHTTPError as e:
-
         # Raise exception message if error is not a permissions error.
         if e.response.status_code != 403:
             raise e
