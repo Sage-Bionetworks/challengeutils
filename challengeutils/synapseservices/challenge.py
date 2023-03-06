@@ -23,7 +23,6 @@ class Challenge(Service):
         etag: str = None,
         participantTeamId: str = None,
     ):
-
         self.openapi_types = {
             "id": str,
             "projectId": str,
