@@ -133,7 +133,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
             ## submission user information
             submitting_user = submission["userId"]
-            submitting_username = syn.getUserProfile(submitting_user)['userName']
+            submitting_username = self.syn.getUserProfile(submitting_user)['userName']
 
             ## submission information bundle
             submission_information = json.loads(submission['entityBundleJSON'])
@@ -166,8 +166,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                 if submitting_user != user_created or submitting_user != user_modified:
                     
                     ## collect users who created and modified the submitted file
-                    file_creation_users = syn.getUserProfile(user_created)['userName']
-                    file_modified_users =syn.getUserProfile(user_modified)['userName']
+                    file_creation_users = self.syn.getUserProfile(user_created)['userName']
+                    file_modified_users = self.syn.getUserProfile(user_modified)['userName']
                     
                     ## Link differentiating users
                     if submitting_user != user_created:
@@ -413,7 +413,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         print ("\n")
         print ("---------------------------------------- CLUSTER ANALYSIS ----------------------------------------")
-        print (tabulate(self.user_clusters, headers="firstrow", tablefmt="fancy_grid"))
+        print (tabulate(self.user_clusters, headers="keys", tablefmt="fancy_grid"))
 
 
 

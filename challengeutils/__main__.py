@@ -804,7 +804,7 @@ def build_parser():
 
     ## ============ Cheat Detection Parser ============
     parser_cheat_detection = subparsers.add_parser("cheat-detection", help="Scan an evaluation queue for possible cheating")
-    parser_cheat_detection.add_argument("evaluationid", type=str, help="Synapse id of Evaluation Queue")
+    parser_cheat_detection.add_argument("evaluation_id", type=int, help="Synapse id of Evaluation Queue")
 
     parser_cheat_detection.set_defaults(func=run_cheat_detection)
     ## ============ End Cheat Detection Parser ============
