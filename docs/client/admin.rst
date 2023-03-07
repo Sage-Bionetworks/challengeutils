@@ -681,7 +681,7 @@ Synopsis
 ^^^^^^^^
 
 cheat-detection
-    evaluationid
+    evaluationid [-s]
 
 Description
 ^^^^^^^^^^^
@@ -700,4 +700,12 @@ Positional
 .. cmdoption:: projectid
 
     Synapse evaluation ID e.g. ``9615080``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -s, --submission_status
+
+    List of submission statuses to use when scanning 
+    for valid submissions. Accepts multiple inputs. Defaults to `ACCEPTED`
 ^^^^^^^^
