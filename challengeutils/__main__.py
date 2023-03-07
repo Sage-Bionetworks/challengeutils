@@ -391,7 +391,7 @@ def run_cheat_detection(syn, args):
     >>> challengeutils cheat-detection <evaluation_id>
     """
 
-    if type(args.submission_status) == str:
+    if isinstance(args.submission_status, str):
         submission_status = [args.submission_status]
     else:
         submission_status = args.submission_status
