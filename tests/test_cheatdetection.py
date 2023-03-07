@@ -18,7 +18,8 @@ class TestCheatDetection:
         
         self.cheat_detection_obj = cheat_detection.CheatDetection(
             syn=self.syn,
-            evaluation_id=self.evaluation_id
+            evaluation_id=self.evaluation_id,
+            submission_status=["ACCEPTED"]
         )
         
 
