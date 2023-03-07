@@ -223,6 +223,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                             users = tuple([user_created, file_modified_users])
 
                             self.link_users(users, "file creator and file modifier are different", "Different Users", 1.0)
+                else:
+                    sys.exit(f"Submissions of entity type {entityType} not currently supported in cheat_detection module")
     
 
 
