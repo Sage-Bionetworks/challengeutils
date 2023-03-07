@@ -1,4 +1,4 @@
 pandas
-synapseclient==2.3.0
 jellyfish
 tabulate
+synapseclient

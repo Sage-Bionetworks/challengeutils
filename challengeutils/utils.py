@@ -18,6 +18,7 @@ from synapseclient.core.utils import id_of
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # TODO: Deprecate once fully using submissionviews
 def _switch_annotation_permission(add_annotations, existing_annotations, force=False):
     """
