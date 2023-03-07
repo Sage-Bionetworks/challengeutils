@@ -13,18 +13,26 @@ import sys
 
 class CheatDetection:
 
-    def __init__(self, syn: Synapse, evaluation_id: int, submission_status: str):
+    def __init__(self, syn: Synapse, evaluation_id: int, submission_status: list):
+        """
+        Initialize cheat detection class
+
+        Args:
+            syn (Synapse): A Synapse object from the synapseclient package.
+            evaluation_id (int): The synapse ID for the evaluation queue being scanned.
+            submission_status (list): Status of the valid submissions to pull from the evaluation queue.
+        """
         self.syn = syn
-        
-        self.linked_users = pd.DataFrame()
-
-        self.user_clusters = pd.DataFrame()
-
-        self.accepted_submissions = []
 
         self.evaluation = evaluation_id
 
         self.submission_status = submission_status
+
+        self.accepted_submissions = []
+        
+        self.linked_users = pd.DataFrame()
+
+        self.user_clusters = pd.DataFrame()
     
 
 
@@ -234,7 +242,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         Each user pair is found by looking at all the different users who submitted something on the same day.
         Function acts on the linked_users object
         """
-        #print (self.accepted_submissions)
+        #print(self.accepted_submissions)
 
         if len(self.accepted_submissions) > 0:
             submitted_files = pd.DataFrame(self.accepted_submissions)[["username", "createdOn", "filename"]].drop_duplicates()
@@ -299,7 +307,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         self.filter_cooccurrences()
 
         #except KeyError:
-        #print ("Unable to identify round evaluation round information. Code debugging necessary")
+        #print("Unable to identify round evaluation round information. Code debugging necessary")
     
 
 
@@ -415,7 +423,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
             count += 1
             if count > max_iterations:
-                print (f"User cluster identification incomplete after {max_iterations} iterations")
+                print(f"User cluster identification incomplete after {max_iterations} iterations")
                 break
 
         
@@ -471,23 +479,23 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         report = self.collect_user_interaction_summary()
 
         report = report.sort_values("Score Totals", ascending=False)
-        print ("\n")
-        print ("============================================= REPORT SUMMARY =============================================")
-        print ("\tDESCRIPTION: These are the username pairs that have raised flags for potentially being either from the same user or the same")
-        print ("\tteam to skirt the submission limits. User pairs in the report have at least one day of submission co-occurrences where the")
-        print ("\ttotal submissions are greater than the daily limit and they have at least one other linking activity.")
+        print("\n")
+        print("============================================= REPORT SUMMARY =============================================")
+        print("\tDESCRIPTION: These are the username pairs that have raised flags for potentially being either from the same user or the same")
+        print("\tteam to skirt the submission limits. User pairs in the report have at least one day of submission co-occurrences where the")
+        print("\ttotal submissions are greater than the daily limit and they have at least one other linking activity.")
 
-        print ("Different Users: \t\tCounts the number of times the two users created, submitted, or modified the same file.")
-        print ("Filename Similarity: \t\tShows the maximum Jaro similarity of possible shared submitted files. Jaro scores are (0, 1), 1=exact match")
-        print ("Submission Co-occurrence: \tCounts the number of times the two users submitted on the same day more than 2 submissions combined.")
-        print (tabulate(report, headers='keys', tablefmt='psql', showindex=False))
+        print("Different Users: \t\tCounts the number of times the two users created, submitted, or modified the same file.")
+        print("Filename Similarity: \t\tShows the maximum Jaro similarity of possible shared submitted files. Jaro scores are (0, 1), 1=exact match")
+        print("Submission Co-occurrence: \tCounts the number of times the two users submitted on the same day more than 2 submissions combined.")
+        print(tabulate(report, headers='keys', tablefmt='psql', showindex=False))
 
-        print ("\n")
-        print ("---------------------------------------- CLUSTER ANALYSIS ----------------------------------------")
-        print ("Group: Identifying group number")
-        print ("Clusters: Possible group of collaborating users. Not all users have connection to each other but they are all part of a connected group.")
-        print ("Average Score: Average score between each of the users in the cluster.")
-        print (tabulate(self.user_clusters, headers="keys", tablefmt="fancy_grid"))
+        print("\n")
+        print("---------------------------------------- CLUSTER ANALYSIS ----------------------------------------")
+        print("Group: Identifying group number")
+        print("Clusters: Possible group of collaborating users. Not all users have connection to each other but they are all part of a connected group.")
+        print("Average Score: Average score between each of the users in the cluster.")
+        print(tabulate(self.user_clusters, headers="keys", tablefmt="fancy_grid"))
 
 
 
@@ -497,15 +505,15 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         Run all the different cheat detection tests and print out the user pairs and cluster reports.
         """
 
-        print ("Finding users in cahoots...")
+        print("Finding users in cahoots...")
         self.collect_submissions()
 
         if len(self.accepted_submissions) > 0:
 
-            print ("Calculating filename similarities...")
+            print("Calculating filename similarities...")
             self.filename_similarity()
 
-            print ("Calculating submission cooccurrences...")
+            print("Calculating submission cooccurrences...")
             self.user_submission_pairwise_comparison()
 
             ## TODO: ADD NEW TESTS HERE
@@ -516,11 +524,11 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
             self.check_analysis_status()
 
 
-            print ("Identifying user clusters...")
+            print("Identifying user clusters...")
             self.user_cluster_detection()
 
-            print ("Generating report...")
+            print("Generating report...")
             self.report()
 
         else:
-            print ("No accepted or valid submissions in the evaluation queue...")
+            print("No accepted or valid submissions in the evaluation queue...")
