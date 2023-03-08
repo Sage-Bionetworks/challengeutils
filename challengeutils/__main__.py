@@ -718,11 +718,9 @@ def build_parser():
     parser_validate_project = subparsers.add_parser(
         "validate-project", help="Validate a Project submission"
     )
+    parser_validate_project.add_argument("submissionid", type=int, help="Submission ID")
     parser_validate_project.add_argument(
-        "submissionid", type=int, help="Submission ID",
-    )
-    parser_validate_project.add_argument(
-        "challengewiki", type=str, help="Synapse ID of Challenge wiki",
+        "challengewiki", type=str, help="Synapse ID of Challenge wiki"
     )
     parser_validate_project.add_argument(
         "-p",

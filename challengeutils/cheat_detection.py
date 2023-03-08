@@ -139,19 +139,19 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def link_users(self, users: tuple, reason: str, abbr_reason: str, score: float):
         """
-        Creates a new link between two users and associates a numerical score to 
-        the link and a reason for the link. Adds the new link to the linked_users 
-        dictionary in the CheatDetection object.  
+        Creates a new link between two users and associates a numerical score to
+        the link and a reason for the link. Adds the new link to the linked_users
+        dictionary in the CheatDetection object.
 
         Args:
-            users (tuple): A tuple of two users who should be linked. The 
+            users (tuple): A tuple of two users who should be linked. The
             reason (str): Description of the reason for linking the two users
             abbr_reason (str): Short title for the type of reason linking the two users.
-            score (float): Numerical float value associated with the measure. The 
+            score (float): Numerical float value associated with the measure. The
                 magnitude of the score will depend on what it is measuring
 
         Returns:
-            N/A, nothing is returned from this function. 
+            N/A, nothing is returned from this function.
             The linked_users dictionary is updated directly.
         """
         users = sorted(users)
@@ -168,14 +168,14 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def collect_submissions(self):
         """
-        Collects all the ACCEPTED submissions in the evaluation queue under investigation 
-        and pulls all the relevant information from each submission and puts it into the 
-        accepted_submissions pandas dataframe. In addition, for each submission, if the 
-        users who created, modified, or submitted the file that was submitted to the queue 
+        Collects all the ACCEPTED submissions in the evaluation queue under investigation
+        and pulls all the relevant information from each submission and puts it into the
+        accepted_submissions pandas dataframe. In addition, for each submission, if the
+        users who created, modified, or submitted the file that was submitted to the queue
         are different, the two users are linked in the linked_users dictionary.
 
         Returns:
-            N/A, nothing is returned from this function. The accepted_submissions 
+            N/A, nothing is returned from this function. The accepted_submissions
             dictionary and the linked_users object is updated directly.
         """
 
@@ -270,8 +270,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def filename_similarity(self):
         """
-        Calculates the Jaro distance between the names of each submitted filename for 
-        each of the user pairs in the accepted submissions. Each user pair is found by 
+        Calculates the Jaro distance between the names of each submitted filename for
+        each of the user pairs in the accepted submissions. Each user pair is found by
         looking at all the different users who submitted something on the same day.
         Function acts on the linked_users object
         """
@@ -320,7 +320,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def user_submission_pairwise_comparison(self):
         """
-        Calculates the number of times two users submit to the challenge on the same and filters 
+        Calculates the number of times two users submit to the challenge on the same and filters
         out the combined counts that fall under the submission limit.
         """
 
@@ -409,7 +409,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def filter_cooccurrences(self):
         """
-        User pairs that are only linked due to submission co-occcurrence and no other 
+        User pairs that are only linked due to submission co-occcurrence and no other
         reason are removed from the suspect list. Function acts on the linked_users object
         """
 
@@ -518,15 +518,15 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         # TODO: There are more efficient and less open ended algorithms for identify
         # open and closed clusters in networks. One of them should be implemented here.
         """
-        Identifies possible clusters of users that could be coordinating to skirt 
+        Identifies possible clusters of users that could be coordinating to skirt
         the daily submission limit.
 
         Args:
-            max_iterations (int): The number of times the function should try to 
+            max_iterations (int): The number of times the function should try to
                 iterively build clusters
 
         Returns:
-            N/A, nothing is returned from this function. The user_clusters 
+            N/A, nothing is returned from this function. The user_clusters
                 dictionary is updated directly.
         """
 
@@ -623,7 +623,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def report(self):
         """
-        Generates a report from the linked_users object and prints out the report along 
+        Generates a report from the linked_users object and prints out the report along
         with an explanation for interpreting the report.
         """
         report = self.collect_user_interaction_summary()
@@ -678,7 +678,7 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def cheat_detection(self):
         """
-        Run all the different cheat detection tests and print out the user pairs 
+        Run all the different cheat detection tests and print out the user pairs
         and cluster reports.
         """
 
