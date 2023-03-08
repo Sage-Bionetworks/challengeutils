@@ -396,9 +396,10 @@ def run_cheat_detection(syn, args):
         submission_status = [args.submission_status]
     else:
         submission_status = args.submission_status
-    
+
     cheat_detect = cheat_detection.CheatDetection(
-        syn=syn, evaluation_id=args.evaluation_id, submission_status=submission_status)
+        syn=syn, evaluation_id=args.evaluation_id, submission_status=submission_status
+    )
     cheat_detect.cheat_detection()
 
 
