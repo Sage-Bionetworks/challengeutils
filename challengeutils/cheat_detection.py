@@ -1,4 +1,7 @@
-
+"""
+Cheat Detection module
+author: Timothy Bergquist
+"""
 
 import json
 import copy
@@ -9,7 +12,6 @@ import numpy as np
 from tabulate import tabulate
 from synapseclient import Synapse
 import jellyfish as j
-from scipy.spatial.distance import pdist as p
 
 
 # cheat detection class
@@ -80,14 +82,14 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         def get_rounds(round_list):
             # Gather round information
             rounds = []
-            for round in round_list:
+            for each_round in round_list:
                 temp = {}
-                temp["roundStart"] = round["roundStart"]
-                temp["roundEnd"] = round["roundEnd"]
+                temp["roundStart"] = each_round["roundStart"]
+                temp["roundEnd"] = each_round["roundEnd"]
 
                 # if no limit is specified, set limit as 100,000
                 try:
-                    temp["limit"] = round["limits"][0]["maximumSubmissions"]
+                    temp["limit"] = each_round["limits"][0]["maximumSubmissions"]
                 except KeyError:
                     temp["limit"] = 100000
 
@@ -101,10 +103,10 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         # evaluation information
         url = f"/evaluation/{self.evaluation}/round/list"
-        EvaluationRoundListRequest = json.dumps({"nextPageToken": None})
+        evaluation_round_list_request = json.dumps({"nextPageToken": None})
 
         # Collection evaluation
-        round_list = self.syn.restPOST(url, body=EvaluationRoundListRequest)["page"]
+        round_list = self.syn.restPOST(url, body=evaluation_round_list_request)["page"]
 
         # Quotas have been depreciated, but some legacy challenges still use quotas.
         # This accounts for those possible deviations.
@@ -118,11 +120,11 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                 quota = False
 
             if quota:
-                raise Exception(
-                    "UNABLE TO SCAN: Evaluation is using the DEPRECIATED submission quota method.")
+                sys.exit("UNABLE TO SCAN: Evaluation is using the "
+                         "DEPRECIATED submission quota method.")
             else:
-                raise Exception(
-                    "UNABLE TO SCAN: Unable to identify evaluation rounds or submission quotas")
+                sys.exit("UNABLE TO SCAN: Unable to identify evaluation "
+                         "rounds or submission quotas")
 
         else:
             rounds = get_rounds(round_list)
@@ -133,8 +135,9 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def link_users(self, users: tuple, reason: str, abbr_reason: str, score: float):
         """
-        Creates a new link between two users and associates a numerical score to the link and a reason for the link.
-        Adds the new link to the linked_users dictionary in the CheatDetection object.  
+        Creates a new link between two users and associates a numerical score to 
+        the link and a reason for the link. Adds the new link to the linked_users 
+        dictionary in the CheatDetection object.  
 
         Args:
             users (tuple): A tuple of two users who should be linked. The 
@@ -144,7 +147,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                 magnitude of the score will depend on what it is measuring
 
         Returns:
-            N/A, nothing is returned from this function. The linked_users dictionary is updated directly.
+            N/A, nothing is returned from this function. 
+            The linked_users dictionary is updated directly.
         """
         users = sorted(users)
 
@@ -158,13 +162,15 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def collect_submissions(self):
         """
-        Collects all the ACCEPTED submissions in the evaluation queue under investigation and pulls all the relevant information from each submission
-        and puts it into the accepted_submissions pandas dataframe.
-        In addition, for each submission, if the users who created, modified, or submitted the file that was submitted to the queue are different,
-        the two users are linked in the linked_users dictionary.
+        Collects all the ACCEPTED submissions in the evaluation queue under investigation 
+        and pulls all the relevant information from each submission and puts it into the 
+        accepted_submissions pandas dataframe. In addition, for each submission, if the 
+        users who created, modified, or submitted the file that was submitted to the queue 
+        are different, the two users are linked in the linked_users dictionary.
 
         Returns:
-            N/A, nothing is returned from this function. The accepted_submissions dictionary and the linked_users object is updated directly.
+            N/A, nothing is returned from this function. The accepted_submissions 
+            dictionary and the linked_users object is updated directly.
         """
 
         for status in self.submission_status:
@@ -179,21 +185,22 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                 submission_information = json.loads(submission['entityBundleJSON'])
 
                 # Entity type of the submission
-                entityType = submission_information["entityType"]
+                entity_type = submission_information["entityType"]
 
                 # If entity if file type
-                if entityType == "file" or entityType == 'org.sagebionetworks.repo.model.FileEntity':
+                if entity_type == "file" or\
+                        entity_type == 'org.sagebionetworks.repo.model.FileEntity':
 
                     # collect file entity information
                     file = submission_information['entity']
 
                     # collect user and filename information for further evaluation
-                    fileName = file["name"]
+                    file_name = file["name"]
                     current_submission = {
                         "user": submitting_user,
                         "username": submitting_username,
                         "createdOn": submission["createdOn"].split("T")[0],
-                        "filename": fileName,
+                        "filename": file_name,
                         "count": 1
                     }
                     self.accepted_submissions.append(current_submission)
@@ -201,8 +208,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                     user_created = file["createdBy"]
                     user_modified = file["modifiedBy"]
 
-                    # when the submitting user is not the same user that created or last modified the file
-                    # link the two different users as collaborators
+                    # when the submitting user is not the same user that created or
+                    # last modified the file link the two different users as collaborators
                     if submitting_user != user_created or submitting_user != user_modified:
 
                         # collect users who created and modified the submitted file
@@ -216,32 +223,38 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                             users = tuple([submitting_username, file_creation_users])
 
                             self.link_users(
-                                users, "file creator and submitter are different", "Different Users", 1.0)
+                                users, "file creator and submitter are different",
+                                "Different Users", 1.0)
 
                         if submitting_user != user_modified:
                             users = tuple([submitting_username, file_modified_users])
 
                             self.link_users(
-                                users, "file modifier and submitter are different", "Different Users", 1.0)
+                                users, "file modifier and submitter are different",
+                                "Different Users", 1.0)
 
                         if user_created != user_modified:
                             users = tuple([user_created, file_modified_users])
 
                             self.link_users(
-                                users, "file creator and file modifier are different", "Different Users", 1.0)
+                                users, "file creator and file modifier are different",
+                                "Different Users", 1.0)
                 else:
                     sys.exit(
-                        f"Submissions of entity type {entityType} not currently supported in cheat_detection module")
+                        f"Submissions of entity type {entity_type} not \
+                            currently supported in cheat_detection module")
 
     def filename_similarity(self):
         """
-        Calculates the Jaro distance between the names of each submitted filename for each of the user pairs in the accepted submissions.
-        Each user pair is found by looking at all the different users who submitted something on the same day.
+        Calculates the Jaro distance between the names of each submitted filename for 
+        each of the user pairs in the accepted submissions. Each user pair is found by 
+        looking at all the different users who submitted something on the same day.
         Function acts on the linked_users object
         """
         # print(self.accepted_submissions)
 
-        if len(self.accepted_submissions) > 0:
+        if len(self.accepted_submissions) > 1:
+
             submitted_files = pd.DataFrame(self.accepted_submissions)[
                 ["username", "createdOn", "filename"]].drop_duplicates()
             submitted_files = submitted_files.merge(
@@ -250,8 +263,9 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                                               != submitted_files["username_y"]]
 
             # Calculate Jaro Distance between each of the filenames
-            # Jaro distance is a string-edit distance that gives a floating point response in [0,1] where 0
-            # represents two completely dissimilar strings and 1 represents identical strings.
+            # Jaro distance is a string-edit distance that gives a floating point response
+            # in [0,1] where 0 represents two completely dissimilar strings and 1 represents
+            # identical strings.
             submitted_files['similarity'] = submitted_files.apply(
                 lambda row: j.jaro_similarity(row["filename_x"], row["filename_y"]), axis=1)
 
@@ -260,11 +274,17 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
             # Add user linkes to linked user dictionary
             submitted_files.apply(lambda row: self.link_users(users=tuple(
-                [row["username_x"], row["username_y"]]), reason=f"Filename similarity: {row['filename_x']}, {row['filename_y']}", abbr_reason="Filename Similarity", score=row["similarity"]) , axis=1)
+                [row["username_x"], row["username_y"]]), reason=f"Filename similarity:\
+                      {row['filename_x']}, {row['filename_y']}", abbr_reason="Filename Similarity",
+                score=row["similarity"]) , axis=1)
+        else:
+            sys.exit(f"{len(self.accepted_submissions)} valid submissions "
+                     "- Not enough accepted submissions to analyze queue")
 
     def user_submission_pairwise_comparison(self):
         """
-        Calculates the number of times two users submit to the challenge on the same and filters out the combined counts that fall under the submission limit.
+        Calculates the number of times two users submit to the challenge on the same and filters 
+        out the combined counts that fall under the submission limit.
         """
 
         # Collecte all valid submissions from the evaluation queue
@@ -283,26 +303,37 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
             lambda row: tuple(sorted([row["username_x"], row["username_y"]])), axis=1)
 
         # Calculate the number of combined submissions the user pair submitted in a single day
-        combined_accepted_submissions["combined_counts"] = combined_accepted_submissions["count_x"] + \
+        combined_accepted_submissions["combined_counts"] = \
+            combined_accepted_submissions["count_x"] + \
             combined_accepted_submissions["count_y"]
 
         # Filter out rows where the usernames are the same
         combined_accepted_submissions = combined_accepted_submissions[
-            combined_accepted_submissions["username_x"] != combined_accepted_submissions["username_y"]]
+            combined_accepted_submissions["username_x"] !=
+            combined_accepted_submissions["username_y"]]
 
         # Identify round submission limits
         # Currently only can handle DAILY submission limit
-        # TODO: Add handlers for MONTHLY submission limits
+        #TODO: Add handlers for MONTHLY submission limits
 
         evaluation_rounds = self.get_evaluation_rounds()
         combined_accepted_submissions = combined_accepted_submissions.merge(
             evaluation_rounds, how="cross")
-        combined_accepted_submissions = combined_accepted_submissions[(combined_accepted_submissions["createdOn"] >= combined_accepted_submissions["roundStart"]) & (
-            combined_accepted_submissions["createdOn"] <= combined_accepted_submissions["roundEnd"])]
+        combined_accepted_submissions = combined_accepted_submissions[
+            (
+                combined_accepted_submissions["createdOn"] >=
+                combined_accepted_submissions["roundStart"]
+            ) & (
+                combined_accepted_submissions["createdOn"] <=
+                combined_accepted_submissions["roundEnd"]
+            )]
 
         # Filter out pairs where the combined submissions are not more than the daily limit
         combined_accepted_submissions = combined_accepted_submissions[
-            combined_accepted_submissions["combined_counts"] > combined_accepted_submissions["limit"]]
+            combined_accepted_submissions["combined_counts"] >
+            combined_accepted_submissions["limit"]
+        ]
+
         combined_accepted_submissions["combined_counts"] = 1
 
         # Sum together the co-occurrence pairs
@@ -311,7 +342,11 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         # Add all pairs as possible linked users
         combined_accepted_submissions.apply(lambda row: self.link_users(
-            users=row["usernames"], reason=f"Submission Co-occurrence", abbr_reason="Submission Co-occurrence", score=row["combined_counts"]), axis=1)
+            users=row["usernames"],
+            reason="Submission Co-occurrence",
+            abbr_reason="Submission Co-occurrence",
+            score=row["combined_counts"]), axis=1
+        )
 
         # Filter out co-occurrences that don't have accompanying suspicious activity
         self.filter_cooccurrences()
@@ -321,8 +356,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def filter_cooccurrences(self):
         """
-        User pairs that are only linked due to submission co-occcurrence and no other reason are removed from the suspect list.
-        Function acts on the linked_users object
+        User pairs that are only linked due to submission co-occcurrence and no other 
+        reason are removed from the suspect list. Function acts on the linked_users object
         """
 
         # Select pairs that are linked by co-occurrence
@@ -330,16 +365,21 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                                                  == "Submission Co-occurrence"]
 
         # Select pairs that are linked for other reasons
-        other_reasons = self.linked_users[self.linked_users["Reasons"]
-                                          != "Submission Co-occurrence"]
+        other_reasons = self.linked_users[
+            self.linked_users["Reasons"] != "Submission Co-occurrence"
+        ]
 
         # Find user pairs that are linked by co-occurrence and another reason
-        df = other_reasons.merge(cooccurrance_reasons, on=["User 1", "User 2"], how="inner")[
+        other_reasons = other_reasons.merge(
+                                        cooccurrance_reasons,
+                                        on=["User 1", "User 2"],
+                                        how="inner")[
             ["User 1", "User 2"]].drop_duplicates()
 
         # Filter user pairs to combined co-occurrence and other reasons
         self.linked_users = self.linked_users.merge(
-            df, on=["User 1", "User 2"], how="inner")
+            other_reasons, on=["User 1", "User 2"], how="inner")
+
 
     def collect_user_interaction_summary(self):
         """
@@ -349,25 +389,40 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         unique_reasons = set(self.linked_users["Abbr Reason"])
 
         if "Different Users" in unique_reasons:
-            # Collect users that submitted or modified the same model and merge the different user pairs
-            diff_users = self.linked_users[self.linked_users["Abbr Reason"] == "Different Users"].pivot_table(
-                index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=sum).reset_index()
+            # Collect users that submitted or modified the same model
+            # and merge the different user pairs
+            diff_users = self.linked_users[
+                self.linked_users["Abbr Reason"] == "Different Users"].pivot_table(
+                                                index=["User 1", "User 2"],
+                                                columns="Abbr Reason",
+                                                values="Scores",
+                                                aggfunc=sum).reset_index()
         else:
             diff_users = self.linked_users[["User 1", "User 2"]]
             diff_users["Different Users"] = 0
 
         if "Filename Similarity" in unique_reasons:
-            # Collect users that both submitted similarly named files and merge the different user pairs
-            file_sim = self.linked_users[self.linked_users["Abbr Reason"] == "Filename Similarity"].pivot_table(
-                index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=max).reset_index()
+            # Collect users that both submitted similarly named files
+            # and merge the different user pairs
+            file_sim = self.linked_users[
+                self.linked_users["Abbr Reason"] == "Filename Similarity"].pivot_table(
+                    index=["User 1", "User 2"],
+                    columns="Abbr Reason",
+                    values="Scores",
+                    aggfunc=max).reset_index()
         else:
             file_sim = self.linked_users[["User 1", "User 2"]]
             file_sim["Filename Similarity"] = 0
 
         if "Submission Co-occurrence" in unique_reasons:
-            # Collect users that both submitted on the same day for more than than the daily limit and merge the different user pairs
-            sub_coocc = self.linked_users[self.linked_users["Abbr Reason"] == "Submission Co-occurrence"].pivot_table(
-                index=["User 1", "User 2"], columns="Abbr Reason", values="Scores", aggfunc=sum).reset_index()
+            # Collect users that both submitted on the same day for more than
+            # than the daily limit and merge the different user pairs
+            sub_coocc = self.linked_users[
+                self.linked_users["Abbr Reason"] == "Submission Co-occurrence"].pivot_table(
+                    index=["User 1", "User 2"],
+                    columns="Abbr Reason",
+                    values="Scores",
+                    aggfunc=sum).reset_index()
         else:
             sub_coocc = self.linked_users[["User 1", "User 2"]]
             sub_coocc["Submission Co-occurrence"] = 0
@@ -381,21 +436,28 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         # Calculate score totals
         report["Score Totals"] = report.apply(
-            lambda row: row["Different Users"] + row["Filename Similarity"] + row["Submission Co-occurrence"], axis=1)
+            lambda row:
+                row["Different Users"] +
+                row["Filename Similarity"] +
+                row["Submission Co-occurrence"], axis=1)
 
         return report
 
     def user_cluster_detection(self, max_iterations=30):
 
-        # TODO: There are more efficient and less open ended algorithms for identify open and closed clusters in networks. One of them should be implemented here.
+        # TODO: There are more efficient and less open ended algorithms for identify 
+        # open and closed clusters in networks. One of them should be implemented here.
         """
-        Identifies possible clusters of users that could be coordinating to skirt the daily submission limit.
+        Identifies possible clusters of users that could be coordinating to skirt 
+        the daily submission limit.
 
         Args:
-            max_iterations (int): The number of times the function should try to iterively build clusters
+            max_iterations (int): The number of times the function should try to 
+                iterively build clusters
 
         Returns:
-            N/A, nothing is returned from this function. The user_clusters dictionary is updated directly.
+            N/A, nothing is returned from this function. The user_clusters 
+                dictionary is updated directly.
         """
 
         # collect user interation summary table
@@ -485,26 +547,36 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def report(self):
         """
-        Generates a report from the linked_users object and prints out the report along with an explanation for interpreting the report.
+        Generates a report from the linked_users object and prints out the report along 
+        with an explanation for interpreting the report.
         """
         report = self.collect_user_interaction_summary()
 
         report = report.sort_values("Score Totals", ascending=False)
         print("\n")
-        print("============================================= REPORT SUMMARY =============================================")
-        print("\tDESCRIPTION: These are the username pairs that have raised flags for potentially being either from the same user or the same")
-        print("\tteam to skirt the submission limits. User pairs in the report have at least one day of submission co-occurrences where the")
-        print("\ttotal submissions are greater than the daily limit and they have at least one other linking activity.")
+        print("============================================= REPORT SUMMARY "
+              "=============================================")
+        print("\tDESCRIPTION: These are the username pairs that have raised flags for "
+              "potentially being either from the same user or the same")
+        print("\tteam to skirt the submission limits. User pairs in the report have at "
+              "least one day of submission co-occurrences where the")
+        print("\ttotal submissions are greater than the daily limit and they have at "
+              "least one other linking activity.")
 
-        print("Different Users: \t\tCounts the number of times the two users created, submitted, or modified the same file.")
-        print("Filename Similarity: \t\tShows the maximum Jaro similarity of possible shared submitted files. Jaro scores are (0, 1), 1=exact match")
-        print("Submission Co-occurrence: \tCounts the number of times the two users submitted on the same day more than 2 submissions combined.")
+        print("Different Users: \t\tCounts the number of times the two users created, "
+              "submitted, or modified the same file.")
+        print("Filename Similarity: \t\tShows the maximum Jaro similarity of possible "
+              "shared submitted files. Jaro scores are (0, 1), 1=exact match")
+        print("Submission Co-occurrence: \tCounts the number of times the two users "
+              "submitted on the same day more than 2 submissions combined.")
         print(tabulate(report, headers='keys', tablefmt='psql', showindex=False))
 
         print("\n")
-        print("---------------------------------------- CLUSTER ANALYSIS ----------------------------------------")
+        print("---------------------------------------- CLUSTER ANALYSIS "
+              "----------------------------------------")
         print("Group: Identifying group number")
-        print("Clusters: Possible group of collaborating users. Not all users have connection to each other but they are all part of a connected group.")
+        print("Clusters: Possible group of collaborating users. Not all users have "
+              "connection to each other but they are all part of a connected group.")
         print("Average Score: Average score between each of the users in the cluster.")
         print(tabulate(self.user_clusters, headers="keys", tablefmt="fancy_grid"))
 
@@ -512,7 +584,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
     def cheat_detection(self):
         """
-        Run all the different cheat detection tests and print out the user pairs and cluster reports.
+        Run all the different cheat detection tests and print out the user pairs 
+        and cluster reports.
         """
 
         print("Finding users in cahoots...")
