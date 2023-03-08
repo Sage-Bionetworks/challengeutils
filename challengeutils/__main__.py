@@ -386,7 +386,7 @@ def command_add_mod_flair(syn, args):
 
 def run_cheat_detection(syn, args):
     """
-    Scan an evaluation queue for possible collaborators 
+    Scan an evaluation queue for possible collaborators
     who are trying to exceed the submission limit.
 
     >>> challengeutils cheat-detection <evaluation_id>

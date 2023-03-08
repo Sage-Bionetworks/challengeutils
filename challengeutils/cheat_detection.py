@@ -21,7 +21,7 @@ class CheatDetection:
 
     Args:
         syn: Synapse
-            A Synapse object from the synapseclient package. 
+            A Synapse object from the synapseclient package.
         evaluation_id: int
             The synapse ID for the evaluation queue being scanned.
         submission_status: list
@@ -29,7 +29,6 @@ class CheatDetection:
     """
 
     def __init__(self, syn: Synapse, evaluation_id: int, submission_status: list):
-
         self.syn = syn
 
         self.evaluation = evaluation_id
@@ -64,7 +63,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         """Returns the unique users from the linked users dictionary"""
 
         if len(self.linked_users) > 0:
-
             col_1 = set(self.linked_users["User 1"])
             col_2 = set(self.linked_users["User 2"])
             combined = col_1.union(col_2)
@@ -111,7 +109,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         # Quotas have been depreciated, but some legacy challenges still use quotas.
         # This accounts for those possible deviations.
         if len(round_list) == 0:
-
             evaluation = self.syn.restGET(f"/evaluation/{self.evaluation}")
 
             try:
@@ -181,7 +178,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         for status in self.submission_status:
             for submission in self.syn.getSubmissions(self.evaluation, status=status):
-
                 # submission user information
                 submitting_user = submission["userId"]
                 submitting_username = self.syn.getUserProfile(submitting_user)[
@@ -199,7 +195,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                     entity_type == "file"
                     or entity_type == "org.sagebionetworks.repo.model.FileEntity"
                 ):
-
                     # collect file entity information
                     file = submission_information["entity"]
 
@@ -223,7 +218,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                         submitting_user != user_created
                         or submitting_user != user_modified
                     ):
-
                         # collect users who created and modified the submitted file
                         file_creation_users = self.syn.getUserProfile(user_created)[
                             "userName"
@@ -278,7 +272,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         # print(self.accepted_submissions)
 
         if len(self.accepted_submissions) > 1:
-
             submitted_files = pd.DataFrame(self.accepted_submissions)[
                 ["username", "createdOn", "filename"]
             ].drop_duplicates()
@@ -514,7 +507,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         return report
 
     def user_cluster_detection(self, max_iterations=30):
-
         # TODO: There are more efficient and less open ended algorithms for identify
         # open and closed clusters in networks. One of them should be implemented here.
         """
@@ -543,11 +535,9 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         # iteratively build possible clusters
         while old_clusters != clusters:
-
             old_clusters = copy.deepcopy(clusters)
 
             for index, row in users.iterrows():
-
                 user_1 = row["User 1"]
                 user_2 = row["User 2"]
                 # score = row["Score Totals"]
@@ -577,7 +567,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
         for cluster in clusters.values():
             if cluster not in visit_clusters:
-
                 # Calculate the average user pair scores for the cluster
                 score_temp = pd.DataFrame({"Group": f"Group {group}", "Users": cluster})
                 average_score = np.mean(
@@ -686,7 +675,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         self.collect_submissions()
 
         if len(self.accepted_submissions) > 0:
-
             print("Calculating filename similarities...")
             self.filename_similarity()
 
