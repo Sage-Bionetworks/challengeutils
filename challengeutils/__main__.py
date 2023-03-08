@@ -719,14 +719,10 @@ def build_parser():
         "validate-project", help="Validate a Project submission"
     )
     parser_validate_project.add_argument(
-        "submissionid",
-        type=int,
-        help="Submission ID",
+        "submissionid", type=int, help="Submission ID",
     )
     parser_validate_project.add_argument(
-        "challengewiki",
-        type=str,
-        help="Synapse ID of Challenge wiki",
+        "challengewiki", type=str, help="Synapse ID of Challenge wiki",
     )
     parser_validate_project.add_argument(
         "-p",
@@ -811,13 +807,27 @@ def build_parser():
 
     # ============ Cheat Detection Parser ============
     parser_cheat_detection = subparsers.add_parser(
-        "cheat-detection", help="Scan an evaluation queue for possible cheating")
+        "cheat-detection", help="Scan an evaluation queue for possible cheating"
+    )
     parser_cheat_detection.add_argument(
-        "evaluation_id", type=int, help="Synapse id of the evaluation queue to scan")
-    parser_cheat_detection.add_argument("-s", "--submission_status", type=str, nargs="+", default="ACCEPTED",
-                                        choices=[
-                                            "SCORED", "VALIDATED", "EVALUATION_IN_PROGRESS", "RECEIVED", "ACCEPTED", "OPEN"],
-                                        help="The status or statuses of submissions to evaluate in the queue")
+        "evaluation_id", type=int, help="Synapse id of the evaluation queue to scan"
+    )
+    parser_cheat_detection.add_argument(
+        "-s",
+        "--submission_status",
+        type=str,
+        nargs="+",
+        default="ACCEPTED",
+        choices=[
+            "SCORED",
+            "VALIDATED",
+            "EVALUATION_IN_PROGRESS",
+            "RECEIVED",
+            "ACCEPTED",
+            "OPEN",
+        ],
+        help="The status or statuses of submissions to evaluate in the queue",
+    )
 
     parser_cheat_detection.set_defaults(func=run_cheat_detection)
     # ============ End Cheat Detection Parser ============
