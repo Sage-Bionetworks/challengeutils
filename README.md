@@ -30,14 +30,10 @@ Now `pre-commit` will run automatically on `git commit`! For example:
 $ git commit -m 'update readme' -a
 Check Yaml...........................................(no files to check)Skipped
 Fix End of Files.........................................................Passed
-Trim Trailing Whitespace.................................................Failed
-- hook id: trailing-whitespace
-- exit code: 1
-- files were modified by this hook
-
-Fixing README.md
-
+Trim Trailing Whitespace.................................................Passed
 black................................................(no files to check)Skipped
+[add-pre-commit 75b4393] update readme
+ 1 file changed, 23 insertions(+)
 ```
 
 ## Contributing
