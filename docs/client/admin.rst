@@ -671,3 +671,41 @@ Optional
 
     Path to markdown files and wiki_config.json
     Defaults to location of where code is being executed
+
+-------
+
+Scan an evaluation queue for cheating
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+cheat-detection
+    evaluationid [-s]
+
+Description
+^^^^^^^^^^^
+
+Scans an evaluation queue for possible pairs of users who are trying to skirt the 
+daily submission limit by creating multiple users to submit to a challenge. A report
+is generated with possible linked users and the strength of evidence that any two users
+are linked.
+
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils cheat-detection
+
+.. cmdoption:: projectid
+
+    Synapse evaluation ID e.g. ``9615080``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -s, --submission_status
+
+    List of submission statuses to use when scanning 
+    for valid submissions. Accepts multiple inputs. Defaults to `ACCEPTED`
+^^^^^^^^

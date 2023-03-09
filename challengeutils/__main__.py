@@ -17,6 +17,7 @@ from . import (
     annotations,
     createchallenge,
     challenge,
+    cheat_detection,
     evaluation_queue,
     mirrorwiki,
     permissions,
@@ -383,6 +384,25 @@ def command_add_mod_flair(syn, args):
     )
 
 
+def run_cheat_detection(syn, args):
+    """
+    Scan an evaluation queue for possible collaborators
+    who are trying to exceed the submission limit.
+
+    >>> challengeutils cheat-detection <evaluation_id>
+    """
+
+    if isinstance(args.submission_status, str):
+        submission_status = [args.submission_status]
+    else:
+        submission_status = args.submission_status
+
+    cheat_detect = cheat_detection.CheatDetection(
+        syn=syn, evaluation_id=args.evaluation_id, submission_status=submission_status
+    )
+    cheat_detect.cheat_detection()
+
+
 def build_parser():
     """Builds the argument parser and returns the result."""
     parser = argparse.ArgumentParser(description="Challenge utility functions")
@@ -698,15 +718,9 @@ def build_parser():
     parser_validate_project = subparsers.add_parser(
         "validate-project", help="Validate a Project submission"
     )
+    parser_validate_project.add_argument("submissionid", type=int, help="Submission ID")
     parser_validate_project.add_argument(
-        "submissionid",
-        type=int,
-        help="Submission ID",
-    )
-    parser_validate_project.add_argument(
-        "challengewiki",
-        type=str,
-        help="Synapse ID of Challenge wiki",
+        "challengewiki", type=str, help="Synapse ID of Challenge wiki"
     )
     parser_validate_project.add_argument(
         "-p",
@@ -788,6 +802,33 @@ def build_parser():
         "Defaults to location of where code is being executed.",
     )
     parser_push_wiki.set_defaults(func=command_push_wiki)
+
+    # ============ Cheat Detection Parser ============
+    parser_cheat_detection = subparsers.add_parser(
+        "cheat-detection", help="Scan an evaluation queue for possible cheating"
+    )
+    parser_cheat_detection.add_argument(
+        "evaluation_id", type=int, help="Synapse id of the evaluation queue to scan"
+    )
+    parser_cheat_detection.add_argument(
+        "-s",
+        "--submission_status",
+        type=str,
+        nargs="+",
+        default="ACCEPTED",
+        choices=[
+            "SCORED",
+            "VALIDATED",
+            "EVALUATION_IN_PROGRESS",
+            "RECEIVED",
+            "ACCEPTED",
+            "OPEN",
+        ],
+        help="The status or statuses of submissions to evaluate in the queue",
+    )
+
+    parser_cheat_detection.set_defaults(func=run_cheat_detection)
+    # ============ End Cheat Detection Parser ============
 
     parser_add_moderator_flair = subparsers.add_parser(
         "add-mod-flair", help="Adds the 'Moderator' flair to a user/team"
