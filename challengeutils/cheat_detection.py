@@ -118,13 +118,12 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
 
             if quota:
                 sys.exit(
-                    "UNABLE TO SCAN: Evaluation is using the "
+                    f"UNABLE TO COMPLETE SCAN: Evaluation {self.evaluation} is using the "
                     "DEPRECIATED submission quota method."
                 )
             else:
                 sys.exit(
-                    "UNABLE TO SCAN: Unable to identify evaluation "
-                    "rounds or submission quotas"
+                    f"Evaluation {self.evaluation} does not have rounds or submission limits"
                 )
 
         else:
@@ -282,29 +281,30 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
                 submitted_files["username_x"] != submitted_files["username_y"]
             ]
 
-            # Calculate Jaro Distance between each of the filenames
-            # Jaro distance is a string-edit distance that gives a floating point response
-            # in [0,1] where 0 represents two completely dissimilar strings and 1 represents
-            # identical strings.
-            submitted_files["similarity"] = submitted_files.apply(
-                lambda row: j.jaro_similarity(row["filename_x"], row["filename_y"]),
-                axis=1,
-            )
+            if len(submitted_files) > 0:
+                # Calculate Jaro Distance between each of the filenames
+                # Jaro distance is a string-edit distance that gives a floating point response
+                # in [0,1] where 0 represents two completely dissimilar strings and 1 represents
+                # identical strings.
+                submitted_files["similarity"] = submitted_files.apply(
+                    lambda row: j.jaro_similarity(row["filename_x"], row["filename_y"]),
+                    axis=1,
+                )
 
-            # Filter out similarities below 0.7
-            submitted_files = submitted_files[submitted_files["similarity"] > 0.7]
+                # Filter out similarities below 0.7
+                submitted_files = submitted_files[submitted_files["similarity"] > 0.7]
 
-            # Add user linkes to linked user dictionary
-            submitted_files.apply(
-                lambda row: self.link_users(
-                    users=tuple([row["username_x"], row["username_y"]]),
-                    reason=f"Filename similarity:\
-                      {row['filename_x']}, {row['filename_y']}",
-                    abbr_reason="Filename Similarity",
-                    score=row["similarity"],
-                ),
-                axis=1,
-            )
+                # Add user linkes to linked user dictionary
+                submitted_files.apply(
+                    lambda row: self.link_users(
+                        users=tuple([row["username_x"], row["username_y"]]),
+                        reason=f"Filename similarity:\
+                        {row['filename_x']}, {row['filename_y']}",
+                        abbr_reason="Filename Similarity",
+                        score=row["similarity"],
+                    ),
+                    axis=1,
+                )
         else:
             sys.exit(
                 f"{len(self.accepted_submissions)} valid submissions "
@@ -405,6 +405,8 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
         User pairs that are only linked due to submission co-occcurrence and no other
         reason are removed from the suspect list. Function acts on the linked_users object
         """
+
+        self.check_analysis_status()
 
         # Select pairs that are linked by co-occurrence
         cooccurrance_reasons = self.linked_users[
@@ -609,7 +611,6 @@ Potentially Linked Users: {self.get_number_of_linked_users()}
             raise sys.exit("No linked users found")
 
     # Build and print report
-
     def report(self):
         """
         Generates a report from the linked_users object and prints out the report along
@@ -703,4 +704,5 @@ if __name__ == "__main__":
         9614925,  ## BraTS
         9615036,  ## FetS
         9615294,  ## Awesome Challenge
+        9614400,  ## CAFA4
     ]
