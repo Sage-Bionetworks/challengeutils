@@ -8,3 +8,4 @@ black
 jellyfish
 tabulate
 scipy
+pre-commit
