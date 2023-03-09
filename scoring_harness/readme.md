@@ -1,11 +1,11 @@
 Python Challenge Scoring Harness
 ================================
 
-In a perfect world, Synapse would automatically validate, score, annotate submissions and email participants for you.  Sadly, we do not live in a perfect world! 
+In a perfect world, Synapse would automatically validate, score, annotate submissions and email participants for you.  Sadly, we do not live in a perfect world!
 
 Fortunately, we have created `runqueue.py`, a lightweight python script, that takes a configuration python as a parameter that you can run on the cloud (AWS, Google, Azure) or your internal servers/clusters.  This script will automatically look for received submissions to an evaluation queue and validate/score these submissions.
 
-If you have no idea what evaluation queues or challenge are, then please turn back around.  If you are curious about setting up a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge before continuing. 
+If you have no idea what evaluation queues or challenge are, then please turn back around.  If you are curious about setting up a challenge, please view the step-by-step [Challenge Guide Overview](https://docs.synapse.org/articles/challenge_administration.html) to building out a challenge before continuing.
 
 
 ## Dependencies
@@ -59,7 +59,7 @@ runqueue.py challenge_config.template.py --send-messages --notifications --ackno
 
 ### Messages and Notifications
 
-The script can send several types of messages, which are in `messages.py`. 
+The script can send several types of messages, which are in `messages.py`.
 
 * *--send-messages* instructs the script to email the submitter when a submission fails validation or gets scored.
 * *--notifications* sends error messages to challenge administrators which can be specified by `--admin-user-ids`. Defaults to the user running the harness.
@@ -68,7 +68,7 @@ The script can send several types of messages, which are in `messages.py`.
 
 ### RPy2
 
-Often it's more convenient to write statistical code in R. We've successfully used the [Rpy2](https://rpy2.bitbucket.io/) library to pass file paths to scoring functions written in R and get back a named list of scoring statistics. 
+Often it's more convenient to write statistical code in R. We've successfully used the [Rpy2](https://rpy2.bitbucket.io/) library to pass file paths to scoring functions written in R and get back a named list of scoring statistics.
 
 ## Setting Up Automatic Validation and Scoring on an EC2
 
@@ -78,7 +78,7 @@ It is very typical for validation and scoring to occur every 5 to 10 minutes, as
 
 Paste this into the file:
 
-	# minute (m), hour (h), day of month (dom), month (mon)                      
+	# minute (m), hour (h), day of month (dom), month (mon)
 	*/10 * * * * runqueue.py ....
 
 Note: the first 5 * stand for minute (m), hour (h), day of month (dom), and month (mon). The configuration to have a job be done every ten minutes would look something like */10 * * * *
