@@ -2,3 +2,4 @@ pandas
 jellyfish
 tabulate
 synapseclient
+pre-commit
