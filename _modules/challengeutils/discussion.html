@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>challengeutils.discussion &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>challengeutils.discussion &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html">
           
-
-          
+          <a href="../../index.html">
             
-            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
@@ -118,73 +69,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>challengeutils.discussion</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">challengeutils.discussion</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for challengeutils.discussion</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Interact with Synapse discussion API endpoints.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -200,6 +112,7 @@
 
 <div class="viewcode-block" id="DiscussionApi"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi">[docs]</a><span class="k">class</span> <span class="nc">DiscussionApi</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Discussion API calls&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">syn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">syn</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
@@ -209,17 +122,17 @@
         <span class="sd">&quot;&quot;&quot;Get the Forum&#39;s metadata for a given project ID.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/project/projectId/forum.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/project/</span><span class="si">{projectid}</span><span class="s1">/forum&#39;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/project/</span><span class="si">{projectid}</span><span class="s2">/forum&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Forum</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get the Forum&#39;s metadata for a given forum ID.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">&#39;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Forum</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/forum/</span><span class="si">{forumid}</span><span class="s2">&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_forum_threads"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum_threads">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                          <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">,</span>
-                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
+<div class="viewcode-block" id="DiscussionApi.get_forum_threads"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum_threads">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threads</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXCLUDE_DELETED&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get N number of threads for a given forum ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId/threads.html</span>
 
@@ -234,7 +147,7 @@
 <span class="sd">            list: Forum threads</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/threads?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/forum/</span><span class="si">{forumid}</span><span class="s2">/threads?filter=</span><span class="si">{query_filter}</span><span class="s2">&quot;</span>
         <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Thread</span><span class="p">(</span><span class="o">**</span><span class="n">thread</span><span class="p">)</span></div>
@@ -251,15 +164,13 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            DiscussionThreadBundle</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">request_obj</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;forumId&#39;</span><span class="p">:</span> <span class="n">forumid</span><span class="p">,</span>
-                       <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
-                       <span class="s1">&#39;messageMarkdown&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
-        <span class="n">thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s1">&#39;/thread&#39;</span><span class="p">,</span>
-                                   <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_obj</span><span class="p">))</span>
+        <span class="n">request_obj</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;forumId&quot;</span><span class="p">:</span> <span class="n">forumid</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="s2">&quot;messageMarkdown&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s2">&quot;/thread&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_obj</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">Thread</span><span class="p">(</span><span class="o">**</span><span class="n">thread</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_threads_referencing_entity"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_threads_referencing_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_threads_referencing_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entityid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                       <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
+<div class="viewcode-block" id="DiscussionApi.get_threads_referencing_entity"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_threads_referencing_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_threads_referencing_entity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">entityid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get N number of threads that belongs to projects user can</span>
 <span class="sd">        view and references the given entity</span>
@@ -272,8 +183,7 @@
 <span class="sd">        Yields:</span>
 <span class="sd">            DiscussionThreadBundles</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/entity/</span><span class="si">{entityid}</span><span class="s2">/threads&quot;</span><span class="p">,</span>
-                                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/entity/</span><span class="si">{entityid}</span><span class="s2">/threads&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Thread</span><span class="p">(</span><span class="o">**</span><span class="n">thread</span><span class="p">)</span></div>
 
@@ -337,18 +247,17 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            DiscussionReplyBundle</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">create_reply</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;threadId&#39;</span><span class="p">:</span> <span class="n">threadid</span><span class="p">,</span> <span class="s1">&#39;messageMarkdown&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">Reply</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s1">&#39;/reply&#39;</span><span class="p">,</span>
-                                         <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">create_reply</span><span class="p">)))</span></div>
+        <span class="n">create_reply</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;threadId&quot;</span><span class="p">:</span> <span class="n">threadid</span><span class="p">,</span> <span class="s2">&quot;messageMarkdown&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">Reply</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s2">&quot;/reply&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">create_reply</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_reply"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_reply">[docs]</a>    <span class="k">def</span> <span class="nf">get_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replyid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reply</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get a reply</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/reply/replyId.html&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Reply</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/reply/</span><span class="si">{replyid}</span><span class="s1">&#39;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Reply</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/reply/</span><span class="si">{replyid}</span><span class="s2">&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_thread_replies"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_thread_replies">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                           <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">,</span>
-                           <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscussionApi.get_thread_replies"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_thread_replies">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXCLUDE_DELETED&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get N number of replies for a given thread ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/thread/threadId/replies.html</span>
 
@@ -361,8 +270,7 @@
 <span class="sd">            list: Forum threads replies</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">replies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{threadid}</span><span class="s1">/replies?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/replies?filter=</span><span class="si">{query_filter}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">reply</span> <span class="ow">in</span> <span class="n">replies</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Reply</span><span class="p">(</span><span class="o">**</span><span class="n">reply</span><span class="p">)</span></div>
@@ -374,42 +282,43 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/reply/messageUrl?messageKey=</span><span class="si">{messagekey}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_forum_threadcount"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum_threadcount">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threadcount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                              <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="DiscussionApi.get_forum_threadcount"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum_threadcount">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_threadcount</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXCLUDE_DELETED&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Total number of threads given forum ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId/threadcount.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">threadcount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/threadcount?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">threadcount</span><span class="p">)[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span></div>
+        <span class="n">threadcount</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/forum/</span><span class="si">{forumid}</span><span class="s2">/threadcount?filter=</span><span class="si">{query_filter}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">threadcount</span><span class="p">)[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_thread_replycount"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_thread_replycount">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replycount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                              <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EXCLUDE_DELETED&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="DiscussionApi.get_thread_replycount"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_thread_replycount">[docs]</a>    <span class="k">def</span> <span class="nf">get_thread_replycount</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXCLUDE_DELETED&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Total number of replies given thread ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/thread/threadId/replycount.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">replycount</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/thread/</span><span class="si">{threadid}</span><span class="s1">/replycount?filter=</span><span class="si">{query_filter}</span><span class="s1">&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">replycount</span><span class="p">)[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span></div>
+        <span class="n">replycount</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/thread/</span><span class="si">{threadid}</span><span class="s2">/replycount?filter=</span><span class="si">{query_filter}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">replycount</span><span class="p">)[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DiscussionApi.get_forum_moderators"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_forum_moderators">[docs]</a>    <span class="k">def</span> <span class="nf">get_forum_moderators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forumid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get moderators given a forum ID</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/GET/forum/forumId/moderators.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/forum/</span><span class="si">{forumid}</span><span class="s1">/moderators&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">_GET_paginated</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/forum/</span><span class="si">{forumid}</span><span class="s2">/moderators&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DiscussionApi.get_threadcount_referencing_entities"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_threadcount_referencing_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                                             <span class="n">entityid_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="DiscussionApi.get_threadcount_referencing_entities"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.DiscussionApi.get_threadcount_referencing_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_threadcount_referencing_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entityid_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get list of entity and count pairs, with count is the number of</span>
 <span class="sd">        threads that belongs to projects user can view and references</span>
 <span class="sd">        the given entity.</span>
 <span class="sd">        https://rest-docs.synapse.org/rest/POST/entity/threadcounts.html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">entities</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;idList&#39;</span><span class="p">:</span> <span class="n">entityid_list</span><span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s1">&#39;/entity/threadcounts&#39;</span><span class="p">,</span>
-                                 <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">entities</span><span class="p">))</span></div></div>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;idList&quot;</span><span class="p">:</span> <span class="n">entityid_list</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn</span><span class="o">.</span><span class="n">restPOST</span><span class="p">(</span><span class="s2">&quot;/entity/threadcounts&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">entities</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="get_forum_threads"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_forum_threads">[docs]</a><span class="k">def</span> <span class="nf">get_forum_threads</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">ent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_forum_threads"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_forum_threads">[docs]</a><span class="k">def</span> <span class="nf">get_forum_threads</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">ent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Thread</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets threads from a forum</span>
 
@@ -433,8 +342,7 @@
     <span class="k">return</span> <span class="n">threads</span></div>
 
 
-<div class="viewcode-block" id="get_thread_replies"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_thread_replies">[docs]</a><span class="k">def</span> <span class="nf">get_thread_replies</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="n">Thread</span><span class="p">,</span>
-                       <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Reply</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_thread_replies"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_thread_replies">[docs]</a><span class="k">def</span> <span class="nf">get_thread_replies</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="n">Thread</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Reply</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Gets replies of a thread</span>
 
 <span class="sd">    Args:</span>
@@ -457,7 +365,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_text</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the text from a message url</span>
 
 <span class="sd">    Args:</span>
@@ -465,13 +373,13 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        response: Request response</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">[</span><span class="s1">&#39;messageUrl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">[</span><span class="s2">&quot;messageUrl&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">response</span>
 
 
 <div class="viewcode-block" id="get_thread_text"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_thread_text">[docs]</a><span class="k">def</span> <span class="nf">get_thread_text</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Thread</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a thread&#39;s text</span>
 
 <span class="sd">    Args:</span>
@@ -480,7 +388,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Thread text</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api</span> <span class="o">=</span> <span class="n">DiscussionApi</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thread</span><span class="p">,</span> <span class="n">Thread</span><span class="p">):</span>
         <span class="n">thread</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_thread</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
@@ -491,7 +399,7 @@
 
 
 <div class="viewcode-block" id="get_thread_reply_text"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_thread_reply_text">[docs]</a><span class="k">def</span> <span class="nf">get_thread_reply_text</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">reply</span><span class="p">:</span> <span class="n">Reply</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get thread reply text</span>
 
 <span class="sd">    Args:</span>
@@ -500,7 +408,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Thread text</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api</span> <span class="o">=</span> <span class="n">DiscussionApi</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reply</span><span class="p">,</span> <span class="n">Reply</span><span class="p">):</span>
         <span class="n">reply</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_reply</span><span class="p">(</span><span class="n">reply</span><span class="p">)</span>
@@ -509,9 +417,8 @@
     <span class="k">return</span> <span class="n">thread_reply_response</span><span class="o">.</span><span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="get_forum_participants"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_forum_participants">[docs]</a><span class="k">def</span> <span class="nf">get_forum_participants</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
-                           <span class="n">ent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UserProfile</span><span class="p">]:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="get_forum_participants"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.get_forum_participants">[docs]</a><span class="k">def</span> <span class="nf">get_forum_participants</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">ent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UserProfile</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all forum participants</span>
 
 <span class="sd">    Args:</span>
@@ -520,7 +427,7 @@
 
 <span class="sd">    Return:</span>
 <span class="sd">        list: user profiles active in forum</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">ent</span><span class="p">)</span>
     <span class="n">threads</span> <span class="o">=</span> <span class="n">get_forum_threads</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">synid</span><span class="p">)</span>
     <span class="n">users</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -532,7 +439,7 @@
 
 
 <div class="viewcode-block" id="create_thread"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.create_thread">[docs]</a><span class="k">def</span> <span class="nf">create_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">ent</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a thread</span>
 
 <span class="sd">    Args:</span>
@@ -543,7 +450,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: Thread bundle</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api</span> <span class="o">=</span> <span class="n">DiscussionApi</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="n">synid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">ent</span><span class="p">)</span>
     <span class="n">forum_obj</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_project_forum</span><span class="p">(</span><span class="n">synid</span><span class="p">)</span>
@@ -567,8 +474,7 @@
     <span class="k">return</span> <span class="n">replyobj</span></div>
 
 
-<div class="viewcode-block" id="copy_thread"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_thread">[docs]</a><span class="k">def</span> <span class="nf">copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="n">Thread</span><span class="p">,</span>
-                <span class="n">project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Thread</span><span class="p">:</span>
+<div class="viewcode-block" id="copy_thread"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_thread">[docs]</a><span class="k">def</span> <span class="nf">copy_thread</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="n">Thread</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Thread</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Copies a discussion thread and its replies to a project</span>
 
 <span class="sd">    Args:</span>
@@ -600,7 +506,7 @@
     <span class="n">projectid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">title</span>
     <span class="n">author</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">createdby</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">author</span><span class="p">)[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">author</span><span class="p">)[</span><span class="s2">&quot;userName&quot;</span><span class="p">]</span>
     <span class="n">on_behalf_of</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;On behalf of @</span><span class="si">{username}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">get_thread_text</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">thread</span><span class="p">)</span>
     <span class="n">new_thread_text</span> <span class="o">=</span> <span class="n">on_behalf_of</span> <span class="o">+</span> <span class="n">text</span>
@@ -622,15 +528,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">threadid</span> <span class="o">=</span> <span class="n">id_of</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
     <span class="n">author</span> <span class="o">=</span> <span class="n">reply</span><span class="o">.</span><span class="n">createdby</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">author</span><span class="p">)[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">author</span><span class="p">)[</span><span class="s2">&quot;userName&quot;</span><span class="p">]</span>
     <span class="n">on_behalf_of</span> <span class="o">=</span> <span class="s2">&quot;On behalf of @</span><span class="si">{user}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">get_thread_reply_text</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">reply</span><span class="p">)</span>
     <span class="n">new_reply_text</span> <span class="o">=</span> <span class="n">on_behalf_of</span> <span class="o">+</span> <span class="n">text</span>
     <span class="k">return</span> <span class="n">create_thread_reply</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">new_reply_text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copy_forum"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_forum">[docs]</a><span class="k">def</span> <span class="nf">copy_forum</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-               <span class="n">new_project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="copy_forum"><a class="viewcode-back" href="../../python/discussion.html#challengeutils.discussion.copy_forum">[docs]</a><span class="k">def</span> <span class="nf">copy_forum</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">new_project</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Project</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copies the discussion forum of a project to another project</span>
 
 <span class="sd">    Args:</span>
@@ -644,46 +551,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,97 +1,48 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Challenge Wiki &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Challenge Wiki &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Submissions" href="submissions.html" />
     <link rel="prev" title="challengeutils" href="../index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html">
           
-
-          
+          <a href="../index.html">
             
-            <img src="../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Challenge Wiki</a><ul>
@@ -125,75 +76,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Challenge Wiki</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Challenge Wiki</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/python/wiki.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="challenge-wiki">
-<h1>Challenge Wiki<a class="headerlink" href="#challenge-wiki" title="Permalink to this headline">¶</a></h1>
+<h1>Challenge Wiki<a class="headerlink" href="#challenge-wiki" title="Permalink to this headline"></a></h1>
 <div class="section" id="module-challengeutils.createchallenge">
-<span id="create"></span><h2>Create<a class="headerlink" href="#module-challengeutils.createchallenge" title="Permalink to this headline">¶</a></h2>
+<span id="create"></span><h2>Create<a class="headerlink" href="#module-challengeutils.createchallenge" title="Permalink to this headline"></a></h2>
 <p>The skeleton for two challenges site with initial wiki, four teams
 (admin, participants, organizers, and preregistrants), and
 a challenge widget added on live site with a participant
@@ -209,7 +119,7 @@ team associated with it.</p>
 </div>
 <dl class="function">
 <dt id="challengeutils.createchallenge.check_existing_and_delete_wiki">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">check_existing_and_delete_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#check_existing_and_delete_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.check_existing_and_delete_wiki" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">check_existing_and_delete_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">synid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#check_existing_and_delete_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.check_existing_and_delete_wiki" title="Permalink to this definition"></a></dt>
 <dd><p>Checks if wiki exists, and if so prompt to delete</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -223,7 +133,7 @@ team associated with it.</p>
 
 <dl class="function">
 <dt id="challengeutils.createchallenge.create_challenge_widget">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_challenge_widget</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_live</em>, <em class="sig-param">team_part_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_challenge_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_challenge_widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_challenge_widget</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_live</em>, <em class="sig-param">team_part_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_challenge_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_challenge_widget" title="Permalink to this definition"></a></dt>
 <dd><p>Creates challenge widget - activates a Synapse project
 If challenge object exists, it retrieves existing object</p>
 <dl class="field-list simple">
@@ -239,7 +149,7 @@ If challenge object exists, it retrieves existing object</p>
 
 <dl class="function">
 <dt id="challengeutils.createchallenge.create_evaluation_queue">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_evaluation_queue</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">name</em>, <em class="sig-param">description</em>, <em class="sig-param">parentid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_evaluation_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_evaluation_queue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_evaluation_queue</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">name</em>, <em class="sig-param">description</em>, <em class="sig-param">parentid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_evaluation_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_evaluation_queue" title="Permalink to this definition"></a></dt>
 <dd><p>Creates Evaluation Queues</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -258,7 +168,7 @@ If challenge object exists, it retrieves existing object</p>
 
 <dl class="function">
 <dt id="challengeutils.createchallenge.create_project">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_project" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">project_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_project" title="Permalink to this definition"></a></dt>
 <dd><p>Creates Synapse Project</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -275,7 +185,7 @@ If challenge object exists, it retrieves existing object</p>
 
 <dl class="function">
 <dt id="challengeutils.createchallenge.create_team">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">team_name</em>, <em class="sig-param">desc</em>, <em class="sig-param">can_public_join=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_team" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">create_team</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">team_name</em>, <em class="sig-param">desc</em>, <em class="sig-param">can_public_join=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#create_team"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.create_team" title="Permalink to this definition"></a></dt>
 <dd><p>Creates Synapse Team</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -295,7 +205,7 @@ an invitation or approval. Default to False</p></li>
 
 <dl class="function">
 <dt id="challengeutils.createchallenge.main">
-<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">challenge_name</em>, <em class="sig-param">live_site=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.main" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.createchallenge.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">challenge_name</em>, <em class="sig-param">live_site=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/createchallenge.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.createchallenge.main" title="Permalink to this definition"></a></dt>
 <dd><p>Creates two project entity for challenge sites.
 1) live (public) and 2) staging (private until launch)
 Allow for users to set up the live site themselves</p>
@@ -327,7 +237,7 @@ id. (Default is None)</p></li>
 
 </div>
 <div class="section" id="module-challengeutils.mirrorwiki">
-<span id="updating"></span><h2>Updating<a class="headerlink" href="#module-challengeutils.mirrorwiki" title="Permalink to this headline">¶</a></h2>
+<span id="updating"></span><h2>Updating<a class="headerlink" href="#module-challengeutils.mirrorwiki" title="Permalink to this headline"></a></h2>
 <p>Mirrors (sync) wiki pages by using the wikipage titles between
 two Synapse Entities. This function only works if <cite>entity</cite> and
 <cite>destination`are the same type and both must have wiki pages.
@@ -347,7 +257,7 @@ want to add, you will have to create a wiki page first in the
 </div>
 <dl class="function">
 <dt id="challengeutils.mirrorwiki.mirror">
-<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirror</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, entity: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], destination: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], force: bool = False, dryrun: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/mirrorwiki.html#mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirror" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.mirrorwiki.</code><code class="sig-name descname">mirror</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse, entity: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], destination: Union[synapseclient.entity.File, synapseclient.entity.Folder, synapseclient.entity.Project], force: bool = False, dryrun: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/mirrorwiki.html#mirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.mirrorwiki.mirror" title="Permalink to this definition"></a></dt>
 <dd><p>Mirrors (sync) wiki pages by using the wikipage titles between two
 Synapse Entities.  This function only works if <cite>entity</cite> and <cite>destination</cite>
 are the same type and both must have wiki pages.  Only wiki pages with the
@@ -371,11 +281,11 @@ is False.</p></li>
 
 </div>
 <div class="section" id="module-challengeutils.wiki">
-<span id="synapse-wiki-tools"></span><h2>Synapse Wiki Tools<a class="headerlink" href="#module-challengeutils.wiki" title="Permalink to this headline">¶</a></h2>
+<span id="synapse-wiki-tools"></span><h2>Synapse Wiki Tools<a class="headerlink" href="#module-challengeutils.wiki" title="Permalink to this headline"></a></h2>
 <p>Pull and push wiki tools</p>
 <dl class="function">
 <dt id="challengeutils.wiki.pull_wiki">
-<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">pull_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">project: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#pull_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.pull_wiki" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">pull_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">project: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#pull_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.pull_wiki" title="Permalink to this definition"></a></dt>
 <dd><p>Downloads each wikipage’s content into a markdown file and
 stores a configuration file</p>
 <dl class="field-list simple">
@@ -407,7 +317,7 @@ executed.</p></li>
 
 <dl class="function">
 <dt id="challengeutils.wiki.push_wiki">
-<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">push_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">projectid: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#push_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.push_wiki" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">push_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn: synapseclient.client.Synapse</em>, <em class="sig-param">projectid: str</em>, <em class="sig-param">workdir: str = './'</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#push_wiki"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.push_wiki" title="Permalink to this definition"></a></dt>
 <dd><p>Pushes Wiki from configuration</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -439,7 +349,7 @@ executed.</p></li>
 
 <dl class="function">
 <dt id="challengeutils.wiki.read_wiki_config">
-<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">read_wiki_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#read_wiki_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.read_wiki_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">read_wiki_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#read_wiki_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.read_wiki_config" title="Permalink to this definition"></a></dt>
 <dd><p>Read wiki config file from working directory</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -465,7 +375,7 @@ executed.</p></li>
 
 <dl class="function">
 <dt id="challengeutils.wiki.validate_config">
-<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">validate_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#validate_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.validate_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.wiki.</code><code class="sig-name descname">validate_config</code><span class="sig-paren">(</span><em class="sig-param">workdir: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="../_modules/challengeutils/wiki.html#validate_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.wiki.validate_config" title="Permalink to this definition"></a></dt>
 <dd><p>Validates wiki configuration</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -501,46 +411,30 @@ executed.</p></li>
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

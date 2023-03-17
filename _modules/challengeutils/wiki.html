@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>challengeutils.wiki &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>challengeutils.wiki &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html">
           
-
-          
+          <a href="../../index.html">
             
-            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
@@ -118,69 +69,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>challengeutils.wiki</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">challengeutils.wiki</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for challengeutils.wiki</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Pull and push wiki tools&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -191,8 +103,7 @@
 <span class="kn">from</span> <span class="nn">synapseclient</span> <span class="kn">import</span> <span class="n">Synapse</span>
 
 
-<div class="viewcode-block" id="pull_wiki"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.wiki.pull_wiki">[docs]</a><span class="k">def</span> <span class="nf">pull_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-              <span class="n">workdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="pull_wiki"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.wiki.pull_wiki">[docs]</a><span class="k">def</span> <span class="nf">pull_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">workdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Downloads each wikipage&#39;s content into a markdown file and</span>
 <span class="sd">    stores a configuration file</span>
 
@@ -219,22 +130,21 @@
     <span class="n">projectid</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">id_of</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">wiki_headers</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWikiHeaders</span><span class="p">(</span><span class="n">projectid</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_headers</span><span class="p">:</span>
-        <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">projectid</span><span class="p">,</span> <span class="n">subpageId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">projectid</span><span class="p">,</span> <span class="n">subpageId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
         <span class="c1"># Convert all special characters to underscore</span>
         <span class="c1"># This way markdown paths don&#39;t have special characters</span>
         <span class="c1"># and json file can be written without encoding</span>
-        <span class="n">clean_title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">letter</span> <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
-                              <span class="k">if</span> <span class="n">letter</span><span class="o">.</span><span class="n">isalnum</span><span class="p">())</span>
+        <span class="n">clean_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">letter</span> <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">letter</span><span class="o">.</span><span class="n">isalnum</span><span class="p">())</span>
         <span class="c1"># Home page title is always blank</span>
-        <span class="k">if</span> <span class="n">clean_title</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">clean_title</span> <span class="o">=</span> <span class="s1">&#39;homepage&#39;</span>
-            <span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_title</span>
+        <span class="k">if</span> <span class="n">clean_title</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">clean_title</span> <span class="o">=</span> <span class="s2">&quot;homepage&quot;</span>
+            <span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_title</span>
         <span class="c1"># The wiki id is added to the markdown path because wiki ids are</span>
         <span class="c1"># unique, but wiki titles don&#39;t have to be</span>
         <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{wiki.id}</span><span class="s2">-</span><span class="si">{clean_title}</span><span class="s2">.md&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_file</span><span class="p">:</span>
-            <span class="n">md_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;markdown&#39;</span><span class="p">])</span>
-        <span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;markdown_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{wiki.id}</span><span class="s2">-</span><span class="si">{clean_title}</span><span class="s2">.md&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_file</span><span class="p">:</span>
+            <span class="n">md_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;markdown&quot;</span><span class="p">])</span>
+        <span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;markdown_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{wiki.id}</span><span class="s2">-</span><span class="si">{clean_title}</span><span class="s2">.md&quot;</span>
     <span class="k">return</span> <span class="n">wiki_headers</span></div>
 
 
@@ -294,23 +204,24 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wiki_config</span> <span class="o">=</span> <span class="n">read_wiki_config</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
-    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span>
-           <span class="k">if</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span>
+        <span class="k">if</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must have unique ids.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Must have one home page where `parentId` is blank</span>
-    <span class="n">home_page</span> <span class="o">=</span> <span class="p">[</span><span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parentId&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-                 <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span><span class="p">]</span>
+    <span class="n">home_page</span> <span class="o">=</span> <span class="p">[</span><span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parentId&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">home_page</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must only have one config &quot;</span>
-                         <span class="s2">&quot;where `parentId` is blank&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must only have one config &quot;</span> <span class="s2">&quot;where `parentId` is blank&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span><span class="p">:</span>
         <span class="c1"># Configuration must not be empty</span>
-        <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;markdown_path&#39;</span><span class="p">)</span>
-        <span class="n">wikiid</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
-        <span class="n">parentid</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parentId&#39;</span><span class="p">)</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">)</span>
+        <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;markdown_path&quot;</span><span class="p">)</span>
+        <span class="n">wikiid</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">parentid</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parentId&quot;</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span>
         <span class="c1"># Title must be specified</span>
         <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must have title&quot;</span><span class="p">)</span>
@@ -320,18 +231,21 @@
         <span class="c1"># are specified</span>
         <span class="k">if</span> <span class="n">wikiid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">wikiid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">wikiid</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wikiid</span>
+            <span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wikiid</span>
         <span class="k">if</span> <span class="n">parentid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">parentid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parentid</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;parentId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parentid</span>
+            <span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;parentId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parentid</span>
 
         <span class="c1"># id and parentid must not be empty strings</span>
-        <span class="k">if</span> <span class="n">wikiid</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">parentid</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">title</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`id`, `parentId`, and `title` must not be &#39;</span>
-                             <span class="s1">&#39;empty strings if specified&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wikiid</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">parentid</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`id`, `parentId`, and `title` must not be &quot;</span>
+                <span class="s2">&quot;empty strings if specified&quot;</span>
+            <span class="p">)</span>
         <span class="c1"># Markdown file must exist if specified</span>
         <span class="k">if</span> <span class="n">markdown_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">markdown_path</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">markdown_path</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{markdown_path}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
         <span class="c1"># id must not be the same as parentid, but if both aren&#39;t specified,</span>
         <span class="c1"># This error shouldn&#39;t be raised</span>
@@ -339,13 +253,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`id` and `parentId` can&#39;t be equal.&quot;</span><span class="p">)</span>
         <span class="c1"># If parentid is specified, it has to be in one of the `ids`</span>
         <span class="k">if</span> <span class="n">parentid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parentid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`parentId` must be one of the &quot;</span>
-                             <span class="s2">&quot;`id`s in the config&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`parentId` must be one of the &quot;</span> <span class="s2">&quot;`id`s in the config&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wiki_config</span></div>
 
 
-<div class="viewcode-block" id="push_wiki"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.wiki.push_wiki">[docs]</a><span class="k">def</span> <span class="nf">push_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">projectid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-              <span class="n">workdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="push_wiki"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.wiki.push_wiki">[docs]</a><span class="k">def</span> <span class="nf">push_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">projectid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">workdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Pushes Wiki from configuration</span>
 
 <span class="sd">    Args:</span>
@@ -372,74 +284,60 @@
     <span class="n">wiki_config</span> <span class="o">=</span> <span class="n">validate_config</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">wiki_header</span> <span class="ow">in</span> <span class="n">wiki_config</span><span class="p">:</span>
         <span class="c1"># no markdown path, nothing to update</span>
-        <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;markdown_path&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;markdown_path&#39;</span><span class="p">):</span>
+        <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;markdown_path&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;markdown_path&quot;</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Markdown not specified: </span><span class="si">{wiki_header[&#39;title&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">markdown_path</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">md_f</span><span class="p">:</span>
             <span class="n">markdown</span> <span class="o">=</span> <span class="n">md_f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="c1"># Create new wiki page if id isn&#39;t specified</span>
-        <span class="k">if</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">projectid</span><span class="p">,</span> <span class="n">subpageId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">wiki_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">projectid</span><span class="p">,</span> <span class="n">subpageId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
             <span class="c1"># Don&#39;t store if the wiki pages are the same</span>
             <span class="k">if</span> <span class="n">wiki</span><span class="o">.</span><span class="n">markdown</span> <span class="o">==</span> <span class="n">markdown</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no updates: </span><span class="si">{wiki_header[&#39;title&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wiki updated: </span><span class="si">{wiki_header[&#39;title&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">wiki</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Wiki</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="n">projectid</span><span class="p">,</span>
-                                      <span class="n">title</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">],</span>
-                                      <span class="n">parentWikiId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;parentId&#39;</span><span class="p">])</span>
+            <span class="n">wiki</span> <span class="o">=</span> <span class="n">synapseclient</span><span class="o">.</span><span class="n">Wiki</span><span class="p">(</span>
+                <span class="n">owner</span><span class="o">=</span><span class="n">projectid</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">],</span>
+                <span class="n">parentWikiId</span><span class="o">=</span><span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;parentId&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wiki added: </span><span class="si">{wiki_header[&#39;title&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">wiki</span><span class="o">.</span><span class="n">markdown</span> <span class="o">=</span> <span class="n">markdown</span>
         <span class="n">wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">wiki</span><span class="p">)</span>
         <span class="c1"># If new wiki page is added, must add to wiki_config.json</span>
-        <span class="n">wiki_header</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">wiki_header</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">wiki_config</span></div>
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

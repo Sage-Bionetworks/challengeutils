@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>challengeutils.mirrorwiki &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>challengeutils.mirrorwiki &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html">
           
-
-          
+          <a href="../../index.html">
             
-            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
@@ -118,69 +69,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>challengeutils.mirrorwiki</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">challengeutils.mirrorwiki</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for challengeutils.mirrorwiki</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Mirrors (sync) wiki pages by using the wikipage titles between</span>
 <span class="sd">two Synapse Entities. This function only works if `entity` and</span>
@@ -216,9 +128,12 @@
 <span class="n">PREVIEW_FILE_HANDLE</span> <span class="o">=</span> <span class="s2">&quot;org.sagebionetworks.repo.model.file.PreviewFileHandle&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_replace_wiki_text</span><span class="p">(</span><span class="n">markdown</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wiki_mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                       <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
-                       <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_replace_wiki_text</span><span class="p">(</span>
+    <span class="n">markdown</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">wiki_mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Remap wiki text with correct synapse links</span>
 
 <span class="sd">    Args:</span>
@@ -258,35 +173,38 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># All attachments must be updated</span>
-    <span class="k">if</span> <span class="n">entity_wiki</span><span class="p">[</span><span class="s1">&#39;attachmentFileHandleIds&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">entity_wiki</span><span class="p">[</span><span class="s2">&quot;attachmentFileHandleIds&quot;</span><span class="p">]:</span>
         <span class="n">attachments</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">syn</span><span class="o">.</span><span class="n">_getFileHandleDownload</span><span class="p">(</span><span class="n">filehandleid</span><span class="p">,</span>
-                                       <span class="n">entity_wiki</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                                       <span class="n">objectType</span><span class="o">=</span><span class="s1">&#39;WikiAttachment&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">filehandleid</span> <span class="ow">in</span> <span class="n">entity_wiki</span><span class="p">[</span><span class="s1">&#39;attachmentFileHandleIds&#39;</span><span class="p">]</span>
+            <span class="n">syn</span><span class="o">.</span><span class="n">_getFileHandleDownload</span><span class="p">(</span>
+                <span class="n">filehandleid</span><span class="p">,</span> <span class="n">entity_wiki</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">objectType</span><span class="o">=</span><span class="s2">&quot;WikiAttachment&quot;</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">filehandleid</span> <span class="ow">in</span> <span class="n">entity_wiki</span><span class="p">[</span><span class="s2">&quot;attachmentFileHandleIds&quot;</span><span class="p">]</span>
         <span class="p">]</span>
         <span class="c1"># Remove preview attachments</span>
         <span class="n">no_previews</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">attachment</span><span class="p">[</span><span class="s1">&#39;fileHandle&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">attachments</span>
-            <span class="k">if</span> <span class="n">attachment</span><span class="p">[</span><span class="s1">&#39;fileHandle&#39;</span><span class="p">][</span><span class="s1">&#39;concreteType&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">PREVIEW_FILE_HANDLE</span>
+            <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;fileHandle&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">attachments</span>
+            <span class="k">if</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;fileHandle&quot;</span><span class="p">][</span><span class="s2">&quot;concreteType&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">PREVIEW_FILE_HANDLE</span>
         <span class="p">]</span>
-        <span class="n">content_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">attachment</span><span class="p">[</span><span class="s1">&#39;contentType&#39;</span><span class="p">]</span>
-                         <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">no_previews</span><span class="p">]</span>
-        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">attachment</span><span class="p">[</span><span class="s1">&#39;fileName&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">no_previews</span><span class="p">]</span>
+        <span class="n">content_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;contentType&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">no_previews</span><span class="p">]</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">no_previews</span><span class="p">]</span>
         <span class="n">copied_filehandles</span> <span class="o">=</span> <span class="n">synapseutils</span><span class="o">.</span><span class="n">copyFileHandles</span><span class="p">(</span>
-            <span class="n">syn</span><span class="p">,</span> <span class="n">no_previews</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;WikiAttachment&quot;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">no_previews</span><span class="p">),</span>
-            <span class="p">[</span><span class="n">entity_wiki</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">no_previews</span><span class="p">),</span>
-            <span class="n">content_types</span><span class="p">,</span> <span class="n">file_names</span>
+            <span class="n">syn</span><span class="p">,</span>
+            <span class="n">no_previews</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;WikiAttachment&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_previews</span><span class="p">),</span>
+            <span class="p">[</span><span class="n">entity_wiki</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_previews</span><span class="p">),</span>
+            <span class="n">content_types</span><span class="p">,</span>
+            <span class="n">file_names</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">new_attachments</span> <span class="o">=</span> <span class="p">[</span><span class="n">filehandle</span><span class="p">[</span><span class="s1">&#39;newFileHandle&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-                           <span class="k">for</span> <span class="n">filehandle</span> <span class="ow">in</span> <span class="n">copied_filehandles</span><span class="p">]</span>
+        <span class="n">new_attachments</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">filehandle</span><span class="p">[</span><span class="s2">&quot;newFileHandle&quot;</span><span class="p">][</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">filehandle</span> <span class="ow">in</span> <span class="n">copied_filehandles</span>
+        <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">new_attachments</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">return</span> <span class="n">new_attachments</span>
 
 
-<span class="k">def</span> <span class="nf">_get_headers</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
-                 <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_get_headers</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get wiki headers.</span>
 
 <span class="sd">    Args:</span>
@@ -301,18 +219,24 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">wiki_headers</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWikiHeaders</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">SynapseHTTPError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{entity.name}</span><span class="s2"> has no Wiki. Mirroring wikis &quot;</span>
-                         <span class="s2">&quot;require that both `entity` and `destination` &quot;</span>
-                         <span class="s2">&quot;have the same wiki structure. If you want to copy &quot;</span>
-                         <span class="s2">&quot;a wiki page from `entity` to `destination`, you may &quot;</span>
-                         <span class="s2">&quot;want to use `synapseutils.copyWiki`&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{entity.name}</span><span class="s2"> has no Wiki. Mirroring wikis &quot;</span>
+            <span class="s2">&quot;require that both `entity` and `destination` &quot;</span>
+            <span class="s2">&quot;have the same wiki structure. If you want to copy &quot;</span>
+            <span class="s2">&quot;a wiki page from `entity` to `destination`, you may &quot;</span>
+            <span class="s2">&quot;want to use `synapseutils.copyWiki`&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">wiki_headers</span>
 
 
-<span class="k">def</span> <span class="nf">_update_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">entity_wiki_pages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">],</span>
-                 <span class="n">destination_wiki_pages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">],</span>
-                 <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dryrun</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_update_wiki</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
+    <span class="n">entity_wiki_pages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">],</span>
+    <span class="n">destination_wiki_pages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">],</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Wiki</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Updates wiki pages.</span>
 
 <span class="sd">    Args:</span>
@@ -334,8 +258,7 @@
         <span class="c1"># Generate new markdown text</span>
         <span class="n">entity_wiki</span> <span class="o">=</span> <span class="n">entity_wiki_pages</span><span class="p">[</span><span class="n">title</span><span class="p">]</span>
         <span class="n">destination_wiki</span> <span class="o">=</span> <span class="n">destination_wiki_pages</span><span class="p">[</span><span class="n">title</span><span class="p">]</span>
-        <span class="n">markdown</span> <span class="o">=</span> <span class="n">_replace_wiki_text</span><span class="p">(</span><span class="n">markdown</span><span class="o">=</span><span class="n">entity_wiki</span><span class="o">.</span><span class="n">markdown</span><span class="p">,</span>
-                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">markdown</span> <span class="o">=</span> <span class="n">_replace_wiki_text</span><span class="p">(</span><span class="n">markdown</span><span class="o">=</span><span class="n">entity_wiki</span><span class="o">.</span><span class="n">markdown</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">destination_wiki</span><span class="o">.</span><span class="n">markdown</span> <span class="o">==</span> <span class="n">markdown</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No page updates: </span><span class="si">{title}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -348,19 +271,18 @@
         <span class="c1"># someone could name attachments with the same name</span>
         <span class="n">new_attachments</span> <span class="o">=</span> <span class="n">_copy_attachments</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity_wiki</span><span class="p">)</span>
 
-        <span class="n">destination_wiki</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="s1">&#39;attachmentFileHandleIds&#39;</span><span class="p">:</span> <span class="n">new_attachments</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="n">destination_wiki</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;attachmentFileHandleIds&quot;</span><span class="p">:</span> <span class="n">new_attachments</span><span class="p">})</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dryrun</span><span class="p">:</span>
             <span class="n">destination_wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">destination_wiki</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mirrored_wiki</span>
 
 
-<span class="k">def</span> <span class="nf">_get_wikipages_and_mapping</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
-                               <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
-                               <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">]</span>
-                               <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_wikipages_and_mapping</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
+    <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get entity/destination pages and mapping of wiki pages</span>
 
 <span class="sd">    Args:</span>
@@ -381,31 +303,38 @@
 
     <span class="n">entity_wiki_pages</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">wiki</span> <span class="ow">in</span> <span class="n">entity_wiki</span><span class="p">:</span>
-        <span class="n">entity_wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-        <span class="n">entity_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entity_wiki</span>
+        <span class="n">entity_wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="n">entity_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entity_wiki</span>
 
     <span class="c1"># Mapping dictionary containing wiki page mapping between</span>
     <span class="c1"># entity and destination</span>
     <span class="n">wiki_mapping</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">destination_wiki_pages</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">wiki</span> <span class="ow">in</span> <span class="n">destination_wiki</span><span class="p">:</span>
-        <span class="n">destination_wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-        <span class="n">destination_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">destination_wiki</span>
+        <span class="n">destination_wiki</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getWiki</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="n">destination_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">destination_wiki</span>
         <span class="c1"># Only map wiki pages that exist in `entity` (source)</span>
-        <span class="k">if</span> <span class="n">entity_wiki_pages</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">wiki_mapping</span><span class="p">[</span><span class="n">entity_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">wiki</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">entity_wiki_pages</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">wiki_mapping</span><span class="p">[</span><span class="n">entity_wiki_pages</span><span class="p">[</span><span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">wiki</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Title exists at destination but not in &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;entity: </span><span class="si">{wiki[&#39;title&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Title exists at destination but not in &quot;</span> <span class="sa">f</span><span class="s2">&quot;entity: </span><span class="si">{wiki[&#39;title&#39;]}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;entity_wiki_pages&#39;</span><span class="p">:</span> <span class="n">entity_wiki_pages</span><span class="p">,</span>
-            <span class="s1">&#39;destination_wiki_pages&#39;</span><span class="p">:</span> <span class="n">destination_wiki_pages</span><span class="p">,</span>
-            <span class="s1">&#39;wiki_mapping&#39;</span><span class="p">:</span> <span class="n">wiki_mapping</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;entity_wiki_pages&quot;</span><span class="p">:</span> <span class="n">entity_wiki_pages</span><span class="p">,</span>
+        <span class="s2">&quot;destination_wiki_pages&quot;</span><span class="p">:</span> <span class="n">destination_wiki_pages</span><span class="p">,</span>
+        <span class="s2">&quot;wiki_mapping&quot;</span><span class="p">:</span> <span class="n">wiki_mapping</span><span class="p">,</span>
+    <span class="p">}</span>
 
 
-<div class="viewcode-block" id="mirror"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.mirrorwiki.mirror">[docs]</a><span class="k">def</span> <span class="nf">mirror</span><span class="p">(</span><span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
-           <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-           <span class="n">dryrun</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="mirror"><a class="viewcode-back" href="../../python/wiki.html#challengeutils.mirrorwiki.mirror">[docs]</a><span class="k">def</span> <span class="nf">mirror</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">:</span> <span class="n">Synapse</span><span class="p">,</span>
+    <span class="n">entity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">File</span><span class="p">,</span> <span class="n">Folder</span><span class="p">,</span> <span class="n">Project</span><span class="p">],</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mirrors (sync) wiki pages by using the wikipage titles between two</span>
 <span class="sd">    Synapse Entities.  This function only works if `entity` and `destination`</span>
 <span class="sd">    are the same type and both must have wiki pages.  Only wiki pages with the</span>
@@ -426,62 +355,48 @@
     <span class="n">entity</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">downloadFile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">destination</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">downloadFile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only mirror wiki pages between similar &quot;</span>
-                         <span class="s2">&quot;entity types&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can only mirror wiki pages between similar &quot;</span> <span class="s2">&quot;entity types&quot;</span><span class="p">)</span>
 
     <span class="c1"># Get entity/destination pages and mapping of wiki pages</span>
-    <span class="n">pages_and_mappings</span> <span class="o">=</span> <span class="n">_get_wikipages_and_mapping</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span>
-                                                    <span class="n">destination</span><span class="p">)</span>
+    <span class="n">pages_and_mappings</span> <span class="o">=</span> <span class="n">_get_wikipages_and_mapping</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Your wiki pages will not be mirrored. `dryrun` is True&quot;</span><span class="p">)</span>
-    <span class="n">_update_wiki</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="o">**</span><span class="n">pages_and_mappings</span><span class="p">,</span>
-                 <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
-                 <span class="n">entity</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span>
-                 <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">)</span></div>
+    <span class="n">_update_wiki</span><span class="p">(</span>
+        <span class="n">syn</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">pages_and_mappings</span><span class="p">,</span>
+        <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span>
+        <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
+        <span class="n">entity</span><span class="o">=</span><span class="n">entity</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

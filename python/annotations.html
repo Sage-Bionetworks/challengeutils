@@ -1,97 +1,48 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Annotations &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Annotations &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Permissions" href="permissions.html" />
     <link rel="prev" title="Discussion Service" href="discussion.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html">
           
-
-          
+          <a href="../index.html">
             
-            <img src="../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="wiki.html">Challenge Wiki</a></li>
@@ -120,78 +71,37 @@
 <li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Annotations</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Annotations</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/python/annotations.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="module-challengeutils.annotations">
-<span id="annotations"></span><h1>Annotations<a class="headerlink" href="#module-challengeutils.annotations" title="Permalink to this headline">¶</a></h1>
+<span id="annotations"></span><h1>Annotations<a class="headerlink" href="#module-challengeutils.annotations" title="Permalink to this headline"></a></h1>
 <p>Updating submission annotations
 Deprecate many of these functions once synapseclient==2.1.0</p>
 <dl class="function">
 <dt id="challengeutils.annotations.annotate_submission">
-<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">annotate_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_dict</em>, <em class="sig-param">status=None</em>, <em class="sig-param">is_private=True</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/annotations.html#annotate_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.annotate_submission" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">annotate_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_dict</em>, <em class="sig-param">status=None</em>, <em class="sig-param">is_private=True</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/annotations.html#annotate_submission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.annotate_submission" title="Permalink to this definition"></a></dt>
 <dd><p>Annotate submission with annotation values from a dict</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -209,7 +119,7 @@ private to public and vice versa.</p></li>
 
 <dl class="function">
 <dt id="challengeutils.annotations.annotate_submission_with_json">
-<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_values</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/annotations.html#annotate_submission_with_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.annotate_submission_with_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">submissionid</em>, <em class="sig-param">annotation_values</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/annotations.html#annotate_submission_with_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.annotate_submission_with_json" title="Permalink to this definition"></a></dt>
 <dd><p>ChallengeWorkflowTemplate tool: Annotates submission with annotation
 values from a json file and uses exponential backoff to retry when
 there are concurrent update issues (HTTP 412).</p>
@@ -236,7 +146,7 @@ force: Force change the annotation from</p>
 
 <dl class="function">
 <dt id="challengeutils.annotations.update_submission_status">
-<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">update_submission_status</code><span class="sig-paren">(</span><em class="sig-param">sub_status: synapseclient.evaluation.SubmissionStatus, values: Union[synapseclient.annotations.Annotations, dict], status: str = None</em><span class="sig-paren">)</span> &#x2192; synapseclient.evaluation.SubmissionStatus<a class="reference internal" href="../_modules/challengeutils/annotations.html#update_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.update_submission_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">challengeutils.annotations.</code><code class="sig-name descname">update_submission_status</code><span class="sig-paren">(</span><em class="sig-param">sub_status: synapseclient.evaluation.SubmissionStatus, values: Union[synapseclient.annotations.Annotations, dict], status: str = None</em><span class="sig-paren">)</span> &#x2192; synapseclient.evaluation.SubmissionStatus<a class="reference internal" href="../_modules/challengeutils/annotations.html#update_submission_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.annotations.update_submission_status" title="Permalink to this definition"></a></dt>
 <dd><p>Updates submission status and annotations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -256,46 +166,30 @@ force: Force change the annotation from</p>
 
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

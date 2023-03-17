@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>challengeutils.utils &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>challengeutils.utils &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html">
           
-
-          
+          <a href="../../index.html">
             
-            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
@@ -118,69 +69,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>challengeutils.utils</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">challengeutils.utils</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for challengeutils.utils</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Challenge utility functions</span>
@@ -192,19 +104,20 @@
 <span class="kn">import</span> <span class="nn">urllib</span>
 
 <span class="kn">import</span> <span class="nn">synapseclient</span>
-<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_submission_status_annotations</span><span class="p">,</span>
-                                       <span class="n">to_submission_status_annotations</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">synapseclient.annotations</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">is_submission_status_annotations</span><span class="p">,</span>
+    <span class="n">to_submission_status_annotations</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.exceptions</span> <span class="kn">import</span> <span class="n">SynapseHTTPError</span>
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <span class="c1"># TODO: Deprecate once fully using submissionviews</span>
-<span class="k">def</span> <span class="nf">_switch_annotation_permission</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">,</span>
-                                  <span class="n">existing_annotations</span><span class="p">,</span>
-                                  <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">_switch_annotation_permission</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">,</span> <span class="n">existing_annotations</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Switch annotation permissions</span>
 <span class="sd">    If you add a private annotation that appears in the public annotation,</span>
 <span class="sd">    it should throw an error, or switch permissions</span>
@@ -217,27 +130,30 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Existing annotations</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">check_key</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="ow">in</span> <span class="n">add_annotations</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">check_key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="nb">sum</span><span class="p">(</span><span class="n">check_key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">force</span><span class="p">:</span>
         <span class="c1"># Filter out the annotations that have changed ACL</span>
-        <span class="n">existing_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">existing_annotations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span>
-                                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">add_annotations</span><span class="p">}</span>
+        <span class="n">existing_annotations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">existing_annotations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">add_annotations</span>
+        <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">change_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span>
-                       <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">add_annotations</span><span class="p">]</span>
+        <span class="n">change_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">existing_annotations</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">add_annotations</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;You are trying to change the ACL of these annotation key(s): </span><span class="si">{}</span><span class="s2">.&quot;</span>
             <span class="s2">&quot; Either change the annotation key or specify &quot;</span>
-            <span class="s2">&quot;force=True&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">change_keys</span><span class="p">)))</span>
+            <span class="s2">&quot;force=True&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">change_keys</span><span class="p">))</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">existing_annotations</span>
+
 
 <span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <span class="k">def</span> <span class="nf">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert private / public submission status objects to dictionary</span>
 
 <span class="sd">    Args:</span>
@@ -246,17 +162,21 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dictionary with annotation key value pairs</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">annotation_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]:</span> <span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-                       <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="n">annotations</span>
-                       <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]</span>
-                       <span class="k">if</span> <span class="n">annotation_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;scopeId&#39;</span><span class="p">,</span> <span class="s1">&#39;objectId&#39;</span><span class="p">]</span> <span class="ow">and</span>
-                       <span class="n">annotation</span><span class="p">[</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">is_private</span><span class="p">}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">annotation_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">annotation</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]:</span> <span class="n">annotation</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="n">annotations</span>
+        <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">annotation_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;scopeId&quot;</span><span class="p">,</span> <span class="s2">&quot;objectId&quot;</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="n">annotation</span><span class="p">[</span><span class="s2">&quot;isPrivate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">is_private</span>
+    <span class="p">}</span>
     <span class="k">return</span> <span class="n">annotation_dict</span>
 
+
 <span class="c1"># TODO: Deprecate once fully using submissionviews</span>
-<div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                    <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="update_single_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_single_submission_status">[docs]</a><span class="k">def</span> <span class="nf">update_single_submission_status</span><span class="p">(</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will update a single submission&#39;s status</span>
 
@@ -273,45 +193,45 @@
 <span class="sd">        Updated submission status</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">existing_annots</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
-    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">existing_annots</span><span class="p">,</span>
-                                                          <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
+        <span class="n">existing_annots</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
-    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span><span class="n">existing_annots</span><span class="p">,</span>
-                                                         <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
+        <span class="n">existing_annots</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_submission_status_annotations</span><span class="p">(</span><span class="n">add_annotations</span><span class="p">):</span>
         <span class="n">private_added_annotations</span> <span class="o">=</span> <span class="n">add_annotations</span> <span class="k">if</span> <span class="n">is_private</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">public_added_annotations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">is_private</span> <span class="k">else</span> <span class="n">add_annotations</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">private_added_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
-            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
         <span class="n">public_added_annotations</span> <span class="o">=</span> <span class="n">_submission_annotations_to_dict</span><span class="p">(</span>
-            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">add_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
 
     <span class="c1"># If you add a private annotation that appears in the public annotation,</span>
     <span class="c1"># it switches</span>
-    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span><span class="n">public_added_annotations</span><span class="p">,</span>
-                                                        <span class="n">private_annotations</span><span class="p">,</span>
-                                                        <span class="n">force</span><span class="p">)</span>
+    <span class="n">private_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span>
+        <span class="n">public_added_annotations</span><span class="p">,</span> <span class="n">private_annotations</span><span class="p">,</span> <span class="n">force</span>
+    <span class="p">)</span>
 
-    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span><span class="n">private_added_annotations</span><span class="p">,</span>
-                                                       <span class="n">public_annotations</span><span class="p">,</span>
-                                                       <span class="n">force</span><span class="p">)</span>
+    <span class="n">public_annotations</span> <span class="o">=</span> <span class="n">_switch_annotation_permission</span><span class="p">(</span>
+        <span class="n">private_added_annotations</span><span class="p">,</span> <span class="n">public_annotations</span><span class="p">,</span> <span class="n">force</span>
+    <span class="p">)</span>
 
     <span class="n">private_annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">private_added_annotations</span><span class="p">)</span>
     <span class="n">public_annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">public_added_annotations</span><span class="p">)</span>
 
-    <span class="n">priv</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">private_annotations</span><span class="p">,</span>
-                                            <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">pub</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">public_annotations</span><span class="p">,</span>
-                                           <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">priv</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">private_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">to_submission_status_annotations</span><span class="p">(</span><span class="n">public_annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Combined private and public annotations into</span>
     <span class="c1"># one Submission.Status.annotation</span>
-    <span class="n">combined_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stringAnnos&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                            <span class="s1">&#39;longAnnos&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                            <span class="s1">&#39;doubleAnnos&#39;</span><span class="p">:</span> <span class="p">[]}</span>
-    <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;stringAnnos&#39;</span><span class="p">,</span> <span class="s1">&#39;longAnnos&#39;</span><span class="p">,</span> <span class="s1">&#39;doubleAnnos&#39;</span><span class="p">]:</span>
+    <span class="n">combined_annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stringAnnos&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;longAnnos&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;doubleAnnos&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">annotation_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;stringAnnos&quot;</span><span class="p">,</span> <span class="s2">&quot;longAnnos&quot;</span><span class="p">,</span> <span class="s2">&quot;doubleAnnos&quot;</span><span class="p">]:</span>
         <span class="n">private_annotation</span> <span class="o">=</span> <span class="n">priv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
         <span class="n">public_annotation</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
         <span class="n">private_annotation_exists</span> <span class="o">=</span> <span class="n">private_annotation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -323,7 +243,7 @@
         <span class="c1"># Remove annotation key if doesn&#39;t exist</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">private_annotation_exists</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">public_annotation_exists</span><span class="p">:</span>
             <span class="n">combined_annotations</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span>
-    <span class="n">status</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_annotations</span>
+    <span class="n">status</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_annotations</span>
     <span class="k">return</span> <span class="n">status</span></div>
 
 
@@ -348,14 +268,15 @@
 
     <span class="n">prev_num_results</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
     <span class="k">while</span> <span class="n">prev_num_results</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">rest_uri</span> <span class="o">=</span> <span class="s2">&quot;/evaluation/submission/query?query=&quot;</span> <span class="o">+</span> \
-            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> limit </span><span class="si">{}</span><span class="s2"> offset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
+        <span class="n">rest_uri</span> <span class="o">=</span> <span class="s2">&quot;/evaluation/submission/query?query=&quot;</span> <span class="o">+</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> limit </span><span class="si">{}</span><span class="s2"> offset </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">page</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">restGET</span><span class="p">(</span><span class="n">rest_uri</span><span class="p">)</span>
         <span class="c1"># results = page[&#39;results&#39;] if &#39;results&#39; in page else page[&#39;children&#39;]</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">[{</span><span class="n">page</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">][</span><span class="n">index</span><span class="p">]:</span><span class="n">value</span>
-                    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">])}</span>
-                   <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">page</span><span class="p">[</span><span class="s1">&#39;rows&#39;</span><span class="p">]]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">page</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">][</span><span class="n">index</span><span class="p">]:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">])}</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">page</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
         <span class="n">prev_num_results</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -363,7 +284,7 @@
 
 
 <span class="k">def</span> <span class="nf">_change_annotation_acl</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">annotation_type</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to locate the existing annotation</span>
 
 <span class="sd">    Args:</span>
@@ -375,13 +296,15 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Updated annotation key ACL</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_type</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">check</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span>
-                            <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">]))</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="n">annotations</span><span class="p">[</span><span class="n">annotation_type</span><span class="p">])</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
-            <span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;isPrivate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_private</span>
+            <span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;isPrivate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_private</span>
     <span class="k">return</span> <span class="n">annotations</span>
+
 
 <span class="c1"># TODO: Deprecate once fully using submissionviews</span>
 <div class="viewcode-block" id="change_submission_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -400,17 +323,22 @@
     <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">annotations</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
         <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
-            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;stringAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;stringAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span>
+        <span class="p">)</span>
         <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
-            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;doubleAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;doubleAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span>
+        <span class="p">)</span>
         <span class="n">submission_annotations</span> <span class="o">=</span> <span class="n">_change_annotation_acl</span><span class="p">(</span>
-            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;longAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="p">)</span>
+            <span class="n">submission_annotations</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;longAnnos&quot;</span><span class="p">,</span> <span class="n">is_private</span>
+        <span class="p">)</span>
     <span class="n">status</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">submission_annotations</span>
     <span class="k">return</span> <span class="n">status</span></div>
 
+
 <span class="c1"># TODO: Deprecate once fully using submissionviews</span>
-<div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
-                                          <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="update_all_submissions_annotation_acl"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.update_all_submissions_annotation_acl">[docs]</a><span class="k">def</span> <span class="nf">update_all_submissions_annotation_acl</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;SCORED&quot;</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change the acl of a list of known annotation keys on</span>
 <span class="sd">    all submissions of a evaluation</span>
@@ -422,16 +350,17 @@
 <span class="sd">        status: ALL, VALIDATED, INVALID</span>
 <span class="sd">        is_private: whether the annotation is private or not, default to True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span> <span class="k">else</span> <span class="n">status</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span> <span class="k">else</span> <span class="n">status</span>
     <span class="n">bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">bundle</span><span class="p">:</span>
-        <span class="n">new_status</span> <span class="o">=</span> <span class="n">change_submission_annotation_acl</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span>
-                                                      <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span><span class="p">)</span>
+        <span class="n">new_status</span> <span class="o">=</span> <span class="n">change_submission_annotation_acl</span><span class="p">(</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">is_private</span><span class="o">=</span><span class="n">is_private</span>
+        <span class="p">)</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">new_status</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="change_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;RECEIVED&#39;</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="change_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;RECEIVED&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change a submission status</span>
 
 <span class="sd">    Args:</span>
@@ -441,16 +370,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Updated submission status</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionStatus</span><span class="p">(</span><span class="n">submissionid</span><span class="p">)</span>
     <span class="n">sub_status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
     <span class="n">sub_status</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">sub_status</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sub_status</span></div>
 
+
 <span class="c1"># TODO: Can possibly deprecate once using submissionview</span>
-<div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
-                                 <span class="n">change_to_status</span><span class="o">=</span><span class="s1">&#39;VALIDATED&#39;</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="change_all_submission_status"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.change_all_submission_status">[docs]</a><span class="k">def</span> <span class="nf">change_all_submission_status</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">submission_status</span><span class="o">=</span><span class="s2">&quot;SCORED&quot;</span><span class="p">,</span> <span class="n">change_to_status</span><span class="o">=</span><span class="s2">&quot;VALIDATED&quot;</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to change submission status of all submissions in a queue</span>
 <span class="sd">    The defaults is to change submissions from SCORED -&gt; VALIDATED</span>
 <span class="sd">    This function can be useful for &#39;rescoring&#39; submissions</span>
@@ -462,16 +393,15 @@
 <span class="sd">                           change. Default is SCORED.</span>
 <span class="sd">        change_to_status: Submission status to change a submission to.</span>
 <span class="sd">                          Default is VALIDATED.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">submission_bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span>
-                                                 <span class="n">status</span><span class="o">=</span><span class="n">submission_status</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">submission_bundle</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">submission_status</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">submission_bundle</span><span class="p">:</span>
         <span class="n">status</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">change_to_status</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">status</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_check_date_range</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to check if the date is within range</span>
 <span class="sd">    Note: the date and time is in UTC</span>
 
@@ -484,25 +414,21 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        boolean</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">start_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">date_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span>
-                                              <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
+        <span class="n">date_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">Z&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">start_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_datetime</span><span class="p">,</span>
-                                                   <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span>
+            <span class="n">start_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_datetime</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">date_obj</span> <span class="o">&gt;=</span> <span class="n">start_obj</span>
         <span class="k">if</span> <span class="n">end_datetime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">end_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_datetime</span><span class="p">,</span>
-                                                 <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span>
+            <span class="n">end_obj</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_datetime</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">date_obj</span> <span class="o">&lt;=</span> <span class="n">end_obj</span>
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span> <span class="nf">_get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
-                      <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="k">def</span> <span class="nf">_get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to get contributors from a given evaluation id.</span>
 <span class="sd">    Note: the date and time is in UTC</span>
 
@@ -517,20 +443,22 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Set of contributors&#39; user ids</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bundles</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmissionBundles</span><span class="p">(</span><span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">)</span>
     <span class="n">contributors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">bundles</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">_check_date_range</span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">createdOn</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">):</span>
-            <span class="n">principalids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">contributor</span><span class="p">[</span><span class="s1">&#39;principalId&#39;</span><span class="p">]</span>
-                               <span class="k">for</span> <span class="n">contributor</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">contributors</span><span class="p">)</span>
+            <span class="n">principalids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="n">contributor</span><span class="p">[</span><span class="s2">&quot;principalId&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">contributor</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">contributors</span>
+            <span class="p">)</span>
             <span class="n">contributors</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">principalids</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">contributors</span>
 
 
-<div class="viewcode-block" id="get_contributors"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.get_contributors">[docs]</a><span class="k">def</span> <span class="nf">get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationids</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;SCORED&#39;</span><span class="p">,</span>
-                     <span class="n">start_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="get_contributors"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.get_contributors">[docs]</a><span class="k">def</span> <span class="nf">get_contributors</span><span class="p">(</span>
+    <span class="n">syn</span><span class="p">,</span> <span class="n">evaluationids</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;SCORED&quot;</span><span class="p">,</span> <span class="n">start_datetime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_datetime</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to get contributors from a list of evaluation ids</span>
 <span class="sd">    Note: the date and time is in UTC</span>
 
@@ -545,32 +473,35 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Set of contributors&#39; user ids</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">all_contributors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">evaluationid</span> <span class="ow">in</span> <span class="n">evaluationids</span><span class="p">:</span>
-        <span class="n">contributors</span> <span class="o">=</span> <span class="n">_get_contributors</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
-                                         <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">)</span>
+        <span class="n">contributors</span> <span class="o">=</span> <span class="n">_get_contributors</span><span class="p">(</span>
+            <span class="n">syn</span><span class="p">,</span> <span class="n">evaluationid</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">end_datetime</span>
+        <span class="p">)</span>
         <span class="n">all_contributors</span> <span class="o">=</span> <span class="n">all_contributors</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">contributors</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">all_contributors</span></div>
 
 
 <div class="viewcode-block" id="list_evaluations"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.list_evaluations">[docs]</a><span class="k">def</span> <span class="nf">list_evaluations</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List evaluation queues of a Synapse project</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        syn: Synapse object</span>
 <span class="sd">        project: Synapse id/entity of project</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">evaluations</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getEvaluationByContentSource</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">evaluations</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;Evaluation- </span><span class="si">{name}</span><span class="s2">(</span><span class="si">{evalid}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                  <span class="n">evalid</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">id</span><span class="p">))</span></div>
+            <span class="s2">&quot;Evaluation- </span><span class="si">{name}</span><span class="s2">(</span><span class="si">{evalid}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">evalid</span><span class="o">=</span><span class="n">evaluation</span><span class="o">.</span><span class="n">id</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="download_submission"><a class="viewcode-back" href="../../python/utils.html#challengeutils.utils.download_submission">[docs]</a><span class="k">def</span> <span class="nf">download_submission</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">submissionid</span><span class="p">,</span> <span class="n">download_location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download submission and return json</span>
 
 <span class="sd">    Args:</span>
@@ -580,16 +511,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: submission json results</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sub</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getSubmission</span><span class="p">(</span><span class="n">submissionid</span><span class="p">,</span> <span class="n">downloadLocation</span><span class="o">=</span><span class="n">download_location</span><span class="p">)</span>
-    <span class="n">entity</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;docker_repository&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerRepositoryName&quot;</span><span class="p">),</span>
-              <span class="s1">&#39;docker_digest&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerDigest&quot;</span><span class="p">),</span>
-              <span class="s1">&#39;entity_id&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
-              <span class="s1">&#39;entity_version&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;versionNumber&#39;</span><span class="p">),</span>
-              <span class="s1">&#39;entity_type&#39;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;concreteType&#39;</span><span class="p">),</span>
-              <span class="s1">&#39;evaluation_id&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;evaluationId&#39;</span><span class="p">],</span>
-              <span class="s1">&#39;file_path&#39;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;filePath&#39;</span><span class="p">]}</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="s2">&quot;entity&quot;</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;docker_repository&quot;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerRepositoryName&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;docker_digest&quot;</span><span class="p">:</span> <span class="n">sub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dockerDigest&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;entity_version&quot;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;versionNumber&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;concreteType&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;evaluation_id&quot;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s2">&quot;evaluationId&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;file_path&quot;</span><span class="p">:</span> <span class="n">sub</span><span class="p">[</span><span class="s2">&quot;filePath&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -606,10 +539,10 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">submitterid</span><span class="p">)</span>
-        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;userName&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="n">SynapseHTTPError</span><span class="p">:</span>
         <span class="n">team</span> <span class="o">=</span> <span class="n">syn</span><span class="o">.</span><span class="n">getTeam</span><span class="p">(</span><span class="n">submitterid</span><span class="p">)</span>
-        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">team</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">submitter_name</span> <span class="o">=</span> <span class="n">team</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">submitter_name</span>
 
 
@@ -626,46 +559,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

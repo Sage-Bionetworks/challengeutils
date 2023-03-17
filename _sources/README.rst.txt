@@ -48,7 +48,7 @@ To install from the source:
 
     $ python setup.py install
 
-.. Attention:: 
+.. Attention::
 
     ``synapseclient < 2.3.0`` is no longer supported, so some features may
     break if you are not on the latest client.

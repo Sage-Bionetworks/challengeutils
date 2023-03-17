@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>challengeutils.permissions &mdash; challengeutils 4.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>challengeutils.permissions &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../../index.html">
           
-
-          
+          <a href="../../index.html">
             
-            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
-          
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
               <div class="version">
-                4.1
+                4.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Python Client</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../python/wiki.html">Challenge Wiki</a></li>
@@ -118,69 +69,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">challengeutils</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>challengeutils.permissions</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">challengeutils.permissions</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for challengeutils.permissions</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Convenience functions to set permissions on Synapse entities,</span>
 <span class="sd">without having to know the granular access control list&quot;&quot;&quot;</span>
@@ -188,27 +100,49 @@
 <span class="kn">from</span> <span class="nn">synapseclient.core.utils</span> <span class="kn">import</span> <span class="n">id_of</span>
 
 <span class="n">VIEW</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">]</span>
-<span class="n">SUBMIT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;SUBMIT&#39;</span><span class="p">]</span>
-<span class="n">DOWNLOAD</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">]</span>
-<span class="n">EDIT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">]</span>
-<span class="n">EDIT_AND_DELETE</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">]</span>
-<span class="n">SCORE</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;READ_PRIVATE_SUBMISSION&#39;</span><span class="p">]</span>
-<span class="n">ADMIN_EVALS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DELETE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;SUBMIT&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE_SUBMISSION&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;READ_PRIVATE_SUBMISSION&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">]</span>
-<span class="n">ADMIN</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_SETTINGS&#39;</span><span class="p">,</span> <span class="s1">&#39;MODERATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CREATE&#39;</span><span class="p">,</span> <span class="s1">&#39;READ&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;DOWNLOAD&#39;</span><span class="p">,</span> <span class="s1">&#39;UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;CHANGE_PERMISSIONS&#39;</span><span class="p">]</span>
-<span class="n">EVALUATION_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
-                             <span class="s1">&#39;submit&#39;</span><span class="p">:</span> <span class="n">SUBMIT</span><span class="p">,</span>
-                             <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="n">SCORE</span><span class="p">,</span>
-                             <span class="s1">&#39;admin&#39;</span><span class="p">:</span> <span class="n">ADMIN_EVALS</span><span class="p">,</span>
-                             <span class="s1">&#39;remove&#39;</span><span class="p">:</span> <span class="p">[]}</span>
-<span class="n">ENTITY_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
-                         <span class="s1">&#39;download&#39;</span><span class="p">:</span> <span class="n">DOWNLOAD</span><span class="p">,</span>
-                         <span class="s1">&#39;edit&#39;</span><span class="p">:</span> <span class="n">EDIT</span><span class="p">,</span>
-                         <span class="s1">&#39;edit_and_delete&#39;</span><span class="p">:</span> <span class="n">EDIT_AND_DELETE</span><span class="p">,</span>
-                         <span class="s1">&#39;admin&#39;</span><span class="p">:</span> <span class="n">ADMIN</span><span class="p">,</span>
-                         <span class="s1">&#39;remove&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+<span class="n">SUBMIT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;SUBMIT&quot;</span><span class="p">]</span>
+<span class="n">DOWNLOAD</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">]</span>
+<span class="n">MODERATE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">,</span> <span class="s2">&quot;MODERATE&quot;</span><span class="p">]</span>
+<span class="n">EDIT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span> <span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATE&quot;</span><span class="p">]</span>
+<span class="n">EDIT_AND_DELETE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span> <span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;CREATE&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">]</span>
+<span class="n">SCORE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;READ&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE_SUBMISSION&quot;</span><span class="p">,</span> <span class="s2">&quot;READ_PRIVATE_SUBMISSION&quot;</span><span class="p">]</span>
+<span class="n">ADMIN_EVALS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DELETE_SUBMISSION&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SUBMIT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CREATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;READ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UPDATE_SUBMISSION&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;READ_PRIVATE_SUBMISSION&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CHANGE_PERMISSIONS&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">ADMIN</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CHANGE_SETTINGS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MODERATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CREATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;READ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DOWNLOAD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CHANGE_PERMISSIONS&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">EVALUATION_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;view&quot;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
+    <span class="s2">&quot;submit&quot;</span><span class="p">:</span> <span class="n">SUBMIT</span><span class="p">,</span>
+    <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">SCORE</span><span class="p">,</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="n">ADMIN_EVALS</span><span class="p">,</span>
+    <span class="s2">&quot;remove&quot;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">}</span>
+<span class="n">ENTITY_PERMS_MAPPINGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;view&quot;</span><span class="p">:</span> <span class="n">VIEW</span><span class="p">,</span>
+    <span class="s2">&quot;download&quot;</span><span class="p">:</span> <span class="n">DOWNLOAD</span><span class="p">,</span>
+    <span class="s2">&quot;moderate&quot;</span><span class="p">:</span> <span class="n">MODERATE</span><span class="p">,</span>
+    <span class="s2">&quot;edit&quot;</span><span class="p">:</span> <span class="n">EDIT</span><span class="p">,</span>
+    <span class="s2">&quot;edit_and_delete&quot;</span><span class="p">:</span> <span class="n">EDIT_AND_DELETE</span><span class="p">,</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="n">ADMIN</span><span class="p">,</span>
+    <span class="s2">&quot;remove&quot;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">_set_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">syn_obj</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="p">):</span>
@@ -231,15 +165,20 @@
         <span class="n">permission_level_mapping</span> <span class="o">=</span> <span class="n">ENTITY_PERMS_MAPPINGS</span>
 
     <span class="k">if</span> <span class="n">permission_level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">permission_level_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;permission_level must be one of these: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">permission_level_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;permission_level must be one of these: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">permission_level_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
-    <span class="n">syn</span><span class="o">.</span><span class="n">setPermissions</span><span class="p">(</span><span class="n">syn_obj</span><span class="p">,</span> <span class="n">principalId</span><span class="o">=</span><span class="n">principalid</span><span class="p">,</span>
-                       <span class="n">accessType</span><span class="o">=</span><span class="n">permission_level_mapping</span><span class="p">[</span><span class="n">permission_level</span><span class="p">])</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">setPermissions</span><span class="p">(</span>
+        <span class="n">syn_obj</span><span class="p">,</span>
+        <span class="n">principalId</span><span class="o">=</span><span class="n">principalid</span><span class="p">,</span>
+        <span class="n">accessType</span><span class="o">=</span><span class="n">permission_level_mapping</span><span class="p">[</span><span class="n">permission_level</span><span class="p">],</span>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="set_evaluation_permissions"><a class="viewcode-back" href="../../python/permissions.html#challengeutils.permissions.set_evaluation_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_evaluation_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span>
-                               <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="set_evaluation_permissions"><a class="viewcode-back" href="../../python/permissions.html#challengeutils.permissions.set_evaluation_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_evaluation_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;view&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to set ACL on an entity for a user or team based on</span>
 <span class="sd">    permission levels (view, download...)</span>
@@ -259,8 +198,7 @@
     <span class="n">_set_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">evaluation</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="set_entity_permissions"><a class="viewcode-back" href="../../python/permissions.html#challengeutils.permissions.set_entity_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span>
-                           <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="set_entity_permissions"><a class="viewcode-back" href="../../python/permissions.html#challengeutils.permissions.set_entity_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_entity_permissions</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">principalid</span><span class="p">,</span> <span class="n">permission_level</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to set ACL on an entity for a user or team based on</span>
 <span class="sd">    permission levels (view, download...)</span>
@@ -297,46 +235,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2017-2021, Sage Bionetworks.
-
-    </p>
+    <p>&#169; Copyright 2017-2023, Sage Bionetworks.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

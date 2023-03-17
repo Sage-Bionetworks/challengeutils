@@ -6,7 +6,7 @@ Participant
 -----------
 
 .. automodule:: challengeutils.__main__
-    :members: 
+    :members:
         command_list_registered_challenges
     :undoc-members:
     :show-inheritance:
@@ -18,7 +18,7 @@ Admin
 -----
 
 .. automodule:: challengeutils.__main__
-    :members: 
+    :members:
         command_createchallenge, command_mirrorwiki,
         command_list_evaluations, command_set_evaluation_quota,
         command_set_evaluation_acl, command_query,
