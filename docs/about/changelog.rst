@@ -8,6 +8,19 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v4.2.0
+------
+.. Important::
+    **Deprecation notice: we will no longer support Python 3.6 and 3.7 starting
+    July 2023. We recommend you upgrade your Python functions before then to ensure
+    a smooth transition.
+
+- Add support for Python 3.10
+- New feature added: cheat detection!
+- New feature added: pre-commit hook for easier development
+- General bug fixes
+
+
 v4.1.0
 ------
 .. Important::
@@ -17,10 +30,6 @@ v4.1.0
     .. code:: console
 
         $ pip install synapseclient --upgrade
-
-.. Important::
-    **Support for Python 3.6 is will be dropped in the later
-    half of this year.
 
 - Fix `challengeutils` cli bug
 - Update `synapse_login` to support Synapse PAT env variable.
@@ -34,10 +43,6 @@ v4.0.1
     .. code:: console
 
         $ pip install synapseclient --upgrade
-
-.. Important::
-    **Support for Python 3.6 is will be dropped in the later
-    half of this year.
 
 - Support `Python` 3.9
 - Deprecate `helpers.py` and create `stop_submissions_over_quota` function

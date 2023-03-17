@@ -21,11 +21,11 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "challengeutils"
-copyright = "2017-2021, Sage Bionetworks"
-author = "Thomas Yu"
+copyright = "2017-2023, Sage Bionetworks"
+author = "Thomas Yu, Verena Chung, Tim Bergquist"
 
 # The short X.Y version
-version = "4.1"
+version = "4.2"
 # The full version, including alpha/beta/rc tags
 release = version
 
