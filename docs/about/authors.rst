@@ -18,7 +18,7 @@ and everyone else on our `contributors list`_. Thank you all! |beers|
 .. |beers| image:: ../static/beers.png
     :scale: 10
 
-If you would like to help make **challengeutils** better, either through 
+If you would like to help make **challengeutils** better, either through
 code, documentation, tests, or bug reports, don't hesitate to do so!  See
 our `contributing guide`_ for more information.
 

@@ -17,5 +17,24 @@ pip install challengeutils
 challengeutils -v
 ```
 
+This repository also uses [`pre-commit`](https://pre-commit.com/) to autolint files according to [Black's coding styles](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html). To run the hook in your local dev environment, enter the following:
+
+```
+pip install pre-commit
+pre-commit install
+```
+
+Now `pre-commit` will run automatically on `git commit`! For example:
+
+```
+$ git commit -m 'update readme' -a
+Check Yaml...........................................(no files to check)Skipped
+Fix End of Files.........................................................Passed
+Trim Trailing Whitespace.................................................Passed
+black................................................(no files to check)Skipped
+[add-pre-commit 75b4393] update readme
+ 1 file changed, 23 insertions(+)
+```
+
 ## Contributing
 Thinking about contributing to challengeutils? Get started by reading our [Contributor Guide](CONTRIBUTING.md).

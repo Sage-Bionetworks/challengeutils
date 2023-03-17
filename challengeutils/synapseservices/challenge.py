@@ -15,21 +15,26 @@ class Challenge(Service):
                            in the Challenge
 
     """
-    def __init__(self, id: str = None, projectId: str = None, etag:
-                 str = None, participantTeamId: str = None):
 
+    def __init__(
+        self,
+        id: str = None,
+        projectId: str = None,
+        etag: str = None,
+        participantTeamId: str = None,
+    ):
         self.openapi_types = {
-            'id': str,
-            'projectId': str,
-            'etag': str,
-            'participantTeamId': str
+            "id": str,
+            "projectId": str,
+            "etag": str,
+            "participantTeamId": str,
         }
 
         self.attribute_map = {
-            'id': 'id',
-            'projectId': 'projectId',
-            'etag': 'etag',
-            'participantTeamId': 'participantTeamId'
+            "id": "id",
+            "projectId": "projectId",
+            "etag": "etag",
+            "participantTeamId": "participantTeamId",
         }
 
         self._id = id

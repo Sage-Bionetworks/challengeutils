@@ -1,6 +1,11 @@
 -e .
-synapseclient==2.0.0
+synapseclient==2.7.0
 pandas
 pytest
 sphinx_rtd_theme
 Sphinx
+black
+jellyfish
+tabulate
+scipy
+pre-commit

@@ -6,16 +6,18 @@ import json
 import typing
 
 from synapseclient import SubmissionStatus, Annotations
-from synapseclient.annotations import (is_synapse_annotations,
-                                       to_synapse_annotations,
-                                       from_synapse_annotations)
+from synapseclient.annotations import (
+    is_synapse_annotations,
+    to_synapse_annotations,
+    from_synapse_annotations,
+)
 
 from .utils import update_single_submission_status
 
 
 def _convert_to_annotation_cls(
-        sub_status: SubmissionStatus,
-        values: typing.Union[Annotations, dict]) -> Annotations:
+    sub_status: SubmissionStatus, values: typing.Union[Annotations, dict]
+) -> Annotations:
     """Convert synapse style annotation or dict to synapseclient.Annotation
 
     Args:
@@ -31,15 +33,15 @@ def _convert_to_annotation_cls(
     if is_synapse_annotations(values):
         values = from_synapse_annotations(values)
     else:
-        values = Annotations(id=sub_status.id,
-                             etag=sub_status.etag,
-                             values=values)
+        values = Annotations(id=sub_status.id, etag=sub_status.etag, values=values)
     return values
 
 
-def update_submission_status(sub_status: SubmissionStatus,
-                             values: typing.Union[Annotations, dict],
-                             status: str = None) -> SubmissionStatus:
+def update_submission_status(
+    sub_status: SubmissionStatus,
+    values: typing.Union[Annotations, dict],
+    status: str = None,
+) -> SubmissionStatus:
     """Updates submission status and annotations
 
     Args:
@@ -65,8 +67,7 @@ def update_submission_status(sub_status: SubmissionStatus,
     return sub_status
 
 
-def annotate_submission_with_json(syn, submissionid, annotation_values,
-                                  **kwargs):
+def annotate_submission_with_json(syn, submissionid, annotation_values, **kwargs):
     """
     ChallengeWorkflowTemplate tool: Annotates submission with annotation
     values from a json file and uses exponential backoff to retry when
@@ -87,13 +88,13 @@ def annotate_submission_with_json(syn, submissionid, annotation_values,
     """
     with open(annotation_values) as json_data:
         annotation_json = json.load(json_data)
-    sub_status = annotate_submission(syn, submissionid, annotation_json,
-                                     **kwargs)
+    sub_status = annotate_submission(syn, submissionid, annotation_json, **kwargs)
     return sub_status
 
 
-def annotate_submission(syn, submissionid, annotation_dict,
-                        status=None, is_private=True, force=False):
+def annotate_submission(
+    syn, submissionid, annotation_dict, status=None, is_private=True, force=False
+):
     """Annotate submission with annotation values from a dict
 
     Args:
@@ -107,12 +108,14 @@ def annotate_submission(syn, submissionid, annotation_dict,
     sub_status = syn.getSubmissionStatus(submissionid)
     # Don't add any annotations that are None or []
     not_add = [None, []]
-    annotation_dict = {key: annotation_dict[key] for key in annotation_dict
-                       if annotation_dict[key] not in not_add}
+    annotation_dict = {
+        key: annotation_dict[key]
+        for key in annotation_dict
+        if annotation_dict[key] not in not_add
+    }
     # TODO: Remove once submissionview is fully supported
-    sub_status = update_single_submission_status(sub_status, annotation_dict,
-                                                 is_private=is_private,
-                                                 force=force)
-    sub_status = update_submission_status(sub_status, annotation_dict,
-                                          status=status)
+    sub_status = update_single_submission_status(
+        sub_status, annotation_dict, is_private=is_private, force=force
+    )
+    sub_status = update_submission_status(sub_status, annotation_dict, status=status)
     return syn.store(sub_status)

@@ -18,6 +18,7 @@ class ChallengeApi:
         team: synapseclient.Team or its id
 
     """
+
     def __init__(self, syn: Synapse):
         self.syn = syn
 
@@ -32,14 +33,11 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        challenge_object = {'participantTeamId': teamid,
-                            'projectId': projectid}
-        challenge = self.syn.restPOST('/challenge',
-                                      json.dumps(challenge_object))
+        challenge_object = {"participantTeamId": teamid, "projectId": projectid}
+        challenge = self.syn.restPOST("/challenge", json.dumps(challenge_object))
         return Challenge(**challenge)
 
-    def get_registered_challenges(self,
-                                  participantId: str) -> Iterator[Challenge]:
+    def get_registered_challenges(self, participantId: str) -> Iterator[Challenge]:
         """Gets a list of challenges a participant is registered to
 
         Args:
@@ -50,13 +48,14 @@ class ChallengeApi:
 
         """
         challenges = self.syn._GET_paginated(
-            f'/challenge?participantId={participantId}'
+            f"/challenge?participantId={participantId}"
         )
         for challenge in challenges:
             yield Challenge(**challenge)
 
-    def get_challenge(self, challengeid: str = None,
-                      projectid: str = None) -> Challenge:
+    def get_challenge(
+        self, challengeid: str = None, projectid: str = None
+    ) -> Challenge:
         """Gets a challenge
 
         Args:
@@ -76,8 +75,9 @@ class ChallengeApi:
 
         return Challenge(**self.syn.restGET(url))
 
-    def update_challenge(self, challengeid: str, teamid: str = None,
-                         projectid: str = None) -> Challenge:
+    def update_challenge(
+        self, challengeid: str, teamid: str = None, projectid: str = None
+    ) -> Challenge:
         """Updates a Synapse Challenge
 
         Args:
@@ -89,11 +89,14 @@ class ChallengeApi:
             A synapseservices.Challenge
 
         """
-        challenge_object = {'id': challengeid,
-                            'participantTeamId': teamid,
-                            'projectId': projectid}
-        challenge = self.syn.restPUT(f'/challenge/{challengeid}',
-                                     json.dumps(challenge_object))
+        challenge_object = {
+            "id": challengeid,
+            "participantTeamId": teamid,
+            "projectId": projectid,
+        }
+        challenge = self.syn.restPUT(
+            f"/challenge/{challengeid}", json.dumps(challenge_object)
+        )
         return Challenge(**challenge)
 
     def delete_challenge(self, challengeid: str):
@@ -103,7 +106,7 @@ class ChallengeApi:
             challengeid: A Synapse Challenge id
 
         """
-        return self.syn.restDELETE(f'/challenge/{challengeid}')
+        return self.syn.restDELETE(f"/challenge/{challengeid}")
 
     def get_registered_participants(self, challengeid: str) -> list:
         """Get participants registered for a challenge
@@ -115,7 +118,7 @@ class ChallengeApi:
             Registered participants
 
         """
-        url = f'/challenge/{challengeid}/participant'
+        url = f"/challenge/{challengeid}/participant"
         return self.syn._GET_paginated(url)
 
     def get_registered_teams(self, challengeid: str):
@@ -128,7 +131,7 @@ class ChallengeApi:
             Registered teams
 
         """
-        url = f'/challenge/{challengeid}/challengeTeam'
+        url = f"/challenge/{challengeid}/challengeTeam"
         return self.syn._GET_paginated(url)
 
     def register_team(self, challengeid: str, teamid: str):
@@ -142,13 +145,13 @@ class ChallengeApi:
             A Synapse team
 
         """
-        team_dict = {'challengeId': challengeid, 'teamId': teamid}
-        return self.syn.restPOST(f'/challenge/{challengeid}/challengeTeam',
-                                 json.dumps(team_dict))
+        team_dict = {"challengeId": challengeid, "teamId": teamid}
+        return self.syn.restPOST(
+            f"/challenge/{challengeid}/challengeTeam", json.dumps(team_dict)
+        )
 
 
-def get_registered_challenges(syn: Synapse,
-                              userid: str = None) -> Iterator[Project]:
+def get_registered_challenges(syn: Synapse, userid: str = None) -> Iterator[Project]:
     """Get the Synapse Challenge Projects a user is registered to.
     Defaults to the logged in synapse user.
 
@@ -192,8 +195,9 @@ def get_challenge(syn: Synapse, project: Union[Project, str]) -> Challenge:
     return challenge_obj
 
 
-def create_challenge(syn: Synapse, project: Union[Project, str],
-                     team: Union[Team, str]) -> Challenge:
+def create_challenge(
+    syn: Synapse, project: Union[Project, str], team: Union[Team, str]
+) -> Challenge:
     """Creates Challenge associated with a Project
 
     Args:
@@ -209,6 +213,5 @@ def create_challenge(syn: Synapse, project: Union[Project, str],
     teamid = id_of(team)
 
     challenge_api = ChallengeApi(syn=syn)
-    challenge_obj = challenge_api.create_challenge(projectid=synid,
-                                                   teamid=teamid)
+    challenge_obj = challenge_api.create_challenge(projectid=synid, teamid=teamid)
     return challenge_obj

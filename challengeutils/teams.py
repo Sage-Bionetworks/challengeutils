@@ -25,7 +25,7 @@ def get_team_count(syn: Synapse, team: Union[int, str, Team]) -> int:
     """
     team_obj = syn.getTeam(team)
     count = _get_team_count(syn, team_obj.id)
-    return count['count']
+    return count["count"]
 
 
 def remove_team_member(syn, team, user):
@@ -42,16 +42,17 @@ def remove_team_member(syn, team, user):
 
 
 class NewUserProfile(UserProfile):
-    '''
+    """
     Create new user profile that makes Userprofiles hashable
     SYNPY-879
-    '''
+    """
+
     def __hash__(self):
-        return int(self['ownerId'])
+        return int(self["ownerId"])
 
 
 def _get_team_set(syn, team):
-    '''
+    """
     Helper function to return a set of usernames
 
     Args:
@@ -60,14 +61,14 @@ def _get_team_set(syn, team):
 
     Returns:
         Set of synapse user profiles in team
-    '''
+    """
     members = syn.getTeamMembers(team)
-    members_set = set(NewUserProfile(**member['member']) for member in members)
+    members_set = set(NewUserProfile(**member["member"]) for member in members)
     return members_set
 
 
 def team_members_diff(syn, a, b):
-    '''
+    """
     Calculates the diff between teama and teamb
 
     Args:
@@ -77,7 +78,7 @@ def team_members_diff(syn, a, b):
 
     Returns:
         Set of synapse user profiles in teama but not in teamb
-    '''
+    """
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     members_not_in_teamb = uniq_teama_members.difference(uniq_teamb_members)
@@ -85,7 +86,7 @@ def team_members_diff(syn, a, b):
 
 
 def team_members_intersection(syn, a, b):
-    '''
+    """
     Calculates the intersection between teama and teamb
 
     Args:
@@ -95,7 +96,7 @@ def team_members_intersection(syn, a, b):
 
     Returns:
         Set of synapse user profiles that belong in both teams
-    '''
+    """
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     intersect_members = uniq_teama_members.intersection(uniq_teamb_members)
@@ -103,7 +104,7 @@ def team_members_intersection(syn, a, b):
 
 
 def team_members_union(syn, a, b):
-    '''
+    """
     Calculates the union between teama and teamb
 
     Args:
@@ -113,7 +114,7 @@ def team_members_union(syn, a, b):
 
     Returns:
         Set of a combination of synapse user profiles from both teams
-    '''
+    """
     uniq_teama_members = _get_team_set(syn, a)
     uniq_teamb_members = _get_team_set(syn, b)
     union_members = uniq_teama_members.union(uniq_teamb_members)

@@ -140,7 +140,7 @@ Synopsis
 ^^^^^^^^
 
 set-evaluation-quota
-    eval_id [--round_start yyyy-MM-ddTHH:mm:ss 
+    eval_id [--round_start yyyy-MM-ddTHH:mm:ss
     [--round_end yyyy-MM-ddTHH:mm:ss]
     [--round_duration n]
     [--num_rounds n] [--sub_limit n]
@@ -149,7 +149,7 @@ Description
 ^^^^^^^^^^^
 
 Set the quota of an evaluation queue. Quota options include the round
-starting date, round ending date, round duration, number of rounds, and 
+starting date, round ending date, round duration, number of rounds, and
 submission limit.
 
 .. Warning::
@@ -206,7 +206,7 @@ set-evaluation-acl
 Description
 ^^^^^^^^^^^
 
-Set the evaluation permissions for ``user_or_team`` with 
+Set the evaluation permissions for ``user_or_team`` with
 ``permission_level`` access.
 
 Positional
@@ -236,7 +236,7 @@ Synopsis
 ^^^^^^^^
 
 query
-    "QUERY" [--outputfile file] [--render] 
+    "QUERY" [--outputfile file] [--render]
     [--limit n] [--offset n]
 
 Description
@@ -388,7 +388,7 @@ Positional
 
 .. cmdoption:: status
 
-    One of: ``RECEIVED``, ``ACCEPTED``, ``INVALID``, ``VALIDATED``, 
+    One of: ``RECEIVED``, ``ACCEPTED``, ``INVALID``, ``VALIDATED``,
     ``SCORED``, ``OPEN``, ``CLOSED``, ``EVALUATION_IN_PROGRESS``,
     ``REJECTED``
 
@@ -438,7 +438,7 @@ set-entity-acl
 Description
 ^^^^^^^^^^^
 
-Set the entity permissions for ``user_or_team`` with 
+Set the entity permissions for ``user_or_team`` with
 ``permission_level`` access.
 
 Positional
@@ -671,3 +671,41 @@ Optional
 
     Path to markdown files and wiki_config.json
     Defaults to location of where code is being executed
+
+-------
+
+Scan an evaluation queue for cheating
+-----------------------------
+
+Synopsis
+^^^^^^^^
+
+cheat-detection
+    evaluationid [-s]
+
+Description
+^^^^^^^^^^^
+
+Scans an evaluation queue for possible pairs of users who are trying to skirt the
+daily submission limit by creating multiple users to submit to a challenge. A report
+is generated with possible linked users and the strength of evidence that any two users
+are linked.
+
+
+Positional
+^^^^^^^^^^
+
+.. program:: challengeutils cheat-detection
+
+.. cmdoption:: projectid
+
+    Synapse evaluation ID e.g. ``9615080``
+
+Optional
+^^^^^^^^
+
+.. cmdoption:: -s, --submission_status
+
+    List of submission statuses to use when scanning
+    for valid submissions. Accepts multiple inputs. Defaults to `ACCEPTED`
+^^^^^^^^
