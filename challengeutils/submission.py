@@ -103,18 +103,14 @@ def validate_project(syn, submission, challenge, public=False, admin=None):
     """
     writeup = syn.getSubmission(submission)
     errors = []
-
     type_error = _validate_ent_type(writeup)
     if type_error:
         errors.append(type_error)
-
     contents_error = _validate_project_id(writeup, challenge)
     if contents_error:
         errors.append(contents_error)
-
     permissions_error = _check_project_permissions(syn, writeup, public, admin)
     errors.extend(permissions_error)
-
     status = "INVALID" if errors else "VALIDATED"
     return {"submission_errors": "\n".join(errors), "submission_status": status}
 
@@ -142,7 +138,6 @@ def archive_project(syn, submission, admin):
 # TODO: move to utils module
 def _validate_ent_type(submission):
     """Check entity type of submission."""
-
     try:
         if not isinstance(submission.entity, entity.Project):
             ent_type = re.search(r"entity\.(.*?)'", str(type(submission.entity))).group(
@@ -157,7 +152,6 @@ def _validate_ent_type(submission):
 
 def _validate_project_id(proj, challenge):
     """Check that submission is not the Challenge site."""
-
     return (
         "Submission should not be the Challenge site."
         if proj.entityId == challenge
@@ -167,9 +161,7 @@ def _validate_project_id(proj, challenge):
 
 def _validate_public_permissions(syn, proj):
     """Ensure project is shared with the public."""
-
     error = "Your project is not publicly available."
-
     try:
         # Remove error message if the project is accessible by the public.
         syn_users_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
@@ -178,18 +170,15 @@ def _validate_public_permissions(syn, proj):
             "READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms
         ) and "READ" in public_perms:
             error = ""
-
     except SynapseHTTPError as e:
         # Raise exception message if error is not a permissions error.
         if e.response.status_code != 403:
             raise e
-
     return error
 
 
 def _validate_admin_permissions(syn, proj, admin):
     """Ensure project is shared with the given admin."""
-
     error = (
         "Project is private; please update its sharing settings."
         f" Writeup should be shared with {admin}."
@@ -199,24 +188,20 @@ def _validate_admin_permissions(syn, proj, admin):
         admin_perms = syn.getPermissions(proj.entityId, admin)
         if "READ" in admin_perms and "DOWNLOAD" in admin_perms:
             error = ""
-
     except SynapseHTTPError as e:
         # Raise exception message if error is not a permissions error.
         if e.response.status_code != 403:
             raise e
-
     return error
 
 
 def _check_project_permissions(syn, submission, public, admin):
     """Check the submission sharing settings."""
-
     errors = []
     if public:
         public_error = _validate_public_permissions(syn, submission)
         if public_error:
             errors.append(public_error)
-
     if not public and admin is not None:
         admin_error = _validate_admin_permissions(syn, submission, admin)
         if admin_error:
