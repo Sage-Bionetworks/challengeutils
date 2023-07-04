@@ -164,11 +164,8 @@ def _validate_public_permissions(syn, proj):
     error = "Your project is not publicly available."
     try:
         # Remove error message if the project is accessible by the public.
-        syn_users_perms = syn.getPermissions(proj.entityId, AUTHENTICATED_USERS)
         public_perms = syn.getPermissions(proj.entityId)
-        if (
-            "READ" in syn_users_perms and "DOWNLOAD" in syn_users_perms
-        ) and "READ" in public_perms:
+        if "READ" in public_perms:
             error = ""
     except SynapseHTTPError as e:
         # Raise exception message if error is not a permissions error.
@@ -184,9 +181,13 @@ def _validate_admin_permissions(syn, proj, admin):
         f" Writeup should be shared with {admin}."
     )
     try:
-        # Remove error message if admin has read and download permissions.
+        # Remove error message if admin has read and download permissions
+        # OR if the project is publicly availably.
         admin_perms = syn.getPermissions(proj.entityId, admin)
-        if "READ" in admin_perms and "DOWNLOAD" in admin_perms:
+        public_perms = syn.getPermissions(proj.entityId)
+        if "READ" in public_perms or (
+            "READ" in admin_perms and "DOWNLOAD" in admin_perms
+        ):
             error = ""
     except SynapseHTTPError as e:
         # Raise exception message if error is not a permissions error.
@@ -202,7 +203,7 @@ def _check_project_permissions(syn, submission, public, admin):
         public_error = _validate_public_permissions(syn, submission)
         if public_error:
             errors.append(public_error)
-    if not public and admin is not None:
+    if admin is not None:
         admin_error = _validate_admin_permissions(syn, submission, admin)
         if admin_error:
             errors.append(admin_error)
