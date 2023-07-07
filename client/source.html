@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Source &mdash; challengeutils 4.2 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>Source &mdash; challengeutils 4.2.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
@@ -33,7 +33,7 @@
               <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                4.2
+                4.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 <li class="toctree-l1"><a class="reference internal" href="participant.html">Participant Built-in Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="admin.html">Admin Built-in Commands</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Source</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#participant">Participant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-challengeutils.__main__">Participant</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#admin">Admin</a></li>
 </ul>
 </li>
@@ -101,12 +101,205 @@
              
   <div class="section" id="source">
 <h1>Source<a class="headerlink" href="#source" title="Permalink to this headline"></a></h1>
-<div class="section" id="participant">
-<h2>Participant<a class="headerlink" href="#participant" title="Permalink to this headline"></a></h2>
+<div class="section" id="module-challengeutils.__main__">
+<span id="participant"></span><h2>Participant<a class="headerlink" href="#module-challengeutils.__main__" title="Permalink to this headline"></a></h2>
+<p>challengeutils command line client</p>
+<dl class="function">
+<dt id="challengeutils.__main__.command_list_registered_challenges">
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_list_registered_challenges</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_list_registered_challenges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#challengeutils.__main__.command_list_registered_challenges" title="Permalink to this definition"></a></dt>
+<dd><p>List the challenges a user is registered to. Defaults to the
+logged in synapse user is userid isn’t specified.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="nb">list</span><span class="o">-</span><span class="n">registered</span><span class="o">-</span><span class="n">challenges</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="nb">list</span><span class="o">-</span><span class="n">registered</span><span class="o">-</span><span class="n">challenges</span> <span class="o">--</span><span class="n">userid</span> <span class="mi">1223</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <hr class="docutils" />
 <div class="section" id="admin">
 <h2>Admin<a class="headerlink" href="#admin" title="Permalink to this headline"></a></h2>
+<p>challengeutils command line client</p>
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_createchallenge</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_createchallenge"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a challenge space in Synapse.  This pulls from a standard
+DREAM template and creates the Projects and Teams that you will need
+for a challenge.  For more information on all the components this function
+creates, please head to <a class="reference external" href="https://docs.synapse.org/articles/challenge_administration.html">challenge administration</a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">createchallenge</span> <span class="s2">&quot;Challenge Name Here&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_mirrorwiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_mirrorwiki"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Mirrors (sync) wiki pages by using the wikipage titles between two
+Synapse Entities.  This function only works if <cite>entity</cite> and <cite>destination</cite>
+are the same type and both must have wiki pages.  Only wiki pages with the
+same titles will be copied from <cite>entity</cite> to <cite>destination</cite> - if there is
+a wiki page that you want to add, you will have to create a wiki page
+first in the <cite>destination</cite> with the same name.</p>
+<p>Note: this is different from copying a wiki - to copy a wiki, please look
+at <cite>synapseutils.copyWiki</cite>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">mirrorwiki</span> <span class="n">syn12345</span> <span class="n">syn23456</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_list_evaluations</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_list_evaluations"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Lists evaluation queues of a project</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">listevaluations</span> <span class="n">projectid</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_evaluation_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_evaluation_quota"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the evaluation quota on existing evaluation queues.
+This WILL erase any old quota you had previously set.
+Note - round_start must be specified with either round_end or
+round_duration and number_of_rounds must be defined for the
+time limits to work.  submission_limit will work without number_of_rounds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationquota</span> <span class="mi">12345</span>                                           <span class="o">--</span><span class="n">round_start</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">21</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">round_end</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">23</span><span class="n">T17</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                                           <span class="o">--</span><span class="n">num_rounds</span> <span class="mi">2</span>                                           <span class="o">--</span><span class="n">sub_limit</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_evaluation_acl</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_evaluation_acl"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets permissions on queues for users or teams.  By default the user is
+public if there is no user or team specified and the default permission
+is view.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setevaluationacl</span> <span class="mi">12345</span> <span class="n">user_or_team</span> <span class="n">score</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_query</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_query"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Command line convenience function to call evaluation queue query
+Evaluation queues offer a separate query service from the rest of Synapse.
+This query function will print the leaderboard in a csv format in standard
+out.  Proceed <a class="reference external" href="https://docs.synapse.org/rest/GET/evaluation/submission/query.html">here</a>
+to learn more about this query service.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">query</span> <span class="s2">&quot;select objectId, status from evaluation_12345&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_download_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_download_submission"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Downloads a Synapse Submission given a submission id</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">downloadsubmission</span> <span class="n">submissionid</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_annotate_submission_with_json</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_annotate_submission_with_json"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Annotate a Synapse submission with a json file.  This function
+is used by a ChallengeWorkflowTemplates tool.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">annotatesubmission</span> <span class="mi">12345</span> <span class="n">annotations</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">to_public</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_change_status</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_change_status"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Each submission has a status, this is a convenience function to change
+the status of a submission.  Here is a list of <a class="reference external" href="https://rest-docs.synapse.org/rest/org/sagebionetworks/evaluation/model/SubmissionStatusEnum.html">valid statuses</a></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">changestatus</span> <span class="mi">1234545</span> <span class="n">INVALID</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_stop_submission_over_quota</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_stop_submission_over_quota"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets an annotation on Synapse Docker submissions such that it will
+be terminated by the orchestrator. Usually applies to submissions
+that have been running for longer than the alloted time.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">stop</span><span class="o">-</span><span class="n">submission</span><span class="o">-</span><span class="n">over</span><span class="o">-</span><span class="n">quota</span> <span class="n">submission_viewid</span> <span class="n">quota</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_set_entity_acl</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_set_entity_acl"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets permissions on entities for users or teams.  By default the user is
+public if there is no user or team specified and the default permission
+is view.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">setentityacl</span> <span class="n">syn123545</span> <span class="n">user_or_team</span> <span class="n">view</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_validate_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_validate_project"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validate a Project submission, e.g. writeup.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">validate</span><span class="o">-</span><span class="n">project</span> <span class="mi">9876543</span> <span class="n">syn123</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">public</span><span class="p">]</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">admin</span> <span class="n">bob</span><span class="p">]</span>                                        <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">foo</span><span class="o">.</span><span class="n">txt</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_archive_project</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_archive_project"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Archive a Project submission by creating a copy of it.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">archive</span><span class="o">-</span><span class="n">project</span> <span class="mi">9876543</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_delete_submission</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_delete_submission"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes a submission</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">delete</span><span class="o">-</span><span class="n">submission</span> <span class="mi">12345</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_validate_docker</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_validate_docker"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Validates Docker image by making sure it exists and is less than one
+terabyte</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">validate</span><span class="o">-</span><span class="n">docker</span> <span class="n">submissionid</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_push_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_push_wiki"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Command line interface to upload wiki updates</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">push</span><span class="o">-</span><span class="n">wiki</span> <span class="n">syn12345</span> <span class="o">--</span><span class="n">workdir</span> <span class="o">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">challengeutils.__main__.</code><code class="sig-name descname">command_pull_wiki</code><span class="sig-paren">(</span><em class="sig-param">syn</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/challengeutils/__main__.html#command_pull_wiki"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Command line interface to download wiki into local markdown files</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">challengeutils</span> <span class="n">pull</span><span class="o">-</span><span class="n">wiki</span> <span class="n">syn12345</span> <span class="o">--</span><span class="n">workdir</span> <span class="o">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
