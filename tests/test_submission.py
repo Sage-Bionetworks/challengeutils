@@ -69,7 +69,7 @@ def test__validate_admin_permissions_admin_permissions_req():
     admin = "me"
     with patch.object(SYN, "getPermissions") as patch_perms:
         errors = submission._validate_admin_permissions(SYN, PROJ, admin=admin)
-        patch_perms.assert_called_once()
+        assert patch_perms.call_count == 2
 
         message = (
             "Project is private; please update its sharing settings."
@@ -86,7 +86,7 @@ def test__validate_public_permissions_public_permissions_req():
     """
     with patch.object(SYN, "getPermissions") as patch_perms:
         errors = submission._validate_public_permissions(SYN, PROJ)
-        assert patch_perms.call_count == 2
+        patch_perms.assert_called_once()
         assert errors == "Your project is not publicly available."
 
 
