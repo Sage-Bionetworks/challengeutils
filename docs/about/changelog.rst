@@ -8,6 +8,10 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v4.2.1
+------
+- Bug fix for `validate-project`
+
 v4.2.0
 ------
 .. Important::
