@@ -479,7 +479,7 @@ def build_parser():
             "Number of challenge tasks (default: 1)"
         ),
     )
-    parser_creparser_create_portal_challengeatechallenge.add_argument(
+    parser_create_portal_challenge.add_argument(
         "--livesiteid",
         help=(
             "Option to specify the live site synapse Id" " there is already a live site"
