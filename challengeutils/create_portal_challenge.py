@@ -20,14 +20,14 @@ import synapseclient
 from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
 
-from . import challenge, permissions, utils
+from . import challenge, permissions
 
 logger = logging.getLogger(__name__)
 
 CHALLENGE_TEMPLATE_SYNID = "syn52941681"
-TASK_WIKI_ID = "624554"
 TABLE_TEMPLATE_SYNID = "syn52955244"
 CHALLENGE_ROLES = ['organizer', 'contributor', 'sponsor']
+TASK_WIKI_ID = "624554"
 
 
 def create_project(syn, project_name):
