@@ -98,7 +98,7 @@ def command_create_portal_challenge(syn, args):
             urls[component] = f"https://www.synapse.org/#!Synapse:{componentid}"
         elif component.endswith("teamid"):
             urls[component] = f"https://www.synapse.org/#!Team:{componentid}"
-    urls["name"] = args.challengename
+    urls["name"] = args.challenge_name
     text = (
         "{name} (Production site): {live_projectid}",
         "{name} (Staging site): {staging_projectid}",
@@ -472,7 +472,7 @@ def build_parser():
     )
     parser_create_portal_challenge.add_argument("challenge_name", help="Challenge name")
     parser_create_portal_challenge.add_argument(
-        "-n",
+        "-t",
         "--tasks_count",
         type=int, default=1,
         help=(
