@@ -325,6 +325,13 @@ def main(syn, challenge_name, tasks_count, live_site=None):
         project_live = syn.get(live_site)
 
     challenge_obj = create_challenge_widget(syn, project_live, teams["team_part_id"])
+    for i in range(0, tasks_count):
+        create_evaluation_queue(
+            syn,
+            f"{challenge_name} Task {i + 1}",
+            f"Task {i + 1} Submission",
+            project_live.id,
+        )
     # TODO: the following function does not work for some reason; see function for details
     # tables = create_organizer_tables(syn, project_live.id)
     tables = {}
