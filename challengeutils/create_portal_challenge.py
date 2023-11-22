@@ -24,6 +24,7 @@ from . import challenge, permissions
 
 logger = logging.getLogger(__name__)
 
+PORTAL_TABLE = "syn51476218"
 CHALLENGE_TEMPLATE_SYNID = "syn52941681"
 TABLE_TEMPLATE_SYNID = "syn52955244"
 CHALLENGE_ROLES = ['organizer', 'contributor', 'sponsor']
@@ -409,6 +410,12 @@ def main(syn, challenge_name, tasks_count, live_site=None):
                 parentWikiId=new_task_tab.id
             )
             syn.store(task_subwiki)
+
+    # Add project to portal table.
+    project_view = syn.get(PORTAL_TABLE)
+    project_view.scopeIds.append(project_live.id)
+    syn.store(project_view)
+    logger.info(f" Challenge added to 'Curated Challenge Projects' ({PORTAL_TABLE})")
 
     return {
         "live_projectid": project_live.id,
