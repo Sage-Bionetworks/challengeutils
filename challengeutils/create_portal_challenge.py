@@ -67,6 +67,24 @@ def create_evaluation_queue(syn, name, description, parentid):
     logger.info("Created Queue {}({})".format(queue.name, queue.id))
     return queue
 
+def _create_live_wiki(syn, project):
+    """Creates the wiki of the live challenge page
+
+    Args:
+        syn: Synpase object
+        project: Synapse project
+        teamid: Synapse team id of participant team
+    """
+    markdown = (
+        syn
+        .getWiki(CHALLENGE_TEMPLATE_SYNID)
+        .get('markdown')
+        .replace(
+            "#!Synapse:syn52941681/tables/", 
+            f"#!Synapse:{project.id}/tables/")
+    )
+    syn.store(synapseclient.Wiki(title="", owner=project, markdown=markdown))
+
 
 def create_challenge_widget(syn, project_live, team_part_id):
     """Creates challenge widget - activates a Synapse project
