@@ -262,8 +262,30 @@ def create_organizer_tables(syn, project_id):
             parent=parent_id
         )
         folder = syn.store(folder)
-        logger.info("Created Folder {}({})".format(folder.name, folder.id))
-    return
+def create_annotations(syn, project_id, table_ids, folder_ids):
+    """Create annotations that will power the portal."""
+    logger.info("Creating basic annotations...")
+    project = syn.get(project_id)
+
+    # Set basic annotations to the project.
+    for name, value in syn.get_annotations(CHALLENGE_TEMPLATE_SYNID).items():
+        project[name] = ""
+
+    # For annotations we do currently know, add their values.
+    main_wiki_id = [
+        wiki.get('id')
+        for wiki in syn.getWikiHeaders(project_id)
+        if not wiki.get('parentId')
+    ][0]
+    project['Overview'] = f"{project_id}/wiki/{main_wiki_id}"
+    # # for role, synid in table_ids.items():
+    # #     annots[role] = synid
+    for i, synid in folder_ids.items():
+        project[f'Task_{i + 1}.DataFolder'] = synid
+    print(project)
+    project = syn.store(project)
+    logger.info("Annotations creation complete.")
+    return project
 
 
 def main(syn, challenge_name, tasks_count, live_site=None):
@@ -303,14 +325,9 @@ def main(syn, challenge_name, tasks_count, live_site=None):
         project_live = syn.get(live_site)
 
     challenge_obj = create_challenge_widget(syn, project_live, teams["team_part_id"])
-    create_evaluation_queue(
-        syn,
-        "%s Project Submission" % challenge_name,
-        "Project Submission",
-        project_live.id,
-    )
-    create_organizer_tables(syn, project_live.id)
-    create_data_folders(syn, project_live.id, tasks_count)
+    # Add the basic annotations to the live Project - some can be pre-filled but the
+    # majority will need to filled out on the web UI.
+    project_live = create_annotations(syn, project_live.id, tables, folders)
 
     # Create staging Project
     project_staging = create_project(syn, challenge_name + " - staging")
