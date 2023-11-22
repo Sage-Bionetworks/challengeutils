@@ -88,7 +88,7 @@ def command_create_portal_challenge(syn, args):
     >>> challengeutils create-portal-challenge "Challenge Name Here" [-n <int>]
     """
     challenge_components = create_portal_challenge.main(
-        syn, args.challengename, args.tasks_count, args.livesiteid
+        syn, args.challenge_name, args.tasks_count, args.livesiteid
     )
     # component: project or team
     # componentid: project id or teamid
@@ -474,7 +474,7 @@ def build_parser():
     parser_create_portal_challenge.add_argument(
         "-n",
         "--tasks_count",
-        default=1,
+        type=int, default=1,
         help=(
             "Number of challenge tasks (default: 1)"
         ),
