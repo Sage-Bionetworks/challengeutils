@@ -113,14 +113,16 @@ def create_organizer_tables(syn, parent_id):
         parent=parent_id)
     table = synapseclient.Table(schema, [[]])
     table = syn.store(table)
-
+    logger.info("Created Table {}({})".format(table.name, table.id))
     for role in CHALLENGE_ROLES:
         view = synapseclient.MaterializedViewSchema(
             name=role.title() + 's',
             parent=parent_id,
             definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')"
         )
-        syn.store(view)
+        view = syn.store(view)
+        logger.info("Created MaterializedView {}({})".format(view.name, view.id))
+    return table
 
 
 def _create_live_wiki(syn, project):
@@ -253,7 +255,9 @@ def create_data_folders(syn, parent_id, tasks_count):
             name=f"Task {i + 1}",
             parent=parent_id
         )
-        syn.store(folder)
+        folder = syn.store(folder)
+        logger.info("Created Folder {}({})".format(folder.name, folder.id))
+    return
 
 
 def main(syn, challenge_name, tasks_count, live_site=None):
