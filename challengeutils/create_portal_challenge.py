@@ -133,14 +133,13 @@ def _create_live_wiki(syn, project):
         project: Synapse project
         teamid: Synapse team id of participant team
     """
-    markdown = (
-        syn
-        .getWiki(CHALLENGE_TEMPLATE_SYNID)
-        .get('markdown')
-        .replace(
-            "#!Synapse:syn52941681/tables/", 
-            f"#!Synapse:{project.id}/tables/")
-    )
+    markdown = """
+<div align="center" class="alert alert-info">
+
+###! More information coming soon!
+
+</div>
+    """
     syn.store(synapseclient.Wiki(title="", owner=project, markdown=markdown))
 
 
