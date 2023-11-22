@@ -46,6 +46,38 @@ def create_project(syn, project_name):
     return project
 
 
+def create_team(syn, team_name, desc, can_public_join=False):
+    """Creates Synapse Team
+
+    Args:
+        syn: Synpase object
+        team_name: Name of team
+        desc: Description of team
+        can_public_join: true for teams which members can join without
+                         an invitation or approval. Default to False
+
+    Returns:
+        Synapse Team id
+    """
+    try:
+        # raises a ValueError if a team does not exist
+        team = syn.getTeam(team_name)
+        logger.info("The team {} already exists.".format(team_name))
+        logger.info(team)
+        # If you press enter, this will default to 'y'
+        user_input = input("Do you want to use this team? (Y/n) ") or "y"
+        if user_input.lower() not in ("y", "yes"):
+            logger.info("Please specify a new challenge name. Exiting.")
+            sys.exit(1)
+    except ValueError:
+        team = synapseclient.Team(
+            name=team_name, description=desc, canPublicJoin=can_public_join
+        )
+        # raises a ValueError if a team with this name already exists
+        team = syn.store(team)
+        logger.info("Created Team {} ({})".format(team.name, team.id))
+    return team
+
 
 def create_evaluation_queue(syn, name, description, parentid):
     """
@@ -129,6 +161,32 @@ def _update_wikipage_string(
     wikipage_string = wikipage_string.replace("{challengeName}", challenge_name)
     wikipage_string = wikipage_string.replace("projectId=syn0", "projectId=%s" % synid)
     return wikipage_string
+
+
+def _create_teams(syn, challenge_name):
+    """Create teams needed for a challenge: participants and organizers
+
+    Args:
+        syn: Synapse connection
+        challenge_name: Name of the challenge
+
+    Returns:
+        dict of challenge team ids
+    """
+    team_part = challenge_name + " Participants"
+    team_org = challenge_name + " Organizers"
+    team_part_ent = create_team(
+        syn, team_part, "Challenge Particpant Team", can_public_join=True
+    )
+    team_org_ent = create_team(
+        syn, team_org, "Challenge Organizing Team", can_public_join=False
+    )
+
+    team_map = {
+        "team_part_id": team_part_ent["id"],
+        "team_org_id": team_org_ent["id"],
+    }
+    return team_map
 
 
 def check_existing_and_delete_wiki(syn, synid):
