@@ -470,8 +470,8 @@ def build_parser():
     parser_create_portal_challenge = subparsers.add_parser(
         "create-portal-challenge", help="Create a Sage Challenge Portal challenge from template"
     )
-    parser_createchallenge.add_argument("challenge_name", help="Challenge name")
-    parser_createchallenge.add_argument(
+    parser_create_portal_challenge.add_argument("challenge_name", help="Challenge name")
+    parser_create_portal_challenge.add_argument(
         "-n",
         "--tasks_count",
         default=1,
@@ -479,13 +479,13 @@ def build_parser():
             "Number of challenge tasks (default: 1)"
         ),
     )
-    parser_createchallenge.add_argument(
+    parser_creparser_create_portal_challengeatechallenge.add_argument(
         "--livesiteid",
         help=(
             "Option to specify the live site synapse Id" " there is already a live site"
         ),
     )
-    parser_createchallenge.set_defaults(func=command_create_portal_challenge)
+    parser_create_portal_challenge.set_defaults(func=command_create_portal_challenge)
 
     parser_mirrorwiki = subparsers.add_parser(
         "mirror-wiki",
