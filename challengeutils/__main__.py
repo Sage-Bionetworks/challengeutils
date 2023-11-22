@@ -468,7 +468,8 @@ def build_parser():
     parser_createchallenge.set_defaults(func=command_createchallenge)
 
     parser_create_portal_challenge = subparsers.add_parser(
-        "create-portal-challenge", help="Create a Sage Challenge Portal challenge from template"
+        "create-portal-challenge",
+        help="Create a Sage Challenge Portal challenge from template"
     )
     parser_create_portal_challenge.add_argument("challenge_name", help="Challenge name")
     parser_create_portal_challenge.add_argument(
