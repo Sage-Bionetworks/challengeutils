@@ -240,6 +240,22 @@ def check_existing_and_delete_wiki(syn, synid):
             syn.delete(wiki)
 
 
+def create_data_folders(syn, parent_id, tasks_count):
+    """Create folders for challenge data, one for each task.
+    
+    Args:
+        syn: Synapse object
+        parent_id: project synID
+        tasks_count: Number of task folders to create        
+    """
+    for i in range(0, tasks_count):
+        folder = synapseclient.Folder(
+            name=f"Task {i + 1}",
+            parent=parent_id
+        )
+        syn.store(folder)
+
+
 def main(syn, challenge_name, tasks_count, live_site=None):
     """Creates two project entity for challenge sites.
     1) live (public) and 2) staging (private until launch)
