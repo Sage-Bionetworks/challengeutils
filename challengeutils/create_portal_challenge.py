@@ -99,6 +99,30 @@ def create_evaluation_queue(syn, name, description, parentid):
     logger.info("Created Queue {}({})".format(queue.name, queue.id))
     return queue
 
+
+def create_organizer_tables(syn, parent_id):
+    """Create main table of organizers and associating views.
+
+    Args:
+        syn: Synapse object
+        parent_id: project synID
+    """
+    schema = synapseclient.Schema(
+        name='Organizing Team',
+        columns=syn.getColumns(TABLE_TEMPLATE_SYNID),
+        parent=parent_id)
+    table = synapseclient.Table(schema, [[]])
+    table = syn.store(table)
+
+    for role in CHALLENGE_ROLES:
+        view = synapseclient.MaterializedViewSchema(
+            name=role.title() + 's',
+            parent=parent_id,
+            definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')"
+        )
+        syn.store(view)
+
+
 def _create_live_wiki(syn, project):
     """Creates the wiki of the live challenge page
 
