@@ -16,6 +16,7 @@ from synapseclient.core.exceptions import (
 from . import (
     annotations,
     createchallenge,
+    create_portal_challenge,
     challenge,
     cheat_detection,
     evaluation_queue,
@@ -76,6 +77,33 @@ def command_createchallenge(syn, args):
         "{name} (Participant team): {organizer_teamid}",
         "{name} (Organizer team): {participant_teamid}",
         "{name} (Pre-registrant team): {preregistrantrant_teamid}",
+    )
+    print("\n" + "\n".join(text).format(**urls))
+    return challenge_components
+
+
+def command_create_portal_challenge(syn, args):
+    """Creates a challenge on the Sage Challenge Portal.
+
+    >>> challengeutils create-portal-challenge "Challenge Name Here" [-n <int>]
+    """
+    challenge_components = create_portal_challenge.main(
+        syn, args.challengename, args.tasks_count, args.livesiteid
+    )
+    # component: project or team
+    # componentid: project id or teamid
+    urls = {}
+    for component, componentid in challenge_components.items():
+        if component.endswith("projectid"):
+            urls[component] = f"https://www.synapse.org/#!Synapse:{componentid}"
+        elif component.endswith("teamid"):
+            urls[component] = f"https://www.synapse.org/#!Team:{componentid}"
+    urls["name"] = args.challengename
+    text = (
+        "{name} (Production site): {live_projectid}",
+        "{name} (Staging site): {staging_projectid}",
+        "{name} (Participant team): {organizer_teamid}",
+        "{name} (Organizer team): {participant_teamid}",
     )
     print("\n" + "\n".join(text).format(**urls))
     return challenge_components
@@ -438,6 +466,26 @@ def build_parser():
         ),
     )
     parser_createchallenge.set_defaults(func=command_createchallenge)
+
+    parser_create_portal_challenge = subparsers.add_parser(
+        "create-portal-challenge", help="Create a Sage Challenge Portal challenge from template"
+    )
+    parser_createchallenge.add_argument("challenge_name", help="Challenge name")
+    parser_createchallenge.add_argument(
+        "-n",
+        "--tasks_count",
+        default=1,
+        help=(
+            "Number of challenge tasks (default: 1)"
+        ),
+    )
+    parser_createchallenge.add_argument(
+        "--livesiteid",
+        help=(
+            "Option to specify the live site synapse Id" " there is already a live site"
+        ),
+    )
+    parser_createchallenge.set_defaults(func=command_create_portal_challenge)
 
     parser_mirrorwiki = subparsers.add_parser(
         "mirror-wiki",
