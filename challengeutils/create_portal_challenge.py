@@ -259,7 +259,7 @@ def create_data_folders(syn, project_id, tasks_count):
     Args:
         syn: Synapse object
         parent_id: project synID
-        tasks_count: Number of task folders to create        
+        tasks_count: Number of task folders to create
     """
     logger.info(" Creating folders...")
     folder_ids = {}
