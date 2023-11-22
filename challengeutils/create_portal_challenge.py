@@ -100,31 +100,6 @@ def create_evaluation_queue(syn, name, description, parentid):
     return queue
 
 
-def create_organizer_tables(syn, parent_id):
-    """Create main table of organizers and associating views.
-
-    Args:
-        syn: Synapse object
-        parent_id: project synID
-    """
-    schema = synapseclient.Schema(
-        name='Organizing Team',
-        columns=syn.getColumns(TABLE_TEMPLATE_SYNID),
-        parent=parent_id)
-    table = synapseclient.Table(schema, [[]])
-    table = syn.store(table)
-    logger.info("Created Table {}({})".format(table.name, table.id))
-    for role in CHALLENGE_ROLES:
-        view = synapseclient.MaterializedViewSchema(
-            name=role.title() + 's',
-            parent=parent_id,
-            definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')"
-        )
-        view = syn.store(view)
-        logger.info("Created MaterializedView {}({})".format(view.name, view.id))
-    return table
-
-
 def _create_live_wiki(syn, project):
     """Creates the wiki of the live challenge page
 
@@ -241,7 +216,39 @@ def check_existing_and_delete_wiki(syn, synid):
             syn.delete(wiki)
 
 
-def create_data_folders(syn, parent_id, tasks_count):
+# FIXME: function does not work as expected, see inner comments for details.
+def create_organizer_tables(syn, project_id):
+    """Create main table of organizers and associating views.
+
+    Args:
+        syn: Synapse object
+        parent_id: project synID
+    """
+    view_ids = {}
+    schema = synapseclient.Schema(
+        name='Organizing Team',
+        columns=syn.getColumns(TABLE_TEMPLATE_SYNID),
+        parent=project_id)
+    table = synapseclient.Table(schema, [[]])
+
+    # FIXME: for some reason, storing the table will then call on the
+    #        `challengeutils` CLI again
+    table = syn.store(table)
+    logger.info(f"Table created: {table.name} ({table.id})")
+
+    # FIXME: due to the issue above, we are not able to create the
+    #        MaterializedViews
+    for role in CHALLENGE_ROLES:
+        role_title = role.title() + 's'
+        view = synapseclient.MaterializedViewSchema(
+            name=role_title,
+            parent=project_id,
+            definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')"
+        )
+        view = syn.store(view)
+        view_ids[role_title] = view.id
+        logger.info(f"MaterializedView created: {view.name} ({view.id})")
+    return view_ids
     """Create folders for challenge data, one for each task.
     
     Args:
