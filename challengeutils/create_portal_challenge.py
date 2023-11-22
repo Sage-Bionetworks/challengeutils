@@ -42,7 +42,7 @@ def create_project(syn, project_name):
     """
     project = synapseclient.Project(project_name)
     project = syn.store(project)
-    logger.info(f"Project created: {project.name} ({project.id})")
+    logger.info(f" Project created: {project.name} ({project.id})")
     return project
 
 
@@ -62,12 +62,12 @@ def create_team(syn, team_name, desc, can_public_join=False):
     try:
         # raises a ValueError if a team does not exist
         team = syn.getTeam(team_name)
-        logger.info(f"Team {team_name} already exists.")
+        logger.info(f" Team {team_name} already exists.")
         logger.info(team)
         # If you press enter, this will default to 'y'
         user_input = input("Do you want to use this team? (Y/n) ") or "y"
         if user_input.lower() not in ("y", "yes"):
-            logger.info("Please specify a new challenge name. Exiting.")
+            logger.info(" Please specify a new challenge name. Exiting.")
             sys.exit(1)
     except ValueError:
         team = synapseclient.Team(
@@ -75,7 +75,7 @@ def create_team(syn, team_name, desc, can_public_join=False):
         )
         # raises a ValueError if a team with this name already exists
         team = syn.store(team)
-        logger.info(f"Team created: {team.name} ({team.id})")
+        logger.info(f" Team created: {team.name} ({team.id})")
     return team
 
 
@@ -96,7 +96,7 @@ def create_evaluation_queue(syn, name, description, parentid):
         name=name, description=description, contentSource=parentid
     )
     queue = syn.store(queue_ent)
-    logger.info(f"Queue created: {queue.name} ({queue.id})")
+    logger.info(f" Queue created: {queue.name} ({queue.id})")
     return queue
 
 
@@ -129,10 +129,10 @@ def create_challenge_widget(syn, project_live, team_part_id):
     """
     try:
         chal_obj = challenge.create_challenge(syn, project_live, team_part_id)
-        logger.info(f"Acivated as Challenge ({chal_obj.id})")
+        logger.info(f" Acivated as Challenge (ID: {chal_obj.id})")
     except SynapseHTTPError:
         chal_obj = challenge.get_challenge(syn, project_live)
-        logger.info(f"Fetched existing Challenge ({chal_obj.id})")
+        logger.info(f" Fetched existing Challenge (ID: {chal_obj.id})")
     return chal_obj
 
 
@@ -203,16 +203,16 @@ def check_existing_and_delete_wiki(syn, synid):
         pass
 
     if wiki is not None:
-        logger.info("The staging project has already a wiki.")
+        logger.info(" The staging project has already a wiki.")
         logger.info(wiki)
         user_input = (
             input("Do you agree to delete the wiki before continuing? (y/N) ") or "n"
         )
         if user_input.lower() not in ("y", "yes"):
-            logger.info("Exiting")
+            logger.info(" --- Exiting ---")
             sys.exit(1)
         else:
-            logger.info(f"Deleting wiki of the staging project ({wiki.id})")
+            logger.info(f" Deleting wiki of the staging project ({wiki.id})")
             syn.delete(wiki)
 
 
@@ -234,7 +234,7 @@ def create_organizer_tables(syn, project_id):
     # FIXME: for some reason, storing the table will then call on the
     #        `challengeutils` CLI again
     table = syn.store(table)
-    logger.info(f"Table created: {table.name} ({table.id})")
+    logger.info(f" Table created: {table.name} ({table.id})")
 
     # FIXME: due to the issue above, we are not able to create the
     #        MaterializedViews
@@ -247,7 +247,7 @@ def create_organizer_tables(syn, project_id):
         )
         view = syn.store(view)
         view_ids[role_title] = view.id
-        logger.info(f"MaterializedView created: {view.name} ({view.id})")
+        logger.info(f" MaterializedView created: {view.name} ({view.id})")
     return view_ids
 
 
@@ -274,7 +274,7 @@ def create_data_folders(syn, project_id, tasks_count):
 
 def create_annotations(syn, project_id, table_ids, folder_ids):
     """Create annotations that will power the portal."""
-    logger.info("Creating basic annotations...")
+    logger.info(" Creating basic annotations...")
     project = syn.get(project_id)
 
     # Set basic annotations to the project.
@@ -288,13 +288,14 @@ def create_annotations(syn, project_id, table_ids, folder_ids):
         if not wiki.get('parentId')
     ][0]
     project['Overview'] = f"{project_id}/wiki/{main_wiki_id}"
+    project['Abstract'] = "More challenge information coming soon!"
     # # for role, synid in table_ids.items():
     # #     annots[role] = synid
     for i, synid in folder_ids.items():
         project[f'Task_{i + 1}.DataFolder'] = synid
     print(project)
     project = syn.store(project)
-    logger.info("Annotations creation complete.")
+    logger.info(" Annotations creation complete.")
     return project
 
 
@@ -370,7 +371,7 @@ def main(syn, challenge_name, tasks_count, live_site=None):
     # Checks if staging wiki exists, if so delete
     check_existing_and_delete_wiki(syn, project_staging.id)
 
-    logger.info(f"Copying wiki template to {project_staging.name}")
+    logger.info(f" Copying wiki template to {project_staging.name}")
     new_wikiids = synapseutils.copyWiki(
         syn, CHALLENGE_TEMPLATE_SYNID, project_staging.id
     )
