@@ -325,6 +325,22 @@ def main(syn, challenge_name, tasks_count, live_site=None):
         project_live = syn.get(live_site)
 
     challenge_obj = create_challenge_widget(syn, project_live, teams["team_part_id"])
+    # TODO: the following function does not work for some reason; see function for details
+    # tables = create_organizer_tables(syn, project_live.id)
+    tables = {}
+
+    # Create data folder(s) and set their local sharing settings as:
+    #     - organizers team = download access
+    #     - participants team = download access
+    folders = create_data_folders(syn, project_live.id, tasks_count)
+    for _, folder_id in folders.items():
+        permissions.set_entity_permissions(
+            syn, folder_id, teams["team_org_id"], permission_level="download"
+        )
+        permissions.set_entity_permissions(
+            syn, folder_id, teams["team_part_id"], permission_level="download"
+        )
+
     # Add the basic annotations to the live Project - some can be pre-filled but the
     # majority will need to filled out on the web UI.
     project_live = create_annotations(syn, project_live.id, tables, folders)
