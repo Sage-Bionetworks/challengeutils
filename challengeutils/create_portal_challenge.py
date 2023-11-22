@@ -255,7 +255,7 @@ def create_organizer_tables(syn, project_id):
 
 def create_data_folders(syn, project_id, tasks_count):
     """Create folders for challenge data, one for each task.
-    
+
     Args:
         syn: Synapse object
         parent_id: project synID
@@ -345,7 +345,8 @@ def main(syn, challenge_name, tasks_count, live_site=None):
             f"Task {i + 1} Submission",
             project_live.id,
         )
-    # TODO: the following function does not work for some reason; see function for details
+    # TODO: the following function does not work for some reason; see function
+    #       for details
     # tables = create_organizer_tables(syn, project_live.id)
     tables = {}
 
