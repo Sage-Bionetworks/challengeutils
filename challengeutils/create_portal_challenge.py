@@ -327,11 +327,28 @@ def main(syn, challenge_name, tasks_count, live_site=None):
             project_live.id,
         )
         syn.store(wikipage)
+
+    # Create another Task tab per task.
+    for i in range(1, tasks_count):
+        new_tab = synapseclient.Wiki(
+            title=f"Task {i + 1}",
+            owner=project_staging.id,
+            markdown="",
+            parentWikiId=syn.getWiki(project_staging.id).id
+        )
+        new_tab = syn.store(new_tab)
+        synapseutils.copyWiki(
+            syn,
+            CHALLENGE_TEMPLATE_SYNID,
+            project_staging.id,
+            entitySubPageId=TASK_WIKI_ID,
+            destinationSubPageId=new_tab.id,
+            entityMap={CHALLENGE_TEMPLATE_SYNID: project_staging.id}
+        )
+
     return {
         "live_projectid": project_live.id,
         "staging_projectid": project_staging.id,
-        "admin_teamid": teams["team_admin_id"],
         "organizer_teamid": teams["team_org_id"],
         "participant_teamid": teams["team_part_id"],
-        "preregistrantrant_teamid": teams["team_prereg_id"],
     }
