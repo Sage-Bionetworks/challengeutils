@@ -235,7 +235,7 @@ def create_organizer_tables(syn, project_id):
     # FIXME: for some reason, storing the table will then call on the
     #        `challengeutils` CLI again
     table = syn.store(table)
-    logger.info(f" Table created: {table.name} ({table.id}) ✔")
+    logger.info(f"    Table created: {table.name} ({table.id}) ✔")
 
     # FIXME: due to the issue above, we are not able to create the
     #        MaterializedViews
@@ -248,7 +248,7 @@ def create_organizer_tables(syn, project_id):
         )
         view = syn.store(view)
         view_ids[role_title] = view.id
-        logger.info(f" MaterializedView created: {view.name} ({view.id}) ✔")
+        logger.info(f"    MaterializedView created: {view.name} ({view.id}) ✔")
     return view_ids
 
 
@@ -270,7 +270,7 @@ def create_data_folders(syn, project_id, tasks_count):
         )
         folder = syn.store(folder)
         folder_ids[i] = folder.id
-        logger.info(f" Folder created: {folder.name} ({folder.id}) ✔")
+        logger.info(f"    Folder created: {folder.name} ({folder.id}) ✔")
     return folder_ids
 
 
@@ -296,7 +296,7 @@ def create_annotations(syn, project_id, table_ids, folder_ids):
     for i, synid in folder_ids.items():
         project[f'Task_{i + 1}.DataFolder'] = synid
     project = syn.store(project)
-    logger.info(" Annotations creation complete.")
+    logger.info("    Annotations creation complete ✔")
     return project
 
 
