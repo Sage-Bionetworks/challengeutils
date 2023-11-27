@@ -1,5 +1,8 @@
 # Sage Bionetworks Challenge Utilities
 
+> [!WARNING]
+> **Starting early 2024, this package will no longer be maintained.**  We are  in the process of creating a new-and-improved version of `challengeutils` - more information coming soon!
+
 [![Get challengeutils from PyPI](https://img.shields.io/pypi/v/challengeutils.svg?style=for-the-badge&logo=pypi)](https://pypi.python.org/pypi/challengeutils) [![Docker Automated](https://img.shields.io/docker/automated/sagebionetworks/challengeutils.svg?style=for-the-badge&logo=docker)](https://hub.docker.com/r/sagebionetworks/challengeutils/) [![Docker Pull](https://img.shields.io/docker/pulls/sagebionetworks/challengeutils.svg?style=for-the-badge&logo=docker)](https://hub.docker.com/r/sagebionetworks/challengeutils/) [![Coverage Status](https://img.shields.io/coveralls/github/Sage-Bionetworks/challengeutils.svg?&style=for-the-badge&label=coverage&logo=Coveralls)](https://coveralls.io/github/Sage-Bionetworks/challengeutils)
 
 
