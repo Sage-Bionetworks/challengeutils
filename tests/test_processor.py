@@ -80,9 +80,9 @@ def test_abc_class():
     with pytest.raises(
         TypeError,
         match="Can't instantiate abstract class "
-        "EvaluationQueueProcessor with "
-        "abstract methods interaction_func, "
-        "notify",
+        r"EvaluationQueueProcessor with.* "
+        r"abstract methods '?interaction_func'?, "
+        r"'?notify'?",
     ):
         EvaluationQueueProcessor(SYN, EVALUATION)
 
