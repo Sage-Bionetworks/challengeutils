@@ -8,6 +8,12 @@ For older releases, visit the `GitHub releases`_.
 
 .. _Github releases: https://github.com/Sage-Bionetworks/challengeutils/releases
 
+v4.3.0
+------
+- Remove support for Python 3.7
+- Add support for Python 3.11 and 3.12
+- New feature added: `create-portal-challenge` - which will create a challenge on the new [Sage Challenge Portal (staging)](https://staging.challenges.synapse.org/)
+
 v4.2.1
 ------
 - Bug fix for `validate-project`
