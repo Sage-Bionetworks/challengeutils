@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 PORTAL_TABLE = "syn51476218"
 CHALLENGE_TEMPLATE_SYNID = "syn52941681"
 TABLE_TEMPLATE_SYNID = "syn52955244"
-CHALLENGE_ROLES = ['organizer', 'contributor', 'sponsor']
+CHALLENGE_ROLES = ["organizer", "contributor", "sponsor"]
 TASK_WIKI_ID = "624554"
 
 
@@ -228,9 +228,10 @@ def create_organizer_tables(syn, project_id):
     logger.info(" Creating tables...")
     view_ids = {}
     schema = synapseclient.Schema(
-        name='Organizing Team',
+        name="Organizing Team",
         columns=syn.getColumns(TABLE_TEMPLATE_SYNID),
-        parent=project_id)
+        parent=project_id,
+    )
     table = synapseclient.Table(schema, [[]])
 
     # FIXME: for some reason, storing the table will then call on the
@@ -241,11 +242,11 @@ def create_organizer_tables(syn, project_id):
     # FIXME: due to the issue above, we are not able to create the
     #        MaterializedViews
     for role in CHALLENGE_ROLES:
-        role_title = role.title() + 's'
+        role_title = role.title() + "s"
         view = synapseclient.MaterializedViewSchema(
             name=role_title,
             parent=project_id,
-            definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')"
+            definingSQL=f"SELECT * FROM {table.id} WHERE challengeRole HAS ('{role}')",
         )
         view = syn.store(view)
         view_ids[role_title] = view.id
@@ -265,10 +266,7 @@ def create_data_folders(syn, project_id, tasks_count):
     folder_ids = {}
     for i in range(0, tasks_count):
         folder_name = f"Task {i + 1}"
-        folder = synapseclient.Folder(
-            name=folder_name,
-            parent=project_id
-        )
+        folder = synapseclient.Folder(name=folder_name, parent=project_id)
         folder = syn.store(folder)
         folder_ids[i] = folder.id
         logger.info(f"    Folder created: {folder.name} ({folder.id}) ✔")
@@ -286,16 +284,16 @@ def create_annotations(syn, project_id, table_ids, folder_ids):
 
     # For annotations we do currently know, add their values.
     main_wiki_id = [
-        wiki.get('id')
+        wiki.get("id")
         for wiki in syn.getWikiHeaders(project_id)
-        if not wiki.get('parentId')
+        if not wiki.get("parentId")
     ][0]
-    project['Overview'] = f"{project_id}/wiki/{main_wiki_id}"
-    project['Abstract'] = "More challenge information coming soon!"
+    project["Overview"] = f"{project_id}/wiki/{main_wiki_id}"
+    project["Abstract"] = "More challenge information coming soon!"
     # # for role, synid in table_ids.items():
     # #     annots[role] = synid
     for i, synid in folder_ids.items():
-        project[f'Task_{i + 1}.DataFolder'] = synid
+        project[f"Task_{i + 1}.DataFolder"] = synid
     project = syn.store(project)
     logger.info("    Annotations creation complete ✔")
     return project
@@ -391,16 +389,16 @@ def main(syn, challenge_name, tasks_count, live_site=None):
 
     # Create another Task tab per task.
     task_wikis = [
-        wiki.get('title')
+        wiki.get("title")
         for wiki in syn.getWikiHeaders(CHALLENGE_TEMPLATE_SYNID)
-        if wiki.get('parentId') == TASK_WIKI_ID
+        if wiki.get("parentId") == TASK_WIKI_ID
     ]
     for i in range(1, tasks_count):
         new_task_tab = synapseclient.Wiki(
             title=f"Task {i + 1} (tab)",
             owner=project_staging.id,
             markdown="This page can be left empty - it will not appear on the portal.",
-            parentWikiId=syn.getWiki(project_staging.id).id
+            parentWikiId=syn.getWiki(project_staging.id).id,
         )
         new_task_tab = syn.store(new_task_tab)
         for wiki_title in task_wikis:
@@ -408,7 +406,7 @@ def main(syn, challenge_name, tasks_count, live_site=None):
                 title=wiki_title,
                 owner=project_staging.id,
                 markdown="Refer to the Task 1 tab for examples",
-                parentWikiId=new_task_tab.id
+                parentWikiId=new_task_tab.id,
             )
             syn.store(task_subwiki)
 

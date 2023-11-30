@@ -469,16 +469,15 @@ def build_parser():
 
     parser_create_portal_challenge = subparsers.add_parser(
         "create-portal-challenge",
-        help="Create a Sage Challenge Portal challenge from template"
+        help="Create a Sage Challenge Portal challenge from template",
     )
     parser_create_portal_challenge.add_argument("challenge_name", help="Challenge name")
     parser_create_portal_challenge.add_argument(
         "-t",
         "--tasks_count",
-        type=int, default=1,
-        help=(
-            "Number of challenge tasks (default: 1)"
-        ),
+        type=int,
+        default=1,
+        help=("Number of challenge tasks (default: 1)"),
     )
     parser_create_portal_challenge.add_argument(
         "--livesiteid",
