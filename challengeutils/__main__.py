@@ -50,13 +50,13 @@ def command_mirrorwiki(syn, args):
     )
 
 
-def command_createchallenge(syn, args):
+def command_create_challenge_legacy(syn, args):
     """Creates a challenge space in Synapse.  This pulls from a standard
     DREAM template and creates the Projects and Teams that you will need
     for a challenge.  For more information on all the components this function
     creates, please head to `challenge administration <https://docs.synapse.org/articles/challenge_administration.html>`_.
 
-    >>> challengeutils createchallenge "Challenge Name Here"
+    >>> challengeutils create-legacy-challenge "Challenge Name Here"
     """
     challenge_components = createchallenge.main(
         syn, args.challengename, args.livesiteid
@@ -82,10 +82,10 @@ def command_createchallenge(syn, args):
     return challenge_components
 
 
-def command_create_portal_challenge(syn, args):
+def command_create_challenge(syn, args):
     """Creates a challenge on the Sage Challenge Portal.
 
-    >>> challengeutils create-portal-challenge "Challenge Name Here" [-n <int>]
+    >>> challengeutils create-challenge "Challenge Name Here" [-n <int>]
     """
     challenge_components = create_portal_challenge.main(
         syn, args.challenge_name, args.tasks_count, args.livesiteid, args.private
@@ -455,21 +455,21 @@ def build_parser():
         help='For additional help: "challengeutils <COMMAND> -h"',
     )
 
-    parser_createchallenge = subparsers.add_parser(
-        "create-challenge", help="Creates a challenge from a template"
+    parser_create_legacy_challenge = subparsers.add_parser(
+        "create-challenge-legacy", help="Creates a challenge from a legacy template"
     )
-    parser_createchallenge.add_argument("challengename", help="Challenge name")
-    parser_createchallenge.add_argument(
+    parser_create_legacy_challenge.add_argument("challengename", help="Challenge name")
+    parser_create_legacy_challenge.add_argument(
         "--livesiteid",
         help=(
             "Option to specify the live site synapse Id" " there is already a live site"
         ),
     )
-    parser_createchallenge.set_defaults(func=command_createchallenge)
+    parser_create_legacy_challenge.set_defaults(func=command_create_challenge_legacy)
 
     parser_create_portal_challenge = subparsers.add_parser(
-        "create-portal-challenge",
-        help="Create a Sage Challenge Portal challenge from template",
+        "create-challenge",
+        help="(recommended) Create a challenge from the Sage Challenge Portal template",
     )
     parser_create_portal_challenge.add_argument("challenge_name", help="Challenge name")
     parser_create_portal_challenge.add_argument(
