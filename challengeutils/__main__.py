@@ -1,4 +1,5 @@
 """challengeutils command line client"""
+
 import argparse
 import json
 import logging
@@ -6,19 +7,19 @@ import os
 
 import pandas as pd
 import synapseclient
+from synapseclient.core.exceptions import (
+    SynapseAuthenticationError,
+    SynapseNoCredentialsError,
+)
 from synapseclient.core.retry import with_retry
 from synapseclient.core.utils import from_unix_epoch_time
-from synapseclient.core.exceptions import (
-    SynapseNoCredentialsError,
-    SynapseAuthenticationError,
-)
 
 from . import (
     annotations,
-    createchallenge,
-    create_portal_challenge,
     challenge,
     cheat_detection,
+    create_portal_challenge,
+    createchallenge,
     evaluation_queue,
     mirrorwiki,
     permissions,
@@ -482,7 +483,7 @@ def build_parser():
     parser_create_portal_challenge.add_argument(
         "--livesiteid",
         help=(
-            "Option to specify the live site synapse Id" " there is already a live site"
+            "Option to specify the live site synapse Id there is already a live site"
         ),
     )
     parser_create_portal_challenge.add_argument(

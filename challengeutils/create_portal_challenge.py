@@ -13,12 +13,13 @@ Example::
     challengeutils.create_portal_challenge.main(syn, "Foo Challenge")
 
 """
+
 import logging
 import sys
 
 import synapseclient
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from . import challenge, permissions
 
