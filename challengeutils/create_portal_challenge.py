@@ -13,12 +13,13 @@ Example::
     challengeutils.create_portal_challenge.main(syn, "Foo Challenge")
 
 """
+
 import logging
 import sys
 
 import synapseclient
-from synapseclient.core.exceptions import SynapseHTTPError
 import synapseutils
+from synapseclient.core.exceptions import SynapseHTTPError
 
 from . import challenge, permissions
 
@@ -29,6 +30,7 @@ CHALLENGE_TEMPLATE_SYNID = "syn52941681"
 TABLE_TEMPLATE_SYNID = "syn52955244"
 CHALLENGE_ROLES = ["organizer", "contributor", "sponsor"]
 TASK_WIKI_ID = "624554"
+SAGE_CNB_TEAM = "3379097"
 
 
 def create_project(syn, project_name):
@@ -299,7 +301,7 @@ def create_annotations(syn, project_id, table_ids, folder_ids):
     return project
 
 
-def main(syn, challenge_name, tasks_count, live_site=None):
+def main(syn, challenge_name, tasks_count, live_site=None, private=False):
     """Creates two project entity for challenge sites.
     1) live (public) and 2) staging (private until launch)
     Allow for users to set up the live site themselves
@@ -331,18 +333,24 @@ def main(syn, challenge_name, tasks_count, live_site=None):
         permissions.set_entity_permissions(
             syn, project_live, teams["team_org_id"], permission_level="moderate"
         )
+        if not private:
+            permissions.set_entity_permissions(
+                syn, project_live, SAGE_CNB_TEAM, "admin"
+            )
         _create_live_wiki(syn, project_live)
     else:
         project_live = syn.get(live_site)
 
     challenge_obj = create_challenge_widget(syn, project_live, teams["team_part_id"])
     for i in range(0, tasks_count):
-        create_evaluation_queue(
+        queue = create_evaluation_queue(
             syn,
             f"{challenge_name} Task {i + 1}",
             f"Task {i + 1} Submission",
             project_live.id,
         )
+        if not private:
+            permissions.set_evaluation_permissions(syn, queue, SAGE_CNB_TEAM, "admin")
     # TODO: the following function does not work for some reason; see function
     #       for details
     # tables = create_organizer_tables(syn, project_live.id)
@@ -369,6 +377,8 @@ def main(syn, challenge_name, tasks_count, live_site=None):
     permissions.set_entity_permissions(
         syn, project_staging, teams["team_org_id"], permission_level="edit"
     )
+    if not private:
+        permissions.set_entity_permissions(syn, project_staging, SAGE_CNB_TEAM, "admin")
     # Checks if staging wiki exists, if so delete
     check_existing_and_delete_wiki(syn, project_staging.id)
 
