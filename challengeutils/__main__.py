@@ -88,7 +88,7 @@ def command_create_portal_challenge(syn, args):
     >>> challengeutils create-portal-challenge "Challenge Name Here" [-n <int>]
     """
     challenge_components = create_portal_challenge.main(
-        syn, args.challenge_name, args.tasks_count, args.livesiteid
+        syn, args.challenge_name, args.tasks_count, args.livesiteid, args.private
     )
     # component: project or team
     # componentid: project id or teamid
@@ -485,7 +485,11 @@ def build_parser():
             "Option to specify the live site synapse Id" " there is already a live site"
         ),
     )
-    parser_create_portal_challenge.set_defaults(func=command_create_portal_challenge)
+    parser_create_portal_challenge.add_argument(
+        "--private",
+        help="Option to not share the challenge with the Sage CNB Team",
+    )
+    parser_create_portal_challenge.set_defaults(func=command_create_challenge)
 
     parser_mirrorwiki = subparsers.add_parser(
         "mirror-wiki",
